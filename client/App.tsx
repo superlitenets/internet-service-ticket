@@ -18,7 +18,6 @@ import Leave from "./pages/Leave";
 import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
 import Payments from "./pages/Payments";
-import Mikrotik from "./pages/Mikrotik";
 import MikrotikAccounts from "./pages/MikrotikAccounts";
 import MikrotikBilling from "./pages/MikrotikBilling";
 import MikrotikMonitoring from "./pages/MikrotikMonitoring";
