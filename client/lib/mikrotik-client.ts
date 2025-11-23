@@ -919,3 +919,203 @@ export async function autoApplyCreditsToInvoices(accountId: string): Promise<any
     );
   }
 }
+
+/**
+ * Send invoice notification
+ */
+export async function sendInvoiceNotificationAPI(
+  accountId: string,
+  invoiceId: string
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/send-invoice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, invoiceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send invoice notification");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to send invoice notification"
+    );
+  }
+}
+
+/**
+ * Send payment reminder notification
+ */
+export async function sendPaymentReminderNotificationAPI(
+  accountId: string,
+  invoiceId: string
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/send-reminder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, invoiceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send payment reminder");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to send payment reminder"
+    );
+  }
+}
+
+/**
+ * Send overdue notification
+ */
+export async function sendOverdueNotificationAPI(
+  accountId: string,
+  invoiceId: string
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/send-overdue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, invoiceId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send overdue notification");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to send overdue notification"
+    );
+  }
+}
+
+/**
+ * Send payment received notification
+ */
+export async function sendPaymentReceivedNotificationAPI(
+  accountId: string,
+  paymentId: string
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/send-payment-received", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, paymentId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send payment received notification");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to send payment received notification"
+    );
+  }
+}
+
+/**
+ * Send quota alert notification
+ */
+export async function sendQuotaAlertNotificationAPI(
+  accountId: string,
+  percentageUsed: number,
+  usedData?: number,
+  totalQuota?: number
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/send-quota-alert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, percentageUsed, usedData, totalQuota }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send quota alert");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to send quota alert"
+    );
+  }
+}
+
+/**
+ * Get notification logs
+ */
+export async function getNotificationLogsAPI(
+  accountId?: string,
+  limit: number = 100
+): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/notifications/logs", window.location.origin);
+    if (accountId) {
+      url.searchParams.append("accountId", accountId);
+    }
+    url.searchParams.append("limit", limit.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch notification logs");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch notification logs"
+    );
+  }
+}
+
+/**
+ * Get notification templates
+ */
+export async function getNotificationTemplatesAPI(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/templates");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch notification templates");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch notification templates"
+    );
+  }
+}
+
+/**
+ * Get notification statistics
+ */
+export async function getNotificationStatsAPI(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/notifications/stats");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch notification statistics");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch notification statistics"
+    );
+  }
+}
