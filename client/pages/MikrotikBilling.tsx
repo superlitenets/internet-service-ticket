@@ -7,7 +7,7 @@ import { FileText, DollarSign, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
-  getMikrotikInvoices,
+  getAllInvoices,
   getMikrotikPlans,
   generateInvoice,
   createMikrotikPlan,
