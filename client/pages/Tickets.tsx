@@ -323,17 +323,28 @@ export default function TicketsPage() {
   const handleSendSmsNotification = async (ticket: Ticket) => {
     setSendingSms(true);
     try {
-      // Get SMS credentials from settings (in production, these would come from backend)
-      const smsSettings = {
-        provider: "twilio",
-        accountSid: "AC1234567890abcdef1234567890abcde",
-        authToken: "your_auth_token_here",
-        fromNumber: "+1234567890",
-      };
+      const settings = getSmsSettings();
+      if (!settings) {
+        toast({
+          title: "Error",
+          description: "SMS settings not configured",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const message = `Hello ${ticket.customer}! Your support ticket (${ticket.id}) has been assigned to ${ticket.assignedTo}. Status: ${ticket.status}. We'll help you resolve this shortly.`;
+      const statusTemplate = getTemplate("ticket_status_change", "customer");
+      if (!statusTemplate) {
+        throw new Error("SMS template not found");
+      }
 
-      await sendSmsToPhone(ticket.customerPhone, message, smsSettings);
+      const message = renderTemplate(statusTemplate, {
+        customerName: ticket.customer,
+        ticketId: ticket.id,
+        status: ticket.status,
+      });
+
+      await sendSmsToPhone(ticket.customerPhone, message);
 
       setAllTickets((prev) =>
         prev.map((t) =>
