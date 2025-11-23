@@ -2691,6 +2691,182 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </Card>
+
+            {/* RADIUS Configuration */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    RADIUS Authentication
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure RADIUS server for PPPoE and Hotspot authentication
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      RADIUS Server Host *
+                    </label>
+                    <Input
+                      value={radiusForm.host}
+                      onChange={(e) => setRadiusForm({ ...radiusForm, host: e.target.value })}
+                      placeholder="192.168.1.1 or radius.example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Port
+                    </label>
+                    <Input
+                      type="number"
+                      value={radiusForm.port}
+                      onChange={(e) => setRadiusForm({ ...radiusForm, port: parseInt(e.target.value) || 1812 })}
+                      placeholder="1812"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Shared Secret *
+                  </label>
+                  <Input
+                    type="password"
+                    value={radiusForm.sharedSecret}
+                    onChange={(e) => setRadiusForm({ ...radiusForm, sharedSecret: e.target.value })}
+                    placeholder="Enter RADIUS shared secret"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This is the shared secret configured on your RADIUS server
+                  </p>
+                </div>
+
+                <div className="space-y-3 bg-muted/30 p-4 rounded-lg">
+                  <h4 className="font-medium text-sm">Sync Options</h4>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={radiusForm.syncOnCreate}
+                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnCreate: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Sync to RADIUS when accounts are created</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={radiusForm.syncOnUpdate}
+                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnUpdate: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Sync status changes (suspend/resume)</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={radiusForm.syncOnDelete}
+                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnDelete: e.target.checked })}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Remove from RADIUS when accounts are deleted</span>
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={async () => {
+                      try {
+                        setTestingRadius(true);
+                        const result = await testRADIUSConnection({
+                          instanceId: selectedInstanceForRadius || undefined,
+                          host: radiusForm.host,
+                          port: radiusForm.port,
+                          sharedSecret: radiusForm.sharedSecret,
+                        });
+
+                        if (result.success) {
+                          toast({
+                            title: "Success",
+                            description: result.message,
+                          });
+                        } else {
+                          toast({
+                            title: "Error",
+                            description: result.message || "Failed to connect to RADIUS server",
+                            variant: "destructive",
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: error instanceof Error ? error.message : "Failed to test connection",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setTestingRadius(false);
+                      }
+                    }}
+                    disabled={!radiusForm.host || !radiusForm.sharedSecret || testingRadius}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    {testingRadius ? "Testing..." : "Test Connection"}
+                  </Button>
+
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const result = await updateRADIUSConfig({
+                          instanceId: selectedInstanceForRadius || undefined,
+                          host: radiusForm.host,
+                          port: radiusForm.port,
+                          sharedSecret: radiusForm.sharedSecret,
+                          syncOnCreate: radiusForm.syncOnCreate,
+                          syncOnUpdate: radiusForm.syncOnUpdate,
+                          syncOnDelete: radiusForm.syncOnDelete,
+                        });
+
+                        if (result.success) {
+                          toast({
+                            title: "Success",
+                            description: "RADIUS configuration saved successfully",
+                          });
+                        }
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: error instanceof Error ? error.message : "Failed to save RADIUS configuration",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    disabled={!radiusForm.host || !radiusForm.sharedSecret}
+                    className="gap-2"
+                  >
+                    <Save size={16} />
+                    Save RADIUS Configuration
+                  </Button>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800 font-medium mb-2">
+                    💡 How it works:
+                  </p>
+                  <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                    <li>When you create an account, both PPPoE and Hotspot users are created in RADIUS</li>
+                    <li>Account credentials are synchronized using the generated PPPoE username/password</li>
+                    <li>When you suspend/activate accounts, RADIUS users are disabled/enabled</li>
+                    <li>When you delete accounts, users are removed from RADIUS</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* Instance Dialog */}
