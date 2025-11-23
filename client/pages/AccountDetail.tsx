@@ -420,22 +420,30 @@ export default function AccountDetail() {
           </Card>
 
           {/* PPPoE & Hotspot Credentials */}
-          <Card className="p-6 border-0 shadow-sm">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
+          <Card className="p-8 border-0 shadow-sm bg-slate-50 dark:bg-slate-950">
+            <h2 className="text-xl font-bold text-foreground mb-8">
               Access Credentials
             </h2>
 
             <div className="space-y-6">
               {/* PPPoE */}
-              <div>
-                <p className="text-sm font-medium text-foreground mb-3">
-                  PPPoE Access
-                </p>
-                <div className="bg-muted/50 rounded p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Username</p>
-                      <p className="font-mono text-sm">{account.pppoeUsername}</p>
+              <div className="bg-white dark:bg-slate-900 rounded-lg border border-border p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-400">
+                    <span className="font-bold text-sm">P</span>
+                  </div>
+                  <h3 className="font-semibold text-foreground">PPPoE Access</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded border border-border">
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                        Username
+                      </p>
+                      <p className="font-mono text-sm font-medium text-foreground">
+                        {account.pppoeUsername}
+                      </p>
                     </div>
                     <Button
                       variant="ghost"
@@ -443,14 +451,18 @@ export default function AccountDetail() {
                       onClick={() =>
                         copyToClipboard(account.pppoeUsername || "")
                       }
+                      className="ml-2"
                     >
-                      <Copy size={14} />
+                      <Copy size={16} />
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Password</p>
-                      <p className="font-mono text-sm">
+
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded border border-border">
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                        Password
+                      </p>
+                      <p className="font-mono text-sm font-medium text-foreground">
                         {showPassword
                           ? account.pppoePassword
                           : "•".repeat(
@@ -462,11 +474,12 @@ export default function AccountDetail() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowPassword(!showPassword)}
+                      className="ml-2"
                     >
                       {showPassword ? (
-                        <EyeOff size={14} />
+                        <EyeOff size={16} />
                       ) : (
-                        <Eye size={14} />
+                        <Eye size={16} />
                       )}
                     </Button>
                   </div>
@@ -475,28 +488,33 @@ export default function AccountDetail() {
 
               {/* Hotspot */}
               {account.hotspotUsername && (
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-3">
-                    Hotspot Access
-                  </p>
-                  <div className="bg-muted/50 rounded p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Username</p>
-                        <p className="font-mono text-sm">
-                          {account.hotspotUsername}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          copyToClipboard(account.hotspotUsername || "")
-                        }
-                      >
-                        <Copy size={14} />
-                      </Button>
+                <div className="bg-white dark:bg-slate-900 rounded-lg border border-border p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-orange-600 dark:text-orange-400">
+                      <span className="font-bold text-sm">H</span>
                     </div>
+                    <h3 className="font-semibold text-foreground">Hotspot Access</h3>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded border border-border">
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
+                        Username
+                      </p>
+                      <p className="font-mono text-sm font-medium text-foreground">
+                        {account.hotspotUsername}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        copyToClipboard(account.hotspotUsername || "")
+                      }
+                      className="ml-2"
+                    >
+                      <Copy size={16} />
+                    </Button>
                   </div>
                 </div>
               )}
