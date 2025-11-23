@@ -24,6 +24,29 @@ let invoices: MikrotikInvoice[] = [];
 let payments: MikrotikPayment[] = [];
 let usageRecords: MikrotikUsage[] = [];
 
+/**
+ * Generate secure PPPoE and Hotspot credentials based on account number
+ */
+function generatePPPoECredentials(accountNumber: string) {
+  // Generate random password (alphanumeric, at least 8 characters)
+  const generatePassword = (): string => {
+    const length = 12;
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  };
+
+  return {
+    pppoeUsername: accountNumber, // Use account number as username
+    pppoePassword: generatePassword(),
+    hotspotUsername: `hs_${accountNumber}`, // Hotspot prefix
+    hotspotPassword: generatePassword(),
+  };
+}
+
 // Initialize default plans
 function initializeDefaultPlans() {
   if (plans.length === 0) {
