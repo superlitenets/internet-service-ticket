@@ -25,6 +25,15 @@ import {
   handleCheckWhatsAppStatus,
   handleLogoutWhatsAppWeb,
 } from "./routes/whatsapp-unified";
+import {
+  handleMpesaC2B,
+  handleMpesaB2B,
+  handleMpesaStkPush,
+  getMpesaTransactions,
+  getMpesaTransaction,
+  handleMpesaCallback,
+  handleMpesaValidation,
+} from "./routes/mpesa";
 
 export function createServer() {
   const app = express();
