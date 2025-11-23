@@ -2917,6 +2917,189 @@ export default function SettingsPage() {
                 </div>
               </div>
             </Card>
+
+            {/* Account Expiration & Renewal Management */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    Account Expiration & Renewal
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Manage automatic suspension and renewal of expired accounts
+                  </p>
+                </div>
+
+                <div className="space-y-4 bg-muted/30 p-4 rounded-lg">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                    />
+                    <span className="text-sm font-medium">Enable automatic expiration checks</span>
+                  </label>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Grace Period (days)
+                    </label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      max="30"
+                      className="w-full md:w-1/2"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Number of days after due date before suspension (0 = suspend immediately)
+                    </p>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      defaultChecked
+                    />
+                    <span className="text-sm">Auto-suspend expired accounts in RADIUS</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      defaultChecked
+                    />
+                    <span className="text-sm">Auto-resume accounts on renewal</span>
+                  </label>
+                </div>
+
+                <Button variant="outline" className="w-full">
+                  <Save size={16} className="mr-2" />
+                  Save Expiration Settings
+                </Button>
+              </div>
+            </Card>
+
+            {/* Notifications Management */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    Notification Management
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure automatic notifications for invoices, payments, and alerts
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 space-y-3">
+                    <h4 className="font-semibold text-blue-900">Invoice Notifications</h4>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" className="rounded" defaultChecked />
+                      <span className="text-sm text-blue-800">Send when invoice generated</span>
+                    </label>
+                    <Button size="sm" variant="outline">Configure Template</Button>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-green-50 border border-green-200 space-y-3">
+                    <h4 className="font-semibold text-green-900">Payment Reminders</h4>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" className="rounded" defaultChecked />
+                      <span className="text-sm text-green-800">Send automatic reminders</span>
+                    </label>
+                    <Button size="sm" variant="outline">Configure Template</Button>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-orange-50 border border-orange-200 space-y-3">
+                    <h4 className="font-semibold text-orange-900">Overdue Alerts</h4>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" className="rounded" defaultChecked />
+                      <span className="text-sm text-orange-800">Alert on overdue payments</span>
+                    </label>
+                    <Button size="sm" variant="outline">Configure Template</Button>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-purple-50 border border-purple-200 space-y-3">
+                    <h4 className="font-semibold text-purple-900">Quota Alerts</h4>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" className="rounded" defaultChecked />
+                      <span className="text-sm text-purple-800">Bandwidth quota warnings</span>
+                    </label>
+                    <Button size="sm" variant="outline">Configure Template</Button>
+                  </div>
+                </div>
+
+                <Button variant="outline" className="w-full">
+                  <Save size={16} className="mr-2" />
+                  Save Notification Settings
+                </Button>
+              </div>
+            </Card>
+
+            {/* RouterOS Integration */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    RouterOS Integration
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Manage RouterOS configuration and monitoring settings
+                  </p>
+                </div>
+
+                <div className="space-y-3 bg-muted/30 p-4 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Monitor Update Interval (seconds)
+                    </label>
+                    <Input
+                      type="number"
+                      placeholder="60"
+                      min="10"
+                      max="300"
+                      className="w-full md:w-1/2"
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      defaultChecked
+                    />
+                    <span className="text-sm">Enable bandwidth monitoring</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      defaultChecked
+                    />
+                    <span className="text-sm">Log all RouterOS API calls</span>
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button variant="outline" className="gap-2">
+                    <Network size={16} />
+                    Test Connection
+                  </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Network size={16} />
+                    View Device Info
+                  </Button>
+                </div>
+
+                <Button variant="outline" className="w-full">
+                  <Save size={16} className="mr-2" />
+                  Save RouterOS Settings
+                </Button>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* Instance Dialog */}
