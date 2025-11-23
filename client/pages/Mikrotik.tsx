@@ -745,7 +745,7 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await scheduleBilling(selectedAccountForBilling, billingCycleDay);
+      await scheduleBilling(selectedAccountForBilling, billingCycleDay, selectedInstance?.id);
       toast({
         title: "Success",
         description: "Billing schedule activated",
@@ -775,7 +775,7 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await cancelBillingAutomation(selectedAccountForBilling);
+      await cancelBillingAutomation(selectedAccountForBilling, selectedInstance?.id);
       toast({
         title: "Success",
         description: "Billing schedule cancelled",
@@ -805,7 +805,7 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const result = await testBillingAutomation(selectedAccountForBilling);
+      const result = await testBillingAutomation(selectedAccountForBilling, selectedInstance?.id);
       if (result.success) {
         toast({
           title: "Success",
@@ -833,7 +833,7 @@ export default function MikrotikPage() {
   const handleLoadAutomationLogs = async () => {
     try {
       setLoading(true);
-      const result = await fetchAutomationLogs(selectedAccountForBilling || undefined, 50);
+      const result = await fetchAutomationLogs(selectedAccountForBilling || undefined, 50, selectedInstance?.id);
       if (result.success) {
         setAutomationLogs(result.logs);
         toast({
@@ -874,13 +874,13 @@ export default function MikrotikPage() {
       let result;
       switch (notificationType) {
         case "invoice":
-          result = await sendInvoiceNotificationAPI(invoice.accountId, invoice.id);
+          result = await sendInvoiceNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
           break;
         case "reminder":
-          result = await sendPaymentReminderNotificationAPI(invoice.accountId, invoice.id);
+          result = await sendPaymentReminderNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
           break;
         case "overdue":
-          result = await sendOverdueNotificationAPI(invoice.accountId, invoice.id);
+          result = await sendOverdueNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
           break;
         default:
           throw new Error("Unknown notification type");
