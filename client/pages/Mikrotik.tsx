@@ -204,21 +204,32 @@ export default function MikrotikPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [accountsData, plansData, statsData] = await Promise.all([
-        getMikrotikAccounts(),
-        getMikrotikPlans(),
-        getMikrotikStats(),
-      ]);
 
-      setAccounts(accountsData);
-      setPlans(plansData);
-      setStats(statsData);
+      // Load accounts
+      try {
+        const accountsData = await getMikrotikAccounts();
+        setAccounts(accountsData);
+      } catch (err) {
+        console.error("Failed to load accounts:", err);
+      }
+
+      // Load plans
+      try {
+        const plansData = await getMikrotikPlans();
+        setPlans(plansData);
+      } catch (err) {
+        console.error("Failed to load plans:", err);
+      }
+
+      // Load stats
+      try {
+        const statsData = await getMikrotikStats();
+        setStats(statsData);
+      } catch (err) {
+        console.error("Failed to load stats:", err);
+      }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load data",
-        variant: "destructive",
-      });
+      console.error("Data loading error:", error);
     } finally {
       setLoading(false);
     }
