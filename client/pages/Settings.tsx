@@ -38,6 +38,7 @@ import {
   DollarSign,
   Trash,
   Network,
+  Wifi,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
