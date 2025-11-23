@@ -17,6 +17,7 @@ import Attendance from "./pages/Attendance";
 import Leave from "./pages/Leave";
 import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
+import Payments from "./pages/Payments";
 import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
