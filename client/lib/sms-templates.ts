@@ -30,8 +30,8 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     recipientType: "technician",
     name: "Ticket Created - Technician",
     message:
-      "New ticket #{{ticketId}} assigned to you. Customer: {{customerName}}, Priority: {{priority}}, Issue: {{title}}.",
-    variables: ["ticketId", "customerName", "priority", "title"],
+      "New ticket #{{ticketId}} for you. Customer: {{customerName}} ({{customerPhone}}) at {{customerLocation}}. Priority: {{priority}}. Issue: {{title}}.",
+    variables: ["ticketId", "customerName", "customerPhone", "customerLocation", "priority", "title"],
   },
   {
     id: "template_ticket_assigned_customer",
@@ -48,8 +48,8 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     recipientType: "technician",
     name: "Ticket Assigned - Technician",
     message:
-      "You have been assigned ticket #{{ticketId}} for {{customerName}}. Priority: {{priority}}. Issue: {{title}}.",
-    variables: ["ticketId", "customerName", "priority", "title"],
+      "Assigned ticket #{{ticketId}} - {{customerName}} ({{customerPhone}}) at {{customerLocation}}. Priority: {{priority}}. {{title}}.",
+    variables: ["ticketId", "customerName", "customerPhone", "customerLocation", "priority", "title"],
   },
   {
     id: "template_ticket_status_change_customer",
