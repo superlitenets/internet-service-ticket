@@ -87,11 +87,7 @@ import {
   getTopCustomersByRevenue,
   generateMonthlyBillingReport,
 } from "@/lib/mikrotik-client";
-import {
-  MikrotikAccount,
-  MikrotikPlan,
-  MikrotikInvoice,
-} from "@shared/api";
+import { MikrotikAccount, MikrotikPlan, MikrotikInvoice } from "@shared/api";
 import { getCompanyPrefix } from "@/lib/company-settings-storage";
 import {
   getMikrotikInstances,
@@ -112,13 +108,16 @@ export default function MikrotikPage() {
     setExpandedGroups((prev) =>
       prev.includes(groupName)
         ? prev.filter((g) => g !== groupName)
-        : [...prev, groupName]
+        : [...prev, groupName],
     );
   };
 
   // Mikrotik Instance State
-  const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [mikrotikInstances, setMikrotikInstances] = useState<
+    MikrotikInstance[]
+  >([]);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
 
   // State
   const [accounts, setAccounts] = useState<MikrotikAccount[]>([]);
@@ -137,9 +136,8 @@ export default function MikrotikPage() {
   const [newAccountDialog, setNewAccountDialog] = useState(false);
   const [newPlanDialog, setNewPlanDialog] = useState(false);
   const [paymentDialog, setPaymentDialog] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<MikrotikInvoice | null>(
-    null
-  );
+  const [selectedInvoice, setSelectedInvoice] =
+    useState<MikrotikInvoice | null>(null);
 
   // Forms
   const [accountForm, setAccountForm] = useState({
@@ -190,7 +188,8 @@ export default function MikrotikPage() {
   // Bandwidth Monitoring State
   const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
   const [quotaAlerts, setQuotaAlerts] = useState<any[]>([]);
-  const [selectedAccountForMonitoring, setSelectedAccountForMonitoring] = useState<string>("");
+  const [selectedAccountForMonitoring, setSelectedAccountForMonitoring] =
+    useState<string>("");
   const [bandwidthHistory, setBandwidthHistory] = useState<any[]>([]);
   const [averageUsage, setAverageUsage] = useState<any>(null);
   const [peakUsage, setPeakUsage] = useState<any>(null);
@@ -198,13 +197,15 @@ export default function MikrotikPage() {
   // Billing Automation State
   const [billingStatus, setBillingStatus] = useState<any>(null);
   const [automationLogs, setAutomationLogs] = useState<any[]>([]);
-  const [selectedAccountForBilling, setSelectedAccountForBilling] = useState<string>("");
+  const [selectedAccountForBilling, setSelectedAccountForBilling] =
+    useState<string>("");
   const [billingCycleDay, setBillingCycleDay] = useState(1);
 
   // Notifications State
   const [notificationStats, setNotificationStats] = useState<any>(null);
   const [notificationLogs, setNotificationLogs] = useState<any[]>([]);
-  const [selectedInvoiceForNotification, setSelectedInvoiceForNotification] = useState<string>("");
+  const [selectedInvoiceForNotification, setSelectedInvoiceForNotification] =
+    useState<string>("");
   const [notificationType, setNotificationType] = useState<string>("invoice");
 
   // Analytics State
@@ -544,7 +545,10 @@ export default function MikrotikPage() {
   const handleLoadInterfaceStats = async () => {
     try {
       setLoading(true);
-      const result = await getRouterOSInterfaceStats(undefined, selectedInstance?.id);
+      const result = await getRouterOSInterfaceStats(
+        undefined,
+        selectedInstance?.id,
+      );
       if (result.success) {
         setInterfaceStats(result.interfaces);
         toast({
@@ -622,20 +626,26 @@ export default function MikrotikPage() {
 
   const loadAnalyticsData = async () => {
     try {
-      const [analyticsResult, revenueResult, trendResult, accountTrendResult, topCustomersResult] =
-        await Promise.all([
-          getDashboardAnalytics(selectedInstance?.id),
-          getRevenueAnalytics(undefined, undefined, selectedInstance?.id),
-          getMonthlyRevenueTrend(6, selectedInstance?.id),
-          getAccountGrowthTrend(6, selectedInstance?.id),
-          getTopCustomersByRevenue(5, selectedInstance?.id),
-        ]);
+      const [
+        analyticsResult,
+        revenueResult,
+        trendResult,
+        accountTrendResult,
+        topCustomersResult,
+      ] = await Promise.all([
+        getDashboardAnalytics(selectedInstance?.id),
+        getRevenueAnalytics(undefined, undefined, selectedInstance?.id),
+        getMonthlyRevenueTrend(6, selectedInstance?.id),
+        getAccountGrowthTrend(6, selectedInstance?.id),
+        getTopCustomersByRevenue(5, selectedInstance?.id),
+      ]);
 
       if (analyticsResult.success) setAnalyticsData(analyticsResult.summary);
       if (revenueResult.success) setRevenueData(revenueResult.revenue);
       if (trendResult.success) setRevenueTrend(trendResult.trend);
       if (accountTrendResult.success) setAccountTrend(accountTrendResult.trend);
-      if (topCustomersResult.success) setTopCustomers(topCustomersResult.topCustomers);
+      if (topCustomersResult.success)
+        setTopCustomers(topCustomersResult.topCustomers);
     } catch (error) {
       console.error("Failed to load analytics data:", error);
     }
@@ -653,7 +663,10 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await startBandwidthMonitoring(selectedAccountForMonitoring, selectedInstance?.id);
+      await startBandwidthMonitoring(
+        selectedAccountForMonitoring,
+        selectedInstance?.id,
+      );
       toast({
         title: "Success",
         description: "Bandwidth monitoring started",
@@ -683,7 +696,10 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await stopBandwidthMonitoring(selectedAccountForMonitoring, selectedInstance?.id);
+      await stopBandwidthMonitoring(
+        selectedAccountForMonitoring,
+        selectedInstance?.id,
+      );
       toast({
         title: "Success",
         description: "Bandwidth monitoring stopped",
@@ -713,12 +729,28 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const [historyResult, averageResult, peakResult, alertsResult] = await Promise.all([
-        getBandwidthHistory(selectedAccountForMonitoring, 24, selectedInstance?.id),
-        getAverageBandwidthUsage(selectedAccountForMonitoring, 24, selectedInstance?.id),
-        getPeakUsageTime(selectedAccountForMonitoring, 24, selectedInstance?.id),
-        getAccountQuotaAlerts(selectedAccountForMonitoring, selectedInstance?.id),
-      ]);
+      const [historyResult, averageResult, peakResult, alertsResult] =
+        await Promise.all([
+          getBandwidthHistory(
+            selectedAccountForMonitoring,
+            24,
+            selectedInstance?.id,
+          ),
+          getAverageBandwidthUsage(
+            selectedAccountForMonitoring,
+            24,
+            selectedInstance?.id,
+          ),
+          getPeakUsageTime(
+            selectedAccountForMonitoring,
+            24,
+            selectedInstance?.id,
+          ),
+          getAccountQuotaAlerts(
+            selectedAccountForMonitoring,
+            selectedInstance?.id,
+          ),
+        ]);
 
       if (historyResult.success) {
         setBandwidthHistory(historyResult.history);
@@ -741,7 +773,9 @@ export default function MikrotikPage() {
       toast({
         title: "Error",
         description:
-          error instanceof Error ? error.message : "Failed to load bandwidth data",
+          error instanceof Error
+            ? error.message
+            : "Failed to load bandwidth data",
         variant: "destructive",
       });
     } finally {
@@ -761,7 +795,11 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await scheduleBilling(selectedAccountForBilling, billingCycleDay, selectedInstance?.id);
+      await scheduleBilling(
+        selectedAccountForBilling,
+        billingCycleDay,
+        selectedInstance?.id,
+      );
       toast({
         title: "Success",
         description: "Billing schedule activated",
@@ -791,7 +829,10 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await cancelBillingAutomation(selectedAccountForBilling, selectedInstance?.id);
+      await cancelBillingAutomation(
+        selectedAccountForBilling,
+        selectedInstance?.id,
+      );
       toast({
         title: "Success",
         description: "Billing schedule cancelled",
@@ -821,7 +862,10 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const result = await testBillingAutomation(selectedAccountForBilling, selectedInstance?.id);
+      const result = await testBillingAutomation(
+        selectedAccountForBilling,
+        selectedInstance?.id,
+      );
       if (result.success) {
         toast({
           title: "Success",
@@ -849,7 +893,11 @@ export default function MikrotikPage() {
   const handleLoadAutomationLogs = async () => {
     try {
       setLoading(true);
-      const result = await fetchAutomationLogs(selectedAccountForBilling || undefined, 50, selectedInstance?.id);
+      const result = await fetchAutomationLogs(
+        selectedAccountForBilling || undefined,
+        50,
+        selectedInstance?.id,
+      );
       if (result.success) {
         setAutomationLogs(result.logs);
         toast({
@@ -881,7 +929,9 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const invoice = invoices.find((inv) => inv.id === selectedInvoiceForNotification);
+      const invoice = invoices.find(
+        (inv) => inv.id === selectedInvoiceForNotification,
+      );
 
       if (!invoice) {
         throw new Error("Invoice not found");
@@ -890,13 +940,25 @@ export default function MikrotikPage() {
       let result;
       switch (notificationType) {
         case "invoice":
-          result = await sendInvoiceNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
+          result = await sendInvoiceNotificationAPI(
+            invoice.accountId,
+            invoice.id,
+            selectedInstance?.id,
+          );
           break;
         case "reminder":
-          result = await sendPaymentReminderNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
+          result = await sendPaymentReminderNotificationAPI(
+            invoice.accountId,
+            invoice.id,
+            selectedInstance?.id,
+          );
           break;
         case "overdue":
-          result = await sendOverdueNotificationAPI(invoice.accountId, invoice.id, selectedInstance?.id);
+          result = await sendOverdueNotificationAPI(
+            invoice.accountId,
+            invoice.id,
+            selectedInstance?.id,
+          );
           break;
         default:
           throw new Error("Unknown notification type");
@@ -919,7 +981,9 @@ export default function MikrotikPage() {
       toast({
         title: "Error",
         description:
-          error instanceof Error ? error.message : "Failed to send notification",
+          error instanceof Error
+            ? error.message
+            : "Failed to send notification",
         variant: "destructive",
       });
     } finally {
@@ -953,13 +1017,13 @@ export default function MikrotikPage() {
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      acc.accountNumber.includes(searchTerm)
+      acc.accountNumber.includes(searchTerm),
   );
 
   const filteredInvoices = invoices.filter(
     (inv) =>
       inv.invoiceNumber.includes(searchTerm) ||
-      inv.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+      inv.customerName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Log component state for debugging
@@ -992,7 +1056,7 @@ export default function MikrotikPage() {
                 <Select
                   value={selectedInstance?.id || ""}
                   onValueChange={(id) => {
-                    const instance = mikrotikInstances.find(i => i.id === id);
+                    const instance = mikrotikInstances.find((i) => i.id === id);
                     setSelectedInstance(instance || null);
                   }}
                 >
@@ -1073,7 +1137,11 @@ export default function MikrotikPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           {/* Grouped Tab Navigation */}
           <div className="bg-card border border-border rounded-lg p-4 space-y-3">
             {/* Dashboard */}
@@ -1383,7 +1451,9 @@ export default function MikrotikPage() {
                           <tr
                             key={account.id}
                             className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                            onClick={() => navigate(`/mikrotik/accounts/${account.id}`)}
+                            onClick={() =>
+                              navigate(`/mikrotik/accounts/${account.id}`)
+                            }
                           >
                             <td className="py-3 px-4">
                               <p className="font-medium text-foreground whitespace-nowrap">
@@ -1523,8 +1593,8 @@ export default function MikrotikPage() {
                                   invoice.status === "paid"
                                     ? "default"
                                     : invoice.status === "overdue"
-                                    ? "destructive"
-                                    : "secondary"
+                                      ? "destructive"
+                                      : "secondary"
                                 }
                                 className="gap-1.5"
                               >
@@ -1610,7 +1680,10 @@ export default function MikrotikPage() {
                         </div>
 
                         <div className="space-y-1">
-                          <Badge variant="outline" className="text-xs capitalize">
+                          <Badge
+                            variant="outline"
+                            className="text-xs capitalize"
+                          >
                             {plan.planType.replace("-", " ")}
                           </Badge>
                           {plan.dataQuota && (
@@ -1621,10 +1694,18 @@ export default function MikrotikPage() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                          >
                             <Edit size={14} />
                           </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                          >
                             <Trash2 size={14} />
                           </Button>
                         </div>
@@ -1800,7 +1881,8 @@ export default function MikrotikPage() {
                                 {alert.customerName}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                {alert.currentUsageMB.toFixed(0)} MB / {alert.quotaMB} MB
+                                {alert.currentUsageMB.toFixed(0)} MB /{" "}
+                                {alert.quotaMB} MB
                               </p>
                             </div>
                             <Badge
@@ -1861,31 +1943,35 @@ export default function MikrotikPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {bandwidthHistory.slice(-10).map((record: any, idx: number) => (
-                            <tr key={idx} className="border-b border-border">
-                              <td className="py-3 px-4 text-sm">
-                                {new Date(record.timestamp).toLocaleTimeString()}
-                              </td>
-                              <td className="py-3 px-4 text-right text-sm">
-                                {record.downloadMBps.toFixed(2)} Mbps
-                              </td>
-                              <td className="py-3 px-4 text-right text-sm">
-                                {record.uploadMBps.toFixed(2)} Mbps
-                              </td>
-                              <td className="py-3 px-4 text-right">
-                                <Badge
-                                  variant={
-                                    record.status === "normal"
-                                      ? "default"
-                                      : "destructive"
-                                  }
-                                  className="text-xs capitalize"
-                                >
-                                  {record.status}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
+                          {bandwidthHistory
+                            .slice(-10)
+                            .map((record: any, idx: number) => (
+                              <tr key={idx} className="border-b border-border">
+                                <td className="py-3 px-4 text-sm">
+                                  {new Date(
+                                    record.timestamp,
+                                  ).toLocaleTimeString()}
+                                </td>
+                                <td className="py-3 px-4 text-right text-sm">
+                                  {record.downloadMBps.toFixed(2)} Mbps
+                                </td>
+                                <td className="py-3 px-4 text-right text-sm">
+                                  {record.uploadMBps.toFixed(2)} Mbps
+                                </td>
+                                <td className="py-3 px-4 text-right">
+                                  <Badge
+                                    variant={
+                                      record.status === "normal"
+                                        ? "default"
+                                        : "destructive"
+                                    }
+                                    className="text-xs capitalize"
+                                  >
+                                    {record.status}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
@@ -1970,7 +2056,9 @@ export default function MikrotikPage() {
                         min={1}
                         max={28}
                         value={billingCycleDay}
-                        onChange={(e) => setBillingCycleDay(parseInt(e.target.value))}
+                        onChange={(e) =>
+                          setBillingCycleDay(parseInt(e.target.value))
+                        }
                         placeholder="1"
                       />
                     </div>
@@ -2041,35 +2129,37 @@ export default function MikrotikPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {automationLogs.slice(-20).map((log: any, idx: number) => (
-                            <tr key={idx} className="border-b border-border">
-                              <td className="py-3 px-4 text-sm whitespace-nowrap">
-                                {new Date(log.timestamp).toLocaleTimeString()}
-                              </td>
-                              <td className="py-3 px-4 text-sm">
-                                <Badge variant="outline" className="text-xs">
-                                  {log.action}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4 text-sm text-muted-foreground">
-                                {log.details}
-                              </td>
-                              <td className="py-3 px-4 text-center">
-                                <Badge
-                                  variant={
-                                    log.status === "success"
-                                      ? "default"
-                                      : log.status === "failed"
-                                        ? "destructive"
-                                        : "secondary"
-                                  }
-                                  className="text-xs capitalize"
-                                >
-                                  {log.status}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
+                          {automationLogs
+                            .slice(-20)
+                            .map((log: any, idx: number) => (
+                              <tr key={idx} className="border-b border-border">
+                                <td className="py-3 px-4 text-sm whitespace-nowrap">
+                                  {new Date(log.timestamp).toLocaleTimeString()}
+                                </td>
+                                <td className="py-3 px-4 text-sm">
+                                  <Badge variant="outline" className="text-xs">
+                                    {log.action}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-muted-foreground">
+                                  {log.details}
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                  <Badge
+                                    variant={
+                                      log.status === "success"
+                                        ? "default"
+                                        : log.status === "failed"
+                                          ? "destructive"
+                                          : "secondary"
+                                    }
+                                    className="text-xs capitalize"
+                                  >
+                                    {log.status}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
@@ -2107,9 +2197,7 @@ export default function MikrotikPage() {
                       </p>
                     </div>
                     <div className="p-4 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-sm text-red-600 font-medium">
-                        Failed
-                      </p>
+                      <p className="text-sm text-red-600 font-medium">Failed</p>
                       <p className="text-2xl font-bold text-red-900 mt-2">
                         {notificationStats.totalFailed}
                       </p>
@@ -2157,8 +2245,12 @@ export default function MikrotikPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="invoice">Invoice Generated</SelectItem>
-                          <SelectItem value="reminder">Payment Reminder</SelectItem>
+                          <SelectItem value="invoice">
+                            Invoice Generated
+                          </SelectItem>
+                          <SelectItem value="reminder">
+                            Payment Reminder
+                          </SelectItem>
                           <SelectItem value="overdue">Overdue Alert</SelectItem>
                         </SelectContent>
                       </Select>
@@ -2215,40 +2307,48 @@ export default function MikrotikPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {notificationLogs.slice(-20).map((log: any, idx: number) => (
-                            <tr key={idx} className="border-b border-border">
-                              <td className="py-3 px-4 text-sm whitespace-nowrap">
-                                {new Date(log.timestamp).toLocaleTimeString()}
-                              </td>
-                              <td className="py-3 px-4 text-sm">
-                                <Badge variant="outline" className="text-xs capitalize">
-                                  {log.notificationType}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4 text-sm text-muted-foreground">
-                                {log.customerPhone}
-                              </td>
-                              <td className="py-3 px-4 text-sm capitalize">
-                                <Badge variant="secondary" className="text-xs">
-                                  {log.channel}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4 text-center">
-                                <Badge
-                                  variant={
-                                    log.status === "sent"
-                                      ? "default"
-                                      : log.status === "failed"
-                                        ? "destructive"
-                                        : "secondary"
-                                  }
-                                  className="text-xs capitalize"
-                                >
-                                  {log.status}
-                                </Badge>
-                              </td>
-                            </tr>
-                          ))}
+                          {notificationLogs
+                            .slice(-20)
+                            .map((log: any, idx: number) => (
+                              <tr key={idx} className="border-b border-border">
+                                <td className="py-3 px-4 text-sm whitespace-nowrap">
+                                  {new Date(log.timestamp).toLocaleTimeString()}
+                                </td>
+                                <td className="py-3 px-4 text-sm">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs capitalize"
+                                  >
+                                    {log.notificationType}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-muted-foreground">
+                                  {log.customerPhone}
+                                </td>
+                                <td className="py-3 px-4 text-sm capitalize">
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    {log.channel}
+                                  </Badge>
+                                </td>
+                                <td className="py-3 px-4 text-center">
+                                  <Badge
+                                    variant={
+                                      log.status === "sent"
+                                        ? "default"
+                                        : log.status === "failed"
+                                          ? "destructive"
+                                          : "secondary"
+                                    }
+                                    className="text-xs capitalize"
+                                  >
+                                    {log.status}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            ))}
                         </tbody>
                       </table>
                     </div>
@@ -2282,144 +2382,203 @@ export default function MikrotikPage() {
                     variant="outline"
                     className="gap-2"
                   >
-                    <Loader size={14} className={loading ? "animate-spin" : ""} />
+                    <Loader
+                      size={14}
+                      className={loading ? "animate-spin" : ""}
+                    />
                     Refresh
                   </Button>
                 </div>
 
                 {/* Key Metrics */}
-                {analyticsData && analyticsData.revenue && analyticsData.accounts && analyticsData.payments && analyticsData.bandwidth && (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-                        <p className="text-xs text-blue-600 font-medium">Total Revenue</p>
-                        <p className="text-2xl font-bold text-blue-900 mt-1">
-                          KES {((analyticsData.revenue.totalRevenue || 0) / 1000).toFixed(0)}K
-                        </p>
-                        <p className="text-xs text-blue-600 mt-1">
-                          Paid: {((analyticsData.revenue.paidRevenue || 0) / 1000).toFixed(0)}K
-                        </p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-green-50 border border-green-200">
-                        <p className="text-xs text-green-600 font-medium">Total Accounts</p>
-                        <p className="text-2xl font-bold text-green-900 mt-1">
-                          {analyticsData.accounts.totalAccounts || 0}
-                        </p>
-                        <p className="text-xs text-green-600 mt-1">
-                          Active: {analyticsData.accounts.activeAccounts || 0}
-                        </p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-purple-50 border border-purple-200">
-                        <p className="text-xs text-purple-600 font-medium">Success Rate</p>
-                        <p className="text-2xl font-bold text-purple-900 mt-1">
-                          {((analyticsData.payments.successRate || 0).toFixed(1))}%
-                        </p>
-                        <p className="text-xs text-purple-600 mt-1">
-                          {analyticsData.payments.successfulPayments || 0} successful
-                        </p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
-                        <p className="text-xs text-orange-600 font-medium">Avg Bandwidth</p>
-                        <p className="text-2xl font-bold text-orange-900 mt-1">
-                          {((analyticsData.bandwidth.averageUserBandwidth || 0).toFixed(0))} GB
-                        </p>
-                        <p className="text-xs text-orange-600 mt-1">per account</p>
-                      </div>
-                    </div>
-
-                    {/* Revenue & Account Trends */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-foreground mb-4">
-                          Revenue Trend (Last 6 Months)
-                        </h4>
-                        {revenueTrend.length > 0 && (
-                          <div className="space-y-2">
-                            {revenueTrend.map((item: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">{item.month}</span>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-blue-500"
-                                      style={{
-                                        width: `${Math.min((item.revenue / 100000) * 100, 100)}%`,
-                                      }}
-                                    ></div>
-                                  </div>
-                                  <span className="font-medium text-foreground">
-                                    KES {(item.revenue / 1000).toFixed(0)}K
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-foreground mb-4">
-                          Account Growth (Last 6 Months)
-                        </h4>
-                        {accountTrend.length > 0 && (
-                          <div className="space-y-2">
-                            {accountTrend.map((item: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">{item.month}</span>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-green-500"
-                                      style={{
-                                        width: `${Math.min((item.activeAccounts / 200) * 100, 100)}%`,
-                                      }}
-                                    ></div>
-                                  </div>
-                                  <span className="font-medium text-foreground">
-                                    {item.activeAccounts} active
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Top Customers */}
-                    {topCustomers.length > 0 && (
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-foreground mb-4">
-                          Top 5 Customers by Revenue
-                        </h4>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
-                            <thead className="border-b border-border">
-                              <tr>
-                                <th className="py-2 px-4 text-left font-medium">Customer</th>
-                                <th className="py-2 px-4 text-right font-medium">Total Spent</th>
-                                <th className="py-2 px-4 text-right font-medium">Accounts</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {topCustomers.map((customer: any, idx: number) => (
-                                <tr key={idx} className="border-b border-border">
-                                  <td className="py-3 px-4 text-sm">{customer.customerName}</td>
-                                  <td className="py-3 px-4 text-right text-sm font-medium">
-                                    KES {(customer.totalSpent / 1000).toFixed(0)}K
-                                  </td>
-                                  <td className="py-3 px-4 text-right text-sm">
-                                    {customer.accountCount}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                {analyticsData &&
+                  analyticsData.revenue &&
+                  analyticsData.accounts &&
+                  analyticsData.payments &&
+                  analyticsData.bandwidth && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                          <p className="text-xs text-blue-600 font-medium">
+                            Total Revenue
+                          </p>
+                          <p className="text-2xl font-bold text-blue-900 mt-1">
+                            KES{" "}
+                            {(
+                              (analyticsData.revenue.totalRevenue || 0) / 1000
+                            ).toFixed(0)}
+                            K
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            Paid:{" "}
+                            {(
+                              (analyticsData.revenue.paidRevenue || 0) / 1000
+                            ).toFixed(0)}
+                            K
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                          <p className="text-xs text-green-600 font-medium">
+                            Total Accounts
+                          </p>
+                          <p className="text-2xl font-bold text-green-900 mt-1">
+                            {analyticsData.accounts.totalAccounts || 0}
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            Active: {analyticsData.accounts.activeAccounts || 0}
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-purple-50 border border-purple-200">
+                          <p className="text-xs text-purple-600 font-medium">
+                            Success Rate
+                          </p>
+                          <p className="text-2xl font-bold text-purple-900 mt-1">
+                            {(analyticsData.payments.successRate || 0).toFixed(
+                              1,
+                            )}
+                            %
+                          </p>
+                          <p className="text-xs text-purple-600 mt-1">
+                            {analyticsData.payments.successfulPayments || 0}{" "}
+                            successful
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
+                          <p className="text-xs text-orange-600 font-medium">
+                            Avg Bandwidth
+                          </p>
+                          <p className="text-2xl font-bold text-orange-900 mt-1">
+                            {(
+                              analyticsData.bandwidth.averageUserBandwidth || 0
+                            ).toFixed(0)}{" "}
+                            GB
+                          </p>
+                          <p className="text-xs text-orange-600 mt-1">
+                            per account
+                          </p>
                         </div>
                       </div>
-                    )}
-                  </>
-                )}
+
+                      {/* Revenue & Account Trends */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="border rounded-lg p-4">
+                          <h4 className="font-medium text-foreground mb-4">
+                            Revenue Trend (Last 6 Months)
+                          </h4>
+                          {revenueTrend.length > 0 && (
+                            <div className="space-y-2">
+                              {revenueTrend.map((item: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between text-sm"
+                                >
+                                  <span className="text-muted-foreground">
+                                    {item.month}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-blue-500"
+                                        style={{
+                                          width: `${Math.min((item.revenue / 100000) * 100, 100)}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                    <span className="font-medium text-foreground">
+                                      KES {(item.revenue / 1000).toFixed(0)}K
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="border rounded-lg p-4">
+                          <h4 className="font-medium text-foreground mb-4">
+                            Account Growth (Last 6 Months)
+                          </h4>
+                          {accountTrend.length > 0 && (
+                            <div className="space-y-2">
+                              {accountTrend.map((item: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between text-sm"
+                                >
+                                  <span className="text-muted-foreground">
+                                    {item.month}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                      <div
+                                        className="h-full bg-green-500"
+                                        style={{
+                                          width: `${Math.min((item.activeAccounts / 200) * 100, 100)}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                    <span className="font-medium text-foreground">
+                                      {item.activeAccounts} active
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Top Customers */}
+                      {topCustomers.length > 0 && (
+                        <div className="border rounded-lg p-4">
+                          <h4 className="font-medium text-foreground mb-4">
+                            Top 5 Customers by Revenue
+                          </h4>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="border-b border-border">
+                                <tr>
+                                  <th className="py-2 px-4 text-left font-medium">
+                                    Customer
+                                  </th>
+                                  <th className="py-2 px-4 text-right font-medium">
+                                    Total Spent
+                                  </th>
+                                  <th className="py-2 px-4 text-right font-medium">
+                                    Accounts
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {topCustomers.map(
+                                  (customer: any, idx: number) => (
+                                    <tr
+                                      key={idx}
+                                      className="border-b border-border"
+                                    >
+                                      <td className="py-3 px-4 text-sm">
+                                        {customer.customerName}
+                                      </td>
+                                      <td className="py-3 px-4 text-right text-sm font-medium">
+                                        KES{" "}
+                                        {(customer.totalSpent / 1000).toFixed(
+                                          0,
+                                        )}
+                                        K
+                                      </td>
+                                      <td className="py-3 px-4 text-right text-sm">
+                                        {customer.accountCount}
+                                      </td>
+                                    </tr>
+                                  ),
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
               </div>
             </Card>
           </TabsContent>
@@ -2578,13 +2737,17 @@ export default function MikrotikPage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Board Name</p>
+                        <p className="text-xs text-muted-foreground">
+                          Board Name
+                        </p>
                         <p className="text-sm font-medium text-foreground">
                           {deviceInfo.boardName}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">CPU Count</p>
+                        <p className="text-xs text-muted-foreground">
+                          CPU Count
+                        </p>
                         <p className="text-sm font-medium text-foreground">
                           {deviceInfo.cpuCount}
                         </p>
@@ -2596,7 +2759,9 @@ export default function MikrotikPage() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">CPU Load</p>
+                        <p className="text-xs text-muted-foreground">
+                          CPU Load
+                        </p>
                         <p className="text-sm font-medium text-foreground">
                           {deviceInfo.cpuLoad}%
                         </p>
@@ -2642,7 +2807,10 @@ export default function MikrotikPage() {
                         </thead>
                         <tbody>
                           {interfaceStats.map((iface: any) => (
-                            <tr key={iface.interfaceName} className="border-b border-border">
+                            <tr
+                              key={iface.interfaceName}
+                              className="border-b border-border"
+                            >
                               <td className="py-3 px-4 text-sm font-medium">
                                 {iface.interfaceName}
                               </td>
@@ -2704,7 +2872,10 @@ export default function MikrotikPage() {
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-medium text-foreground">
-                                {(conn.downloadCurrent / 1024 / 1024).toFixed(2)} MB
+                                {(conn.downloadCurrent / 1024 / 1024).toFixed(
+                                  2,
+                                )}{" "}
+                                MB
                               </p>
                             </div>
                           </div>

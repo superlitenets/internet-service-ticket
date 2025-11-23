@@ -148,24 +148,25 @@ export default function SettingsPage() {
   const [initializingWeb, setInitializingWeb] = useState(false);
 
   // Deduction Settings State
-  const [deductionSettings, setDeductionSettings] = useState<LateDeductionSettings>({
-    enabled: false,
-    lateThresholdMinutes: 15,
-    deductionType: "fixed",
-    fixedDeductionAmount: 50,
-    percentageDeduction: 2,
-    scaledDeductions: [
-      { minutesRange: { min: 15, max: 30 }, deductionAmount: 30 },
-      { minutesRange: { min: 31, max: 60 }, deductionAmount: 60 },
-      { minutesRange: { min: 61, max: 120 }, deductionAmount: 100 },
-      { minutesRange: { min: 121, max: 999 }, deductionAmount: 150 },
-    ],
-    applyAfterDays: 1,
-    excludeWeekends: true,
-    excludeEmployeeIds: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
+  const [deductionSettings, setDeductionSettings] =
+    useState<LateDeductionSettings>({
+      enabled: false,
+      lateThresholdMinutes: 15,
+      deductionType: "fixed",
+      fixedDeductionAmount: 50,
+      percentageDeduction: 2,
+      scaledDeductions: [
+        { minutesRange: { min: 15, max: 30 }, deductionAmount: 30 },
+        { minutesRange: { min: 31, max: 60 }, deductionAmount: 60 },
+        { minutesRange: { min: 61, max: 120 }, deductionAmount: 100 },
+        { minutesRange: { min: 121, max: 999 }, deductionAmount: 150 },
+      ],
+      applyAfterDays: 1,
+      excludeWeekends: true,
+      excludeEmployeeIds: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
   const [testingSms, setTestingSms] = useState(false);
 
   // MPESA Settings State
@@ -183,9 +184,12 @@ export default function SettingsPage() {
   });
 
   // Mikrotik Instances State
-  const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
+  const [mikrotikInstances, setMikrotikInstances] = useState<
+    MikrotikInstance[]
+  >([]);
   const [showInstanceDialog, setShowInstanceDialog] = useState(false);
-  const [editingInstance, setEditingInstance] = useState<MikrotikInstance | null>(null);
+  const [editingInstance, setEditingInstance] =
+    useState<MikrotikInstance | null>(null);
   const [instanceForm, setInstanceForm] = useState({
     name: "",
     apiUrl: "",
@@ -216,7 +220,8 @@ export default function SettingsPage() {
     syncOnDelete: true,
   });
   const [testingRadius, setTestingRadius] = useState(false);
-  const [selectedInstanceForRadius, setSelectedInstanceForRadius] = useState<string>("");
+  const [selectedInstanceForRadius, setSelectedInstanceForRadius] =
+    useState<string>("");
 
   // Load RADIUS config when selected instance changes
   useEffect(() => {
@@ -497,7 +502,7 @@ export default function SettingsPage() {
           isDefault: editingInstance.isDefault,
         });
         setMikrotikInstances(
-          mikrotikInstances.map((i) => (i.id === updated.id ? updated : i))
+          mikrotikInstances.map((i) => (i.id === updated.id ? updated : i)),
         );
       } else {
         const newInstance = addMikrotikInstance({
@@ -554,7 +559,7 @@ export default function SettingsPage() {
     try {
       setDefaultMikrotikInstance(id);
       setMikrotikInstances(
-        mikrotikInstances.map((i) => ({ ...i, isDefault: i.id === id }))
+        mikrotikInstances.map((i) => ({ ...i, isDefault: i.id === id })),
       );
       toast({
         title: "Success",
@@ -573,10 +578,14 @@ export default function SettingsPage() {
     try {
       setTestingWhatsApp(true);
 
-      if (!whatsappSettings.businessApi.phoneNumberId || !whatsappSettings.businessApi.accessToken) {
+      if (
+        !whatsappSettings.businessApi.phoneNumberId ||
+        !whatsappSettings.businessApi.accessToken
+      ) {
         toast({
           title: "Error",
-          description: "Please configure WhatsApp Business API credentials first",
+          description:
+            "Please configure WhatsApp Business API credentials first",
           variant: "destructive",
         });
         return;
@@ -1078,13 +1087,16 @@ export default function SettingsPage() {
                     WhatsApp Configuration
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Configure WhatsApp using Business API, Web, or both with automatic failover
+                    Configure WhatsApp using Business API, Web, or both with
+                    automatic failover
                   </p>
                 </div>
 
                 <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
                   <div className="flex-1">
-                    <p className="font-medium text-foreground">Enable WhatsApp</p>
+                    <p className="font-medium text-foreground">
+                      Enable WhatsApp
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {whatsappSettings.enabled
                         ? "WhatsApp is enabled and active"
@@ -1123,14 +1135,20 @@ export default function SettingsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="business">Business API Only</SelectItem>
+                          <SelectItem value="business">
+                            Business API Only
+                          </SelectItem>
                           <SelectItem value="web">Web Only</SelectItem>
-                          <SelectItem value="both">Both (with Failover)</SelectItem>
+                          <SelectItem value="both">
+                            Both (with Failover)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground mt-2">
-                        • Business API: Official, recommended, requires Meta credentials
-                        <br />• Web: Works when API unavailable, uses WhatsApp Web
+                        • Business API: Official, recommended, requires Meta
+                        credentials
+                        <br />• Web: Works when API unavailable, uses WhatsApp
+                        Web
                         <br />• Both: Try API first, failback to Web if needed
                       </p>
                     </div>
@@ -1150,7 +1168,9 @@ export default function SettingsPage() {
                               </label>
                               <Input
                                 type="text"
-                                value={whatsappSettings.businessApi.businessAccountId}
+                                value={
+                                  whatsappSettings.businessApi.businessAccountId
+                                }
                                 onChange={(e) =>
                                   setWhatsappSettings({
                                     ...whatsappSettings,
@@ -1169,7 +1189,9 @@ export default function SettingsPage() {
                               </label>
                               <Input
                                 type="text"
-                                value={whatsappSettings.businessApi.phoneNumberId}
+                                value={
+                                  whatsappSettings.businessApi.phoneNumberId
+                                }
                                 onChange={(e) =>
                                   setWhatsappSettings({
                                     ...whatsappSettings,
@@ -1190,7 +1212,11 @@ export default function SettingsPage() {
                             </label>
                             <div className="relative">
                               <Input
-                                type={visibleKey === "whatsappToken" ? "text" : "password"}
+                                type={
+                                  visibleKey === "whatsappToken"
+                                    ? "text"
+                                    : "password"
+                                }
                                 value={whatsappSettings.businessApi.accessToken}
                                 onChange={(e) =>
                                   setWhatsappSettings({
@@ -1221,7 +1247,8 @@ export default function SettingsPage() {
                               </button>
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
-                              Get from Meta App Dashboard → Settings → System User Tokens
+                              Get from Meta App Dashboard → Settings → System
+                              User Tokens
                             </p>
                           </div>
 
@@ -1243,7 +1270,10 @@ export default function SettingsPage() {
                               </li>
                               <li>Create WhatsApp Business App</li>
                               <li>Get Phone Number ID from App Dashboard</li>
-                              <li>Generate System User token with whatsapp_business_messaging scope</li>
+                              <li>
+                                Generate System User token with
+                                whatsapp_business_messaging scope
+                              </li>
                             </ul>
                           </div>
                         </div>
@@ -1267,7 +1297,9 @@ export default function SettingsPage() {
                                 <div className="bg-white p-4 rounded inline-block">
                                   {/* Placeholder for QR code - in production use qr library */}
                                   <div className="w-32 h-32 bg-gray-200 flex items-center justify-center">
-                                    <p className="text-xs text-gray-500">QR Code Image</p>
+                                    <p className="text-xs text-gray-500">
+                                      QR Code Image
+                                    </p>
                                   </div>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-3">
@@ -1279,8 +1311,14 @@ export default function SettingsPage() {
                             <div className="p-4 rounded-lg border border-border">
                               <p className="text-sm font-medium mb-2">
                                 Status:{" "}
-                                <Badge variant={whatsappWebStatus ? "default" : "secondary"}>
-                                  {whatsappWebStatus ? "Connected" : "Not Connected"}
+                                <Badge
+                                  variant={
+                                    whatsappWebStatus ? "default" : "secondary"
+                                  }
+                                >
+                                  {whatsappWebStatus
+                                    ? "Connected"
+                                    : "Not Connected"}
                                 </Badge>
                               </p>
                               <p className="text-xs text-muted-foreground">
@@ -1295,8 +1333,9 @@ export default function SettingsPage() {
                                 <strong>⚠️ Important Notice:</strong>
                               </p>
                               <p className="text-xs text-amber-800">
-                                WhatsApp Web automation may violate WhatsApp Terms of Service and can
-                                result in account suspension. Use Business API when possible.
+                                WhatsApp Web automation may violate WhatsApp
+                                Terms of Service and can result in account
+                                suspension. Use Business API when possible.
                               </p>
                             </div>
                           </div>
@@ -1307,8 +1346,9 @@ export default function SettingsPage() {
                     {whatsappSettings.mode === "both" && (
                       <div className="p-4 rounded-lg border border-border bg-green-50">
                         <p className="text-sm text-green-900">
-                          ✓ <strong>Failover Enabled:</strong> System will try Business API first,
-                          then fall back to WhatsApp Web if needed
+                          ✓ <strong>Failover Enabled:</strong> System will try
+                          Business API first, then fall back to WhatsApp Web if
+                          needed
                         </p>
                       </div>
                     )}
@@ -1348,7 +1388,9 @@ export default function SettingsPage() {
                             disabled={initializingWeb}
                           >
                             <MessageSquare size={16} />
-                            {initializingWeb ? "Initializing..." : "Initialize Web"}
+                            {initializingWeb
+                              ? "Initializing..."
+                              : "Initialize Web"}
                           </Button>
                         ) : (
                           <>
@@ -1482,7 +1524,9 @@ export default function SettingsPage() {
 
                 <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
                   <div className="flex-1">
-                    <p className="font-medium text-foreground">Enable Late Deductions</p>
+                    <p className="font-medium text-foreground">
+                      Enable Late Deductions
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {deductionSettings.enabled
                         ? "Deductions are enabled and will be applied to payroll"
@@ -1515,7 +1559,8 @@ export default function SettingsPage() {
                           onChange={(e) =>
                             setDeductionSettings({
                               ...deductionSettings,
-                              lateThresholdMinutes: parseInt(e.target.value) || 0,
+                              lateThresholdMinutes:
+                                parseInt(e.target.value) || 0,
                             })
                           }
                           placeholder="15"
@@ -1556,7 +1601,10 @@ export default function SettingsPage() {
                         onValueChange={(value) =>
                           setDeductionSettings({
                             ...deductionSettings,
-                            deductionType: value as "fixed" | "percentage" | "scaled",
+                            deductionType: value as
+                              | "fixed"
+                              | "percentage"
+                              | "scaled",
                           })
                         }
                       >
@@ -1566,7 +1614,9 @@ export default function SettingsPage() {
                         <SelectContent>
                           <SelectItem value="fixed">Fixed Amount</SelectItem>
                           <SelectItem value="percentage">Percentage</SelectItem>
-                          <SelectItem value="scaled">Scaled by Minutes</SelectItem>
+                          <SelectItem value="scaled">
+                            Scaled by Minutes
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1582,7 +1632,8 @@ export default function SettingsPage() {
                           onChange={(e) =>
                             setDeductionSettings({
                               ...deductionSettings,
-                              fixedDeductionAmount: parseInt(e.target.value) || 0,
+                              fixedDeductionAmount:
+                                parseInt(e.target.value) || 0,
                             })
                           }
                           placeholder="50"
@@ -1604,7 +1655,8 @@ export default function SettingsPage() {
                           onChange={(e) =>
                             setDeductionSettings({
                               ...deductionSettings,
-                              percentageDeduction: parseFloat(e.target.value) || 0,
+                              percentageDeduction:
+                                parseFloat(e.target.value) || 0,
                             })
                           }
                           placeholder="2"
@@ -1622,37 +1674,41 @@ export default function SettingsPage() {
                           Scaled Deductions
                         </label>
                         <div className="space-y-3 mb-3">
-                          {deductionSettings.scaledDeductions?.map((scaled, idx) => (
-                            <div
-                              key={idx}
-                              className="p-3 rounded-lg border border-border flex items-center justify-between"
-                            >
-                              <div>
-                                <p className="text-sm font-medium text-foreground">
-                                  {scaled.minutesRange.min}-{scaled.minutesRange.max} minutes late
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  Deduct: ${scaled.deductionAmount}
-                                </p>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  const updated = [
-                                    ...(deductionSettings.scaledDeductions || []),
-                                  ];
-                                  updated.splice(idx, 1);
-                                  setDeductionSettings({
-                                    ...deductionSettings,
-                                    scaledDeductions: updated,
-                                  });
-                                }}
+                          {deductionSettings.scaledDeductions?.map(
+                            (scaled, idx) => (
+                              <div
+                                key={idx}
+                                className="p-3 rounded-lg border border-border flex items-center justify-between"
                               >
-                                <Trash size={14} />
-                              </Button>
-                            </div>
-                          ))}
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">
+                                    {scaled.minutesRange.min}-
+                                    {scaled.minutesRange.max} minutes late
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Deduct: ${scaled.deductionAmount}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const updated = [
+                                      ...(deductionSettings.scaledDeductions ||
+                                        []),
+                                    ];
+                                    updated.splice(idx, 1);
+                                    setDeductionSettings({
+                                      ...deductionSettings,
+                                      scaledDeductions: updated,
+                                    });
+                                  }}
+                                >
+                                  <Trash size={14} />
+                                </Button>
+                              </div>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
@@ -1681,8 +1737,9 @@ export default function SettingsPage() {
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <p className="text-sm text-blue-900">
-                        <strong>Example:</strong> If a technician is 20 minutes late on 2 days
-                        in a month with fixed $50 deduction, their total deduction will be $100.
+                        <strong>Example:</strong> If a technician is 20 minutes
+                        late on 2 days in a month with fixed $50 deduction,
+                        their total deduction will be $100.
                       </p>
                     </div>
                   </>
@@ -1702,8 +1759,7 @@ export default function SettingsPage() {
                       setDeductionSettings(getDeductionSettings());
                       toast({
                         title: "Reset",
-                        description:
-                          "Deduction settings reset to defaults",
+                        description: "Deduction settings reset to defaults",
                       });
                     }}
                     variant="outline"
@@ -1909,13 +1965,17 @@ export default function SettingsPage() {
                     <Input
                       value={companySettings.prefix}
                       onChange={(e) =>
-                        handleCompanySettingChange("prefix", e.target.value.toUpperCase())
+                        handleCompanySettingChange(
+                          "prefix",
+                          e.target.value.toUpperCase(),
+                        )
                       }
                       placeholder="ACC"
                       maxLength={10}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Used for generating account numbers (e.g., {companySettings.prefix}-1000)
+                      Used for generating account numbers (e.g.,{" "}
+                      {companySettings.prefix}-1000)
                     </p>
                   </div>
 
@@ -2322,7 +2382,8 @@ export default function SettingsPage() {
                     MPESA Configuration
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Configure Safaricom M-Pesa Daraja API for C2B, B2B, and STK Push payments
+                    Configure Safaricom M-Pesa Daraja API for C2B, B2B, and STK
+                    Push payments
                   </p>
                 </div>
 
@@ -2383,7 +2444,9 @@ export default function SettingsPage() {
                         </label>
                         <div className="relative">
                           <Input
-                            type={visibleKey === "consumerKey" ? "text" : "password"}
+                            type={
+                              visibleKey === "consumerKey" ? "text" : "password"
+                            }
                             value={mpesaSettings.consumerKey}
                             onChange={(e) =>
                               setMpesaSettings({
@@ -2476,7 +2539,9 @@ export default function SettingsPage() {
                         </label>
                         <div className="relative">
                           <Input
-                            type={visibleKey === "passkey" ? "text" : "password"}
+                            type={
+                              visibleKey === "passkey" ? "text" : "password"
+                            }
                             value={mpesaSettings.passkey}
                             onChange={(e) =>
                               setMpesaSettings({
@@ -2629,10 +2694,7 @@ export default function SettingsPage() {
                       Configure multiple Mikrotik RouterOS instances
                     </p>
                   </div>
-                  <Button
-                    onClick={handleAddInstance}
-                    className="gap-2"
-                  >
+                  <Button onClick={handleAddInstance} className="gap-2">
                     <Plus size={16} />
                     Add Instance
                   </Button>
@@ -2697,9 +2759,7 @@ export default function SettingsPage() {
                               variant="destructive"
                               size="sm"
                               onClick={() => handleDeleteInstance(instance.id)}
-                              disabled={
-                                mikrotikInstances.length === 1
-                              }
+                              disabled={mikrotikInstances.length === 1}
                               className="gap-1"
                             >
                               <Trash2 size={14} />
@@ -2740,7 +2800,10 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Mikrotik Instance
                     </label>
-                    <Select value={selectedInstanceForRadius} onValueChange={setSelectedInstanceForRadius}>
+                    <Select
+                      value={selectedInstanceForRadius}
+                      onValueChange={setSelectedInstanceForRadius}
+                    >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
@@ -2762,7 +2825,9 @@ export default function SettingsPage() {
                     </label>
                     <Input
                       value={radiusForm.host}
-                      onChange={(e) => setRadiusForm({ ...radiusForm, host: e.target.value })}
+                      onChange={(e) =>
+                        setRadiusForm({ ...radiusForm, host: e.target.value })
+                      }
                       placeholder="192.168.1.1 or radius.example.com"
                     />
                   </div>
@@ -2774,7 +2839,12 @@ export default function SettingsPage() {
                     <Input
                       type="number"
                       value={radiusForm.port}
-                      onChange={(e) => setRadiusForm({ ...radiusForm, port: parseInt(e.target.value) || 1812 })}
+                      onChange={(e) =>
+                        setRadiusForm({
+                          ...radiusForm,
+                          port: parseInt(e.target.value) || 1812,
+                        })
+                      }
                       placeholder="1812"
                     />
                   </div>
@@ -2787,7 +2857,12 @@ export default function SettingsPage() {
                   <Input
                     type="password"
                     value={radiusForm.sharedSecret}
-                    onChange={(e) => setRadiusForm({ ...radiusForm, sharedSecret: e.target.value })}
+                    onChange={(e) =>
+                      setRadiusForm({
+                        ...radiusForm,
+                        sharedSecret: e.target.value,
+                      })
+                    }
                     placeholder="Enter RADIUS shared secret"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
@@ -2802,30 +2877,51 @@ export default function SettingsPage() {
                     <input
                       type="checkbox"
                       checked={radiusForm.syncOnCreate}
-                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnCreate: e.target.checked })}
+                      onChange={(e) =>
+                        setRadiusForm({
+                          ...radiusForm,
+                          syncOnCreate: e.target.checked,
+                        })
+                      }
                       className="rounded"
                     />
-                    <span className="text-sm">Sync to RADIUS when accounts are created</span>
+                    <span className="text-sm">
+                      Sync to RADIUS when accounts are created
+                    </span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={radiusForm.syncOnUpdate}
-                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnUpdate: e.target.checked })}
+                      onChange={(e) =>
+                        setRadiusForm({
+                          ...radiusForm,
+                          syncOnUpdate: e.target.checked,
+                        })
+                      }
                       className="rounded"
                     />
-                    <span className="text-sm">Sync status changes (suspend/resume)</span>
+                    <span className="text-sm">
+                      Sync status changes (suspend/resume)
+                    </span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={radiusForm.syncOnDelete}
-                      onChange={(e) => setRadiusForm({ ...radiusForm, syncOnDelete: e.target.checked })}
+                      onChange={(e) =>
+                        setRadiusForm({
+                          ...radiusForm,
+                          syncOnDelete: e.target.checked,
+                        })
+                      }
                       className="rounded"
                     />
-                    <span className="text-sm">Remove from RADIUS when accounts are deleted</span>
+                    <span className="text-sm">
+                      Remove from RADIUS when accounts are deleted
+                    </span>
                   </label>
                 </div>
 
@@ -2849,21 +2945,30 @@ export default function SettingsPage() {
                         } else {
                           toast({
                             title: "Error",
-                            description: result.message || "Failed to connect to RADIUS server",
+                            description:
+                              result.message ||
+                              "Failed to connect to RADIUS server",
                             variant: "destructive",
                           });
                         }
                       } catch (error) {
                         toast({
                           title: "Error",
-                          description: error instanceof Error ? error.message : "Failed to test connection",
+                          description:
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to test connection",
                           variant: "destructive",
                         });
                       } finally {
                         setTestingRadius(false);
                       }
                     }}
-                    disabled={!radiusForm.host || !radiusForm.sharedSecret || testingRadius}
+                    disabled={
+                      !radiusForm.host ||
+                      !radiusForm.sharedSecret ||
+                      testingRadius
+                    }
                     variant="outline"
                     className="gap-2"
                   >
@@ -2886,13 +2991,17 @@ export default function SettingsPage() {
                         if (result.success) {
                           toast({
                             title: "Success",
-                            description: "RADIUS configuration saved successfully",
+                            description:
+                              "RADIUS configuration saved successfully",
                           });
                         }
                       } catch (error) {
                         toast({
                           title: "Error",
-                          description: error instanceof Error ? error.message : "Failed to save RADIUS configuration",
+                          description:
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to save RADIUS configuration",
                           variant: "destructive",
                         });
                       }
@@ -2910,10 +3019,21 @@ export default function SettingsPage() {
                     💡 How it works:
                   </p>
                   <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-                    <li>When you create an account, both PPPoE and Hotspot users are created in RADIUS</li>
-                    <li>Account credentials are synchronized using the generated PPPoE username/password</li>
-                    <li>When you suspend/activate accounts, RADIUS users are disabled/enabled</li>
-                    <li>When you delete accounts, users are removed from RADIUS</li>
+                    <li>
+                      When you create an account, both PPPoE and Hotspot users
+                      are created in RADIUS
+                    </li>
+                    <li>
+                      Account credentials are synchronized using the generated
+                      PPPoE username/password
+                    </li>
+                    <li>
+                      When you suspend/activate accounts, RADIUS users are
+                      disabled/enabled
+                    </li>
+                    <li>
+                      When you delete accounts, users are removed from RADIUS
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -2933,11 +3053,10 @@ export default function SettingsPage() {
 
                 <div className="space-y-4 bg-muted/30 p-4 rounded-lg">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                    />
-                    <span className="text-sm font-medium">Enable automatic expiration checks</span>
+                    <input type="checkbox" className="rounded" />
+                    <span className="text-sm font-medium">
+                      Enable automatic expiration checks
+                    </span>
                   </label>
 
                   <div>
@@ -2952,26 +3071,23 @@ export default function SettingsPage() {
                       className="w-full md:w-1/2"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Number of days after due date before suspension (0 = suspend immediately)
+                      Number of days after due date before suspension (0 =
+                      suspend immediately)
                     </p>
                   </div>
 
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                      defaultChecked
-                    />
-                    <span className="text-sm">Auto-suspend expired accounts in RADIUS</span>
+                    <input type="checkbox" className="rounded" defaultChecked />
+                    <span className="text-sm">
+                      Auto-suspend expired accounts in RADIUS
+                    </span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                      defaultChecked
-                    />
-                    <span className="text-sm">Auto-resume accounts on renewal</span>
+                    <input type="checkbox" className="rounded" defaultChecked />
+                    <span className="text-sm">
+                      Auto-resume accounts on renewal
+                    </span>
                   </label>
                 </div>
 
@@ -2990,45 +3106,86 @@ export default function SettingsPage() {
                     Notification Management
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Configure automatic notifications for invoices, payments, and alerts
+                    Configure automatic notifications for invoices, payments,
+                    and alerts
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 space-y-3">
-                    <h4 className="font-semibold text-blue-900">Invoice Notifications</h4>
+                    <h4 className="font-semibold text-blue-900">
+                      Invoice Notifications
+                    </h4>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded" defaultChecked />
-                      <span className="text-sm text-blue-800">Send when invoice generated</span>
+                      <input
+                        type="checkbox"
+                        className="rounded"
+                        defaultChecked
+                      />
+                      <span className="text-sm text-blue-800">
+                        Send when invoice generated
+                      </span>
                     </label>
-                    <Button size="sm" variant="outline">Configure Template</Button>
+                    <Button size="sm" variant="outline">
+                      Configure Template
+                    </Button>
                   </div>
 
                   <div className="p-4 rounded-lg bg-green-50 border border-green-200 space-y-3">
-                    <h4 className="font-semibold text-green-900">Payment Reminders</h4>
+                    <h4 className="font-semibold text-green-900">
+                      Payment Reminders
+                    </h4>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded" defaultChecked />
-                      <span className="text-sm text-green-800">Send automatic reminders</span>
+                      <input
+                        type="checkbox"
+                        className="rounded"
+                        defaultChecked
+                      />
+                      <span className="text-sm text-green-800">
+                        Send automatic reminders
+                      </span>
                     </label>
-                    <Button size="sm" variant="outline">Configure Template</Button>
+                    <Button size="sm" variant="outline">
+                      Configure Template
+                    </Button>
                   </div>
 
                   <div className="p-4 rounded-lg bg-orange-50 border border-orange-200 space-y-3">
-                    <h4 className="font-semibold text-orange-900">Overdue Alerts</h4>
+                    <h4 className="font-semibold text-orange-900">
+                      Overdue Alerts
+                    </h4>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded" defaultChecked />
-                      <span className="text-sm text-orange-800">Alert on overdue payments</span>
+                      <input
+                        type="checkbox"
+                        className="rounded"
+                        defaultChecked
+                      />
+                      <span className="text-sm text-orange-800">
+                        Alert on overdue payments
+                      </span>
                     </label>
-                    <Button size="sm" variant="outline">Configure Template</Button>
+                    <Button size="sm" variant="outline">
+                      Configure Template
+                    </Button>
                   </div>
 
                   <div className="p-4 rounded-lg bg-purple-50 border border-purple-200 space-y-3">
-                    <h4 className="font-semibold text-purple-900">Quota Alerts</h4>
+                    <h4 className="font-semibold text-purple-900">
+                      Quota Alerts
+                    </h4>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="rounded" defaultChecked />
-                      <span className="text-sm text-purple-800">Bandwidth quota warnings</span>
+                      <input
+                        type="checkbox"
+                        className="rounded"
+                        defaultChecked
+                      />
+                      <span className="text-sm text-purple-800">
+                        Bandwidth quota warnings
+                      </span>
                     </label>
-                    <Button size="sm" variant="outline">Configure Template</Button>
+                    <Button size="sm" variant="outline">
+                      Configure Template
+                    </Button>
                   </div>
                 </div>
 
@@ -3066,20 +3223,12 @@ export default function SettingsPage() {
                   </div>
 
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                      defaultChecked
-                    />
+                    <input type="checkbox" className="rounded" defaultChecked />
                     <span className="text-sm">Enable bandwidth monitoring</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="rounded"
-                      defaultChecked
-                    />
+                    <input type="checkbox" className="rounded" defaultChecked />
                     <span className="text-sm">Log all RouterOS API calls</span>
                   </label>
                 </div>
@@ -3104,7 +3253,10 @@ export default function SettingsPage() {
           </TabsContent>
 
           {/* Instance Dialog */}
-          <Dialog open={showInstanceDialog} onOpenChange={setShowInstanceDialog}>
+          <Dialog
+            open={showInstanceDialog}
+            onOpenChange={setShowInstanceDialog}
+          >
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -3136,7 +3288,10 @@ export default function SettingsPage() {
                   <Input
                     value={instanceForm.apiUrl}
                     onChange={(e) =>
-                      setInstanceForm({ ...instanceForm, apiUrl: e.target.value })
+                      setInstanceForm({
+                        ...instanceForm,
+                        apiUrl: e.target.value,
+                      })
                     }
                     placeholder="192.168.1.1 or example.com"
                   />
@@ -3201,7 +3356,11 @@ export default function SettingsPage() {
                     Password
                   </label>
                   <Input
-                    type={visibleKey === `instance-${editingInstance?.id}` ? "text" : "password"}
+                    type={
+                      visibleKey === `instance-${editingInstance?.id}`
+                        ? "text"
+                        : "password"
+                    }
                     value={instanceForm.password}
                     onChange={(e) =>
                       setInstanceForm({

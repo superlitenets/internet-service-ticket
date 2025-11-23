@@ -20,7 +20,8 @@ export default function MikrotikManagementPage() {
   const [activeTab, setActiveTab] = useState("notifications");
   const [loading, setLoading] = useState(false);
 
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
   const [notificationStats, setNotificationStats] = useState<any>(null);
   const [accounts, setAccounts] = useState<MikrotikAccount[]>([]);
 
@@ -62,7 +63,9 @@ export default function MikrotikManagementPage() {
     <Layout>
       <div className="p-6 md:p-8 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Mikrotik Management</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Mikrotik Management
+          </h1>
           <p className="text-muted-foreground mt-2">
             Manage notifications, expiration handling, and router settings
           </p>
@@ -101,7 +104,11 @@ export default function MikrotikManagementPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="notifications" className="gap-2">
               <Bell size={16} />
@@ -128,7 +135,9 @@ export default function MikrotikManagementPage() {
                 {notificationStats && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-                      <p className="text-sm text-blue-600 font-medium">Total Sent</p>
+                      <p className="text-sm text-blue-600 font-medium">
+                        Total Sent
+                      </p>
                       <p className="text-2xl font-bold text-blue-900 mt-2">
                         {notificationStats.totalSent}
                       </p>
@@ -205,7 +214,10 @@ export default function MikrotikManagementPage() {
 
           {/* Expiration Tab */}
           <TabsContent value="expiration" className="space-y-6">
-            <AccountExpiration accounts={accounts} instanceId={selectedInstance?.id} />
+            <AccountExpiration
+              accounts={accounts}
+              instanceId={selectedInstance?.id}
+            />
           </TabsContent>
 
           {/* RouterOS Tab */}
@@ -265,7 +277,9 @@ export default function MikrotikManagementPage() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between py-2 border-b">
                       <span className="text-muted-foreground">Status</span>
-                      <span className="font-medium text-green-600">Connected</span>
+                      <span className="font-medium text-green-600">
+                        Connected
+                      </span>
                     </div>
                     <div className="flex justify-between py-2 border-b">
                       <span className="text-muted-foreground">IP Address</span>

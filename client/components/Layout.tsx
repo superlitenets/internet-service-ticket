@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
     setExpandedGroups((prev) =>
       prev.includes(groupLabel)
         ? prev.filter((g) => g !== groupLabel)
-        : [...prev, groupLabel]
+        : [...prev, groupLabel],
     );
   };
 
@@ -170,7 +170,9 @@ export default function Layout({ children }: LayoutProps) {
                               )}
                             >
                               <SubIcon size={16} />
-                              <span className="font-medium">{subItem.label}</span>
+                              <span className="font-medium">
+                                {subItem.label}
+                              </span>
                             </Link>
                           );
                         })}

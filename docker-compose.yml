@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -56,6 +56,5 @@ services:
 networks:
   netflow:
     driver: bridge
-
 # volumes:
 #   postgres_data:

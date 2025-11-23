@@ -15,6 +15,7 @@ This guide explains how to deploy NetFlow CRM on your own server using Docker.
 ### 1. Install Docker and Docker Compose
 
 **On Ubuntu/Debian:**
+
 ```bash
 # Update package manager
 sudo apt-get update
@@ -26,6 +27,7 @@ newgrp docker
 ```
 
 **On CentOS/RHEL:**
+
 ```bash
 sudo yum install -y docker docker-compose
 sudo systemctl start docker
@@ -47,11 +49,13 @@ Or upload the files to your server using SCP/SFTP.
 ### Option 1: Simple Docker Run (No Compose)
 
 **Build the image:**
+
 ```bash
 docker build -t netflow-crm:latest .
 ```
 
 **Run the container:**
+
 ```bash
 docker run -d \
   --name netflow-crm \
@@ -62,6 +66,7 @@ docker run -d \
 ```
 
 **Check if it's running:**
+
 ```bash
 docker logs netflow-crm
 docker ps | grep netflow-crm
@@ -74,21 +79,25 @@ Access the app at: `http://your-server-ip:3000`
 ### Option 2: Docker Compose (Recommended)
 
 **Start the application:**
+
 ```bash
 docker-compose up -d
 ```
 
 **View logs:**
+
 ```bash
 docker-compose logs -f app
 ```
 
 **Stop the application:**
+
 ```bash
 docker-compose down
 ```
 
 **Restart the application:**
+
 ```bash
 docker-compose restart
 ```
@@ -147,12 +156,14 @@ To enable the Nginx service in docker-compose.yml:
 ### SSL/HTTPS Setup
 
 1. Obtain SSL certificates (e.g., using Let's Encrypt):
+
 ```bash
 sudo apt-get install certbot
 sudo certbot certonly --standalone -d your-domain.com
 ```
 
 2. Copy certificates to your project:
+
 ```bash
 mkdir -p certs
 sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem certs/cert.pem
@@ -174,6 +185,7 @@ If using PostgreSQL with Docker Compose:
 4. Run: `docker-compose up -d`
 
 **Initialize database:**
+
 ```bash
 docker-compose exec db psql -U admin -d netflow -f init.sql
 ```
@@ -181,6 +193,7 @@ docker-compose exec db psql -U admin -d netflow -f init.sql
 ## Monitoring and Maintenance
 
 ### View Logs
+
 ```bash
 # View all logs
 docker-compose logs
@@ -193,11 +206,13 @@ docker-compose logs -f app
 ```
 
 ### Check Container Status
+
 ```bash
 docker-compose ps
 ```
 
 ### CPU and Memory Usage
+
 ```bash
 docker stats
 ```
@@ -205,11 +220,13 @@ docker stats
 ### Update the Application
 
 1. Pull latest code:
+
 ```bash
 git pull origin main
 ```
 
 2. Rebuild and restart:
+
 ```bash
 docker-compose down
 docker-compose build --no-cache
@@ -219,6 +236,7 @@ docker-compose up -d
 ### Backup Data
 
 If you have persistent volumes, backup them:
+
 ```bash
 docker-compose exec db pg_dump -U admin netflow > backup.sql
 ```
@@ -226,6 +244,7 @@ docker-compose exec db pg_dump -U admin netflow > backup.sql
 ### Clean Up
 
 Remove old images and containers:
+
 ```bash
 docker system prune -a
 ```
@@ -233,12 +252,14 @@ docker system prune -a
 ## Troubleshooting
 
 ### Container won't start
+
 ```bash
 docker-compose logs app
 docker inspect <container_id>
 ```
 
 ### Port already in use
+
 ```bash
 # Find process using port 3000
 sudo lsof -i :3000
@@ -246,6 +267,7 @@ sudo lsof -i :3000
 ```
 
 ### High memory usage
+
 ```bash
 # Check Docker stats
 docker stats
@@ -260,6 +282,7 @@ services:
 ```
 
 ### Database connection error
+
 - Verify DATABASE_URL in .env
 - Check if db service is running: `docker-compose ps`
 - Test connection: `docker-compose exec app psql $DATABASE_URL`
@@ -268,11 +291,12 @@ services:
 
 1. **Enable Gzip compression** (nginx.conf already configured)
 2. **Set resource limits** to prevent container crash:
+
    ```yaml
    deploy:
      resources:
        limits:
-         cpus: '2'
+         cpus: "2"
          memory: 2G
    ```
 
@@ -285,13 +309,13 @@ services:
 For high traffic, run multiple app instances:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 services:
   app:
     build: .
     # ... other config ...
     deploy:
-      replicas: 3  # Run 3 instances
+      replicas: 3 # Run 3 instances
 
   nginx:
     image: nginx:alpine
@@ -312,6 +336,7 @@ services:
 ## Support
 
 For issues:
+
 1. Check logs: `docker-compose logs app`
 2. Verify environment variables are set
 3. Ensure all required services are running

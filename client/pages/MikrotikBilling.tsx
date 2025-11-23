@@ -24,7 +24,8 @@ export default function MikrotikBillingPage() {
   const [activeTab, setActiveTab] = useState("invoices");
   const [loading, setLoading] = useState(false);
 
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
   const [invoices, setInvoices] = useState<MikrotikInvoice[]>([]);
   const [plans, setPlans] = useState<MikrotikPlan[]>([]);
 
@@ -80,7 +81,10 @@ export default function MikrotikBillingPage() {
 
   const getPendingRevenue = () => {
     return invoices
-      .filter((inv) => inv.paymentStatus === "pending" || inv.paymentStatus === "overdue")
+      .filter(
+        (inv) =>
+          inv.paymentStatus === "pending" || inv.paymentStatus === "overdue",
+      )
       .reduce((sum, inv) => sum + inv.totalAmount, 0);
   };
 
@@ -88,7 +92,9 @@ export default function MikrotikBillingPage() {
     <Layout>
       <div className="p-6 md:p-8 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Mikrotik Billing</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Mikrotik Billing
+          </h1>
           <p className="text-muted-foreground mt-2">
             Manage invoices, billing plans, and payment processing
           </p>
@@ -97,7 +103,9 @@ export default function MikrotikBillingPage() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="p-4 border-0 shadow-sm">
-            <p className="text-sm text-muted-foreground font-medium">Total Revenue</p>
+            <p className="text-sm text-muted-foreground font-medium">
+              Total Revenue
+            </p>
             <p className="text-2xl font-bold text-foreground mt-2">
               KES {getTotalRevenue().toFixed(2)}
             </p>
@@ -117,7 +125,11 @@ export default function MikrotikBillingPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="invoices" className="gap-2">
               <FileText size={16} />
@@ -164,7 +176,10 @@ export default function MikrotikBillingPage() {
                     <tbody>
                       {invoices.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                          <td
+                            colSpan={5}
+                            className="py-8 text-center text-muted-foreground"
+                          >
                             No invoices found
                           </td>
                         </tr>
@@ -177,7 +192,9 @@ export default function MikrotikBillingPage() {
                             <td className="py-3 px-4 font-medium text-foreground">
                               {invoice.invoiceNumber}
                             </td>
-                            <td className="py-3 px-4">{invoice.customerName}</td>
+                            <td className="py-3 px-4">
+                              {invoice.customerName}
+                            </td>
                             <td className="py-3 px-4 text-right font-medium">
                               KES {invoice.totalAmount.toFixed(2)}
                             </td>
@@ -223,14 +240,18 @@ export default function MikrotikBillingPage() {
                       <div className="space-y-2 text-sm">
                         <p>
                           <span className="text-muted-foreground">Price: </span>
-                          <span className="font-medium">KES {plan.monthlyFee}</span>
+                          <span className="font-medium">
+                            KES {plan.monthlyFee}
+                          </span>
                         </p>
                         {plan.dataQuota && (
                           <p>
                             <span className="text-muted-foreground">
                               Data Quota:
                             </span>
-                            <span className="font-medium ml-2">{plan.dataQuota} GB</span>
+                            <span className="font-medium ml-2">
+                              {plan.dataQuota} GB
+                            </span>
                           </p>
                         )}
                       </div>

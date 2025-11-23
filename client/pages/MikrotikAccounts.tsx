@@ -34,13 +34,17 @@ export default function MikrotikAccountsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [mikrotikInstances, setMikrotikInstances] = useState<
+    MikrotikInstance[]
+  >([]);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
   const [accounts, setAccounts] = useState<MikrotikAccount[]>([]);
   const [plans, setPlans] = useState<MikrotikPlan[]>([]);
   const [newAccountDialog, setNewAccountDialog] = useState(false);
   const [deleteAccountDialog, setDeleteAccountDialog] = useState(false);
-  const [selectedDeleteAccount, setSelectedDeleteAccount] = useState<string>("");
+  const [selectedDeleteAccount, setSelectedDeleteAccount] =
+    useState<string>("");
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -135,14 +139,16 @@ export default function MikrotikAccountsPage() {
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      acc.accountNumber.toLowerCase().includes(searchTerm.toLowerCase())
+      acc.accountNumber.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <Layout>
       <div className="p-6 md:p-8 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Mikrotik Accounts</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Mikrotik Accounts
+          </h1>
           <p className="text-muted-foreground mt-2">
             Manage ISP customer accounts and subscriptions
           </p>
@@ -182,7 +188,10 @@ export default function MikrotikAccountsPage() {
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-3 text-muted-foreground" size={18} />
+              <Search
+                className="absolute left-3 top-3 text-muted-foreground"
+                size={18}
+              />
               <Input
                 placeholder="Search by customer name or account number..."
                 value={searchTerm}
@@ -196,18 +205,31 @@ export default function MikrotikAccountsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="py-3 px-4 text-left font-medium">Account #</th>
-                    <th className="py-3 px-4 text-left font-medium">Customer</th>
+                    <th className="py-3 px-4 text-left font-medium">
+                      Account #
+                    </th>
+                    <th className="py-3 px-4 text-left font-medium">
+                      Customer
+                    </th>
                     <th className="py-3 px-4 text-left font-medium">Phone</th>
-                    <th className="py-3 px-4 text-center font-medium">Status</th>
-                    <th className="py-3 px-4 text-right font-medium">Balance</th>
-                    <th className="py-3 px-4 text-center font-medium">Actions</th>
+                    <th className="py-3 px-4 text-center font-medium">
+                      Status
+                    </th>
+                    <th className="py-3 px-4 text-right font-medium">
+                      Balance
+                    </th>
+                    <th className="py-3 px-4 text-center font-medium">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredAccounts.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                      <td
+                        colSpan={6}
+                        className="py-8 text-center text-muted-foreground"
+                      >
                         No accounts found
                       </td>
                     </tr>
@@ -216,14 +238,18 @@ export default function MikrotikAccountsPage() {
                       <tr
                         key={account.id}
                         className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/mikrotik/accounts/${account.id}`)}
+                        onClick={() =>
+                          navigate(`/mikrotik/accounts/${account.id}`)
+                        }
                       >
                         <td className="py-3 px-4 font-medium text-foreground">
                           {account.accountNumber}
                         </td>
                         <td className="py-3 px-4">
                           <div>
-                            <p className="font-medium">{account.customerName}</p>
+                            <p className="font-medium">
+                              {account.customerName}
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               {account.customerEmail}
                             </p>
@@ -235,7 +261,9 @@ export default function MikrotikAccountsPage() {
                         <td className="py-3 px-4 text-center">
                           <Badge
                             variant={
-                              account.status === "active" ? "default" : "secondary"
+                              account.status === "active"
+                                ? "default"
+                                : "secondary"
                             }
                           >
                             {account.status}
@@ -344,7 +372,9 @@ export default function MikrotikAccountsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Account Type</label>
+              <label className="block text-sm font-medium mb-1">
+                Account Type
+              </label>
               <select
                 value={formData.accountType}
                 onChange={(e) =>

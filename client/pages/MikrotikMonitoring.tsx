@@ -21,7 +21,8 @@ export default function MikrotikMonitoringPage() {
   const [activeTab, setActiveTab] = useState("bandwidth");
   const [loading, setLoading] = useState(false);
 
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
   const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
   const [analyticsData, setAnalyticsData] = useState<any>(null);
 
@@ -63,7 +64,9 @@ export default function MikrotikMonitoringPage() {
     <Layout>
       <div className="p-6 md:p-8 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Mikrotik Monitoring</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Mikrotik Monitoring
+          </h1>
           <p className="text-muted-foreground mt-2">
             Monitor bandwidth usage and view analytics
           </p>
@@ -102,7 +105,11 @@ export default function MikrotikMonitoringPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="bandwidth" className="gap-2">
               <TrendingUp size={16} />
@@ -129,13 +136,19 @@ export default function MikrotikMonitoringPage() {
                     variant="outline"
                     className="gap-2"
                   >
-                    <Loader size={14} className={loading ? "animate-spin" : ""} />
+                    <Loader
+                      size={14}
+                      className={loading ? "animate-spin" : ""}
+                    />
                     Refresh
                   </Button>
                 </div>
 
                 <div className="bg-muted/50 rounded-lg p-6 text-center">
-                  <TrendingUp size={32} className="mx-auto text-muted-foreground mb-4" />
+                  <TrendingUp
+                    size={32}
+                    className="mx-auto text-muted-foreground mb-4"
+                  />
                   <p className="text-muted-foreground">
                     Bandwidth monitoring data will appear here
                   </p>
@@ -153,12 +166,9 @@ export default function MikrotikMonitoringPage() {
                       <p className="text-sm text-blue-800 mb-3">
                         Enable bandwidth monitoring for active accounts
                       </p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={loading}
-                      >
-                        {monitoringStatus.isMonitoring ? "Stop" : "Start"} Monitoring
+                      <Button size="sm" variant="outline" disabled={loading}>
+                        {monitoringStatus.isMonitoring ? "Stop" : "Start"}{" "}
+                        Monitoring
                       </Button>
                     </Card>
                     <Card className="p-4 bg-green-50 border-green-200">
@@ -193,7 +203,10 @@ export default function MikrotikMonitoringPage() {
                     variant="outline"
                     className="gap-2"
                   >
-                    <Loader size={14} className={loading ? "animate-spin" : ""} />
+                    <Loader
+                      size={14}
+                      className={loading ? "animate-spin" : ""}
+                    />
                     Refresh
                   </Button>
                 </div>
@@ -213,7 +226,8 @@ export default function MikrotikMonitoringPage() {
                         Total Revenue
                       </p>
                       <p className="text-2xl font-bold text-green-900 mt-1">
-                        KES {analyticsData.revenue?.totalRevenue?.toFixed(2) || "0"}
+                        KES{" "}
+                        {analyticsData.revenue?.totalRevenue?.toFixed(2) || "0"}
                       </p>
                     </div>
                     <div className="p-4 rounded-lg bg-purple-50 border border-purple-200">
@@ -221,14 +235,19 @@ export default function MikrotikMonitoringPage() {
                         Pending Payments
                       </p>
                       <p className="text-2xl font-bold text-purple-900 mt-1">
-                        KES {analyticsData.payments?.totalPending?.toFixed(2) || "0"}
+                        KES{" "}
+                        {analyticsData.payments?.totalPending?.toFixed(2) ||
+                          "0"}
                       </p>
                     </div>
                   </div>
                 )}
 
                 <div className="bg-muted/50 rounded-lg p-8 text-center mt-6">
-                  <TrendingUp size={32} className="mx-auto text-muted-foreground mb-4" />
+                  <TrendingUp
+                    size={32}
+                    className="mx-auto text-muted-foreground mb-4"
+                  />
                   <p className="text-muted-foreground">
                     Detailed analytics charts will appear here
                   </p>
