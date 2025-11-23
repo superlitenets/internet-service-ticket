@@ -230,13 +230,13 @@ export default function MikrotikPage() {
     initializeData();
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (instanceId?: string) => {
     try {
       setLoading(true);
 
       // Load accounts
       try {
-        const accountsData = await getMikrotikAccounts();
+        const accountsData = await getMikrotikAccounts(instanceId);
         setAccounts(accountsData);
       } catch (err) {
         console.error("Failed to load accounts:", err);
@@ -244,7 +244,7 @@ export default function MikrotikPage() {
 
       // Load plans
       try {
-        const plansData = await getMikrotikPlans();
+        const plansData = await getMikrotikPlans(instanceId);
         setPlans(plansData);
       } catch (err) {
         console.error("Failed to load plans:", err);
@@ -252,7 +252,7 @@ export default function MikrotikPage() {
 
       // Load invoices
       try {
-        const invoicesData = await getAllInvoices();
+        const invoicesData = await getAllInvoices(instanceId);
         setInvoices(invoicesData);
       } catch (err) {
         console.error("Failed to load invoices:", err);
@@ -260,7 +260,7 @@ export default function MikrotikPage() {
 
       // Load stats
       try {
-        const statsData = await getMikrotikStats();
+        const statsData = await getMikrotikStats(instanceId);
         setStats(statsData);
       } catch (err) {
         console.error("Failed to load stats:", err);
@@ -293,6 +293,7 @@ export default function MikrotikPage() {
       const newAccount = await createMikrotikAccount({
         ...accountForm,
         prefix,
+        instanceId: selectedInstance?.id,
       });
 
       setAccounts((prev) => [...prev, newAccount]);
@@ -310,7 +311,7 @@ export default function MikrotikPage() {
         planId: "",
       });
 
-      loadData();
+      loadData(selectedInstance?.id);
     } catch (error) {
       toast({
         title: "Error",
@@ -335,7 +336,10 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const newPlan = await createMikrotikPlan(planForm);
+      const newPlan = await createMikrotikPlan({
+        ...planForm,
+        instanceId: selectedInstance?.id,
+      });
 
       setPlans((prev) => [...prev, newPlan]);
       toast({
@@ -354,7 +358,7 @@ export default function MikrotikPage() {
         features: [],
       });
 
-      loadData();
+      loadData(selectedInstance?.id);
     } catch (error) {
       toast({
         title: "Error",
@@ -370,12 +374,12 @@ export default function MikrotikPage() {
   const handleGenerateInvoice = async (accountId: string) => {
     try {
       setLoading(true);
-      await generateInvoice({ accountId });
+      await generateInvoice({ accountId, instanceId: selectedInstance?.id });
       toast({
         title: "Success",
         description: "Invoice generated successfully",
       });
-      loadData();
+      loadData(selectedInstance?.id);
     } catch (error) {
       toast({
         title: "Error",
@@ -406,6 +410,7 @@ export default function MikrotikPage() {
         amount: paymentForm.amount,
         paymentMethod: paymentForm.paymentMethod,
         mpesaReceiptNumber: paymentForm.mpesaReceiptNumber || undefined,
+        instanceId: selectedInstance?.id,
       });
 
       toast({
@@ -421,7 +426,7 @@ export default function MikrotikPage() {
         mpesaReceiptNumber: "",
       });
 
-      loadData();
+      loadData(selectedInstance?.id);
     } catch (error) {
       toast({
         title: "Error",
@@ -436,7 +441,7 @@ export default function MikrotikPage() {
 
   const loadRouterOSConfig = async () => {
     try {
-      const config = await getRouterOSConfig();
+      const config = await getRouterOSConfig(selectedInstance?.id);
       setRouterOSConfig(config);
       setRouterOSConfigForm(config);
     } catch (error) {
