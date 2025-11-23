@@ -2732,6 +2732,27 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
+                {/* Instance Selector */}
+                {mikrotikInstances.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Mikrotik Instance
+                    </label>
+                    <Select value={selectedInstanceForRadius} onValueChange={setSelectedInstanceForRadius}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mikrotikInstances.map((instance) => (
+                          <SelectItem key={instance.id} value={instance.id}>
+                            {instance.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
