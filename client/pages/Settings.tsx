@@ -363,10 +363,140 @@ export default function SettingsPage() {
           variant: "destructive",
         });
       }
+    } else if (section === "Mikrotik") {
+      try {
+        saveMikrotikInstances(mikrotikInstances);
+        toast({
+          title: "Success",
+          description: "Mikrotik instances saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save Mikrotik instances.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Success",
         description: `${section} settings saved successfully.`,
+      });
+    }
+  };
+
+  const handleAddInstance = () => {
+    setEditingInstance(null);
+    setInstanceForm({
+      name: "",
+      apiUrl: "",
+      username: "",
+      password: "",
+      port: 8728,
+      useSsl: false,
+    });
+    setShowInstanceDialog(true);
+  };
+
+  const handleEditInstance = (instance: MikrotikInstance) => {
+    setEditingInstance(instance);
+    setInstanceForm({
+      name: instance.name,
+      apiUrl: instance.apiUrl,
+      username: instance.username,
+      password: instance.password,
+      port: instance.port,
+      useSsl: instance.useSsl,
+    });
+    setShowInstanceDialog(true);
+  };
+
+  const handleSaveInstance = () => {
+    if (!instanceForm.name || !instanceForm.apiUrl) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (editingInstance) {
+        const updated = updateMikrotikInstance(editingInstance.id, {
+          ...instanceForm,
+          enabled: editingInstance.enabled,
+          isDefault: editingInstance.isDefault,
+        });
+        setMikrotikInstances(
+          mikrotikInstances.map((i) => (i.id === updated.id ? updated : i))
+        );
+      } else {
+        const newInstance = addMikrotikInstance({
+          ...instanceForm,
+          enabled: true,
+          isDefault: mikrotikInstances.length === 0,
+        });
+        setMikrotikInstances([...mikrotikInstances, newInstance]);
+      }
+
+      setShowInstanceDialog(false);
+      toast({
+        title: "Success",
+        description: editingInstance
+          ? "Instance updated successfully"
+          : "Instance added successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save instance",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteInstance = (id: string) => {
+    if (mikrotikInstances.length === 1) {
+      toast({
+        title: "Error",
+        description: "You must have at least one instance",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      deleteMikrotikInstance(id);
+      setMikrotikInstances(mikrotikInstances.filter((i) => i.id !== id));
+      toast({
+        title: "Success",
+        description: "Instance deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete instance",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSetDefault = (id: string) => {
+    try {
+      setDefaultMikrotikInstance(id);
+      setMikrotikInstances(
+        mikrotikInstances.map((i) => ({ ...i, isDefault: i.id === id }))
+      );
+      toast({
+        title: "Success",
+        description: "Default instance updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to set default instance",
+        variant: "destructive",
       });
     }
   };
