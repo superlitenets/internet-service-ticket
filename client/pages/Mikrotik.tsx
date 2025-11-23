@@ -949,12 +949,52 @@ export default function MikrotikPage() {
       <div className="p-6 md:p-8 space-y-8">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-            Mikrotik ISP Billing
-          </h1>
-          <p className="text-muted-foreground">
-            Manage ISP accounts, billing plans, invoices, and payments
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                Mikrotik ISP Billing
+              </h1>
+              <p className="text-muted-foreground">
+                Manage ISP accounts, billing plans, invoices, and payments
+              </p>
+            </div>
+
+            {/* Router Selector */}
+            {mikrotikInstances.length > 0 && (
+              <div className="w-full md:w-64">
+                <Select
+                  value={selectedInstance?.id || ""}
+                  onValueChange={(id) => {
+                    const instance = mikrotikInstances.find(i => i.id === id);
+                    setSelectedInstance(instance || null);
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select router" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mikrotikInstances.map((instance) => (
+                      <SelectItem key={instance.id} value={instance.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{instance.name}</span>
+                          {instance.isDefault && (
+                            <Badge variant="default" className="text-xs">
+                              Default
+                            </Badge>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedInstance && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {selectedInstance.apiUrl}:{selectedInstance.port}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Stats Cards */}
