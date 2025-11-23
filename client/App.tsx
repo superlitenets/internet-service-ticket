@@ -19,6 +19,7 @@ import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
 import Payments from "./pages/Payments";
 import Mikrotik from "./pages/Mikrotik";
+import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
 import { createRoot } from "react-dom/client";
 
@@ -39,6 +40,7 @@ const AppRoutes = () => (
     <Route path="/payments" element={<Payments />} />
     <Route path="/mikrotik" element={<Mikrotik />} />
     <Route path="/mikrotik/accounts/:accountId" element={<AccountDetail />} />
+    <Route path="/reports" element={<Reports />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
