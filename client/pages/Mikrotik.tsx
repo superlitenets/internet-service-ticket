@@ -513,6 +513,17 @@ export default function MikrotikPage() {
     }
   };
 
+  const loadNotificationStats = async () => {
+    try {
+      const result = await getNotificationStatsAPI();
+      if (result.success) {
+        setNotificationStats(result.stats);
+      }
+    } catch (error) {
+      console.error("Failed to load notification stats:", error);
+    }
+  };
+
   const handleStartMonitoring = async () => {
     try {
       if (!selectedAccountForMonitoring) {
