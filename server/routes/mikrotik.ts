@@ -1775,3 +1775,205 @@ export const getNotificationStats: RequestHandler = (req, res) => {
     });
   }
 };
+
+/**
+ * Get dashboard summary analytics
+ */
+export const getDashboardAnalytics: RequestHandler = (req, res) => {
+  try {
+    const analytics = getAnalyticsService();
+    const summary = analytics.getDashboardSummary(
+      accounts.length,
+      invoices.length,
+      payments.length
+    );
+
+    return res.json({
+      success: true,
+      summary,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch dashboard analytics",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get revenue analytics
+ */
+export const getRevenueAnalytics: RequestHandler = (req, res) => {
+  try {
+    const { startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), endDate = new Date() } =
+      req.query;
+
+    const analytics = getAnalyticsService();
+    const revenue = analytics.getRevenueAnalytics(
+      new Date(startDate as string),
+      new Date(endDate as string)
+    );
+
+    return res.json({
+      success: true,
+      revenue,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch revenue analytics",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get monthly revenue trend
+ */
+export const getMonthlyRevenueTrend: RequestHandler = (req, res) => {
+  try {
+    const { months = 12 } = req.query;
+
+    const analytics = getAnalyticsService();
+    const trend = analytics.getMonthlyRevenueTrend(parseInt(months as string));
+
+    return res.json({
+      success: true,
+      trend,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch monthly revenue trend",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get account growth trend
+ */
+export const getAccountGrowthTrend: RequestHandler = (req, res) => {
+  try {
+    const { months = 12 } = req.query;
+
+    const analytics = getAnalyticsService();
+    const trend = analytics.getAccountGrowthTrend(parseInt(months as string));
+
+    return res.json({
+      success: true,
+      trend,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch account growth trend",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get payment method distribution
+ */
+export const getPaymentMethodDistribution: RequestHandler = (req, res) => {
+  try {
+    const analytics = getAnalyticsService();
+    const distribution = analytics.getPaymentMethodDistribution();
+
+    return res.json({
+      success: true,
+      distribution,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch payment method distribution",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get service plan distribution
+ */
+export const getServicePlanDistribution: RequestHandler = (req, res) => {
+  try {
+    const analytics = getAnalyticsService();
+    const distribution = analytics.getServicePlanDistribution();
+
+    return res.json({
+      success: true,
+      distribution,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch service plan distribution",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get top customers by revenue
+ */
+export const getTopCustomers: RequestHandler = (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+
+    const analytics = getAnalyticsService();
+    const topCustomers = analytics.getTopCustomersByRevenue(parseInt(limit as string));
+
+    return res.json({
+      success: true,
+      topCustomers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch top customers",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Generate monthly billing report
+ */
+export const generateMonthlyBillingReport: RequestHandler = (req, res) => {
+  try {
+    const { month, year } = req.body;
+
+    if (month === undefined || year === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "month and year are required",
+      });
+    }
+
+    const analytics = getAnalyticsService();
+    const report = analytics.generateMonthlyBillingReport(month, year);
+
+    return res.json({
+      success: true,
+      report,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to generate monthly billing report",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
