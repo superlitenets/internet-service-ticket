@@ -40,6 +40,7 @@ import {
   getMikrotikAccount,
   updateMikrotikAccount,
   deleteMikrotikAccount,
+  regenerateAccountCredentials,
   getMikrotikPlans,
   createMikrotikPlan,
   generateInvoice,
