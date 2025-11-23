@@ -581,6 +581,10 @@ export default function SettingsPage() {
               <Users size={16} />
               <span className="hidden sm:inline">Team</span>
             </TabsTrigger>
+            <TabsTrigger value="mpesa" className="gap-2">
+              <DollarSign size={16} />
+              <span className="hidden sm:inline">MPESA</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* SMS Notification Settings */}
