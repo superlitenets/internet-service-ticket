@@ -42,6 +42,12 @@ import {
   resetSmsTemplates,
   type SmsTemplate,
 } from "@/lib/sms-templates";
+import {
+  getDeductionSettings,
+  saveDeductionSettings,
+  resetDeductionSettings,
+  type LateDeductionSettings,
+} from "@/lib/deduction-settings-storage";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -72,9 +78,29 @@ export default function SettingsPage() {
     null,
   );
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+
+  // Deduction Settings State
+  const [deductionSettings, setDeductionSettings] = useState<LateDeductionSettings>({
+    enabled: false,
+    lateThresholdMinutes: 15,
+    deductionType: "fixed",
+    fixedDeductionAmount: 50,
+    percentageDeduction: 2,
+    scaledDeductions: [
+      { minutesRange: { min: 15, max: 30 }, deductionAmount: 30 },
+      { minutesRange: { min: 31, max: 60 }, deductionAmount: 60 },
+      { minutesRange: { min: 61, max: 120 }, deductionAmount: 100 },
+      { minutesRange: { min: 121, max: 999 }, deductionAmount: 150 },
+    ],
+    applyAfterDays: 1,
+    excludeWeekends: true,
+    excludeEmployeeIds: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
   const [testingSms, setTestingSms] = useState(false);
 
-  // Load SMS settings and templates from storage on mount
+  // Load SMS settings, templates, and deduction settings from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
@@ -82,6 +108,8 @@ export default function SettingsPage() {
     }
     const templates = getSmsTemplates();
     setSmsTemplates(templates);
+    const deductions = getDeductionSettings();
+    setDeductionSettings(deductions);
   }, []);
 
   // Notification Preferences State
@@ -315,7 +343,7 @@ export default function SettingsPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-2">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
             <TabsTrigger value="sms" className="gap-2">
               <MessageSquare size={16} />
               <span className="hidden sm:inline">SMS</span>
@@ -323,6 +351,10 @@ export default function SettingsPage() {
             <TabsTrigger value="templates" className="gap-2">
               <MessageSquare size={16} />
               <span className="hidden sm:inline">Templates</span>
+            </TabsTrigger>
+            <TabsTrigger value="deductions" className="gap-2">
+              <DollarSign size={16} />
+              <span className="hidden sm:inline">Deductions</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell size={16} />
