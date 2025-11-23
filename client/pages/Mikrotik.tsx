@@ -896,6 +896,330 @@ export default function MikrotikPage() {
               </div>
             </Card>
           </TabsContent>
+
+          {/* RouterOS Settings Tab */}
+          <TabsContent value="routeros" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  RouterOS Configuration
+                </h3>
+
+                {/* Connection Configuration */}
+                <div className="border rounded-lg p-4 space-y-4">
+                  <h4 className="font-medium text-foreground">
+                    RouterOS Connection Settings
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        API URL
+                      </label>
+                      <Input
+                        value={routerOSConfigForm.apiUrl}
+                        onChange={(e) =>
+                          setRouterOSConfigForm({
+                            ...routerOSConfigForm,
+                            apiUrl: e.target.value,
+                          })
+                        }
+                        placeholder="192.168.1.1"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Username
+                      </label>
+                      <Input
+                        value={routerOSConfigForm.username}
+                        onChange={(e) =>
+                          setRouterOSConfigForm({
+                            ...routerOSConfigForm,
+                            username: e.target.value,
+                          })
+                        }
+                        placeholder="admin"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Password
+                      </label>
+                      <Input
+                        type="password"
+                        value={routerOSConfigForm.password}
+                        onChange={(e) =>
+                          setRouterOSConfigForm({
+                            ...routerOSConfigForm,
+                            password: e.target.value,
+                          })
+                        }
+                        placeholder="••••••••"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Port
+                      </label>
+                      <Input
+                        type="number"
+                        value={routerOSConfigForm.port}
+                        onChange={(e) =>
+                          setRouterOSConfigForm({
+                            ...routerOSConfigForm,
+                            port: parseInt(e.target.value),
+                          })
+                        }
+                        placeholder="8728"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={routerOSConfigForm.useSsl}
+                        onChange={(e) =>
+                          setRouterOSConfigForm({
+                            ...routerOSConfigForm,
+                            useSsl: e.target.checked,
+                          })
+                        }
+                      />
+                      <span className="text-sm font-medium text-foreground">
+                        Use SSL/TLS
+                      </span>
+                    </label>
+                  </div>
+
+                  <Button
+                    onClick={handleTestConnection}
+                    disabled={testingConnection}
+                    className="gap-2"
+                  >
+                    {testingConnection ? (
+                      <>
+                        <Loader size={16} className="animate-spin" />
+                        Testing...
+                      </>
+                    ) : (
+                      <>
+                        <Network size={16} />
+                        Test Connection
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Device Information */}
+                {deviceInfo && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-foreground">
+                        Device Information
+                      </h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleLoadDeviceInfo}
+                        disabled={loading}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          System Identity
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.systemIdentity}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Firmware Version
+                        </p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.firmwareVersion}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Board Name</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.boardName}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">CPU Count</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.cpuCount}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Uptime</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.uptime}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">CPU Load</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {deviceInfo.cpuLoad}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Interface Statistics */}
+                {interfaceStats.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-foreground">
+                        Interface Statistics
+                      </h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleLoadInterfaceStats}
+                        disabled={loading}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="border-b border-border">
+                          <tr>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Interface
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Status
+                            </th>
+                            <th className="py-2 px-4 text-right font-medium">
+                              RX (MB)
+                            </th>
+                            <th className="py-2 px-4 text-right font-medium">
+                              TX (MB)
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {interfaceStats.map((iface: any) => (
+                            <tr key={iface.interfaceName} className="border-b border-border">
+                              <td className="py-3 px-4 text-sm font-medium">
+                                {iface.interfaceName}
+                              </td>
+                              <td className="py-3 px-4">
+                                <Badge
+                                  variant={
+                                    iface.running ? "default" : "secondary"
+                                  }
+                                  className="text-xs"
+                                >
+                                  {iface.running ? "Running" : "Down"}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-right text-sm">
+                                {(iface.bytes_in / 1024 / 1024).toFixed(2)}
+                              </td>
+                              <td className="py-3 px-4 text-right text-sm">
+                                {(iface.bytes_out / 1024 / 1024).toFixed(2)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* PPPoE Connections */}
+                {pppoeConnections.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-foreground">
+                        Active PPPoE Connections
+                      </h4>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleLoadPPPoEConnections}
+                        disabled={loading}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {pppoeConnections.map((conn: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-lg bg-muted/30 border border-border"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-foreground">
+                                {conn.username}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Uptime: {conn.uptime}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-medium text-foreground">
+                                {(conn.downloadCurrent / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Load Data Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadDeviceInfo}
+                    disabled={loading || !routerOSConfig.apiUrl}
+                    className="gap-2"
+                  >
+                    <Network size={16} />
+                    Load Device Info
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadInterfaceStats}
+                    disabled={loading || !routerOSConfig.apiUrl}
+                    className="gap-2"
+                  >
+                    <Network size={16} />
+                    Load Interface Stats
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadPPPoEConnections}
+                    disabled={loading || !routerOSConfig.apiUrl}
+                    className="gap-2"
+                  >
+                    <Users size={16} />
+                    Load PPPoE Users
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
 
