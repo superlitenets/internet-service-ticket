@@ -41,11 +41,18 @@ export default function SettingsPage() {
   const [visibleKey, setVisibleKey] = useState<string | null>(null);
 
   // SMS Settings State
-  const [smsSettings, setSmsSettings] = useState<SmsSettings>({
+  const [smsSettings, setSmsSettings] = useState<SmsSettings & {
+    apiKey?: string;
+    partnerId?: string;
+    shortcode?: string;
+  }>({
     provider: "twilio",
     accountSid: "",
     authToken: "",
     fromNumber: "",
+    apiKey: "",
+    partnerId: "",
+    shortcode: "",
     enabled: true,
   });
 
@@ -274,68 +281,149 @@ export default function SettingsPage() {
                         <SelectItem value="vonage">Vonage</SelectItem>
                         <SelectItem value="aws">AWS SNS</SelectItem>
                         <SelectItem value="nexmo">Nexmo</SelectItem>
-                        <SelectItem value="custom">Custom SMS</SelectItem>
+                        <SelectItem value="advanta">Advanta SMS</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Account SID
-                    </label>
-                    <Input
-                      type="text"
-                      value={smsSettings.accountSid}
-                      onChange={(e) =>
-                        handleSmsSettingChange("accountSid", e.target.value)
-                      }
-                      placeholder="Your account SID"
-                    />
-                  </div>
+                  {smsSettings.provider === "twilio" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Account SID
+                        </label>
+                        <Input
+                          type="text"
+                          value={smsSettings.accountSid}
+                          onChange={(e) =>
+                            handleSmsSettingChange("accountSid", e.target.value)
+                          }
+                          placeholder="Your account SID"
+                        />
+                      </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Auth Token
-                    </label>
-                    <div className="relative">
-                      <Input
-                        type={visibleKey === "authToken" ? "text" : "password"}
-                        value={smsSettings.authToken}
-                        onChange={(e) =>
-                          handleSmsSettingChange("authToken", e.target.value)
-                        }
-                        placeholder="Your auth token"
-                      />
-                      <button
-                        onClick={() =>
-                          setVisibleKey(
-                            visibleKey === "authToken" ? null : "authToken",
-                          )
-                        }
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      >
-                        {visibleKey === "authToken" ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
-                      </button>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Auth Token
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={visibleKey === "authToken" ? "text" : "password"}
+                            value={smsSettings.authToken}
+                            onChange={(e) =>
+                              handleSmsSettingChange("authToken", e.target.value)
+                            }
+                            placeholder="Your auth token"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "authToken" ? null : "authToken",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "authToken" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          From Phone Number
+                        </label>
+                        <Input
+                          type="tel"
+                          value={smsSettings.fromNumber}
+                          onChange={(e) =>
+                            handleSmsSettingChange("fromNumber", e.target.value)
+                          }
+                          placeholder="+1234567890"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {smsSettings.provider === "advanta" && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          API Key
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={visibleKey === "apiKey" ? "text" : "password"}
+                            value={smsSettings.apiKey}
+                            onChange={(e) =>
+                              handleSmsSettingChange("apiKey", e.target.value)
+                            }
+                            placeholder="Your Advanta API Key"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "apiKey" ? null : "apiKey",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "apiKey" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Partner ID
+                        </label>
+                        <Input
+                          type="text"
+                          value={smsSettings.partnerId}
+                          onChange={(e) =>
+                            handleSmsSettingChange("partnerId", e.target.value)
+                          }
+                          placeholder="Your Advanta Partner ID"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Shortcode (Sender ID)
+                        </label>
+                        <Input
+                          type="text"
+                          value={smsSettings.shortcode}
+                          onChange={(e) =>
+                            handleSmsSettingChange("shortcode", e.target.value)
+                          }
+                          placeholder="Your sender ID / shortcode"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {(smsSettings.provider === "vonage" ||
+                    smsSettings.provider === "aws" ||
+                    smsSettings.provider === "nexmo") && (
+                    <div className="col-span-full p-4 rounded-lg bg-muted/30 border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        {smsSettings.provider === "vonage" &&
+                          "Vonage credentials required: API Key and API Secret"}
+                        {smsSettings.provider === "aws" &&
+                          "AWS SNS requires: AWS Access Key ID, Secret Access Key, and Region"}
+                        {smsSettings.provider === "nexmo" &&
+                          "Nexmo credentials required: API Key and API Secret"}
+                      </p>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      From Phone Number
-                    </label>
-                    <Input
-                      type="tel"
-                      value={smsSettings.fromNumber}
-                      onChange={(e) =>
-                        handleSmsSettingChange("fromNumber", e.target.value)
-                      }
-                      placeholder="+1234567890"
-                    />
-                  </div>
+                  )}
 
                   <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border">
                     <div className="flex-1">
