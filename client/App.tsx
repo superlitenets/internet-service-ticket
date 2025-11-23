@@ -22,7 +22,6 @@ import Mikrotik from "./pages/Mikrotik";
 import MikrotikAccounts from "./pages/MikrotikAccounts";
 import MikrotikBilling from "./pages/MikrotikBilling";
 import MikrotikMonitoring from "./pages/MikrotikMonitoring";
-import MikrotikManagement from "./pages/MikrotikManagement";
 import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
 import { createRoot } from "react-dom/client";
