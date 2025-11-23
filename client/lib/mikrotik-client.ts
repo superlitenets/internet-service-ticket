@@ -9,9 +9,14 @@ import {
 /**
  * Get all accounts
  */
-export async function getMikrotikAccounts(): Promise<MikrotikAccount[]> {
+export async function getMikrotikAccounts(instanceId?: string): Promise<MikrotikAccount[]> {
   try {
-    const response = await fetch("/api/mikrotik/accounts");
+    const url = new URL("/api/mikrotik/accounts", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch accounts");
@@ -35,6 +40,7 @@ export async function createMikrotikAccount(data: {
   accountType: string;
   planId: string;
   prefix?: string;
+  instanceId?: string;
 }): Promise<MikrotikAccount> {
   try {
     const response = await fetch("/api/mikrotik/accounts", {
@@ -61,10 +67,16 @@ export async function createMikrotikAccount(data: {
  * Get account by ID
  */
 export async function getMikrotikAccount(
-  accountId: string
+  accountId: string,
+  instanceId?: string
 ): Promise<MikrotikAccount> {
   try {
-    const response = await fetch(`/api/mikrotik/accounts/${accountId}`);
+    const url = new URL(`/api/mikrotik/accounts/${accountId}`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch account");
@@ -83,7 +95,7 @@ export async function getMikrotikAccount(
  */
 export async function updateMikrotikAccount(
   accountId: string,
-  data: Partial<MikrotikAccount>
+  data: Partial<MikrotikAccount> & { instanceId?: string }
 ): Promise<MikrotikAccount> {
   try {
     const response = await fetch(`/api/mikrotik/accounts/${accountId}`, {
@@ -109,9 +121,14 @@ export async function updateMikrotikAccount(
 /**
  * Delete account
  */
-export async function deleteMikrotikAccount(accountId: string): Promise<void> {
+export async function deleteMikrotikAccount(accountId: string, instanceId?: string): Promise<void> {
   try {
-    const response = await fetch(`/api/mikrotik/accounts/${accountId}`, {
+    const url = new URL(`/api/mikrotik/accounts/${accountId}`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString(), {
       method: "DELETE",
     });
 
@@ -129,7 +146,8 @@ export async function deleteMikrotikAccount(accountId: string): Promise<void> {
  * Regenerate PPPoE and Hotspot credentials for an account
  */
 export async function regenerateAccountCredentials(
-  accountId: string
+  accountId: string,
+  instanceId?: string
 ): Promise<MikrotikAccount> {
   try {
     const response = await fetch(
@@ -137,6 +155,7 @@ export async function regenerateAccountCredentials(
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instanceId }),
       }
     );
 
@@ -157,9 +176,14 @@ export async function regenerateAccountCredentials(
 /**
  * Get all billing plans
  */
-export async function getMikrotikPlans(): Promise<MikrotikPlan[]> {
+export async function getMikrotikPlans(instanceId?: string): Promise<MikrotikPlan[]> {
   try {
-    const response = await fetch("/api/mikrotik/plans");
+    const url = new URL("/api/mikrotik/plans", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch plans");
@@ -184,6 +208,7 @@ export async function createMikrotikPlan(data: {
   setupFee?: number;
   activationFee?: number;
   features?: string[];
+  instanceId?: string;
 }): Promise<MikrotikPlan> {
   try {
     const response = await fetch("/api/mikrotik/plans", {
@@ -212,6 +237,7 @@ export async function createMikrotikPlan(data: {
 export async function generateInvoice(data: {
   accountId: string;
   billingPeriod?: string;
+  instanceId?: string;
 }): Promise<MikrotikInvoice> {
   try {
     const response = await fetch("/api/mikrotik/invoices", {
@@ -238,10 +264,16 @@ export async function generateInvoice(data: {
  * Get invoices for account
  */
 export async function getAccountInvoices(
-  accountId: string
+  accountId: string,
+  instanceId?: string
 ): Promise<MikrotikInvoice[]> {
   try {
-    const response = await fetch(`/api/mikrotik/accounts/${accountId}/invoices`);
+    const url = new URL(`/api/mikrotik/accounts/${accountId}/invoices`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch invoices");
@@ -258,9 +290,14 @@ export async function getAccountInvoices(
 /**
  * Get all invoices
  */
-export async function getAllInvoices(): Promise<MikrotikInvoice[]> {
+export async function getAllInvoices(instanceId?: string): Promise<MikrotikInvoice[]> {
   try {
-    const response = await fetch("/api/mikrotik/invoices");
+    const url = new URL("/api/mikrotik/invoices", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch invoices");
@@ -283,6 +320,7 @@ export async function recordPayment(data: {
   amount: number;
   paymentMethod: string;
   mpesaReceiptNumber?: string;
+  instanceId?: string;
 }): Promise<MikrotikPayment> {
   try {
     const response = await fetch("/api/mikrotik/payments", {
@@ -309,10 +347,16 @@ export async function recordPayment(data: {
  * Get payments for account
  */
 export async function getAccountPayments(
-  accountId: string
+  accountId: string,
+  instanceId?: string
 ): Promise<MikrotikPayment[]> {
   try {
-    const response = await fetch(`/api/mikrotik/accounts/${accountId}/payments`);
+    const url = new URL(`/api/mikrotik/accounts/${accountId}/payments`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch payments");
@@ -329,9 +373,14 @@ export async function getAccountPayments(
 /**
  * Get usage for account
  */
-export async function getAccountUsage(accountId: string): Promise<MikrotikUsage[]> {
+export async function getAccountUsage(accountId: string, instanceId?: string): Promise<MikrotikUsage[]> {
   try {
-    const response = await fetch(`/api/mikrotik/accounts/${accountId}/usage`);
+    const url = new URL(`/api/mikrotik/accounts/${accountId}/usage`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch usage");
@@ -354,6 +403,7 @@ export async function recordUsage(data: {
   downloadMB: number;
   sessionCount?: number;
   activeTime?: number;
+  instanceId?: string;
 }): Promise<MikrotikUsage> {
   try {
     const response = await fetch("/api/mikrotik/usage", {
@@ -379,7 +429,7 @@ export async function recordUsage(data: {
 /**
  * Get dashboard statistics
  */
-export async function getMikrotikStats(): Promise<{
+export async function getMikrotikStats(instanceId?: string): Promise<{
   totalAccounts: number;
   activeAccounts: number;
   totalRevenue: number;
@@ -388,7 +438,12 @@ export async function getMikrotikStats(): Promise<{
   overdueBills: number;
 }> {
   try {
-    const response = await fetch("/api/mikrotik/stats");
+    const url = new URL("/api/mikrotik/stats", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch statistics");
