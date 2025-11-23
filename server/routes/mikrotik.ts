@@ -2464,3 +2464,232 @@ export const resumeAccountInRADIUS: RequestHandler = async (req, res) => {
     });
   }
 };
+
+/**
+ * Check account expiration status
+ */
+export const checkAccountExpirationStatus: RequestHandler = (req, res) => {
+  try {
+    const instanceId = req.query.instanceId as string | undefined;
+    const { gracePeriodDays = 0 } = req.body;
+    const data = getInstanceData(instanceId);
+    const expirationAutomation = getExpirationAutomation(instanceId);
+
+    const checks = expirationAutomation.checkAccountExpirations(
+      data.accounts,
+      gracePeriodDays
+    );
+
+    return res.json({
+      success: true,
+      message: "Expiration status checked",
+      checks,
+      summary: {
+        totalAccounts: checks.length,
+        expiredAccounts: checks.filter((c) => c.isExpired).length,
+        activeExpiredAccounts: checks.filter((c) => c.shouldBeSuspended).length,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to check expiration status",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Process account expirations (auto-suspend expired accounts)
+ */
+export const processAccountExpirations: RequestHandler = async (req, res) => {
+  try {
+    const instanceId = req.query.instanceId as string | undefined;
+    const { gracePeriodDays = 0, autoSuspend = true } = req.body;
+    const data = getInstanceData(instanceId);
+    const expirationAutomation = getExpirationAutomation(instanceId);
+
+    let suspendCallback: ((accountId: string, account: MikrotikAccount) => Promise<boolean>) | undefined;
+
+    if (autoSuspend && data.radiusConfig?.enabled) {
+      suspendCallback = async (accountId: string, account: MikrotikAccount) => {
+        try {
+          const radiusClient = getRADIUSClient(data.radiusConfig!);
+          const result1 = await radiusClient.disableUser(account.pppoeUsername);
+          const result2 = await radiusClient.disableUser(account.hotspotUsername);
+
+          // Also update account status
+          const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
+          if (accountIndex !== -1) {
+            data.accounts[accountIndex] = {
+              ...data.accounts[accountIndex],
+              status: "suspended",
+              updatedAt: new Date().toISOString(),
+            };
+          }
+
+          return result1.success && result2.success;
+        } catch (error) {
+          console.error("Failed to suspend account in RADIUS:", error);
+          return false;
+        }
+      };
+    }
+
+    const result = await expirationAutomation.processExpirations(
+      data.accounts,
+      gracePeriodDays,
+      suspendCallback
+    );
+
+    return res.json({
+      success: true,
+      message: "Account expirations processed",
+      result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process expirations",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Process account renewal
+ */
+export const processAccountRenewal: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, newNextBillingDate, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
+    const expirationAutomation = getExpirationAutomation(instanceId);
+
+    const account = data.accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Not found",
+      });
+    }
+
+    // Determine resume callback if RADIUS is enabled
+    let resumeCallback: ((accountId: string, account: MikrotikAccount) => Promise<boolean>) | undefined;
+
+    if (data.radiusConfig?.enabled) {
+      resumeCallback = async (accountId: string, account: MikrotikAccount) => {
+        try {
+          const radiusClient = getRADIUSClient(data.radiusConfig!);
+          const result1 = await radiusClient.enableUser(account.pppoeUsername);
+          const result2 = await radiusClient.enableUser(account.hotspotUsername);
+
+          // Also update account status
+          const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
+          if (accountIndex !== -1) {
+            data.accounts[accountIndex] = {
+              ...data.accounts[accountIndex],
+              status: "active",
+              nextBillingDate: newNextBillingDate,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+
+          return result1.success && result2.success;
+        } catch (error) {
+          console.error("Failed to resume account in RADIUS:", error);
+          return false;
+        }
+      };
+    } else {
+      // Just update the account status if RADIUS is not enabled
+      const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
+      if (accountIndex !== -1) {
+        data.accounts[accountIndex] = {
+          ...data.accounts[accountIndex],
+          status: "active",
+          nextBillingDate: newNextBillingDate,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+    }
+
+    const result = await expirationAutomation.processRenewal(
+      accountId,
+      account,
+      newNextBillingDate,
+      resumeCallback
+    );
+
+    const updatedAccount = data.accounts.find((a) => a.id === accountId);
+
+    return res.json({
+      success: result.success,
+      message: result.message,
+      result,
+      account: updatedAccount,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process renewal",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get expiration automation logs
+ */
+export const getExpirationAutomationLogs: RequestHandler = (req, res) => {
+  try {
+    const instanceId = req.query.instanceId as string | undefined;
+    const accountId = req.query.accountId as string | undefined;
+    const limit = parseInt(req.query.limit as string) || 100;
+    const expirationAutomation = getExpirationAutomation(instanceId);
+
+    const logs = expirationAutomation.getAutomationLogs(accountId, limit);
+
+    return res.json({
+      success: true,
+      message: "Expiration automation logs retrieved",
+      logs,
+      totalLogs: logs.length,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch expiration logs",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get expiration automation status
+ */
+export const getExpirationAutomationStatus: RequestHandler = (req, res) => {
+  try {
+    const instanceId = req.query.instanceId as string | undefined;
+    const expirationAutomation = getExpirationAutomation(instanceId);
+
+    const status = expirationAutomation.getAutomationStatus();
+
+    return res.json({
+      success: true,
+      message: "Expiration automation status retrieved",
+      status,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch expiration automation status",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
