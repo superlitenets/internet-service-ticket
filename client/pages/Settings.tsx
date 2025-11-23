@@ -93,6 +93,12 @@ import {
   setDefaultMikrotikInstance,
   type MikrotikInstance,
 } from "@/lib/mikrotik-instances-storage";
+import {
+  getRADIUSConfig,
+  updateRADIUSConfig,
+  testRADIUSConnection,
+} from "@/lib/radius-client";
+import { RADIUSConfig } from "@shared/api";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -186,6 +192,29 @@ export default function SettingsPage() {
     port: 8728,
     useSsl: false,
   });
+
+  // RADIUS Configuration State
+  const [radiusConfig, setRadiusConfig] = useState<RADIUSConfig>({
+    enabled: false,
+    host: "",
+    port: 1812,
+    sharedSecret: "",
+    syncOnCreate: true,
+    syncOnUpdate: true,
+    syncOnDelete: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  const [radiusForm, setRadiusForm] = useState({
+    host: "",
+    port: 1812,
+    sharedSecret: "",
+    syncOnCreate: true,
+    syncOnUpdate: true,
+    syncOnDelete: true,
+  });
+  const [testingRadius, setTestingRadius] = useState(false);
+  const [selectedInstanceForRadius, setSelectedInstanceForRadius] = useState<string>("");
 
   // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, Company settings, and Mikrotik instances from storage on mount
   useEffect(() => {
