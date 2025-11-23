@@ -416,10 +416,14 @@ export default function SettingsPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-2">
             <TabsTrigger value="sms" className="gap-2">
               <MessageSquare size={16} />
               <span className="hidden sm:inline">SMS</span>
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp" className="gap-2">
+              <MessageSquare size={16} />
+              <span className="hidden sm:inline">WhatsApp</span>
             </TabsTrigger>
             <TabsTrigger value="templates" className="gap-2">
               <MessageSquare size={16} />
