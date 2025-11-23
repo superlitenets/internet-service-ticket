@@ -456,3 +456,18 @@ export interface MikrotikConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * RADIUS Configuration for authentication
+ */
+export interface RADIUSConfig {
+  enabled: boolean;
+  host: string;
+  port: number;
+  sharedSecret: string;
+  syncOnCreate: boolean; // Sync to RADIUS when account is created
+  syncOnUpdate: boolean; // Sync to RADIUS when account is updated
+  syncOnDelete: boolean; // Sync to RADIUS when account is deleted
+  createdAt: string;
+  updatedAt: string;
+}
