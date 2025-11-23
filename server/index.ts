@@ -87,5 +87,14 @@ export function createServer() {
   app.get("/api/whatsapp/web/status", handleCheckWhatsAppStatus);
   app.post("/api/whatsapp/web/logout", handleLogoutWhatsAppWeb);
 
+  // MPESA Payment endpoints
+  app.post("/api/mpesa/c2b", handleMpesaC2B);
+  app.post("/api/mpesa/b2b", handleMpesaB2B);
+  app.post("/api/mpesa/stk-push", handleMpesaStkPush);
+  app.get("/api/mpesa/transactions", getMpesaTransactions);
+  app.get("/api/mpesa/transactions/:transactionId", getMpesaTransaction);
+  app.post("/api/mpesa/callback", handleMpesaCallback);
+  app.post("/api/mpesa/validation", handleMpesaValidation);
+
   return app;
 }
