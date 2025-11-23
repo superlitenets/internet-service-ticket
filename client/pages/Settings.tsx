@@ -303,6 +303,20 @@ export default function SettingsPage() {
           variant: "destructive",
         });
       }
+    } else if (section === "MPESA") {
+      try {
+        saveMpesaSettings(mpesaSettings);
+        toast({
+          title: "Success",
+          description: "MPESA settings saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save MPESA settings.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Success",
