@@ -44,7 +44,7 @@ export default function MikrotikBillingPage() {
     if (!selectedInstance) return;
     try {
       setLoading(true);
-      const data = await getMikrotikInvoices(selectedInstance.id);
+      const data = await getAllInvoices(selectedInstance.id);
       setInvoices(data);
     } catch (err) {
       console.error("Failed to load invoices:", err);
