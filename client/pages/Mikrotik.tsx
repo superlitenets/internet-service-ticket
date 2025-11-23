@@ -487,6 +487,17 @@ export default function MikrotikPage() {
     }
   };
 
+  const loadBillingStatus = async () => {
+    try {
+      const result = await getBillingAutomationStatus();
+      if (result.success) {
+        setBillingStatus(result.status);
+      }
+    } catch (error) {
+      console.error("Failed to load billing status:", error);
+    }
+  };
+
   const handleStartMonitoring = async () => {
     try {
       if (!selectedAccountForMonitoring) {
