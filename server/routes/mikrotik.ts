@@ -324,7 +324,7 @@ export const updateMikrotikAccount: RequestHandler = (req, res) => {
 /**
  * Delete Mikrotik account
  */
-export const deleteMikrotikAccount: RequestHandler = (req, res) => {
+export const deleteMikrotikAccount: RequestHandler = async (req, res) => {
   try {
     const { accountId } = req.params;
     const instanceId = req.query.instanceId as string | undefined;
@@ -342,10 +342,23 @@ export const deleteMikrotikAccount: RequestHandler = (req, res) => {
 
     const deleted = data.accounts.splice(accountIndex, 1)[0];
 
+    // Remove from RADIUS if enabled
+    let radiusSync: any = { skipped: true };
+    if (data.radiusConfig?.enabled && data.radiusConfig.syncOnDelete) {
+      const radiusClient = getRADIUSClient(data.radiusConfig);
+      const result1 = await radiusClient.deleteUser(deleted.pppoeUsername, "pppoe");
+      const result2 = await radiusClient.deleteUser(deleted.hotspotUsername, "hotspot");
+      radiusSync = {
+        success: result1.success && result2.success,
+        message: `Deleted PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+      };
+    }
+
     return res.json({
       success: true,
       message: "Account deleted successfully",
       account: deleted,
+      radiusSync,
     });
   } catch (error) {
     return res.status(500).json({
