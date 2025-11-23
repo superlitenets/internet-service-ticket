@@ -46,6 +46,12 @@ import {
   getAllInvoices,
   recordPayment,
   getMikrotikStats,
+  getRouterOSConfig,
+  updateRouterOSConfig,
+  testRouterOSConnection,
+  getRouterOSDeviceInfo,
+  getRouterOSInterfaceStats,
+  getRouterOSPPPoEConnections,
 } from "@/lib/mikrotik-client";
 import {
   MikrotikAccount,
