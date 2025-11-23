@@ -57,6 +57,13 @@ import {
   type WhatsAppConfig,
 } from "@/lib/whatsapp-settings-storage";
 import { testWhatsAppConnection } from "@/lib/whatsapp-client";
+import {
+  initializeWhatsAppWeb,
+  getWhatsAppQRCode,
+  checkWhatsAppWebStatus,
+  logoutWhatsAppWeb,
+  type WhatsAppMode,
+} from "@/lib/whatsapp-unified-client";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -99,6 +106,9 @@ export default function SettingsPage() {
     updatedAt: new Date().toISOString(),
   });
   const [testingWhatsApp, setTestingWhatsApp] = useState(false);
+  const [whatsappWebQR, setWhatsappWebQR] = useState<string | null>(null);
+  const [whatsappWebStatus, setWhatsappWebStatus] = useState(false);
+  const [initializingWeb, setInitializingWeb] = useState(false);
 
   // Deduction Settings State
   const [deductionSettings, setDeductionSettings] = useState<LateDeductionSettings>({
@@ -283,18 +293,18 @@ export default function SettingsPage() {
     try {
       setTestingWhatsApp(true);
 
-      if (!whatsappSettings.phoneNumberId || !whatsappSettings.accessToken) {
+      if (!whatsappSettings.businessApi.phoneNumberId || !whatsappSettings.businessApi.accessToken) {
         toast({
           title: "Error",
-          description: "Please configure WhatsApp credentials first",
+          description: "Please configure WhatsApp Business API credentials first",
           variant: "destructive",
         });
         return;
       }
 
       const result = await testWhatsAppConnection(
-        whatsappSettings.phoneNumberId,
-        whatsappSettings.accessToken,
+        whatsappSettings.businessApi.phoneNumberId,
+        whatsappSettings.businessApi.accessToken,
       );
 
       toast({
@@ -312,6 +322,88 @@ export default function SettingsPage() {
       });
     } finally {
       setTestingWhatsApp(false);
+    }
+  };
+
+  const handleInitWhatsAppWeb = async () => {
+    try {
+      setInitializingWeb(true);
+      const result = await initializeWhatsAppWeb();
+
+      if (result.success && result.qrCode) {
+        setWhatsappWebQR(result.qrCode);
+        toast({
+          title: "Success",
+          description: "Scan the QR code with your phone to authenticate",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to initialize Web",
+        variant: "destructive",
+      });
+    } finally {
+      setInitializingWeb(false);
+    }
+  };
+
+  const handleCheckWebStatus = async () => {
+    try {
+      const status = await checkWhatsAppWebStatus();
+      setWhatsappWebStatus(status.authenticated);
+      toast({
+        title: status.authenticated ? "Connected" : "Not Connected",
+        description: status.message,
+      });
+      setWhatsappSettings({
+        ...whatsappSettings,
+        web: {
+          ...whatsappSettings.web,
+          authenticated: status.authenticated,
+        },
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to check status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLogoutWeb = async () => {
+    try {
+      const result = await logoutWhatsAppWeb();
+      if (result.success) {
+        setWhatsappWebStatus(false);
+        setWhatsappWebQR(null);
+        setWhatsappSettings({
+          ...whatsappSettings,
+          web: {
+            authenticated: false,
+          },
+        });
+        toast({
+          title: "Success",
+          description: "Logged out from WhatsApp Web",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to logout",
+        variant: "destructive",
+      });
     }
   };
 
