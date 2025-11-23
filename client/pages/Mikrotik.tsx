@@ -1445,6 +1445,190 @@ export default function MikrotikPage() {
             </Card>
           </TabsContent>
 
+          {/* Billing Automation Tab */}
+          <TabsContent value="billing" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Billing Automation & Invoice Management
+                </h3>
+
+                {/* Billing Status */}
+                {billingStatus && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                      <p className="text-sm text-blue-600 font-medium">
+                        Scheduled Accounts
+                      </p>
+                      <p className="text-2xl font-bold text-blue-900 mt-2">
+                        {billingStatus.scheduledAccounts}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                      <p className="text-sm text-green-600 font-medium">
+                        Success Actions
+                      </p>
+                      <p className="text-2xl font-bold text-green-900 mt-2">
+                        {billingStatus.successCount}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600 font-medium">
+                        Failed Actions
+                      </p>
+                      <p className="text-2xl font-bold text-red-900 mt-2">
+                        {billingStatus.failureCount}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Billing Configuration */}
+                <div className="border rounded-lg p-4 space-y-4">
+                  <h4 className="font-medium text-foreground">
+                    Schedule Automatic Billing
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Select Account
+                      </label>
+                      <Select
+                        value={selectedAccountForBilling}
+                        onValueChange={setSelectedAccountForBilling}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose account..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {accounts.map((account) => (
+                            <SelectItem key={account.id} value={account.id}>
+                              {account.customerName} ({account.accountNumber})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Billing Cycle Day (1-28)
+                      </label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={28}
+                        value={billingCycleDay}
+                        onChange={(e) => setBillingCycleDay(parseInt(e.target.value))}
+                        placeholder="1"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={handleScheduleBilling}
+                      disabled={loading || !selectedAccountForBilling}
+                      className="gap-2"
+                    >
+                      <DollarSign size={16} />
+                      Schedule Billing
+                    </Button>
+                    <Button
+                      onClick={handleCancelBilling}
+                      disabled={loading || !selectedAccountForBilling}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <DollarSign size={16} />
+                      Cancel Schedule
+                    </Button>
+                    <Button
+                      onClick={handleTestBilling}
+                      disabled={loading || !selectedAccountForBilling}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Settings size={16} />
+                      Test Billing
+                    </Button>
+                    <Button
+                      onClick={handleLoadAutomationLogs}
+                      disabled={loading}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <FileText size={16} />
+                      Load Logs
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Automation Logs */}
+                {automationLogs.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <h4 className="font-medium text-foreground">
+                      Automation Logs ({automationLogs.length})
+                    </h4>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="border-b border-border">
+                          <tr>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Time
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Action
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Details
+                            </th>
+                            <th className="py-2 px-4 text-center font-medium">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {automationLogs.slice(-20).map((log: any, idx: number) => (
+                            <tr key={idx} className="border-b border-border">
+                              <td className="py-3 px-4 text-sm whitespace-nowrap">
+                                {new Date(log.timestamp).toLocaleTimeString()}
+                              </td>
+                              <td className="py-3 px-4 text-sm">
+                                <Badge variant="outline" className="text-xs">
+                                  {log.action}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {log.details}
+                              </td>
+                              <td className="py-3 px-4 text-center">
+                                <Badge
+                                  variant={
+                                    log.status === "success"
+                                      ? "default"
+                                      : log.status === "failed"
+                                        ? "destructive"
+                                        : "secondary"
+                                  }
+                                  className="text-xs capitalize"
+                                >
+                                  {log.status}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* RouterOS Settings Tab */}
           <TabsContent value="routeros" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
