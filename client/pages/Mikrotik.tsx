@@ -2084,6 +2084,15 @@ export default function MikrotikPage() {
             </Card>
           </TabsContent>
 
+          {/* Account Expiration Tab */}
+          <TabsContent value="expiration" className="space-y-6">
+            <AccountExpiration
+              accounts={accounts}
+              instanceId={selectedInstance?.id}
+              gracePeriodDays={routerOSConfig.gracePeriodDays || 0}
+            />
+          </TabsContent>
+
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
