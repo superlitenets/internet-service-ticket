@@ -213,15 +213,6 @@ export default function MikrotikPage() {
 
         const defaultInstance = getDefaultMikrotikInstance();
         setSelectedInstance(defaultInstance);
-
-        await Promise.allSettled([
-          loadData(),
-          loadRouterOSConfig(),
-          loadMonitoringStatus(),
-          loadBillingStatus(),
-          loadNotificationStats(),
-          loadAnalyticsData(),
-        ]);
       } catch (error) {
         console.error("Error during initialization:", error);
       }
@@ -229,6 +220,20 @@ export default function MikrotikPage() {
 
     initializeData();
   }, []);
+
+  // Load data when selected instance changes
+  useEffect(() => {
+    if (selectedInstance) {
+      Promise.allSettled([
+        loadData(selectedInstance.id),
+        loadRouterOSConfig(),
+        loadMonitoringStatus(),
+        loadBillingStatus(),
+        loadNotificationStats(),
+        loadAnalyticsData(),
+      ]);
+    }
+  }, [selectedInstance?.id]);
 
   const loadData = async (instanceId?: string) => {
     try {
