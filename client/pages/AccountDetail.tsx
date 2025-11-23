@@ -525,32 +525,39 @@ export default function AccountDetail() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status Card */}
-          <Card className="p-6 border-0 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
-              Account Status
-            </h3>
-
-            <div className="space-y-4">
+          <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+            <div className="space-y-6">
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Status</p>
-                <Badge
-                  variant={
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                  Account Status
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${
                     account.status === "active"
-                      ? "default"
+                      ? "bg-green-500"
                       : account.status === "paused"
-                        ? "secondary"
-                        : "destructive"
-                  }
-                  className="capitalize"
-                >
-                  {account.status}
-                </Badge>
+                        ? "bg-yellow-500"
+                        : "bg-red-500"
+                  }`} />
+                  <Badge
+                    variant={
+                      account.status === "active"
+                        ? "default"
+                        : account.status === "paused"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                    className="capitalize font-semibold"
+                  >
+                    {account.status.charAt(0).toUpperCase() + account.status.slice(1)}
+                  </Badge>
+                </div>
               </div>
 
               <Button
                 onClick={() => setShowPauseDialog(true)}
                 variant={account.status === "paused" ? "outline" : "destructive"}
-                className="w-full gap-2"
+                className="w-full gap-2 font-semibold"
               >
                 {account.status === "paused" ? (
                   <>
@@ -567,75 +574,74 @@ export default function AccountDetail() {
             </div>
           </Card>
 
+          {/* Balance Card */}
+          <Card className="p-6 border-0 shadow-sm">
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Current Balance
+                </p>
+                <p className="text-3xl font-bold text-green-600">
+                  KES {account.balance.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-red-50 dark:bg-red-950 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                <p className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-1">
+                  Outstanding Balance
+                </p>
+                <p className="text-2xl font-bold text-red-600">
+                  KES {account.outstandingBalance.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </Card>
+
           {/* Network Configuration Card */}
           <Card className="p-6 border-0 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
+            <h3 className="text-sm font-bold text-foreground mb-6 uppercase tracking-wide">
               Network Configuration
             </h3>
 
             <div className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
+              <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                   MAC Address
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="font-mono text-sm">
-                    {account.macAddress || "Not set"}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowMacDialog(true)}
-                    className="gap-1"
-                  >
-                    <RotateCcw size={14} />
-                  </Button>
-                </div>
+                <p className="font-mono text-sm font-medium text-foreground mb-3">
+                  {account.macAddress || "Not set"}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowMacDialog(true)}
+                  className="w-full gap-2"
+                >
+                  <RotateCcw size={14} />
+                  Update MAC
+                </Button>
               </div>
 
               {account.ipAddress && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
+                <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                     IP Address
                   </p>
-                  <p className="font-mono text-sm">{account.ipAddress}</p>
+                  <p className="font-mono text-sm font-medium text-foreground">
+                    {account.ipAddress}
+                  </p>
                 </div>
               )}
 
               {account.dataQuota && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
+                <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                     Data Quota
                   </p>
-                  <p className="font-mono text-sm">
-                    {account.dataQuota} GB
+                  <p className="text-lg font-bold text-foreground">
+                    {account.dataQuota} <span className="text-sm font-normal text-muted-foreground">GB</span>
                   </p>
                 </div>
               )}
-            </div>
-          </Card>
-
-          {/* Balance Card */}
-          <Card className="p-6 border-0 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
-              Balance
-            </h3>
-
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-muted-foreground">Current Balance</p>
-                <p className="text-2xl font-bold text-foreground">
-                  KES {account.balance.toLocaleString()}
-                </p>
-              </div>
-              <div className="border-t border-border pt-3">
-                <p className="text-xs text-muted-foreground">
-                  Outstanding Balance
-                </p>
-                <p className="text-lg font-semibold text-destructive">
-                  KES {account.outstandingBalance.toLocaleString()}
-                </p>
-              </div>
             </div>
           </Card>
         </div>
