@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Ticket, BarChart3, Settings, LogOut } from "lucide-react";
+import { Menu, X, BarChart3, Settings, LogOut, Users, Home } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
