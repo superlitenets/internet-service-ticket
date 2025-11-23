@@ -39,6 +39,8 @@ import {
   getSmsTemplates,
 } from "@/lib/sms-templates";
 import { getSmsSettings } from "@/lib/sms-settings-storage";
+import { sendWhatsAppToPhone } from "@/lib/whatsapp-client";
+import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
 
 interface Ticket {
   id: string;
@@ -147,53 +149,76 @@ export default function TicketsPage() {
     ticket: Ticket,
   ) => {
     try {
-      const settings = getSmsSettings();
-      if (!settings || !settings.enabled) {
-        console.log("SMS notifications disabled or not configured");
+      const smsSettings = getSmsSettings();
+      const whatsappSettings = getWhatsAppConfig();
+
+      if ((!smsSettings || !smsSettings.enabled) && (!whatsappSettings || !whatsappSettings.enabled)) {
+        console.log("No messaging service enabled");
         return;
       }
 
       const technicianPhone = getTechnicianPhone(ticket.assignedTo);
 
-      // Send to customer
-      const customerTemplate = getTemplate(eventType, "customer");
-      if (customerTemplate) {
-        const customerMessage = renderTemplate(customerTemplate, {
-          customerName: ticket.customer,
-          ticketId: ticket.id,
-          title: ticket.title,
-          technicianName: ticket.assignedTo,
-          technicianPhone: technicianPhone || "N/A",
-          status: ticket.status,
-          priority: ticket.priority,
-        });
+      // Prepare message variables
+      const messageVars = {
+        customerName: ticket.customer,
+        customerPhone: ticket.customerPhone,
+        customerLocation: ticket.customerLocation || "N/A",
+        ticketId: ticket.id,
+        title: ticket.title,
+        technicianName: ticket.assignedTo,
+        technicianPhone: technicianPhone || "N/A",
+        status: ticket.status,
+        priority: ticket.priority,
+        description: ticket.description,
+        updatedBy: "System",
+      };
 
-        await sendSmsToPhone(ticket.customerPhone, customerMessage);
+      // Send to customer via SMS
+      if (smsSettings?.enabled) {
+        const customerTemplate = getTemplate(eventType, "customer");
+        if (customerTemplate) {
+          const customerMessage = renderTemplate(customerTemplate, messageVars);
+          await sendSmsToPhone(ticket.customerPhone, customerMessage);
+        }
+      }
+
+      // Send to customer via WhatsApp
+      if (whatsappSettings?.enabled) {
+        const customerTemplate = getTemplate(eventType, "customer");
+        if (customerTemplate) {
+          const customerMessage = renderTemplate(customerTemplate, messageVars);
+          try {
+            await sendWhatsAppToPhone(ticket.customerPhone, customerMessage);
+          } catch (error) {
+            console.warn("WhatsApp send failed, continuing...", error);
+          }
+        }
       }
 
       // Send to technician if assigned
       if (ticket.assignedTo !== "Unassigned" && technicianPhone) {
         const technicianTemplate = getTemplate(eventType, "technician");
         if (technicianTemplate) {
-          const technicianMessage = renderTemplate(technicianTemplate, {
-            customerName: ticket.customer,
-            customerPhone: ticket.customerPhone,
-            customerLocation: ticket.customerLocation || "N/A",
-            ticketId: ticket.id,
-            title: ticket.title,
-            technicianName: ticket.assignedTo,
-            technicianPhone: technicianPhone,
-            status: ticket.status,
-            priority: ticket.priority,
-            description: ticket.description,
-            updatedBy: "System",
-          });
+          const technicianMessage = renderTemplate(technicianTemplate, messageVars);
 
-          await sendSmsToPhone(technicianPhone, technicianMessage);
+          // Send via SMS
+          if (smsSettings?.enabled) {
+            await sendSmsToPhone(technicianPhone, technicianMessage);
+          }
+
+          // Send via WhatsApp
+          if (whatsappSettings?.enabled) {
+            try {
+              await sendWhatsAppToPhone(technicianPhone, technicianMessage);
+            } catch (error) {
+              console.warn("WhatsApp send failed, continuing...", error);
+            }
+          }
         }
       }
     } catch (error) {
-      console.error("Failed to send SMS notifications:", error);
+      console.error("Failed to send notifications:", error);
     }
   };
 
