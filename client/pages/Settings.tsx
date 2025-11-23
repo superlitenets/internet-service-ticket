@@ -137,7 +137,21 @@ export default function SettingsPage() {
   });
   const [testingSms, setTestingSms] = useState(false);
 
-  // Load SMS settings, templates, deduction settings, and WhatsApp config from storage on mount
+  // MPESA Settings State
+  const [mpesaSettings, setMpesaSettings] = useState<MpesaConfig>({
+    enabled: false,
+    consumerKey: "",
+    consumerSecret: "",
+    businessShortCode: "",
+    passkey: "",
+    callbackUrl: "",
+    validationUrl: "",
+    confirmationUrl: "",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  // Load SMS settings, templates, deduction settings, WhatsApp config, and MPESA config from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
@@ -149,6 +163,8 @@ export default function SettingsPage() {
     setDeductionSettings(deductions);
     const whatsappConfig = getWhatsAppConfig();
     setWhatsappSettings(whatsappConfig);
+    const mpesaConfig = getMpesaSettings();
+    setMpesaSettings(mpesaConfig);
   }, []);
 
   // Notification Preferences State
