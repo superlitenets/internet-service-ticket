@@ -49,6 +49,7 @@ export async function sendSms(
 /**
  * Send a single SMS to a phone number
  * Uses saved settings automatically if credentials not provided
+ * Supports Twilio, Vonage, AWS SNS, Nexmo, and Advanta SMS
  * @param phoneNumber - Recipient phone number
  * @param message - SMS message content
  * @param credentials - Optional SMS provider credentials (overrides saved settings)
@@ -62,6 +63,9 @@ export async function sendSmsToPhone(
     accountSid?: string;
     authToken?: string;
     fromNumber?: string;
+    apiKey?: string;
+    partnerId?: string;
+    shortcode?: string;
   },
 ): Promise<SendSmsResponse> {
   return sendSms({
@@ -74,6 +78,7 @@ export async function sendSmsToPhone(
 /**
  * Send SMS to multiple phone numbers
  * Uses saved settings automatically if credentials not provided
+ * Supports Twilio, Vonage, AWS SNS, Nexmo, and Advanta SMS
  * @param phoneNumbers - Array of recipient phone numbers
  * @param message - SMS message content
  * @param credentials - Optional SMS provider credentials (overrides saved settings)
@@ -87,6 +92,9 @@ export async function sendSmsBatch(
     accountSid?: string;
     authToken?: string;
     fromNumber?: string;
+    apiKey?: string;
+    partnerId?: string;
+    shortcode?: string;
   },
 ): Promise<SendSmsResponse> {
   return sendSms({
