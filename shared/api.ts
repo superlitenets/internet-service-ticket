@@ -150,3 +150,44 @@ export interface ZKtecoDeviceConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * Late Attendance Deduction Settings
+ */
+export interface LateDeductionSettings {
+  enabled: boolean;
+  lateThresholdMinutes: number; // Minutes after official time
+  deductionType: "fixed" | "percentage" | "scaled";
+  fixedDeductionAmount?: number; // For fixed deductions
+  percentageDeduction?: number; // Percentage of daily salary
+  scaledDeductions?: {
+    // For scaled deductions
+    minutesRange: { min: number; max: number };
+    deductionAmount: number;
+  }[];
+  applyAfterDays?: number; // Apply deduction after N late days in a month
+  excludeWeekends?: boolean;
+  excludeEmployeeIds?: string[]; // Exempt specific employees
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Deduction Record
+ */
+export interface DeductionRecord {
+  id: string;
+  payrollId: string;
+  employeeId: string;
+  employeeName: string;
+  deductionType: string;
+  reason: string;
+  lateDays: number;
+  lateMinutes: number;
+  deductionAmount: number;
+  approvalStatus: "pending" | "approved" | "rejected";
+  approvedBy?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
