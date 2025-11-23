@@ -167,5 +167,15 @@ export function createServer() {
   app.get("/api/mikrotik/routeros/hotspot", getRouterOSHotspotUsers);
   app.get("/api/mikrotik/routeros/queues", getRouterOSQueues);
 
+  // Bandwidth Monitoring
+  app.post("/api/mikrotik/bandwidth/start", startBandwidthMonitoring);
+  app.post("/api/mikrotik/bandwidth/stop", stopBandwidthMonitoring);
+  app.get("/api/mikrotik/bandwidth/history/:accountId", getBandwidthHistory);
+  app.get("/api/mikrotik/bandwidth/peak/:accountId", getPeakUsageTime);
+  app.get("/api/mikrotik/bandwidth/average/:accountId", getAverageUsage);
+  app.get("/api/mikrotik/bandwidth/alerts", getQuotaAlerts);
+  app.get("/api/mikrotik/bandwidth/alerts/:accountId", getAccountQuotaAlerts);
+  app.get("/api/mikrotik/bandwidth/status", getMonitoringStatus);
+
   return app;
 }
