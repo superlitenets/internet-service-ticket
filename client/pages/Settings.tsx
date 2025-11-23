@@ -156,7 +156,7 @@ export default function SettingsPage() {
     updatedAt: new Date().toISOString(),
   });
 
-  // Load SMS settings, templates, deduction settings, WhatsApp config, and MPESA config from storage on mount
+  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, and Company settings from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
@@ -170,6 +170,8 @@ export default function SettingsPage() {
     setWhatsappSettings(whatsappConfig);
     const mpesaConfig = getMpesaSettings();
     setMpesaSettings(mpesaConfig);
+    const companyConfig = getCompanySettings();
+    setCompanySettings(companyConfig);
   }, []);
 
   // Notification Preferences State
