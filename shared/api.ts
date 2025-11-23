@@ -238,3 +238,82 @@ export interface WhatsAppConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * MPESA Configuration
+ */
+export interface MpesaConfig {
+  enabled: boolean;
+  consumerKey: string;
+  consumerSecret: string;
+  businessShortCode: string;
+  passkey: string;
+  callbackUrl?: string;
+  validationUrl?: string;
+  confirmationUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * MPESA C2B Request
+ */
+export interface MpesaC2BRequest {
+  phoneNumber: string;
+  amount: number;
+  accountReference: string;
+  transactionDescription: string;
+}
+
+/**
+ * MPESA B2B Request
+ */
+export interface MpesaB2BRequest {
+  receiverShortCode: string;
+  amount: number;
+  commandId: string;
+  accountReference: string;
+  transactionDescription: string;
+}
+
+/**
+ * MPESA STK Push Request
+ */
+export interface MpesaStkPushRequest {
+  phoneNumber: string;
+  amount: number;
+  accountReference: string;
+  transactionDescription: string;
+  callbackUrl?: string;
+}
+
+/**
+ * MPESA Response
+ */
+export interface MpesaResponse {
+  success: boolean;
+  message: string;
+  transactionId?: string;
+  checkoutRequestId?: string;
+  timestamp: string;
+  error?: string;
+}
+
+/**
+ * MPESA Transaction Record
+ */
+export interface MpesaTransaction {
+  id: string;
+  transactionId: string;
+  type: "C2B" | "B2B" | "STK_PUSH";
+  phoneNumber: string;
+  amount: number;
+  accountReference: string;
+  description: string;
+  status: "pending" | "completed" | "failed";
+  mpesaReceiptNumber?: string;
+  resultCode?: number;
+  resultDescription?: string;
+  createdAt: string;
+  updatedAt: string;
+}
