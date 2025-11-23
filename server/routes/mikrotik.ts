@@ -299,6 +299,47 @@ export const deleteMikrotikAccount: RequestHandler = (req, res) => {
 };
 
 /**
+ * Regenerate PPPoE and Hotspot credentials for an account
+ */
+export const regenerateAccountCredentials: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.params;
+
+    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+
+    if (accountIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Not found",
+      });
+    }
+
+    const account = accounts[accountIndex];
+    const credentials = generatePPPoECredentials(account.accountNumber);
+
+    accounts[accountIndex] = {
+      ...accounts[accountIndex],
+      ...credentials,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return res.json({
+      success: true,
+      message: "Account credentials regenerated successfully",
+      account: accounts[accountIndex],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to regenerate credentials",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
  * Get all billing plans
  */
 export const getMikrotikPlans: RequestHandler = (_req, res) => {
