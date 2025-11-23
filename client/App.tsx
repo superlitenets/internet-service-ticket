@@ -38,6 +38,7 @@ const AppRoutes = () => (
     <Route path="/performance" element={<Performance />} />
     <Route path="/payments" element={<Payments />} />
     <Route path="/mikrotik" element={<Mikrotik />} />
+    <Route path="/mikrotik/accounts/:accountId" element={<AccountDetail />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
