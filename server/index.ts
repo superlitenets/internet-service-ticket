@@ -201,5 +201,15 @@ export function createServer() {
   app.get("/api/mikrotik/billing/status", getBillingStatus);
   app.get("/api/mikrotik/billing/logs", getAutomationLogs);
 
+  // Notifications
+  app.post("/api/mikrotik/notifications/send-invoice", sendInvoiceNotification);
+  app.post("/api/mikrotik/notifications/send-reminder", sendPaymentReminderNotification);
+  app.post("/api/mikrotik/notifications/send-overdue", sendOverdueNotification);
+  app.post("/api/mikrotik/notifications/send-payment-received", sendPaymentReceivedNotification);
+  app.post("/api/mikrotik/notifications/send-quota-alert", sendQuotaAlertNotification);
+  app.get("/api/mikrotik/notifications/logs", getNotificationLogs);
+  app.get("/api/mikrotik/notifications/templates", getNotificationTemplates);
+  app.get("/api/mikrotik/notifications/stats", getNotificationStats);
+
   return app;
 }
