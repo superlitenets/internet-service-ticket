@@ -460,9 +460,14 @@ export async function getMikrotikStats(instanceId?: string): Promise<{
 /**
  * Get RouterOS configuration
  */
-export async function getRouterOSConfig(): Promise<any> {
+export async function getRouterOSConfig(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/routeros/config");
+    const url = new URL("/api/mikrotik/routeros/config", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch RouterOS configuration");
@@ -488,6 +493,7 @@ export async function updateRouterOSConfig(data: {
   port?: number;
   useSsl?: boolean;
   interfaceName?: string;
+  instanceId?: string;
 }): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/routeros/config", {
@@ -520,6 +526,7 @@ export async function testRouterOSConnection(data: {
   password: string;
   port?: number;
   useSsl?: boolean;
+  instanceId?: string;
 }): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/routeros/test", {
@@ -544,9 +551,14 @@ export async function testRouterOSConnection(data: {
 /**
  * Get RouterOS device information
  */
-export async function getRouterOSDeviceInfo(): Promise<any> {
+export async function getRouterOSDeviceInfo(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/routeros/device-info");
+    const url = new URL("/api/mikrotik/routeros/device-info", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch device information");
@@ -566,12 +578,16 @@ export async function getRouterOSDeviceInfo(): Promise<any> {
  * Get RouterOS interface statistics
  */
 export async function getRouterOSInterfaceStats(
-  interfaceName?: string
+  interfaceName?: string,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/routeros/interfaces", window.location.origin);
     if (interfaceName) {
       url.searchParams.append("interfaceName", interfaceName);
+    }
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
     }
 
     const response = await fetch(url.toString());
@@ -593,9 +609,14 @@ export async function getRouterOSInterfaceStats(
 /**
  * Get RouterOS PPPoE connections
  */
-export async function getRouterOSPPPoEConnections(): Promise<any> {
+export async function getRouterOSPPPoEConnections(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/routeros/pppoe");
+    const url = new URL("/api/mikrotik/routeros/pppoe", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch PPPoE connections");
@@ -614,9 +635,14 @@ export async function getRouterOSPPPoEConnections(): Promise<any> {
 /**
  * Get RouterOS Hotspot users
  */
-export async function getRouterOSHotspotUsers(): Promise<any> {
+export async function getRouterOSHotspotUsers(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/routeros/hotspot");
+    const url = new URL("/api/mikrotik/routeros/hotspot", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch Hotspot users");
@@ -633,9 +659,14 @@ export async function getRouterOSHotspotUsers(): Promise<any> {
 /**
  * Get RouterOS queues
  */
-export async function getRouterOSQueues(): Promise<any> {
+export async function getRouterOSQueues(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/routeros/queues");
+    const url = new URL("/api/mikrotik/routeros/queues", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch queues");
@@ -652,12 +683,12 @@ export async function getRouterOSQueues(): Promise<any> {
 /**
  * Start bandwidth monitoring for an account
  */
-export async function startBandwidthMonitoring(accountId: string): Promise<any> {
+export async function startBandwidthMonitoring(accountId: string, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/bandwidth/start", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId }),
+      body: JSON.stringify({ accountId, instanceId }),
     });
 
     if (!response.ok) {
@@ -677,12 +708,12 @@ export async function startBandwidthMonitoring(accountId: string): Promise<any> 
 /**
  * Stop bandwidth monitoring for an account
  */
-export async function stopBandwidthMonitoring(accountId: string): Promise<any> {
+export async function stopBandwidthMonitoring(accountId: string, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/bandwidth/stop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId }),
+      body: JSON.stringify({ accountId, instanceId }),
     });
 
     if (!response.ok) {
@@ -704,7 +735,8 @@ export async function stopBandwidthMonitoring(accountId: string): Promise<any> {
  */
 export async function getBandwidthHistory(
   accountId: string,
-  hours: number = 24
+  hours: number = 24,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL(
@@ -712,6 +744,9 @@ export async function getBandwidthHistory(
       window.location.origin
     );
     url.searchParams.append("hours", hours.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -732,7 +767,8 @@ export async function getBandwidthHistory(
  */
 export async function getPeakUsageTime(
   accountId: string,
-  hours: number = 24
+  hours: number = 24,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL(
@@ -740,6 +776,9 @@ export async function getPeakUsageTime(
       window.location.origin
     );
     url.searchParams.append("hours", hours.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -760,7 +799,8 @@ export async function getPeakUsageTime(
  */
 export async function getAverageBandwidthUsage(
   accountId: string,
-  hours: number = 24
+  hours: number = 24,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL(
@@ -768,6 +808,9 @@ export async function getAverageBandwidthUsage(
       window.location.origin
     );
     url.searchParams.append("hours", hours.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -786,9 +829,14 @@ export async function getAverageBandwidthUsage(
 /**
  * Get all quota alerts
  */
-export async function getAllQuotaAlerts(): Promise<any> {
+export async function getAllQuotaAlerts(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/bandwidth/alerts");
+    const url = new URL("/api/mikrotik/bandwidth/alerts", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch quota alerts");
@@ -805,9 +853,14 @@ export async function getAllQuotaAlerts(): Promise<any> {
 /**
  * Get quota alerts for a specific account
  */
-export async function getAccountQuotaAlerts(accountId: string): Promise<any> {
+export async function getAccountQuotaAlerts(accountId: string, instanceId?: string): Promise<any> {
   try {
-    const response = await fetch(`/api/mikrotik/bandwidth/alerts/${accountId}`);
+    const url = new URL(`/api/mikrotik/bandwidth/alerts/${accountId}`, window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch account alerts");
@@ -824,9 +877,14 @@ export async function getAccountQuotaAlerts(accountId: string): Promise<any> {
 /**
  * Get bandwidth monitoring status
  */
-export async function getMonitoringStatus(): Promise<any> {
+export async function getMonitoringStatus(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/bandwidth/status");
+    const url = new URL("/api/mikrotik/bandwidth/status", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch monitoring status");
@@ -845,13 +903,14 @@ export async function getMonitoringStatus(): Promise<any> {
  */
 export async function scheduleBilling(
   accountId: string,
-  billingCycleDay: number = 1
+  billingCycleDay: number = 1,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/schedule", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, billingCycleDay }),
+      body: JSON.stringify({ accountId, billingCycleDay, instanceId }),
     });
 
     if (!response.ok) {
@@ -869,12 +928,12 @@ export async function scheduleBilling(
 /**
  * Cancel automatic billing for an account
  */
-export async function cancelBillingAutomation(accountId: string): Promise<any> {
+export async function cancelBillingAutomation(accountId: string, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/cancel", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId }),
+      body: JSON.stringify({ accountId, instanceId }),
     });
 
     if (!response.ok) {
@@ -892,9 +951,14 @@ export async function cancelBillingAutomation(accountId: string): Promise<any> {
 /**
  * Get billing automation status
  */
-export async function getBillingAutomationStatus(): Promise<any> {
+export async function getBillingAutomationStatus(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/billing/status");
+    const url = new URL("/api/mikrotik/billing/status", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch billing status");
@@ -913,7 +977,8 @@ export async function getBillingAutomationStatus(): Promise<any> {
  */
 export async function fetchAutomationLogs(
   accountId?: string,
-  limit: number = 100
+  limit: number = 100,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/billing/logs", window.location.origin);
@@ -921,6 +986,9 @@ export async function fetchAutomationLogs(
       url.searchParams.append("accountId", accountId);
     }
     url.searchParams.append("limit", limit.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -939,12 +1007,12 @@ export async function fetchAutomationLogs(
 /**
  * Test billing automation
  */
-export async function testBillingAutomation(accountId: string): Promise<any> {
+export async function testBillingAutomation(accountId: string, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/test", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId }),
+      body: JSON.stringify({ accountId, instanceId }),
     });
 
     if (!response.ok) {
@@ -962,12 +1030,12 @@ export async function testBillingAutomation(accountId: string): Promise<any> {
 /**
  * Process overdue invoices
  */
-export async function processOverdueInvoices(overdueDays: number = 7): Promise<any> {
+export async function processOverdueInvoices(overdueDays: number = 7, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/process-overdue", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ overdueDays }),
+      body: JSON.stringify({ overdueDays, instanceId }),
     });
 
     if (!response.ok) {
@@ -985,12 +1053,12 @@ export async function processOverdueInvoices(overdueDays: number = 7): Promise<a
 /**
  * Auto-apply credits to invoices
  */
-export async function autoApplyCreditsToInvoices(accountId: string): Promise<any> {
+export async function autoApplyCreditsToInvoices(accountId: string, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/apply-credits", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId }),
+      body: JSON.stringify({ accountId, instanceId }),
     });
 
     if (!response.ok) {
@@ -1010,13 +1078,14 @@ export async function autoApplyCreditsToInvoices(accountId: string): Promise<any
  */
 export async function sendInvoiceNotificationAPI(
   accountId: string,
-  invoiceId: string
+  invoiceId: string,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-invoice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, invoiceId }),
+      body: JSON.stringify({ accountId, invoiceId, instanceId }),
     });
 
     if (!response.ok) {
@@ -1036,13 +1105,14 @@ export async function sendInvoiceNotificationAPI(
  */
 export async function sendPaymentReminderNotificationAPI(
   accountId: string,
-  invoiceId: string
+  invoiceId: string,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-reminder", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, invoiceId }),
+      body: JSON.stringify({ accountId, invoiceId, instanceId }),
     });
 
     if (!response.ok) {
@@ -1062,13 +1132,14 @@ export async function sendPaymentReminderNotificationAPI(
  */
 export async function sendOverdueNotificationAPI(
   accountId: string,
-  invoiceId: string
+  invoiceId: string,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-overdue", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, invoiceId }),
+      body: JSON.stringify({ accountId, invoiceId, instanceId }),
     });
 
     if (!response.ok) {
@@ -1088,13 +1159,14 @@ export async function sendOverdueNotificationAPI(
  */
 export async function sendPaymentReceivedNotificationAPI(
   accountId: string,
-  paymentId: string
+  paymentId: string,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-payment-received", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, paymentId }),
+      body: JSON.stringify({ accountId, paymentId, instanceId }),
     });
 
     if (!response.ok) {
@@ -1118,13 +1190,14 @@ export async function sendQuotaAlertNotificationAPI(
   accountId: string,
   percentageUsed: number,
   usedData?: number,
-  totalQuota?: number
+  totalQuota?: number,
+  instanceId?: string
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-quota-alert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, percentageUsed, usedData, totalQuota }),
+      body: JSON.stringify({ accountId, percentageUsed, usedData, totalQuota, instanceId }),
     });
 
     if (!response.ok) {
@@ -1144,7 +1217,8 @@ export async function sendQuotaAlertNotificationAPI(
  */
 export async function getNotificationLogsAPI(
   accountId?: string,
-  limit: number = 100
+  limit: number = 100,
+  instanceId?: string
 ): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/notifications/logs", window.location.origin);
@@ -1152,6 +1226,9 @@ export async function getNotificationLogsAPI(
       url.searchParams.append("accountId", accountId);
     }
     url.searchParams.append("limit", limit.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -1170,9 +1247,14 @@ export async function getNotificationLogsAPI(
 /**
  * Get notification templates
  */
-export async function getNotificationTemplatesAPI(): Promise<any> {
+export async function getNotificationTemplatesAPI(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/notifications/templates");
+    const url = new URL("/api/mikrotik/notifications/templates", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch notification templates");
@@ -1189,9 +1271,14 @@ export async function getNotificationTemplatesAPI(): Promise<any> {
 /**
  * Get notification statistics
  */
-export async function getNotificationStatsAPI(): Promise<any> {
+export async function getNotificationStatsAPI(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/notifications/stats");
+    const url = new URL("/api/mikrotik/notifications/stats", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch notification statistics");
@@ -1208,9 +1295,14 @@ export async function getNotificationStatsAPI(): Promise<any> {
 /**
  * Get dashboard analytics
  */
-export async function getDashboardAnalytics(): Promise<any> {
+export async function getDashboardAnalytics(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/analytics/dashboard");
+    const url = new URL("/api/mikrotik/analytics/dashboard", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch dashboard analytics");
@@ -1227,11 +1319,12 @@ export async function getDashboardAnalytics(): Promise<any> {
 /**
  * Get revenue analytics
  */
-export async function getRevenueAnalytics(startDate?: string, endDate?: string): Promise<any> {
+export async function getRevenueAnalytics(startDate?: string, endDate?: string, instanceId?: string): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/analytics/revenue", window.location.origin);
     if (startDate) url.searchParams.append("startDate", startDate);
     if (endDate) url.searchParams.append("endDate", endDate);
+    if (instanceId) url.searchParams.append("instanceId", instanceId);
 
     const response = await fetch(url.toString());
 
@@ -1250,10 +1343,13 @@ export async function getRevenueAnalytics(startDate?: string, endDate?: string):
 /**
  * Get monthly revenue trend
  */
-export async function getMonthlyRevenueTrend(months: number = 12): Promise<any> {
+export async function getMonthlyRevenueTrend(months: number = 12, instanceId?: string): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/analytics/revenue-trend", window.location.origin);
     url.searchParams.append("months", months.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -1272,10 +1368,13 @@ export async function getMonthlyRevenueTrend(months: number = 12): Promise<any> 
 /**
  * Get account growth trend
  */
-export async function getAccountGrowthTrend(months: number = 12): Promise<any> {
+export async function getAccountGrowthTrend(months: number = 12, instanceId?: string): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/analytics/account-trend", window.location.origin);
     url.searchParams.append("months", months.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -1294,9 +1393,14 @@ export async function getAccountGrowthTrend(months: number = 12): Promise<any> {
 /**
  * Get payment method distribution
  */
-export async function getPaymentMethodDistribution(): Promise<any> {
+export async function getPaymentMethodDistribution(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/analytics/payment-methods");
+    const url = new URL("/api/mikrotik/analytics/payment-methods", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch payment methods");
@@ -1313,9 +1417,14 @@ export async function getPaymentMethodDistribution(): Promise<any> {
 /**
  * Get service plan distribution
  */
-export async function getServicePlanDistribution(): Promise<any> {
+export async function getServicePlanDistribution(instanceId?: string): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/analytics/service-plans");
+    const url = new URL("/api/mikrotik/analytics/service-plans", window.location.origin);
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
+
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
       throw new Error("Failed to fetch service plans");
@@ -1332,10 +1441,13 @@ export async function getServicePlanDistribution(): Promise<any> {
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomersByRevenue(limit: number = 10): Promise<any> {
+export async function getTopCustomersByRevenue(limit: number = 10, instanceId?: string): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/analytics/top-customers", window.location.origin);
     url.searchParams.append("limit", limit.toString());
+    if (instanceId) {
+      url.searchParams.append("instanceId", instanceId);
+    }
 
     const response = await fetch(url.toString());
 
@@ -1354,12 +1466,12 @@ export async function getTopCustomersByRevenue(limit: number = 10): Promise<any>
 /**
  * Generate monthly billing report
  */
-export async function generateMonthlyBillingReport(month: number, year: number): Promise<any> {
+export async function generateMonthlyBillingReport(month: number, year: number, instanceId?: string): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/analytics/monthly-report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ month, year }),
+      body: JSON.stringify({ month, year, instanceId }),
     });
 
     if (!response.ok) {
