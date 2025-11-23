@@ -741,6 +741,22 @@ export default function TicketsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
+                  Location / Address
+                </label>
+                <Input
+                  value={formData.customerLocation}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      customerLocation: e.target.value,
+                    })
+                  }
+                  placeholder="e.g., 123 Main St, Suite 200, New York, NY 10001"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Ticket Title *
                 </label>
                 <Input
