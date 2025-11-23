@@ -81,6 +81,14 @@ import {
   getNotificationLogs,
   getNotificationTemplates,
   getNotificationStats,
+  getDashboardAnalytics,
+  getRevenueAnalytics,
+  getMonthlyRevenueTrend,
+  getAccountGrowthTrend,
+  getPaymentMethodDistribution,
+  getServicePlanDistribution,
+  getTopCustomers,
+  generateMonthlyBillingReport,
 } from "./routes/mikrotik";
 
 export function createServer() {
