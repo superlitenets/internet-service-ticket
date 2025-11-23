@@ -14,6 +14,8 @@ import {
   TrendingUp,
   Wifi,
   FileText,
+  ChevronDown,
+  Briefcase,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -22,31 +24,48 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+interface NavItem {
+  path?: string;
+  label: string;
+  icon: React.ElementType;
+  subItems?: NavItem[];
+}
+
 export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path?: string) => path && location.pathname === path;
 
-  const navItems = [
+  const toggleGroup = (groupLabel: string) => {
+    setExpandedGroups((prev) =>
+      prev.includes(groupLabel)
+        ? prev.filter((g) => g !== groupLabel)
+        : [...prev, groupLabel]
+    );
+  };
+
+  const navItems: NavItem[] = [
     { path: "/", label: "Dashboard", icon: Home },
     { path: "/tickets", label: "Tickets", icon: BarChart3 },
     { path: "/customers", label: "Customers", icon: Users },
     { path: "/team", label: "Team", icon: Users },
     { path: "/inventory", label: "Inventory", icon: Package },
-    // HRM Module
-    { path: "/employees", label: "Employees", icon: Users },
-    { path: "/attendance", label: "Attendance", icon: Clock },
-    { path: "/leave", label: "Leave", icon: Calendar },
-    { path: "/payroll", label: "Payroll", icon: DollarSign },
-    { path: "/performance", label: "Performance", icon: TrendingUp },
-    // Payments
+    {
+      label: "HR",
+      icon: Briefcase,
+      subItems: [
+        { path: "/employees", label: "Employees", icon: Users },
+        { path: "/attendance", label: "Attendance", icon: Clock },
+        { path: "/leave", label: "Leave", icon: Calendar },
+        { path: "/payroll", label: "Payroll", icon: DollarSign },
+        { path: "/performance", label: "Performance", icon: TrendingUp },
+      ],
+    },
     { path: "/payments", label: "Payments", icon: DollarSign },
-    // ISP Billing
     { path: "/mikrotik", label: "Mikrotik ISP", icon: Wifi },
-    // Reports
     { path: "/reports", label: "Reports", icon: FileText },
-    // Settings
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
