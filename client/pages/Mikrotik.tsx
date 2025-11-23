@@ -1093,6 +1093,10 @@ export default function MikrotikPage() {
               <Bell size={14} />
               <span className="hidden sm:inline">Notifications</span>
             </TabsTrigger>
+            <TabsTrigger value="expiration" className="gap-1">
+              <Clock size={14} />
+              <span className="hidden sm:inline">Expiration</span>
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-1">
               <TrendingUp size={14} />
               <span className="hidden sm:inline">Analytics</span>
