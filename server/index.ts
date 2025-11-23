@@ -218,6 +218,17 @@ export function createServer() {
   app.get("/api/mikrotik/billing/status", getBillingStatus);
   app.get("/api/mikrotik/billing/logs", getAutomationLogs);
 
+  // RADIUS Account Management
+  app.post("/api/mikrotik/radius/suspend", suspendAccountInRADIUS);
+  app.post("/api/mikrotik/radius/resume", resumeAccountInRADIUS);
+
+  // Account Expiration & Renewal Automation
+  app.post("/api/mikrotik/expiration/check-status", checkAccountExpirationStatus);
+  app.post("/api/mikrotik/expiration/process", processAccountExpirations);
+  app.post("/api/mikrotik/expiration/renew", processAccountRenewal);
+  app.get("/api/mikrotik/expiration/logs", getExpirationAutomationLogs);
+  app.get("/api/mikrotik/expiration/status", getExpirationAutomationStatus);
+
   // Notifications
   app.post("/api/mikrotik/notifications/send-invoice", sendInvoiceNotification);
   app.post("/api/mikrotik/notifications/send-reminder", sendPaymentReminderNotification);
