@@ -111,9 +111,31 @@ export default function MikrotikPage() {
     mpesaReceiptNumber: "",
   });
 
+  // RouterOS Configuration
+  const [routerOSDialog, setRouterOSDialog] = useState(false);
+  const [routerOSConfig, setRouterOSConfig] = useState({
+    apiUrl: "",
+    username: "",
+    password: "",
+    port: 8728,
+    useSsl: false,
+  });
+  const [routerOSConfigForm, setRouterOSConfigForm] = useState({
+    apiUrl: "",
+    username: "",
+    password: "",
+    port: 8728,
+    useSsl: false,
+  });
+  const [deviceInfo, setDeviceInfo] = useState<any>(null);
+  const [interfaceStats, setInterfaceStats] = useState<any[]>([]);
+  const [pppoeConnections, setPPPoEConnections] = useState<any[]>([]);
+  const [testingConnection, setTestingConnection] = useState(false);
+
   // Load data on mount
   useEffect(() => {
     loadData();
+    loadRouterOSConfig();
   }, []);
 
   const loadData = async () => {
