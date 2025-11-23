@@ -583,7 +583,7 @@ export default function TicketsPage() {
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-6 py-4 text-sm whitespace-nowrap">
                         <Badge
                           variant="secondary"
                           className={getPriorityColor(ticket.priority)}
