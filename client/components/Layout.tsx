@@ -12,7 +12,6 @@ import {
   Calendar,
   DollarSign,
   TrendingUp,
-  Wifi,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
