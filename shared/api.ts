@@ -222,10 +222,19 @@ export interface SendWhatsAppResponse {
  */
 export interface WhatsAppConfig {
   enabled: boolean;
-  phoneNumberId: string;
-  accessToken: string;
-  businessAccountId: string;
-  webhookToken?: string;
+  mode: "business" | "web" | "both";
+  businessApi: {
+    phoneNumberId: string;
+    accessToken: string;
+    businessAccountId: string;
+    webhookToken?: string;
+  };
+  web: {
+    authenticated: boolean;
+    sessionId?: string;
+    phoneNumber?: string;
+  };
+  failoverEnabled: boolean; // Use Web if Business API fails
   createdAt: string;
   updatedAt: string;
 }
