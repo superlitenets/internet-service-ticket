@@ -656,3 +656,298 @@ export const getMikrotikStats: RequestHandler = (_req, res) => {
     });
   }
 };
+
+/**
+ * RouterOS Configuration Storage
+ */
+let routerOSConfig: MikrotikConfig = {
+  enabled: false,
+  apiUrl: "",
+  username: "",
+  password: "",
+  port: 8728,
+  useSsl: false,
+  interfaceName: "ether1",
+  enableDataMonitoring: false,
+  autoGenerateBills: false,
+  billingCycleDay: 1,
+  gracePeriodDays: 3,
+  suspensionDelay: 7,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
+
+/**
+ * Get RouterOS configuration
+ */
+export const getRouterOSConfig: RequestHandler = (_req, res) => {
+  try {
+    const config = { ...routerOSConfig };
+    // Don't expose password
+    delete (config as any).password;
+    return res.json(config);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch configuration",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Update RouterOS configuration
+ */
+export const updateRouterOSConfig: RequestHandler = (req, res) => {
+  try {
+    const { apiUrl, username, password, port, useSsl, interfaceName } =
+      req.body;
+
+    if (apiUrl && username && password) {
+      routerOSConfig = {
+        ...routerOSConfig,
+        ...req.body,
+        updatedAt: new Date().toISOString(),
+      };
+
+      return res.json({
+        success: true,
+        message: "RouterOS configuration updated successfully",
+        config: {
+          ...routerOSConfig,
+          password: undefined,
+        },
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields",
+      error: "apiUrl, username, and password are required",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update configuration",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Test RouterOS connection
+ */
+export const testRouterOSConnection: RequestHandler = async (req, res) => {
+  try {
+    const config = req.body as RouterOSCredentials;
+
+    if (!config.apiUrl || !config.username || !config.password) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "apiUrl, username, and password are required",
+      });
+    }
+
+    const client = createRouterOSClient(config);
+    const result = await client.testConnection();
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to test connection",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get RouterOS device information
+ */
+export const getRouterOSDeviceInfo: RequestHandler = async (req, res) => {
+  try {
+    if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "RouterOS connection not configured",
+        error: "Please configure RouterOS connection first",
+      });
+    }
+
+    const client = createRouterOSClient({
+      apiUrl: routerOSConfig.apiUrl,
+      username: routerOSConfig.username,
+      password: routerOSConfig.password,
+      useSsl: routerOSConfig.useSsl,
+      port: routerOSConfig.port,
+    });
+
+    const deviceInfo = await client.getDeviceInfo();
+
+    return res.json({
+      success: true,
+      deviceInfo,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch device information",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get RouterOS interface statistics
+ */
+export const getRouterOSInterfaceStats: RequestHandler = async (req, res) => {
+  try {
+    if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "RouterOS connection not configured",
+        error: "Please configure RouterOS connection first",
+      });
+    }
+
+    const { interfaceName } = req.query;
+
+    const client = createRouterOSClient({
+      apiUrl: routerOSConfig.apiUrl,
+      username: routerOSConfig.username,
+      password: routerOSConfig.password,
+      useSsl: routerOSConfig.useSsl,
+      port: routerOSConfig.port,
+    });
+
+    const stats = await client.getInterfaceStats(interfaceName as string);
+
+    return res.json({
+      success: true,
+      interfaces: stats,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch interface statistics",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get RouterOS PPPoE active connections
+ */
+export const getRouterOSPPPoEConnections: RequestHandler = async (req, res) => {
+  try {
+    if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "RouterOS connection not configured",
+        error: "Please configure RouterOS connection first",
+      });
+    }
+
+    const client = createRouterOSClient({
+      apiUrl: routerOSConfig.apiUrl,
+      username: routerOSConfig.username,
+      password: routerOSConfig.password,
+      useSsl: routerOSConfig.useSsl,
+      port: routerOSConfig.port,
+    });
+
+    const connections = await client.getPPPoEConnections();
+
+    return res.json({
+      success: true,
+      connections,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch PPPoE connections",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get RouterOS Hotspot active users
+ */
+export const getRouterOSHotspotUsers: RequestHandler = async (req, res) => {
+  try {
+    if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "RouterOS connection not configured",
+        error: "Please configure RouterOS connection first",
+      });
+    }
+
+    const client = createRouterOSClient({
+      apiUrl: routerOSConfig.apiUrl,
+      username: routerOSConfig.username,
+      password: routerOSConfig.password,
+      useSsl: routerOSConfig.useSsl,
+      port: routerOSConfig.port,
+    });
+
+    const users = await client.getHotspotUsers();
+
+    return res.json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch Hotspot users",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get RouterOS queue information
+ */
+export const getRouterOSQueues: RequestHandler = async (req, res) => {
+  try {
+    if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "RouterOS connection not configured",
+        error: "Please configure RouterOS connection first",
+      });
+    }
+
+    const client = createRouterOSClient({
+      apiUrl: routerOSConfig.apiUrl,
+      username: routerOSConfig.username,
+      password: routerOSConfig.password,
+      useSsl: routerOSConfig.useSsl,
+      port: routerOSConfig.port,
+    });
+
+    const queues = await client.getQueues();
+
+    return res.json({
+      success: true,
+      queues,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch queue information",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
