@@ -71,7 +71,17 @@ export default function Layout({ children }: LayoutProps) {
       ],
     },
     { path: "/payments", label: "Payments", icon: DollarSign },
-    { path: "/mikrotik", label: "Mikrotik ISP", icon: Wifi },
+    {
+      label: "Mikrotik ISP",
+      icon: Wifi,
+      subItems: [
+        { path: "/mikrotik", label: "Dashboard", icon: TrendingUp },
+        { path: "/mikrotik/accounts", label: "Accounts", icon: Users },
+        { path: "/mikrotik/billing", label: "Billing", icon: DollarSign },
+        { path: "/mikrotik/monitoring", label: "Monitoring", icon: TrendingUp },
+        { path: "/mikrotik/management", label: "Management", icon: Settings },
+      ],
+    },
     { path: "/reports", label: "Reports", icon: FileText },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
