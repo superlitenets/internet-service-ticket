@@ -554,7 +554,7 @@ export default function TicketsPage() {
                       key={ticket.id}
                       className="hover:bg-muted/30 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-semibold text-primary">
+                      <td className="px-6 py-4 text-sm font-semibold text-primary whitespace-nowrap">
                         {ticket.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
