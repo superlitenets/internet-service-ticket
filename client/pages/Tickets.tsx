@@ -380,25 +380,6 @@ export default function TicketsPage() {
     }
   };
 
-  const handleStatusChange = (ticketId: string, newStatus: string) => {
-    const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
-    if (!ticketToUpdate) return;
-
-    const updatedTicket: Ticket = {
-      ...ticketToUpdate,
-      status: newStatus as "open" | "in-progress" | "pending" | "resolved",
-      updatedAt: new Date().toLocaleString(),
-    };
-
-    setAllTickets((prev) =>
-      prev.map((t) => (t.id === ticketId ? updatedTicket : t))
-    );
-
-    toast({
-      title: "Success",
-      description: `Ticket status updated to ${newStatus}`,
-    });
-  };
 
   const handleDelete = (ticketId: string) => {
     setAllTickets((prev) => prev.filter((t) => t.id !== ticketId));
