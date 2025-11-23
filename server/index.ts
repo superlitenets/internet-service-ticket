@@ -14,6 +14,10 @@ import {
   syncZKtecoAttendance,
   getZKtecoRealtime,
 } from "./routes/hrm";
+import {
+  handleSendWhatsApp,
+  testWhatsAppConnection,
+} from "./routes/whatsapp";
 
 export function createServer() {
   const app = express();
@@ -55,6 +59,10 @@ export function createServer() {
   app.post("/api/hrm/zkteco/test", testZKtecoConnection);
   app.post("/api/hrm/zkteco/sync", syncZKtecoAttendance);
   app.get("/api/hrm/zkteco/realtime/:deviceId", getZKtecoRealtime);
+
+  // WhatsApp API endpoints
+  app.post("/api/whatsapp/send", handleSendWhatsApp);
+  app.post("/api/whatsapp/test", testWhatsAppConnection);
 
   return app;
 }
