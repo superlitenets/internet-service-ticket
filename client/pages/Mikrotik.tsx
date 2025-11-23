@@ -1471,7 +1471,7 @@ export default function MikrotikPage() {
                 </div>
 
                 {/* Bandwidth Stats */}
-                {averageUsage && (
+                {averageUsage && averageUsage.downloadMBps !== undefined && (
                   <div className="border rounded-lg p-4 space-y-4">
                     <h4 className="font-medium text-foreground">
                       24-Hour Usage Statistics
@@ -1483,7 +1483,7 @@ export default function MikrotikPage() {
                           Avg Download
                         </p>
                         <p className="text-lg font-bold text-foreground">
-                          {averageUsage.downloadMBps.toFixed(2)} Mbps
+                          {(averageUsage.downloadMBps || 0).toFixed(2)} Mbps
                         </p>
                       </div>
                       <div>
@@ -1491,17 +1491,17 @@ export default function MikrotikPage() {
                           Avg Upload
                         </p>
                         <p className="text-lg font-bold text-foreground">
-                          {averageUsage.uploadMBps.toFixed(2)} Mbps
+                          {(averageUsage.uploadMBps || 0).toFixed(2)} Mbps
                         </p>
                       </div>
-                      {peakUsage && (
+                      {peakUsage && peakUsage.downloadMBps !== undefined && (
                         <>
                           <div>
                             <p className="text-xs text-muted-foreground">
                               Peak Download
                             </p>
                             <p className="text-lg font-bold text-foreground">
-                              {peakUsage.downloadMBps.toFixed(2)} Mbps
+                              {(peakUsage.downloadMBps || 0).toFixed(2)} Mbps
                             </p>
                           </div>
                           <div>
@@ -1509,7 +1509,7 @@ export default function MikrotikPage() {
                               Peak Upload
                             </p>
                             <p className="text-lg font-bold text-foreground">
-                              {peakUsage.uploadMBps.toFixed(2)} Mbps
+                              {(peakUsage.uploadMBps || 0).toFixed(2)} Mbps
                             </p>
                           </div>
                         </>
@@ -2020,40 +2020,40 @@ export default function MikrotikPage() {
                 </div>
 
                 {/* Key Metrics */}
-                {analyticsData && (
+                {analyticsData && analyticsData.revenue && analyticsData.accounts && analyticsData.payments && analyticsData.bandwidth && (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
                         <p className="text-xs text-blue-600 font-medium">Total Revenue</p>
                         <p className="text-2xl font-bold text-blue-900 mt-1">
-                          KES {(analyticsData.revenue.totalRevenue / 1000).toFixed(0)}K
+                          KES {((analyticsData.revenue.totalRevenue || 0) / 1000).toFixed(0)}K
                         </p>
                         <p className="text-xs text-blue-600 mt-1">
-                          Paid: {(analyticsData.revenue.paidRevenue / 1000).toFixed(0)}K
+                          Paid: {((analyticsData.revenue.paidRevenue || 0) / 1000).toFixed(0)}K
                         </p>
                       </div>
                       <div className="p-4 rounded-lg bg-green-50 border border-green-200">
                         <p className="text-xs text-green-600 font-medium">Total Accounts</p>
                         <p className="text-2xl font-bold text-green-900 mt-1">
-                          {analyticsData.accounts.totalAccounts}
+                          {analyticsData.accounts.totalAccounts || 0}
                         </p>
                         <p className="text-xs text-green-600 mt-1">
-                          Active: {analyticsData.accounts.activeAccounts}
+                          Active: {analyticsData.accounts.activeAccounts || 0}
                         </p>
                       </div>
                       <div className="p-4 rounded-lg bg-purple-50 border border-purple-200">
                         <p className="text-xs text-purple-600 font-medium">Success Rate</p>
                         <p className="text-2xl font-bold text-purple-900 mt-1">
-                          {analyticsData.payments.successRate.toFixed(1)}%
+                          {((analyticsData.payments.successRate || 0).toFixed(1))}%
                         </p>
                         <p className="text-xs text-purple-600 mt-1">
-                          {analyticsData.payments.successfulPayments} successful
+                          {analyticsData.payments.successfulPayments || 0} successful
                         </p>
                       </div>
                       <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
                         <p className="text-xs text-orange-600 font-medium">Avg Bandwidth</p>
                         <p className="text-2xl font-bold text-orange-900 mt-1">
-                          {analyticsData.bandwidth.averageUserBandwidth.toFixed(0)} GB
+                          {((analyticsData.bandwidth.averageUserBandwidth || 0).toFixed(0))} GB
                         </p>
                         <p className="text-xs text-orange-600 mt-1">per account</p>
                       </div>
