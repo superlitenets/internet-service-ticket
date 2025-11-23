@@ -7,6 +7,7 @@ import {
   LogOut,
   Users,
   Home,
+  Package,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/tickets", label: "Tickets", icon: BarChart3 },
     { path: "/customers", label: "Customers", icon: Users },
     { path: "/team", label: "Team", icon: Users },
+    { path: "/inventory", label: "Inventory", icon: Package },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
