@@ -102,17 +102,13 @@ export default function MikrotikAccountsPage() {
 
     try {
       setLoading(true);
-      const prefix = getCompanyPrefix();
-      const newAccount = await createMikrotikAccount(selectedInstance.id, {
-        ...formData,
-        accountNumber: `${prefix}-ACC-${Date.now()}`,
-        status: "active",
-        balance: 0,
-        totalPaid: 0,
-        outstandingBalance: 0,
-        registrationDate: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+      const newAccount = await createMikrotikAccount({
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail,
+        customerPhone: formData.customerPhone,
+        accountType: formData.accountType,
+        planId: formData.planId,
+        instanceId: selectedInstance.id,
       });
 
       setAccounts((prev) => [...prev, newAccount]);
