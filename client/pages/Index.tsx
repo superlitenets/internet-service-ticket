@@ -247,83 +247,71 @@ export default function Dashboard() {
               </Link>
             </div>
 
-            <Card className="border-0 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border bg-muted/30">
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        ID
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        Customer
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        Title
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        Priority
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                        Assigned
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {recentTickets.map((ticket) => (
-                      <tr
-                        key={ticket.id}
-                        className="hover:bg-muted/30 transition-colors"
-                      >
-                        <td className="px-6 py-4 text-sm font-semibold text-primary">
-                          <Link
-                            to={`/tickets/${ticket.id}`}
-                            className="hover:underline"
-                          >
-                            {ticket.id}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
+            <div className="space-y-3">
+              {recentTickets.map((ticket) => (
+                <Link key={ticket.id} to={`/tickets/${ticket.id}`}>
+                  <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                      {/* ID and Customer */}
+                      <div className="lg:col-span-2">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">
+                          Ticket ID
+                        </p>
+                        <p className="font-semibold text-primary">
+                          {ticket.id}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
                           {ticket.customer}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
+                        </p>
+                      </div>
+
+                      {/* Title */}
+                      <div className="lg:col-span-2">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">
+                          Issue
+                        </p>
+                        <p className="text-sm text-foreground line-clamp-2">
                           {ticket.title}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Badge
-                            variant="outline"
-                            className={`gap-1.5 ${getStatusColor(
-                              ticket.status,
-                            )}`}
-                          >
-                            {getStatusIcon(ticket.status)}
-                            {ticket.status === "in-progress"
-                              ? "In Progress"
-                              : ticket.status.charAt(0).toUpperCase() +
-                                ticket.status.slice(1)}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Badge
-                            variant="secondary"
-                            className={getPriorityColor(ticket.priority)}
-                          >
-                            {ticket.priority.charAt(0).toUpperCase() +
-                              ticket.priority.slice(1)}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-muted-foreground">
+                        </p>
+                      </div>
+
+                      {/* Status and Priority */}
+                      <div className="space-y-2">
+                        <Badge
+                          variant="outline"
+                          className={`gap-1.5 ${getStatusColor(
+                            ticket.status,
+                          )}`}
+                        >
+                          {getStatusIcon(ticket.status)}
+                          {ticket.status === "in-progress"
+                            ? "In Progress"
+                            : ticket.status.charAt(0).toUpperCase() +
+                              ticket.status.slice(1)}
+                        </Badge>
+                        <Badge
+                          variant="secondary"
+                          className={getPriorityColor(ticket.priority)}
+                        >
+                          {ticket.priority.charAt(0).toUpperCase() +
+                            ticket.priority.slice(1)}
+                        </Badge>
+                      </div>
+
+                      {/* Assigned To */}
+                      <div className="flex items-center justify-between lg:justify-start">
+                        <p className="text-xs font-medium text-muted-foreground mb-1 lg:hidden">
+                          Assigned
+                        </p>
+                        <p className="text-sm text-muted-foreground">
                           {ticket.assignedTo}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Sidebar */}
