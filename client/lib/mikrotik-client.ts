@@ -371,3 +371,195 @@ export async function getMikrotikStats(): Promise<{
     );
   }
 }
+
+/**
+ * Get RouterOS configuration
+ */
+export async function getRouterOSConfig(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/config");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch RouterOS configuration");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch RouterOS configuration"
+    );
+  }
+}
+
+/**
+ * Update RouterOS configuration
+ */
+export async function updateRouterOSConfig(data: {
+  apiUrl: string;
+  username: string;
+  password: string;
+  port?: number;
+  useSsl?: boolean;
+  interfaceName?: string;
+}): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update RouterOS configuration");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to update RouterOS configuration"
+    );
+  }
+}
+
+/**
+ * Test RouterOS connection
+ */
+export async function testRouterOSConnection(data: {
+  apiUrl: string;
+  username: string;
+  password: string;
+  port?: number;
+  useSsl?: boolean;
+}): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to test RouterOS connection");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to test RouterOS connection"
+    );
+  }
+}
+
+/**
+ * Get RouterOS device information
+ */
+export async function getRouterOSDeviceInfo(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/device-info");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch device information");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch device information"
+    );
+  }
+}
+
+/**
+ * Get RouterOS interface statistics
+ */
+export async function getRouterOSInterfaceStats(
+  interfaceName?: string
+): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/routeros/interfaces", window.location.origin);
+    if (interfaceName) {
+      url.searchParams.append("interfaceName", interfaceName);
+    }
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch interface statistics");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch interface statistics"
+    );
+  }
+}
+
+/**
+ * Get RouterOS PPPoE connections
+ */
+export async function getRouterOSPPPoEConnections(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/pppoe");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch PPPoE connections");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch PPPoE connections"
+    );
+  }
+}
+
+/**
+ * Get RouterOS Hotspot users
+ */
+export async function getRouterOSHotspotUsers(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/hotspot");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch Hotspot users");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch Hotspot users"
+    );
+  }
+}
+
+/**
+ * Get RouterOS queues
+ */
+export async function getRouterOSQueues(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/routeros/queues");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch queues");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch queues"
+    );
+  }
+}
