@@ -48,9 +48,15 @@ export default function Layout({ children }: LayoutProps) {
 
   const navItems: NavItem[] = [
     { path: "/", label: "Dashboard", icon: Home },
-    { path: "/tickets", label: "Tickets", icon: BarChart3 },
-    { path: "/customers", label: "Customers", icon: Users },
-    { path: "/team", label: "Team", icon: Users },
+    {
+      label: "Tasks",
+      icon: TicketIcon,
+      subItems: [
+        { path: "/tickets", label: "Tickets", icon: BarChart3 },
+        { path: "/customers", label: "Customers", icon: Users },
+        { path: "/team", label: "Team", icon: Users },
+      ],
+    },
     { path: "/inventory", label: "Inventory", icon: Package },
     {
       label: "HR",
