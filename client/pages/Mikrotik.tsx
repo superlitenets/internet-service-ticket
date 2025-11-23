@@ -231,6 +231,14 @@ export default function MikrotikPage() {
         console.error("Failed to load plans:", err);
       }
 
+      // Load invoices
+      try {
+        const invoicesData = await getAllInvoices();
+        setInvoices(invoicesData);
+      } catch (err) {
+        console.error("Failed to load invoices:", err);
+      }
+
       // Load stats
       try {
         const statsData = await getMikrotikStats();
