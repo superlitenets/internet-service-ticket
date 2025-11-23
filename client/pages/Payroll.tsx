@@ -30,10 +30,59 @@ import {
   User,
   Calendar,
 } from "lucide-react";
-import type { PayrollRecord } from "@shared/api";
+import type { PayrollRecord, AttendanceRecord } from "@shared/api";
+import { getDeductionSettings } from "@/lib/deduction-settings-storage";
+import {
+  calculateMonthlyDeductions,
+  getDeductionSummary,
+} from "@/lib/deduction-calculator";
 
 export default function PayrollPage() {
   const { toast } = useToast();
+
+  // Mock attendance data for deduction calculations
+  const mockAttendanceData: AttendanceRecord[] = [
+    {
+      id: "ATT-001",
+      employeeId: "EMP-001",
+      employeeName: "John Smith",
+      checkInTime: "09:00 AM",
+      checkOutTime: "05:45 PM",
+      date: "2024-01-10",
+      status: "late",
+      biometricSource: "zkteco40",
+      duration: 555,
+      createdAt: "2024-01-10 09:00 AM",
+      updatedAt: "2024-01-10 05:45 PM",
+    },
+    {
+      id: "ATT-002",
+      employeeId: "EMP-001",
+      employeeName: "John Smith",
+      checkInTime: "08:50 AM",
+      checkOutTime: "06:00 PM",
+      date: "2024-01-15",
+      status: "present",
+      biometricSource: "zkteco40",
+      duration: 550,
+      createdAt: "2024-01-15 08:50 AM",
+      updatedAt: "2024-01-15 06:00 PM",
+    },
+    {
+      id: "ATT-003",
+      employeeId: "EMP-002",
+      employeeName: "Maria Garcia",
+      checkInTime: "09:30 AM",
+      checkOutTime: "06:00 PM",
+      date: "2024-01-20",
+      status: "late",
+      biometricSource: "zkteco40",
+      duration: 510,
+      createdAt: "2024-01-20 09:30 AM",
+      updatedAt: "2024-01-20 06:00 PM",
+    },
+  ];
+
   const [allRecords, setAllRecords] = useState<PayrollRecord[]>([
     {
       id: "PAY-001",
@@ -122,7 +171,19 @@ export default function PayrollPage() {
   };
 
   const getTotalPayroll = () => {
-    return filteredRecords.reduce((sum, record) => sum + record.netSalary, 0);
+    return filteredRecords.reduce((sum, record) => {
+      let deduction = 0;
+      const deductionDetail = monthlyDeductions.get(record.employeeId);
+      if (deductionDetail) {
+        deduction = deductionDetail.deductionAmount;
+      }
+      return sum + (record.netSalary - deduction);
+    }, 0);
+  };
+
+  const getEmployeeDeduction = (employeeId: string): number => {
+    const deductionDetail = monthlyDeductions.get(employeeId);
+    return deductionDetail ? deductionDetail.deductionAmount : 0;
   };
 
   const handleOpenDialog = (record?: PayrollRecord) => {
