@@ -51,7 +51,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/", label: "Dashboard", icon: Home },
     {
       label: "Tasks",
-      icon: TicketIcon,
+      icon: CheckSquare,
       subItems: [
         { path: "/tickets", label: "Tickets", icon: BarChart3 },
         { path: "/customers", label: "Customers", icon: Users },
