@@ -95,6 +95,7 @@ import { getCompanyPrefix } from "@/lib/company-settings-storage";
 
 export default function MikrotikPage() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
