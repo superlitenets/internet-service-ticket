@@ -528,7 +528,7 @@ export default function MikrotikPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dashboard" className="gap-2">
               <TrendingUp size={16} />
               <span className="hidden sm:inline">Dashboard</span>
@@ -544,6 +544,10 @@ export default function MikrotikPage() {
             <TabsTrigger value="plans" className="gap-2">
               <DollarSign size={16} />
               <span className="hidden sm:inline">Plans</span>
+            </TabsTrigger>
+            <TabsTrigger value="bandwidth" className="gap-2">
+              <TrendingUp size={16} />
+              <span className="hidden sm:inline">Bandwidth</span>
             </TabsTrigger>
             <TabsTrigger value="routeros" className="gap-2">
               <Network size={16} />
