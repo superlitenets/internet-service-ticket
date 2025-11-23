@@ -68,9 +68,13 @@ export default function PayrollPage() {
   ]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<PayrollRecord | null>(null);
+  const [editingRecord, setEditingRecord] = useState<PayrollRecord | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "draft" | "approved" | "paid" | "pending">("all");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "draft" | "approved" | "paid" | "pending"
+  >("all");
   const [filterMonth, setFilterMonth] = useState("all");
 
   const [formData, setFormData] = useState({
@@ -87,10 +91,10 @@ export default function PayrollPage() {
     const matchesSearch =
       record.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       record.employeeId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || record.status === filterStatus;
+    const matchesStatus =
+      filterStatus === "all" || record.status === filterStatus;
     const matchesMonth =
-      filterMonth === "all" ||
-      `${record.month}-${record.year}` === filterMonth;
+      filterMonth === "all" || `${record.month}-${record.year}` === filterMonth;
     return matchesSearch && matchesStatus && matchesMonth;
   });
 
@@ -153,11 +157,7 @@ export default function PayrollPage() {
   };
 
   const handleSaveRecord = () => {
-    if (
-      !formData.employeeId ||
-      !formData.month ||
-      formData.baseSalary === 0
-    ) {
+    if (!formData.employeeId || !formData.month || formData.baseSalary === 0) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -178,8 +178,8 @@ export default function PayrollPage() {
                 netSalary,
                 updatedAt: new Date().toLocaleString(),
               }
-            : r
-        )
+            : r,
+        ),
       );
       toast({
         title: "Success",
@@ -213,8 +213,8 @@ export default function PayrollPage() {
               status: "approved" as const,
               updatedAt: new Date().toLocaleString(),
             }
-          : r
-      )
+          : r,
+      ),
     );
     toast({
       title: "Success",
@@ -232,8 +232,8 @@ export default function PayrollPage() {
               paymentDate: new Date().toISOString().split("T")[0],
               updatedAt: new Date().toLocaleString(),
             }
-          : r
-      )
+          : r,
+      ),
     );
     toast({
       title: "Success",
@@ -319,7 +319,14 @@ export default function PayrollPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as "all" | "draft" | "approved" | "paid" | "pending")}>
+            <Select
+              value={filterStatus}
+              onValueChange={(value) =>
+                setFilterStatus(
+                  value as "all" | "draft" | "approved" | "paid" | "pending",
+                )
+              }
+            >
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
@@ -335,8 +342,13 @@ export default function PayrollPage() {
           <div className="space-y-3">
             {filteredRecords.length === 0 ? (
               <div className="text-center py-8">
-                <DollarSign size={32} className="mx-auto text-muted-foreground mb-2" />
-                <p className="text-muted-foreground">No payroll records found</p>
+                <DollarSign
+                  size={32}
+                  className="mx-auto text-muted-foreground mb-2"
+                />
+                <p className="text-muted-foreground">
+                  No payroll records found
+                </p>
               </div>
             ) : (
               filteredRecords.map((record) => (
@@ -389,7 +401,9 @@ export default function PayrollPage() {
                         {record.paymentDate && (
                           <div>
                             <p className="text-muted-foreground">Paid On</p>
-                            <p className="font-semibold">{record.paymentDate}</p>
+                            <p className="font-semibold">
+                              {record.paymentDate}
+                            </p>
                           </div>
                         )}
                       </div>

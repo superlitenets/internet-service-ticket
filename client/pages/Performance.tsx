@@ -48,11 +48,7 @@ export default function PerformancePage() {
       teamwork: 85,
       communication: 88,
       comments: "Excellent performer with strong technical skills",
-      strengths: [
-        "Problem solving",
-        "Technical expertise",
-        "Customer focus",
-      ],
+      strengths: ["Problem solving", "Technical expertise", "Customer focus"],
       improvements: ["Documentation", "Time management"],
       status: "completed",
       createdAt: "2024-01-01 10:00 AM",
@@ -79,7 +75,9 @@ export default function PerformancePage() {
   ]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingReview, setEditingReview] = useState<PerformanceReview | null>(null);
+  const [editingReview, setEditingReview] = useState<PerformanceReview | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
 
   const [formData, setFormData] = useState({
@@ -171,8 +169,8 @@ export default function PerformancePage() {
                 status: "submitted" as const,
                 updatedAt: new Date().toLocaleString(),
               }
-            : r
-        )
+            : r,
+        ),
       );
       toast({
         title: "Success",
@@ -205,8 +203,8 @@ export default function PerformancePage() {
               status: "completed" as const,
               updatedAt: new Date().toLocaleString(),
             }
-          : r
-      )
+          : r,
+      ),
     );
     toast({
       title: "Success",
@@ -257,7 +255,9 @@ export default function PerformancePage() {
           </Card>
           <Card className="p-4 border-0 shadow-sm">
             <p className="text-sm text-muted-foreground mb-1">Average Rating</p>
-            <p className={`text-2xl font-bold ${getRatingColor(parseFloat(averageRating as string) || 0)}`}>
+            <p
+              className={`text-2xl font-bold ${getRatingColor(parseFloat(averageRating as string) || 0)}`}
+            >
               {averageRating}
               <Star size={16} className="inline ml-1" />
             </p>
@@ -288,8 +288,13 @@ export default function PerformancePage() {
           <div className="space-y-4">
             {filteredReviews.length === 0 ? (
               <div className="text-center py-8">
-                <TrendingUp size={32} className="mx-auto text-muted-foreground mb-2" />
-                <p className="text-muted-foreground">No performance reviews found</p>
+                <TrendingUp
+                  size={32}
+                  className="mx-auto text-muted-foreground mb-2"
+                />
+                <p className="text-muted-foreground">
+                  No performance reviews found
+                </p>
               </div>
             ) : (
               filteredReviews.map((review) => (
@@ -310,7 +315,9 @@ export default function PerformancePage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`text-3xl font-bold ${getRatingColor(review.rating)}`}>
+                      <p
+                        className={`text-3xl font-bold ${getRatingColor(review.rating)}`}
+                      >
                         {review.rating}
                       </p>
                       <p className="text-xs text-muted-foreground">/ 5.0</p>
@@ -340,7 +347,9 @@ export default function PerformancePage() {
                           style={{ width: `${review.productivity}%` }}
                         />
                       </div>
-                      <p className="font-semibold mt-1">{review.productivity}%</p>
+                      <p className="font-semibold mt-1">
+                        {review.productivity}%
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Teamwork</p>
@@ -360,7 +369,9 @@ export default function PerformancePage() {
                           style={{ width: `${review.communication}%` }}
                         />
                       </div>
-                      <p className="font-semibold mt-1">{review.communication}%</p>
+                      <p className="font-semibold mt-1">
+                        {review.communication}%
+                      </p>
                     </div>
                   </div>
 
@@ -370,7 +381,11 @@ export default function PerformancePage() {
                         <p className="text-muted-foreground mb-1">Strengths</p>
                         <div className="flex flex-wrap gap-1">
                           {review.strengths.map((strength, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs">
+                            <Badge
+                              key={idx}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {strength}
                             </Badge>
                           ))}
@@ -384,7 +399,11 @@ export default function PerformancePage() {
                         </p>
                         <div className="flex flex-wrap gap-1">
                           {review.improvements.map((improvement, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                            <Badge
+                              key={idx}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {improvement}
                             </Badge>
                           ))}
@@ -421,7 +440,9 @@ export default function PerformancePage() {
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingReview ? "Edit Performance Review" : "Create Performance Review"}
+                {editingReview
+                  ? "Edit Performance Review"
+                  : "Create Performance Review"}
               </DialogTitle>
               <DialogDescription>
                 {editingReview
@@ -626,7 +647,7 @@ export default function PerformancePage() {
                         setFormData({
                           ...formData,
                           strengths: formData.strengths.filter(
-                            (_, i) => i !== idx
+                            (_, i) => i !== idx,
                           ),
                         });
                       }}
@@ -675,7 +696,7 @@ export default function PerformancePage() {
                         setFormData({
                           ...formData,
                           improvements: formData.improvements.filter(
-                            (_, i) => i !== idx
+                            (_, i) => i !== idx,
                           ),
                         });
                       }}

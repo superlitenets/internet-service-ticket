@@ -11,17 +11,18 @@ import type {
 /**
  * Get all employees
  */
-export const getEmployees: RequestHandler<unknown, { employees: Employee[] }> = (
-  _req,
-  res,
-) => {
+export const getEmployees: RequestHandler<
+  unknown,
+  { employees: Employee[] }
+> = (_req, res) => {
   try {
     // In production, this would fetch from a database
     const employees: Employee[] = [];
     res.json({ employees });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Failed to fetch employees",
+      error:
+        error instanceof Error ? error.message : "Failed to fetch employees",
     });
   }
 };
@@ -52,7 +53,8 @@ export const createEmployee: RequestHandler<unknown, unknown, Employee> = (
     });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Failed to create employee",
+      error:
+        error instanceof Error ? error.message : "Failed to create employee",
     });
   }
 };
@@ -69,7 +71,8 @@ export const getAttendance: RequestHandler<
     res.json({ attendance });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Failed to fetch attendance",
+      error:
+        error instanceof Error ? error.message : "Failed to fetch attendance",
     });
   }
 };
@@ -86,7 +89,10 @@ export const getLeaveRequests: RequestHandler<
     res.json({ requests });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Failed to fetch leave requests",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch leave requests",
     });
   }
 };
@@ -120,7 +126,10 @@ export const getPerformance: RequestHandler<
     res.json({ reviews });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : "Failed to fetch performance reviews",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch performance reviews",
     });
   }
 };
@@ -161,7 +170,8 @@ export const testZKtecoConnection: RequestHandler<
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : "Failed to connect to device",
+      message:
+        error instanceof Error ? error.message : "Failed to connect to device",
     });
   }
 };
@@ -213,7 +223,8 @@ export const syncZKtecoAttendance: RequestHandler<
     res.status(500).json({
       success: false,
       recordsImported: 0,
-      message: error instanceof Error ? error.message : "Failed to sync attendance",
+      message:
+        error instanceof Error ? error.message : "Failed to sync attendance",
       timestamp: new Date().toISOString(),
     });
   }

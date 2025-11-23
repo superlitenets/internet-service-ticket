@@ -67,9 +67,13 @@ export default function LeavePage() {
   ]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRequest, setEditingRequest] = useState<LeaveRequest | null>(null);
+  const [editingRequest, setEditingRequest] = useState<LeaveRequest | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
 
   const [formData, setFormData] = useState({
     employeeId: "",
@@ -153,8 +157,8 @@ export default function LeavePage() {
                 duration,
                 updatedAt: new Date().toLocaleString(),
               }
-            : r
-        )
+            : r,
+        ),
       );
       toast({
         title: "Success",
@@ -190,8 +194,8 @@ export default function LeavePage() {
               approvalDate: new Date().toISOString().split("T")[0],
               updatedAt: new Date().toLocaleString(),
             }
-          : r
-      )
+          : r,
+      ),
     );
     toast({
       title: "Success",
@@ -208,8 +212,8 @@ export default function LeavePage() {
               status: "rejected" as const,
               updatedAt: new Date().toLocaleString(),
             }
-          : r
-      )
+          : r,
+      ),
     );
     toast({
       title: "Success",
@@ -246,7 +250,9 @@ export default function LeavePage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Leave Management</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Leave Management
+            </h1>
             <p className="text-muted-foreground mt-1">
               Manage employee leave requests and approvals
             </p>
@@ -294,7 +300,9 @@ export default function LeavePage() {
             <Select
               value={filterStatus}
               onValueChange={(value) =>
-                setFilterStatus(value as "all" | "pending" | "approved" | "rejected")
+                setFilterStatus(
+                  value as "all" | "pending" | "approved" | "rejected",
+                )
               }
             >
               <SelectTrigger className="w-40">
@@ -312,7 +320,10 @@ export default function LeavePage() {
           <div className="space-y-3">
             {filteredRequests.length === 0 ? (
               <div className="text-center py-8">
-                <Calendar size={32} className="mx-auto text-muted-foreground mb-2" />
+                <Calendar
+                  size={32}
+                  className="mx-auto text-muted-foreground mb-2"
+                />
                 <p className="text-muted-foreground">No leave requests found</p>
               </div>
             ) : (
@@ -441,7 +452,12 @@ export default function LeavePage() {
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        leaveType: value as "annual" | "sick" | "maternity" | "unpaid" | "compassionate",
+                        leaveType: value as
+                          | "annual"
+                          | "sick"
+                          | "maternity"
+                          | "unpaid"
+                          | "compassionate",
                       })
                     }
                   >
@@ -491,7 +507,9 @@ export default function LeavePage() {
               {formData.startDate && formData.endDate && (
                 <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
                   <p className="text-sm text-blue-800">
-                    Duration: {calculateDuration(formData.startDate, formData.endDate)} days
+                    Duration:{" "}
+                    {calculateDuration(formData.startDate, formData.endDate)}{" "}
+                    days
                   </p>
                 </div>
               )}

@@ -130,8 +130,7 @@ export default function CustomersPage() {
 
     const matchesStatus =
       statusFilter === "all" || customer.status === statusFilter;
-    const matchesPlan =
-      planFilter === "all" || customer.plan === planFilter;
+    const matchesPlan = planFilter === "all" || customer.plan === planFilter;
 
     return matchesSearch && matchesStatus && matchesPlan;
   });
@@ -184,10 +183,8 @@ export default function CustomersPage() {
     if (editingCustomer) {
       setCustomers((prev) =>
         prev.map((c) =>
-          c.id === editingCustomer.id
-            ? { ...c, ...formData }
-            : c
-        )
+          c.id === editingCustomer.id ? { ...c, ...formData } : c,
+        ),
       );
       toast({
         title: "Success",
@@ -360,7 +357,9 @@ export default function CustomersPage() {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Status</span>
+                    <span className="text-xs text-muted-foreground">
+                      Status
+                    </span>
                     <Badge
                       className={getStatusColor(customer.status)}
                       variant="secondary"
@@ -596,10 +595,7 @@ export default function CustomersPage() {
             </div>
 
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleSave}>
@@ -610,7 +606,10 @@ export default function CustomersPage() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <Dialog
+          open={!!deleteConfirm}
+          onOpenChange={() => setDeleteConfirm(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Customer</DialogTitle>
@@ -620,17 +619,12 @@ export default function CustomersPage() {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(null)}
-              >
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                onClick={() =>
-                  deleteConfirm && handleDelete(deleteConfirm)
-                }
+                onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
               >
                 Delete
               </Button>

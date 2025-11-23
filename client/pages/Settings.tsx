@@ -49,11 +49,13 @@ export default function SettingsPage() {
   const [visibleKey, setVisibleKey] = useState<string | null>(null);
 
   // SMS Settings State
-  const [smsSettings, setSmsSettings] = useState<SmsSettings & {
-    apiKey?: string;
-    partnerId?: string;
-    shortcode?: string;
-  }>({
+  const [smsSettings, setSmsSettings] = useState<
+    SmsSettings & {
+      apiKey?: string;
+      partnerId?: string;
+      shortcode?: string;
+    }
+  >({
     provider: "twilio",
     accountSid: "",
     authToken: "",
@@ -232,7 +234,11 @@ export default function SettingsPage() {
 
       // Check provider-specific credentials
       if (smsSettings.provider === "twilio") {
-        if (!smsSettings.accountSid || !smsSettings.authToken || !smsSettings.fromNumber) {
+        if (
+          !smsSettings.accountSid ||
+          !smsSettings.authToken ||
+          !smsSettings.fromNumber
+        ) {
           toast({
             title: "Error",
             description: "Please configure all Twilio credentials",
@@ -241,7 +247,11 @@ export default function SettingsPage() {
           return;
         }
       } else if (smsSettings.provider === "advanta") {
-        if (!smsSettings.apiKey || !smsSettings.partnerId || !smsSettings.shortcode) {
+        if (
+          !smsSettings.apiKey ||
+          !smsSettings.partnerId ||
+          !smsSettings.shortcode
+        ) {
           toast({
             title: "Error",
             description: "Please configure all Advanta SMS credentials",
@@ -396,10 +406,15 @@ export default function SettingsPage() {
                         </label>
                         <div className="relative">
                           <Input
-                            type={visibleKey === "authToken" ? "text" : "password"}
+                            type={
+                              visibleKey === "authToken" ? "text" : "password"
+                            }
                             value={smsSettings.authToken}
                             onChange={(e) =>
-                              handleSmsSettingChange("authToken", e.target.value)
+                              handleSmsSettingChange(
+                                "authToken",
+                                e.target.value,
+                              )
                             }
                             placeholder="Your auth token"
                           />
@@ -628,7 +643,11 @@ export default function SettingsPage() {
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {template.variables.map((variable) => (
-                            <Badge key={variable} variant="outline" className="text-xs">
+                            <Badge
+                              key={variable}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {`{{${variable}}}`}
                             </Badge>
                           ))}

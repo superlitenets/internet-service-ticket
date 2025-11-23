@@ -18,12 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus,
   Search,
@@ -87,7 +82,9 @@ export default function InventoryPage() {
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false);
-  const [selectedItemForAssignment, setSelectedItemForAssignment] = useState<string | null>(null);
+  const [selectedItemForAssignment, setSelectedItemForAssignment] = useState<
+    string | null
+  >(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -182,7 +179,9 @@ export default function InventoryPage() {
     },
   ]);
 
-  const [assignmentRequests, setAssignmentRequests] = useState<AssignmentRequest[]>([
+  const [assignmentRequests, setAssignmentRequests] = useState<
+    AssignmentRequest[]
+  >([
     {
       id: "req_001",
       itemId: "inv_001",
@@ -263,10 +262,8 @@ export default function InventoryPage() {
     if (editingItem) {
       setInventoryItems((prev) =>
         prev.map((item) =>
-          item.id === editingItem.id
-            ? { ...item, ...formData }
-            : item
-        )
+          item.id === editingItem.id ? { ...item, ...formData } : item,
+        ),
       );
       setHistory((prev) => [
         ...prev,
@@ -351,8 +348,8 @@ export default function InventoryPage() {
               assignedTo: assignmentFormData.customerId,
               quantity: Math.max(0, i.quantity - 1),
             }
-          : i
-      )
+          : i,
+      ),
     );
 
     setAssignmentRequests((prev) => [
@@ -394,11 +391,7 @@ export default function InventoryPage() {
 
   const handleApproveRequest = (requestId: string) => {
     setAssignmentRequests((prev) =>
-      prev.map((r) =>
-        r.id === requestId
-          ? { ...r, status: "approved" }
-          : r
-      )
+      prev.map((r) => (r.id === requestId ? { ...r, status: "approved" } : r)),
     );
     toast({
       title: "Success",
@@ -453,7 +446,7 @@ export default function InventoryPage() {
 
   const totalInventoryValue = inventoryItems.reduce(
     (sum, item) => sum + item.quantity * item.costPerUnit,
-    0
+    0,
   );
 
   const lowStockItems = inventoryItems.filter((item) => item.quantity <= 5);
@@ -549,7 +542,11 @@ export default function InventoryPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-1 md:grid-cols-4 gap-2">
             <TabsTrigger value="inventory" className="gap-2">
               <Package size={16} />
@@ -604,7 +601,10 @@ export default function InventoryPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={conditionFilter} onValueChange={setConditionFilter}>
+                <Select
+                  value={conditionFilter}
+                  onValueChange={setConditionFilter}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Conditions" />
                   </SelectTrigger>
@@ -697,7 +697,10 @@ export default function InventoryPage() {
                             )}
                           </td>
                           <td className="px-6 py-4 text-sm font-medium text-foreground">
-                            ${(item.quantity * item.costPerUnit).toLocaleString()}
+                            $
+                            {(
+                              item.quantity * item.costPerUnit
+                            ).toLocaleString()}
                           </td>
                           <td className="px-6 py-4 text-sm">
                             <div className="flex gap-2">
@@ -790,10 +793,7 @@ export default function InventoryPage() {
                             {item.createdAt}
                           </td>
                           <td className="px-6 py-4 text-sm">
-                            <Badge
-                              className="gap-1"
-                              variant="secondary"
-                            >
+                            <Badge className="gap-1" variant="secondary">
                               <CheckCircle2 size={14} />
                               Active
                             </Badge>
@@ -831,27 +831,33 @@ export default function InventoryPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {history.slice().reverse().map((h) => (
-                      <tr key={h.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="px-6 py-4 text-sm font-semibold text-primary">
-                          {h.itemId}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Badge variant="outline">
-                            {h.action.toUpperCase()}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          {h.details}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-muted-foreground">
-                          {h.performedBy}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-muted-foreground">
-                          {h.timestamp}
-                        </td>
-                      </tr>
-                    ))}
+                    {history
+                      .slice()
+                      .reverse()
+                      .map((h) => (
+                        <tr
+                          key={h.id}
+                          className="hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-sm font-semibold text-primary">
+                            {h.itemId}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <Badge variant="outline">
+                              {h.action.toUpperCase()}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            {h.details}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            {h.performedBy}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            {h.timestamp}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
@@ -887,7 +893,10 @@ export default function InventoryPage() {
                   </thead>
                   <tbody className="divide-y divide-border">
                     {assignmentRequests.map((req) => (
-                      <tr key={req.id} className="hover:bg-muted/30 transition-colors">
+                      <tr
+                        key={req.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
                         <td className="px-6 py-4 text-sm font-medium text-foreground">
                           {req.itemName}
                         </td>
@@ -965,7 +974,14 @@ export default function InventoryPage() {
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        type: value as "router" | "modem" | "cable" | "ont" | "cpe" | "splitter" | "other",
+                        type: value as
+                          | "router"
+                          | "modem"
+                          | "cable"
+                          | "ont"
+                          | "cpe"
+                          | "splitter"
+                          | "other",
                       })
                     }
                   >
@@ -1122,7 +1138,10 @@ export default function InventoryPage() {
         </Dialog>
 
         {/* Assignment Dialog */}
-        <Dialog open={assignmentDialogOpen} onOpenChange={setAssignmentDialogOpen}>
+        <Dialog
+          open={assignmentDialogOpen}
+          onOpenChange={setAssignmentDialogOpen}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Assign Equipment</DialogTitle>
@@ -1193,7 +1212,10 @@ export default function InventoryPage() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <Dialog
+          open={!!deleteConfirm}
+          onOpenChange={() => setDeleteConfirm(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Equipment</DialogTitle>

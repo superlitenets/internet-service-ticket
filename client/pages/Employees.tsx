@@ -169,8 +169,8 @@ export default function EmployeesPage() {
                 ...formData,
                 updatedAt: new Date().toLocaleString(),
               }
-            : e
-        )
+            : e,
+        ),
       );
       toast({
         title: "Success",
@@ -221,7 +221,10 @@ export default function EmployeesPage() {
           <div className="flex gap-4 mb-6">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                  size={18}
+                />
                 <Input
                   placeholder="Search by name, email, or ID..."
                   value={searchTerm}
@@ -230,7 +233,10 @@ export default function EmployeesPage() {
                 />
               </div>
             </div>
-            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+            <Select
+              value={filterDepartment}
+              onValueChange={setFilterDepartment}
+            >
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
@@ -248,7 +254,10 @@ export default function EmployeesPage() {
           <div className="space-y-4">
             {filteredEmployees.length === 0 ? (
               <div className="text-center py-8">
-                <Users size={32} className="mx-auto text-muted-foreground mb-2" />
+                <Users
+                  size={32}
+                  className="mx-auto text-muted-foreground mb-2"
+                />
                 <p className="text-muted-foreground">No employees found</p>
               </div>
             ) : (
@@ -286,11 +295,17 @@ export default function EmployeesPage() {
                           {employee.phone}
                         </div>
                         <div className="flex items-center gap-2">
-                          <Calendar size={14} className="text-muted-foreground" />
+                          <Calendar
+                            size={14}
+                            className="text-muted-foreground"
+                          />
                           Joined {employee.dateOfJoining}
                         </div>
                         <div className="flex items-center gap-2">
-                          <DollarSign size={14} className="text-muted-foreground" />
+                          <DollarSign
+                            size={14}
+                            className="text-muted-foreground"
+                          />
                           ${employee.salary.toLocaleString()}
                         </div>
                       </div>

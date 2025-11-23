@@ -45,11 +45,15 @@ export async function connectZKtecoDevice(
       );
     }
 
-    const data = (await response.json()) as { attendance: BiometricAttendance[] };
+    const data = (await response.json()) as {
+      attendance: BiometricAttendance[];
+    };
     return data.attendance;
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : "Failed to connect to ZKteco device";
+      error instanceof Error
+        ? error.message
+        : "Failed to connect to ZKteco device";
     throw new Error(errorMessage);
   }
 }
@@ -57,9 +61,7 @@ export async function connectZKtecoDevice(
 /**
  * Sync attendance from ZKteco device
  */
-export async function syncZKtecoAttendance(
-  deviceId: string,
-): Promise<{
+export async function syncZKtecoAttendance(deviceId: string): Promise<{
   success: boolean;
   recordsImported: number;
   message: string;
@@ -137,7 +139,9 @@ export async function getRealTimeAttendance(
       throw new Error(`Failed to get real-time data: ${response.statusText}`);
     }
 
-    const data = (await response.json()) as { attendance: BiometricAttendance[] };
+    const data = (await response.json()) as {
+      attendance: BiometricAttendance[];
+    };
     return data.attendance;
   } catch (error) {
     const errorMessage =

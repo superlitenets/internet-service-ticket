@@ -114,9 +114,7 @@ export default function TeamPage() {
       role: "admin",
       department: "Administration",
       status: "online",
-      permissions: [
-        "all",
-      ],
+      permissions: ["all"],
       assignedTickets: 0,
       joinedDate: "2023-12-01",
     },
@@ -184,10 +182,8 @@ export default function TeamPage() {
     if (editingMember) {
       setTeamMembers((prev) =>
         prev.map((m) =>
-          m.id === editingMember.id
-            ? { ...m, ...formData }
-            : m
-        )
+          m.id === editingMember.id ? { ...m, ...formData } : m,
+        ),
       );
       toast({
         title: "Success",
@@ -531,7 +527,11 @@ export default function TeamPage() {
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        role: value as "admin" | "manager" | "technician" | "support",
+                        role: value as
+                          | "admin"
+                          | "manager"
+                          | "technician"
+                          | "support",
                       })
                     }
                   >
@@ -598,10 +598,7 @@ export default function TeamPage() {
             </div>
 
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleSave}>
@@ -612,7 +609,10 @@ export default function TeamPage() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <Dialog
+          open={!!deleteConfirm}
+          onOpenChange={() => setDeleteConfirm(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Remove Team Member</DialogTitle>
@@ -622,17 +622,12 @@ export default function TeamPage() {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(null)}
-              >
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                onClick={() =>
-                  deleteConfirm && handleDelete(deleteConfirm)
-                }
+                onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
               >
                 Remove
               </Button>

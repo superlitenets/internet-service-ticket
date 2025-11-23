@@ -22,7 +22,13 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Ticket Created - Customer",
     message:
       "Hi {{customerName}}, your support ticket #{{ticketId}} has been created. Issue: {{title}}. Your technician {{technicianName}} will contact you at {{technicianPhone}}. Thank you!",
-    variables: ["customerName", "ticketId", "title", "technicianName", "technicianPhone"],
+    variables: [
+      "customerName",
+      "ticketId",
+      "title",
+      "technicianName",
+      "technicianPhone",
+    ],
   },
   {
     id: "template_ticket_created_technician",
@@ -31,7 +37,14 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Ticket Created - Technician",
     message:
       "New ticket #{{ticketId}} for you. Customer: {{customerName}} ({{customerPhone}}) at {{customerLocation}}. Priority: {{priority}}. Issue: {{title}}.",
-    variables: ["ticketId", "customerName", "customerPhone", "customerLocation", "priority", "title"],
+    variables: [
+      "ticketId",
+      "customerName",
+      "customerPhone",
+      "customerLocation",
+      "priority",
+      "title",
+    ],
   },
   {
     id: "template_ticket_assigned_customer",
@@ -40,7 +53,12 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Ticket Assigned - Customer",
     message:
       "Hi {{customerName}}, your ticket #{{ticketId}} has been assigned to {{technicianName}}. Contact: {{technicianPhone}}. They will reach out shortly.",
-    variables: ["customerName", "ticketId", "technicianName", "technicianPhone"],
+    variables: [
+      "customerName",
+      "ticketId",
+      "technicianName",
+      "technicianPhone",
+    ],
   },
   {
     id: "template_ticket_assigned_technician",
@@ -49,7 +67,14 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Ticket Assigned - Technician",
     message:
       "Assigned ticket #{{ticketId}} - {{customerName}} ({{customerPhone}}) at {{customerLocation}}. Priority: {{priority}}. {{title}}.",
-    variables: ["ticketId", "customerName", "customerPhone", "customerLocation", "priority", "title"],
+    variables: [
+      "ticketId",
+      "customerName",
+      "customerPhone",
+      "customerLocation",
+      "priority",
+      "title",
+    ],
   },
   {
     id: "template_ticket_status_change_customer",

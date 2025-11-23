@@ -38,7 +38,8 @@ export const handleSendSms: RequestHandler<
       if (!accountSid || !authToken || !fromNumber) {
         return res.status(400).json({
           success: false,
-          message: "Missing Twilio credentials: accountSid, authToken, fromNumber",
+          message:
+            "Missing Twilio credentials: accountSid, authToken, fromNumber",
           timestamp: new Date().toISOString(),
           error: "Invalid credentials",
         });
@@ -47,7 +48,8 @@ export const handleSendSms: RequestHandler<
       if (!apiKey || !partnerId || !shortcode) {
         return res.status(400).json({
           success: false,
-          message: "Missing Advanta SMS credentials: apiKey, partnerId, shortcode",
+          message:
+            "Missing Advanta SMS credentials: apiKey, partnerId, shortcode",
           timestamp: new Date().toISOString(),
           error: "Invalid credentials",
         });

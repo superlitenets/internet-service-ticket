@@ -261,8 +261,8 @@ export default function TicketsPage() {
                 ...formData,
                 updatedAt: new Date().toLocaleString(),
               }
-            : t
-        )
+            : t,
+        ),
       );
       toast({
         title: "Success",
@@ -301,7 +301,7 @@ export default function TicketsPage() {
     };
 
     setAllTickets((prev) =>
-      prev.map((t) => (t.id === ticketId ? updatedTicket : t))
+      prev.map((t) => (t.id === ticketId ? updatedTicket : t)),
     );
 
     // Send SMS notifications for assignment
@@ -319,11 +319,15 @@ export default function TicketsPage() {
         t.id === ticketId
           ? {
               ...t,
-              status: newStatus as "open" | "in-progress" | "pending" | "resolved",
+              status: newStatus as
+                | "open"
+                | "in-progress"
+                | "pending"
+                | "resolved",
               updatedAt: new Date().toLocaleString(),
             }
-          : t
-      )
+          : t,
+      ),
     );
     toast({
       title: "Success",
@@ -361,8 +365,8 @@ export default function TicketsPage() {
         prev.map((t) =>
           t.id === ticket.id
             ? { ...t, smsNotificationsSent: t.smsNotificationsSent + 1 }
-            : t
-        )
+            : t,
+        ),
       );
 
       toast({
@@ -379,7 +383,6 @@ export default function TicketsPage() {
       setSendingSms(false);
     }
   };
-
 
   const handleDelete = (ticketId: string) => {
     setAllTickets((prev) => prev.filter((t) => t.id !== ticketId));
@@ -600,7 +603,9 @@ export default function TicketsPage() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Unassigned">Unassigned</SelectItem>
+                            <SelectItem value="Unassigned">
+                              Unassigned
+                            </SelectItem>
                             {teamMembers.map((member) => (
                               <SelectItem key={member.name} value={member.name}>
                                 {member.name}
@@ -632,9 +637,7 @@ export default function TicketsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() =>
-                              handleSendSmsNotification(ticket)
-                            }
+                            onClick={() => handleSendSmsNotification(ticket)}
                             disabled={sendingSms}
                             title="Send SMS notification"
                           >
@@ -716,7 +719,10 @@ export default function TicketsPage() {
                     type="email"
                     value={formData.customerEmail}
                     onChange={(e) =>
-                      setFormData({ ...formData, customerEmail: e.target.value })
+                      setFormData({
+                        ...formData,
+                        customerEmail: e.target.value,
+                      })
                     }
                     placeholder="contact@company.com"
                   />
@@ -794,7 +800,11 @@ export default function TicketsPage() {
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        status: value as "open" | "in-progress" | "pending" | "resolved",
+                        status: value as
+                          | "open"
+                          | "in-progress"
+                          | "pending"
+                          | "resolved",
                       })
                     }
                   >
@@ -861,10 +871,7 @@ export default function TicketsPage() {
             </div>
 
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleSave}>
@@ -875,7 +882,10 @@ export default function TicketsPage() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <Dialog
+          open={!!deleteConfirm}
+          onOpenChange={() => setDeleteConfirm(null)}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Ticket</DialogTitle>
@@ -885,17 +895,12 @@ export default function TicketsPage() {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(null)}
-              >
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
                 Cancel
               </Button>
               <Button
                 variant="destructive"
-                onClick={() =>
-                  deleteConfirm && handleDelete(deleteConfirm)
-                }
+                onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
               >
                 Delete
               </Button>

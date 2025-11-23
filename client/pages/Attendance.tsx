@@ -32,7 +32,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import type { AttendanceRecord } from "@shared/api";
-import { syncZKtecoAttendance, testZKtecoConnection } from "@/lib/zkteco-client";
+import {
+  syncZKtecoAttendance,
+  testZKtecoConnection,
+} from "@/lib/zkteco-client";
 
 export default function AttendancePage() {
   const { toast } = useToast();
@@ -69,7 +72,7 @@ export default function AttendancePage() {
   const [syncDialogOpen, setSyncDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [syncing, setSyncing] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -260,8 +263,13 @@ export default function AttendancePage() {
           <div className="space-y-3">
             {filteredRecords.length === 0 ? (
               <div className="text-center py-8">
-                <Clock size={32} className="mx-auto text-muted-foreground mb-2" />
-                <p className="text-muted-foreground">No attendance records found</p>
+                <Clock
+                  size={32}
+                  className="mx-auto text-muted-foreground mb-2"
+                />
+                <p className="text-muted-foreground">
+                  No attendance records found
+                </p>
               </div>
             ) : (
               filteredRecords.map((record) => (
@@ -318,7 +326,8 @@ export default function AttendancePage() {
             <DialogHeader>
               <DialogTitle>Sync ZKteco40 Device</DialogTitle>
               <DialogDescription>
-                Configure and sync attendance data from your ZKteco40 biometric device
+                Configure and sync attendance data from your ZKteco40 biometric
+                device
               </DialogDescription>
             </DialogHeader>
 
@@ -393,8 +402,8 @@ export default function AttendancePage() {
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-sm text-blue-800">
-                  💡 Tip: The default port for ZKteco devices is 4370. Ensure your device
-                  is accessible from your network.
+                  💡 Tip: The default port for ZKteco devices is 4370. Ensure
+                  your device is accessible from your network.
                 </p>
               </div>
             </div>
@@ -441,7 +450,11 @@ export default function AttendancePage() {
                     const name = value.includes("-")
                       ? value.split("-")[1]
                       : "Unknown";
-                    setFormData({ ...formData, employeeId: value, employeeName: name });
+                    setFormData({
+                      ...formData,
+                      employeeId: value,
+                      employeeName: name,
+                    });
                   }}
                 >
                   <SelectTrigger>
@@ -496,7 +509,11 @@ export default function AttendancePage() {
                   onValueChange={(value) =>
                     setFormData({
                       ...formData,
-                      status: value as "present" | "absent" | "late" | "half-day",
+                      status: value as
+                        | "present"
+                        | "absent"
+                        | "late"
+                        | "half-day",
                     })
                   }
                 >
