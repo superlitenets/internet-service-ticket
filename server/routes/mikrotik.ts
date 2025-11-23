@@ -751,14 +751,17 @@ export const getAllInvoices: RequestHandler = (req, res) => {
 /**
  * Get dashboard statistics
  */
-export const getMikrotikStats: RequestHandler = (_req, res) => {
+export const getMikrotikStats: RequestHandler = (req, res) => {
   try {
-    const totalAccounts = accounts.length;
-    const activeAccounts = accounts.filter((a) => a.status === "active").length;
-    const totalRevenue = invoices.reduce((sum, inv) => sum + inv.total, 0);
-    const paidRevenue = payments.reduce((sum, pay) => sum + pay.amount, 0);
-    const pendingPayments = invoices.filter((i) => i.status === "issued").length;
-    const overdueBills = invoices.filter((i) => i.status === "overdue").length;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
+
+    const totalAccounts = data.accounts.length;
+    const activeAccounts = data.accounts.filter((a) => a.status === "active").length;
+    const totalRevenue = data.invoices.reduce((sum, inv) => sum + inv.total, 0);
+    const paidRevenue = data.payments.reduce((sum, pay) => sum + pay.amount, 0);
+    const pendingPayments = data.invoices.filter((i) => i.status === "issued").length;
+    const overdueBills = data.invoices.filter((i) => i.status === "overdue").length;
 
     return res.json({
       totalAccounts,
