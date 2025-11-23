@@ -19,6 +19,9 @@ export async function sendSms(
       accountSid: request.accountSid || savedSettings?.accountSid,
       authToken: request.authToken || savedSettings?.authToken,
       fromNumber: request.fromNumber || savedSettings?.fromNumber,
+      apiKey: request.apiKey || savedSettings?.apiKey,
+      partnerId: request.partnerId || savedSettings?.partnerId,
+      shortcode: request.shortcode || savedSettings?.shortcode,
     };
 
     const response = await fetch("/api/sms/send", {

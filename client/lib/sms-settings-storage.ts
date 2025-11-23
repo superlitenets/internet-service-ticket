@@ -53,15 +53,19 @@ export function clearSmsSettings(): void {
 }
 
 /**
- * Check if SMS settings are properly configured
+ * Check if SMS settings are properly configured based on provider
  */
 export function isSmsConfigured(): boolean {
   const settings = getSmsSettings();
-  return !!(
-    settings &&
-    settings.accountSid &&
-    settings.authToken &&
-    settings.fromNumber &&
-    settings.enabled
-  );
+
+  if (!settings || !settings.enabled) {
+    return false;
+  }
+
+  if (settings.provider === "advanta") {
+    return !!(settings.apiKey && settings.partnerId && settings.shortcode);
+  }
+
+  // For other providers (twilio, vonage, aws, nexmo)
+  return !!(settings.accountSid && settings.authToken && settings.fromNumber);
 }
