@@ -34,6 +34,7 @@ export async function createMikrotikAccount(data: {
   customerPhone: string;
   accountType: string;
   planId: string;
+  prefix?: string;
 }): Promise<MikrotikAccount> {
   try {
     const response = await fetch("/api/mikrotik/accounts", {
