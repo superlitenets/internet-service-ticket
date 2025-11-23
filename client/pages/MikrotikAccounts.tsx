@@ -343,58 +343,23 @@ export default function MikrotikAccountsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  PPPoE Username
-                </label>
-                <Input
-                  required
-                  value={formData.pppoeUsername}
-                  onChange={(e) =>
-                    setFormData({ ...formData, pppoeUsername: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  PPPoE Password
-                </label>
-                <Input
-                  type="password"
-                  required
-                  value={formData.pppoePassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, pppoePassword: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Hotspot Username
-                </label>
-                <Input
-                  value={formData.hotspotUsername}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hotspotUsername: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Hotspot Password
-                </label>
-                <Input
-                  type="password"
-                  value={formData.hotspotPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hotspotPassword: e.target.value })
-                  }
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Account Type</label>
+              <select
+                value={formData.accountType}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    accountType: e.target.value as any,
+                  })
+                }
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="residential">Residential</option>
+                <option value="business">Business</option>
+                <option value="prepaid">Prepaid</option>
+                <option value="postpaid">Postpaid</option>
+              </select>
             </div>
 
             <DialogFooter>
