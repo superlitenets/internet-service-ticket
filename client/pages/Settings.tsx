@@ -2548,6 +2548,238 @@ export default function SettingsPage() {
               </div>
             </Card>
           </TabsContent>
+
+          {/* Mikrotik Instances */}
+          <TabsContent value="mikrotik" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      Mikrotik Instances
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Configure multiple Mikrotik RouterOS instances
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleAddInstance}
+                    className="gap-2"
+                  >
+                    <Plus size={16} />
+                    Add Instance
+                  </Button>
+                </div>
+
+                {/* Instances List */}
+                <div className="space-y-3">
+                  {mikrotikInstances.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No instances configured
+                    </div>
+                  ) : (
+                    mikrotikInstances.map((instance) => (
+                      <div
+                        key={instance.id}
+                        className="border border-border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold text-foreground">
+                                {instance.name}
+                              </h4>
+                              {instance.isDefault && (
+                                <Badge variant="default" className="text-xs">
+                                  Default
+                                </Badge>
+                              )}
+                              {!instance.enabled && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Disabled
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {instance.apiUrl}:{instance.port}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              User: {instance.username}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {!instance.isDefault && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSetDefault(instance.id)}
+                              >
+                                Set Default
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditInstance(instance)}
+                              className="gap-1"
+                            >
+                              <Edit size={14} />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteInstance(instance.id)}
+                              disabled={
+                                mikrotikInstances.length === 1
+                              }
+                              className="gap-1"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Save Button */}
+                <Button
+                  onClick={() => handleSaveSettings("Mikrotik")}
+                  className="w-full gap-2"
+                >
+                  <Save size={16} />
+                  Save All Instances
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Instance Dialog */}
+          <Dialog open={showInstanceDialog} onOpenChange={setShowInstanceDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingInstance ? "Edit Instance" : "Add New Instance"}
+                </DialogTitle>
+                <DialogDescription>
+                  Configure a Mikrotik RouterOS instance
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Instance Name *
+                  </label>
+                  <Input
+                    value={instanceForm.name}
+                    onChange={(e) =>
+                      setInstanceForm({ ...instanceForm, name: e.target.value })
+                    }
+                    placeholder="e.g., Main Router, Backup Router"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    API URL/IP Address *
+                  </label>
+                  <Input
+                    value={instanceForm.apiUrl}
+                    onChange={(e) =>
+                      setInstanceForm({ ...instanceForm, apiUrl: e.target.value })
+                    }
+                    placeholder="192.168.1.1 or example.com"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Port
+                    </label>
+                    <Input
+                      type="number"
+                      value={instanceForm.port}
+                      onChange={(e) =>
+                        setInstanceForm({
+                          ...instanceForm,
+                          port: parseInt(e.target.value) || 8728,
+                        })
+                      }
+                      placeholder="8728"
+                    />
+                  </div>
+
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={instanceForm.useSsl}
+                        onChange={(e) =>
+                          setInstanceForm({
+                            ...instanceForm,
+                            useSsl: e.target.checked,
+                          })
+                        }
+                        className="rounded"
+                      />
+                      <span className="text-sm font-medium text-foreground">
+                        Use SSL
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Username *
+                  </label>
+                  <Input
+                    value={instanceForm.username}
+                    onChange={(e) =>
+                      setInstanceForm({
+                        ...instanceForm,
+                        username: e.target.value,
+                      })
+                    }
+                    placeholder="admin"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Password
+                  </label>
+                  <Input
+                    type={visibleKey === `instance-${editingInstance?.id}` ? "text" : "password"}
+                    value={instanceForm.password}
+                    onChange={(e) =>
+                      setInstanceForm({
+                        ...instanceForm,
+                        password: e.target.value,
+                      })
+                    }
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowInstanceDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveInstance}>
+                  {editingInstance ? "Update Instance" : "Add Instance"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </Tabs>
       </div>
     </Layout>
