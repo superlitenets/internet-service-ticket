@@ -34,6 +34,23 @@ import {
   handleMpesaCallback,
   handleMpesaValidation,
 } from "./routes/mpesa";
+import {
+  getMikrotikAccounts,
+  createMikrotikAccount,
+  getMikrotikAccount,
+  updateMikrotikAccount,
+  deleteMikrotikAccount,
+  getMikrotikPlans,
+  createMikrotikPlan,
+  generateInvoice,
+  getAccountInvoices,
+  recordPayment,
+  getAccountPayments,
+  getAccountUsage,
+  recordUsage,
+  getAllInvoices,
+  getMikrotikStats,
+} from "./routes/mikrotik";
 
 export function createServer() {
   const app = express();
