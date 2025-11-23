@@ -1202,3 +1202,228 @@ export const getMonitoringStatus: RequestHandler = (req, res) => {
     });
   }
 };
+
+/**
+ * Schedule automatic billing for an account
+ */
+export const scheduleBilling: RequestHandler = (req, res) => {
+  try {
+    const { accountId, billingCycleDay = 1 } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Invalid account ID",
+      });
+    }
+
+    const billing = getBillingAutomation();
+    billing.scheduleBilling(accountId, billingCycleDay);
+
+    return res.json({
+      success: true,
+      message: `Automatic billing scheduled for account ${accountId}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to schedule billing",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Cancel automatic billing for an account
+ */
+export const cancelBilling: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const billing = getBillingAutomation();
+    billing.cancelBilling(accountId);
+
+    return res.json({
+      success: true,
+      message: `Automatic billing cancelled for account ${accountId}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to cancel billing",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get billing automation status
+ */
+export const getBillingStatus: RequestHandler = (req, res) => {
+  try {
+    const billing = getBillingAutomation();
+    const status = billing.getAutomationStatus();
+
+    return res.json({
+      success: true,
+      status,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch billing status",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get automation logs
+ */
+export const getAutomationLogs: RequestHandler = (req, res) => {
+  try {
+    const { accountId, limit = 100 } = req.query;
+
+    const billing = getBillingAutomation();
+    const logs = billing.getAutomationLogs(
+      accountId as string | undefined,
+      parseInt(limit as string)
+    );
+
+    return res.json({
+      success: true,
+      logs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch automation logs",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Test billing automation (generates test invoice)
+ */
+export const testBillingAutomation: RequestHandler = async (req, res) => {
+  try {
+    const { accountId } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Invalid account ID",
+      });
+    }
+
+    const billing = getBillingAutomation();
+    const result = await billing.testBillingAutomation(accountId);
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to test billing automation",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Process overdue invoices
+ */
+export const processOverdueInvoices: RequestHandler = async (req, res) => {
+  try {
+    const { overdueDays = 7 } = req.body;
+
+    const billing = getBillingAutomation();
+    const result = await billing.processOverdueInvoices(overdueDays);
+
+    return res.json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process overdue invoices",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Auto-apply credits to invoices
+ */
+export const autoApplyCredits: RequestHandler = async (req, res) => {
+  try {
+    const { accountId } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Invalid account ID",
+      });
+    }
+
+    const billing = getBillingAutomation();
+    const result = await billing.autoApplyCredits(accountId);
+
+    return res.json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to apply credits",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
