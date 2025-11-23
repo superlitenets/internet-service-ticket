@@ -149,5 +149,15 @@ export function createServer() {
   // Statistics
   app.get("/api/mikrotik/stats", getMikrotikStats);
 
+  // RouterOS Integration
+  app.get("/api/mikrotik/routeros/config", getRouterOSConfig);
+  app.put("/api/mikrotik/routeros/config", updateRouterOSConfig);
+  app.post("/api/mikrotik/routeros/test", testRouterOSConnection);
+  app.get("/api/mikrotik/routeros/device-info", getRouterOSDeviceInfo);
+  app.get("/api/mikrotik/routeros/interfaces", getRouterOSInterfaceStats);
+  app.get("/api/mikrotik/routeros/pppoe", getRouterOSPPPoEConnections);
+  app.get("/api/mikrotik/routeros/hotspot", getRouterOSHotspotUsers);
+  app.get("/api/mikrotik/routeros/queues", getRouterOSQueues);
+
   return app;
 }
