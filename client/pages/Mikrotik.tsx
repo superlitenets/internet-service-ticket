@@ -193,12 +193,22 @@ export default function MikrotikPage() {
 
   // Load data on mount
   useEffect(() => {
-    loadData();
-    loadRouterOSConfig();
-    loadMonitoringStatus();
-    loadBillingStatus();
-    loadNotificationStats();
-    loadAnalyticsData();
+    const initializeData = async () => {
+      try {
+        await Promise.allSettled([
+          loadData(),
+          loadRouterOSConfig(),
+          loadMonitoringStatus(),
+          loadBillingStatus(),
+          loadNotificationStats(),
+          loadAnalyticsData(),
+        ]);
+      } catch (error) {
+        console.error("Error during initialization:", error);
+      }
+    };
+
+    initializeData();
   }, []);
 
   const loadData = async () => {
