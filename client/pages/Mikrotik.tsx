@@ -462,6 +462,125 @@ export default function MikrotikPage() {
     }
   };
 
+  const loadMonitoringStatus = async () => {
+    try {
+      const result = await getMonitoringStatus();
+      if (result.success) {
+        setMonitoringStatus(result.status);
+      }
+    } catch (error) {
+      console.error("Failed to load monitoring status:", error);
+    }
+  };
+
+  const handleStartMonitoring = async () => {
+    try {
+      if (!selectedAccountForMonitoring) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      await startBandwidthMonitoring(selectedAccountForMonitoring);
+      toast({
+        title: "Success",
+        description: "Bandwidth monitoring started",
+      });
+      loadMonitoringStatus();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to start monitoring",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStopMonitoring = async () => {
+    try {
+      if (!selectedAccountForMonitoring) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      await stopBandwidthMonitoring(selectedAccountForMonitoring);
+      toast({
+        title: "Success",
+        description: "Bandwidth monitoring stopped",
+      });
+      loadMonitoringStatus();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to stop monitoring",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadBandwidthData = async () => {
+    try {
+      if (!selectedAccountForMonitoring) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      const [historyResult, averageResult, peakResult, alertsResult] = await Promise.all([
+        getBandwidthHistory(selectedAccountForMonitoring, 24),
+        getAverageBandwidthUsage(selectedAccountForMonitoring, 24),
+        getPeakUsageTime(selectedAccountForMonitoring, 24),
+        getAccountQuotaAlerts(selectedAccountForMonitoring),
+      ]);
+
+      if (historyResult.success) {
+        setBandwidthHistory(historyResult.history);
+      }
+      if (averageResult.success) {
+        setAverageUsage(averageResult.average);
+      }
+      if (peakResult.success) {
+        setPeakUsage(peakResult.peakUsage);
+      }
+      if (alertsResult.success) {
+        setQuotaAlerts(alertsResult.alerts);
+      }
+
+      toast({
+        title: "Success",
+        description: "Bandwidth data loaded",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load bandwidth data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
