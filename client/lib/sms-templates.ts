@@ -66,8 +66,8 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     recipientType: "technician",
     name: "Status Change - Technician",
     message:
-      "Ticket #{{ticketId}} status changed to {{status}} by {{updatedBy}}.",
-    variables: ["ticketId", "status", "updatedBy"],
+      "Ticket #{{ticketId}} for {{customerName}} ({{customerPhone}}) status changed to {{status}}.",
+    variables: ["ticketId", "customerName", "customerPhone", "status"],
   },
 ];
 
