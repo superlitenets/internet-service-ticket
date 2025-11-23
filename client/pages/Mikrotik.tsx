@@ -752,6 +752,87 @@ export default function MikrotikPage() {
     }
   };
 
+  const handleSendNotification = async () => {
+    try {
+      if (!selectedInvoiceForNotification) {
+        toast({
+          title: "Error",
+          description: "Please select an invoice",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      const invoice = invoices.find((inv) => inv.id === selectedInvoiceForNotification);
+
+      if (!invoice) {
+        throw new Error("Invoice not found");
+      }
+
+      let result;
+      switch (notificationType) {
+        case "invoice":
+          result = await sendInvoiceNotificationAPI(invoice.accountId, invoice.id);
+          break;
+        case "reminder":
+          result = await sendPaymentReminderNotificationAPI(invoice.accountId, invoice.id);
+          break;
+        case "overdue":
+          result = await sendOverdueNotificationAPI(invoice.accountId, invoice.id);
+          break;
+        default:
+          throw new Error("Unknown notification type");
+      }
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Notification sent successfully",
+        });
+        loadNotificationStats();
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to send notification",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadNotificationLogs = async () => {
+    try {
+      setLoading(true);
+      const result = await getNotificationLogsAPI(undefined, 50);
+      if (result.success) {
+        setNotificationLogs(result.logs);
+        toast({
+          title: "Success",
+          description: "Notification logs loaded",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load logs",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
