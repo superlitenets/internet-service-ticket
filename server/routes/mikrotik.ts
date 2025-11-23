@@ -2100,3 +2100,308 @@ export const generateMonthlyBillingReport: RequestHandler = (req, res) => {
     });
   }
 };
+
+/**
+ * Get RADIUS configuration
+ */
+export const getRADIUSConfig: RequestHandler = (req, res) => {
+  try {
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
+
+    const config = data.radiusConfig || {
+      enabled: false,
+      host: "",
+      port: 1812,
+      sharedSecret: "",
+      syncOnCreate: true,
+      syncOnUpdate: true,
+      syncOnDelete: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Don't expose shared secret
+    const safeConfig = { ...config };
+    delete (safeConfig as any).sharedSecret;
+
+    return res.json(safeConfig);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch RADIUS configuration",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Update RADIUS configuration
+ */
+export const updateRADIUSConfig: RequestHandler = (req, res) => {
+  try {
+    const { instanceId, host, port, sharedSecret, syncOnCreate, syncOnUpdate, syncOnDelete } = req.body;
+    const data = getInstanceData(instanceId);
+
+    if (!host || !port || !sharedSecret) {
+      return res.status(400).json({
+        success: false,
+        message: "Host, port, and shared secret are required",
+        error: "Validation error",
+      });
+    }
+
+    data.radiusConfig = {
+      enabled: true,
+      host,
+      port,
+      sharedSecret,
+      syncOnCreate: syncOnCreate !== false,
+      syncOnUpdate: syncOnUpdate !== false,
+      syncOnDelete: syncOnDelete !== false,
+      createdAt: data.radiusConfig?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const safeConfig = { ...data.radiusConfig };
+    delete (safeConfig as any).sharedSecret;
+
+    return res.json({
+      success: true,
+      message: "RADIUS configuration updated successfully",
+      config: safeConfig,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update RADIUS configuration",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Test RADIUS connection
+ */
+export const testRADIUSConnection: RequestHandler = async (req, res) => {
+  try {
+    const { instanceId, host, port, sharedSecret } = req.body;
+
+    if (!host || !port || !sharedSecret) {
+      return res.status(400).json({
+        success: false,
+        message: "Host, port, and shared secret are required",
+        error: "Validation error",
+      });
+    }
+
+    const radiusClient = getRADIUSClient({
+      enabled: true,
+      host,
+      port,
+      sharedSecret,
+    });
+
+    const result = await radiusClient.testConnection();
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to test RADIUS connection",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Sync account to RADIUS (creates both PPPoE and Hotspot users)
+ */
+export const syncAccountToRADIUS: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
+
+    if (!data.radiusConfig?.enabled) {
+      return res.json({
+        success: false,
+        message: "RADIUS is not enabled",
+        skipped: true,
+      });
+    }
+
+    const account = data.accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Not found",
+      });
+    }
+
+    const radiusClient = getRADIUSClient(data.radiusConfig);
+
+    const users: RADIUSUser[] = [
+      {
+        username: account.pppoeUsername,
+        password: account.pppoePassword,
+        userType: "pppoe",
+      },
+      {
+        username: account.hotspotUsername,
+        password: account.hotspotPassword,
+        userType: "hotspot",
+      },
+    ];
+
+    const result = await radiusClient.createUsers(users);
+
+    return res.json({
+      success: result.success,
+      message: result.message,
+      error: result.error,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to sync account to RADIUS",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Remove account from RADIUS
+ */
+export const removeAccountFromRADIUS: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
+
+    if (!data.radiusConfig?.enabled) {
+      return res.json({
+        success: false,
+        message: "RADIUS is not enabled",
+        skipped: true,
+      });
+    }
+
+    const account = data.accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.json({
+        success: true,
+        message: "Account not found in local database (may already be deleted)",
+        skipped: true,
+      });
+    }
+
+    const radiusClient = getRADIUSClient(data.radiusConfig);
+
+    const result1 = await radiusClient.deleteUser(account.pppoeUsername, "pppoe");
+    const result2 = await radiusClient.deleteUser(account.hotspotUsername, "hotspot");
+
+    return res.json({
+      success: result1.success && result2.success,
+      message: `Deleted PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to remove account from RADIUS",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Suspend account in RADIUS
+ */
+export const suspendAccountInRADIUS: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
+
+    if (!data.radiusConfig?.enabled) {
+      return res.json({
+        success: false,
+        message: "RADIUS is not enabled",
+        skipped: true,
+      });
+    }
+
+    const account = data.accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Not found",
+      });
+    }
+
+    const radiusClient = getRADIUSClient(data.radiusConfig);
+
+    const result1 = await radiusClient.disableUser(account.pppoeUsername);
+    const result2 = await radiusClient.disableUser(account.hotspotUsername);
+
+    return res.json({
+      success: result1.success && result2.success,
+      message: `Suspended PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to suspend account in RADIUS",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Resume account in RADIUS
+ */
+export const resumeAccountInRADIUS: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
+
+    if (!data.radiusConfig?.enabled) {
+      return res.json({
+        success: false,
+        message: "RADIUS is not enabled",
+        skipped: true,
+      });
+    }
+
+    const account = data.accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Not found",
+      });
+    }
+
+    const radiusClient = getRADIUSClient(data.radiusConfig);
+
+    const result1 = await radiusClient.enableUser(account.pppoeUsername);
+    const result2 = await radiusClient.enableUser(account.hotspotUsername);
+
+    return res.json({
+      success: result1.success && result2.success,
+      message: `Resumed PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to resume account in RADIUS",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
