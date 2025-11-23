@@ -754,3 +754,168 @@ export async function getMonitoringStatus(): Promise<any> {
     );
   }
 }
+
+/**
+ * Schedule automatic billing for an account
+ */
+export async function scheduleBilling(
+  accountId: string,
+  billingCycleDay: number = 1
+): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/schedule", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, billingCycleDay }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to schedule billing");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to schedule billing"
+    );
+  }
+}
+
+/**
+ * Cancel automatic billing for an account
+ */
+export async function cancelBillingAutomation(accountId: string): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/cancel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to cancel billing");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to cancel billing"
+    );
+  }
+}
+
+/**
+ * Get billing automation status
+ */
+export async function getBillingAutomationStatus(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/status");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch billing status");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch billing status"
+    );
+  }
+}
+
+/**
+ * Get automation logs
+ */
+export async function fetchAutomationLogs(
+  accountId?: string,
+  limit: number = 100
+): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/billing/logs", window.location.origin);
+    if (accountId) {
+      url.searchParams.append("accountId", accountId);
+    }
+    url.searchParams.append("limit", limit.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch automation logs");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch automation logs"
+    );
+  }
+}
+
+/**
+ * Test billing automation
+ */
+export async function testBillingAutomation(accountId: string): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to test billing automation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to test billing automation"
+    );
+  }
+}
+
+/**
+ * Process overdue invoices
+ */
+export async function processOverdueInvoices(overdueDays: number = 7): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/process-overdue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ overdueDays }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to process overdue invoices");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to process overdue invoices"
+    );
+  }
+}
+
+/**
+ * Auto-apply credits to invoices
+ */
+export async function autoApplyCreditsToInvoices(accountId: string): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/billing/apply-credits", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to apply credits");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to apply credits"
+    );
+  }
+}
