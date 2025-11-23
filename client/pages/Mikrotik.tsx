@@ -1131,7 +1131,8 @@ export default function MikrotikPage() {
                         filteredAccounts.map((account) => (
                           <tr
                             key={account.id}
-                            className="border-b border-border hover:bg-muted/30 transition-colors"
+                            className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                            onClick={() => navigate(`/mikrotik/accounts/${account.id}`)}
                           >
                             <td className="py-3 px-4">
                               <p className="font-medium text-foreground whitespace-nowrap">
