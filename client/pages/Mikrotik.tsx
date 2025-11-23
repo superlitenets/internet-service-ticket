@@ -319,6 +319,132 @@ export default function MikrotikPage() {
     }
   };
 
+  const loadRouterOSConfig = async () => {
+    try {
+      const config = await getRouterOSConfig();
+      setRouterOSConfig(config);
+      setRouterOSConfigForm(config);
+    } catch (error) {
+      console.error("Failed to load RouterOS config:", error);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    try {
+      if (
+        !routerOSConfigForm.apiUrl ||
+        !routerOSConfigForm.username ||
+        !routerOSConfigForm.password
+      ) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setTestingConnection(true);
+      const result = await testRouterOSConnection(routerOSConfigForm);
+
+      if (result.success) {
+        setDeviceInfo(result.deviceInfo);
+        toast({
+          title: "Success",
+          description: result.message,
+        });
+
+        // Save configuration
+        await updateRouterOSConfig(routerOSConfigForm);
+        setRouterOSConfig(routerOSConfigForm);
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to test connection",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
+  const handleLoadDeviceInfo = async () => {
+    try {
+      setLoading(true);
+      const result = await getRouterOSDeviceInfo();
+      if (result.success) {
+        setDeviceInfo(result.deviceInfo);
+        toast({
+          title: "Success",
+          description: "Device information loaded",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load device info",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadInterfaceStats = async () => {
+    try {
+      setLoading(true);
+      const result = await getRouterOSInterfaceStats();
+      if (result.success) {
+        setInterfaceStats(result.interfaces);
+        toast({
+          title: "Success",
+          description: "Interface statistics loaded",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load statistics",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadPPPoEConnections = async () => {
+    try {
+      setLoading(true);
+      const result = await getRouterOSPPPoEConnections();
+      if (result.success) {
+        setPPPoEConnections(result.connections);
+        toast({
+          title: "Success",
+          description: "PPPoE connections loaded",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load connections",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
