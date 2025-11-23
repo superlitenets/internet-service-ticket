@@ -8,6 +8,10 @@ import {
   Users,
   Home,
   Package,
+  Clock,
+  Calendar,
+  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -28,6 +32,13 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/customers", label: "Customers", icon: Users },
     { path: "/team", label: "Team", icon: Users },
     { path: "/inventory", label: "Inventory", icon: Package },
+    // HRM Module
+    { path: "/employees", label: "Employees", icon: Users },
+    { path: "/attendance", label: "Attendance", icon: Clock },
+    { path: "/leave", label: "Leave", icon: Calendar },
+    { path: "/payroll", label: "Payroll", icon: DollarSign },
+    { path: "/performance", label: "Performance", icon: TrendingUp },
+    // Settings
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
