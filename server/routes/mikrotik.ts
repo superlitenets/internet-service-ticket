@@ -15,6 +15,7 @@ import {
 } from "../lib/mikrotik-routeros";
 import { getBandwidthMonitor } from "../lib/mikrotik-bandwidth-monitor";
 import { getBillingAutomation } from "../lib/mikrotik-billing-automation";
+import { getExpirationAutomation } from "../lib/mikrotik-expiration-automation";
 import { getNotificationService } from "../lib/mikrotik-notifications";
 import { getAnalyticsService } from "../lib/mikrotik-analytics";
 import { getRADIUSClient, RADIUSUser, RADIUSResponse } from "../lib/radius-client";
