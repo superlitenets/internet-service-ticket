@@ -1,5 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, BarChart3, Settings, LogOut, Users, Home } from "lucide-react";
+import {
+  Menu,
+  X,
+  BarChart3,
+  Settings,
+  LogOut,
+  Users,
+  Home,
+} from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
       <aside
         className={cn(
           "fixed md:relative z-40 h-screen w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-out",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
       >
         <div className="flex flex-col h-full">
@@ -68,7 +76,7 @@ export default function Layout({ children }: LayoutProps) {
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                   isActive(path)
                     ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
                 <Icon size={20} />
@@ -117,9 +125,7 @@ export default function Layout({ children }: LayoutProps) {
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-background">
-          {children}
-        </div>
+        <div className="flex-1 overflow-auto bg-background">{children}</div>
       </main>
     </div>
   );

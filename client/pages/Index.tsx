@@ -236,11 +236,7 @@ export default function Dashboard() {
                 Recent Tickets
               </h2>
               <Link to="/tickets">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button variant="outline" size="sm" className="gap-2">
                   View all
                   <ChevronRight size={16} />
                 </Button>
@@ -296,7 +292,7 @@ export default function Dashboard() {
                           <Badge
                             variant="outline"
                             className={`gap-1.5 ${getStatusColor(
-                              ticket.status
+                              ticket.status,
                             )}`}
                           >
                             {getStatusIcon(ticket.status)}
@@ -375,9 +371,7 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground">
                       Customer Satisfaction
                     </p>
-                    <p className="text-sm font-semibold text-foreground">
-                      94%
-                    </p>
+                    <p className="text-sm font-semibold text-foreground">94%</p>
                   </div>
                   <div className="w-full bg-muted/50 rounded-full h-2">
                     <div className="bg-accent h-2 rounded-full w-11/12" />
@@ -388,9 +382,7 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground">
                       First Response Rate
                     </p>
-                    <p className="text-sm font-semibold text-foreground">
-                      87%
-                    </p>
+                    <p className="text-sm font-semibold text-foreground">87%</p>
                   </div>
                   <div className="w-full bg-muted/50 rounded-full h-2">
                     <div className="bg-accent h-2 rounded-full w-10/12" />
@@ -401,9 +393,7 @@ export default function Dashboard() {
 
             {/* Upcoming */}
             <Card className="p-6 border-0 shadow-sm">
-              <h3 className="font-semibold text-foreground mb-4">
-                SLA Alerts
-              </h3>
+              <h3 className="font-semibold text-foreground mb-4">SLA Alerts</h3>
               <div className="space-y-3">
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
                   <p className="text-xs font-semibold text-destructive">

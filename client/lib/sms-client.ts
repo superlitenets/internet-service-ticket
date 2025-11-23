@@ -5,7 +5,9 @@ import { SendSmsRequest, SendSmsResponse } from "@shared/api";
  * @param request - SMS request with recipients, message, and optional provider credentials
  * @returns Promise with SMS response
  */
-export async function sendSms(request: SendSmsRequest): Promise<SendSmsResponse> {
+export async function sendSms(
+  request: SendSmsRequest,
+): Promise<SendSmsResponse> {
   try {
     const response = await fetch("/api/sms/send", {
       method: "POST",
@@ -23,7 +25,8 @@ export async function sendSms(request: SendSmsRequest): Promise<SendSmsResponse>
     const data = (await response.json()) as SendSmsResponse;
     return data;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to send SMS";
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to send SMS";
     throw new Error(errorMessage);
   }
 }
@@ -43,7 +46,7 @@ export async function sendSmsToPhone(
     accountSid?: string;
     authToken?: string;
     fromNumber?: string;
-  }
+  },
 ): Promise<SendSmsResponse> {
   return sendSms({
     to: phoneNumber,
@@ -67,7 +70,7 @@ export async function sendSmsBatch(
     accountSid?: string;
     authToken?: string;
     fromNumber?: string;
-  }
+  },
 ): Promise<SendSmsResponse> {
   return sendSms({
     to: phoneNumbers,

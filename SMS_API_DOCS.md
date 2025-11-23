@@ -1,9 +1,11 @@
 # SMS API Documentation
 
 ## Overview
+
 The SMS API provides a simple POST endpoint for sending SMS messages through configured SMS providers (Twilio, Vonage, AWS SNS, Nexmo).
 
 ## Endpoint
+
 ```
 POST /api/sms/send
 ```
@@ -11,11 +13,13 @@ POST /api/sms/send
 ## Request Format
 
 ### Headers
+
 ```
 Content-Type: application/json
 ```
 
 ### Body
+
 ```json
 {
   "to": "+1234567890",
@@ -29,18 +33,19 @@ Content-Type: application/json
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `to` | string \| string[] | Yes | Phone number(s) to send SMS to. Can be single number or array of numbers. Format: +1234567890 or 1234567890 |
-| `message` | string | Yes | SMS message content. Max 1600 characters |
-| `provider` | string | No | SMS provider: "twilio", "vonage", "aws", "nexmo". Default: "twilio" |
-| `accountSid` | string | Yes | Account SID/API Key from your SMS provider |
-| `authToken` | string | Yes | Auth Token/API Secret from your SMS provider |
-| `fromNumber` | string | Yes | Sender phone number registered with your SMS provider |
+| Parameter    | Type               | Required | Description                                                                                                 |
+| ------------ | ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `to`         | string \| string[] | Yes      | Phone number(s) to send SMS to. Can be single number or array of numbers. Format: +1234567890 or 1234567890 |
+| `message`    | string             | Yes      | SMS message content. Max 1600 characters                                                                    |
+| `provider`   | string             | No       | SMS provider: "twilio", "vonage", "aws", "nexmo". Default: "twilio"                                         |
+| `accountSid` | string             | Yes      | Account SID/API Key from your SMS provider                                                                  |
+| `authToken`  | string             | Yes      | Auth Token/API Secret from your SMS provider                                                                |
+| `fromNumber` | string             | Yes      | Sender phone number registered with your SMS provider                                                       |
 
 ## Response Format
 
 ### Success Response (200)
+
 ```json
 {
   "success": true,
@@ -52,6 +57,7 @@ Content-Type: application/json
 ```
 
 ### Error Response (400/500)
+
 ```json
 {
   "success": false,
@@ -66,40 +72,40 @@ Content-Type: application/json
 ### Using JavaScript Client Library
 
 ```typescript
-import { sendSms, sendSmsToPhone, sendSmsBatch } from '@/lib/sms-client';
+import { sendSms, sendSmsToPhone, sendSmsBatch } from "@/lib/sms-client";
 
 // Send single SMS
 const response = await sendSmsToPhone(
-  '+1234567890',
-  'Hello! Your support ticket has been created.',
+  "+1234567890",
+  "Hello! Your support ticket has been created.",
   {
-    provider: 'twilio',
-    accountSid: 'AC1234567890abcdef1234567890abcde',
-    authToken: 'your_auth_token_here',
-    fromNumber: '+1234567890'
-  }
+    provider: "twilio",
+    accountSid: "AC1234567890abcdef1234567890abcde",
+    authToken: "your_auth_token_here",
+    fromNumber: "+1234567890",
+  },
 );
 
 // Send bulk SMS
 const bulkResponse = await sendSmsBatch(
-  ['+1234567890', '+0987654321'],
-  'Maintenance window: 2AM-4AM UTC',
+  ["+1234567890", "+0987654321"],
+  "Maintenance window: 2AM-4AM UTC",
   {
-    provider: 'twilio',
-    accountSid: 'AC1234567890abcdef1234567890abcde',
-    authToken: 'your_auth_token_here',
-    fromNumber: '+1234567890'
-  }
+    provider: "twilio",
+    accountSid: "AC1234567890abcdef1234567890abcde",
+    authToken: "your_auth_token_here",
+    fromNumber: "+1234567890",
+  },
 );
 
 // Using generic sendSms function
 const customResponse = await sendSms({
-  to: ['+1234567890', '+0987654321'],
-  message: 'Your ticket has been assigned',
-  provider: 'vonage',
-  accountSid: 'api_key',
-  authToken: 'api_secret',
-  fromNumber: 'NetFlow'
+  to: ["+1234567890", "+0987654321"],
+  message: "Your ticket has been assigned",
+  provider: "vonage",
+  accountSid: "api_key",
+  authToken: "api_secret",
+  fromNumber: "NetFlow",
 });
 ```
 
@@ -121,27 +127,23 @@ curl -X POST http://localhost:8080/api/sms/send \
 ### Sending to Multiple Recipients
 
 ```typescript
-import { sendSmsBatch } from '@/lib/sms-client';
+import { sendSmsBatch } from "@/lib/sms-client";
 
-const recipients = [
-  '+1234567890',
-  '+0987654321',
-  '+5555555555'
-];
+const recipients = ["+1234567890", "+0987654321", "+5555555555"];
 
 const response = await sendSmsBatch(
   recipients,
-  'Important: Service update scheduled for tonight',
+  "Important: Service update scheduled for tonight",
   {
-    provider: 'twilio',
-    accountSid: 'AC1234567890abcdef1234567890abcde',
-    authToken: 'your_auth_token_here',
-    fromNumber: '+1234567890'
-  }
+    provider: "twilio",
+    accountSid: "AC1234567890abcdef1234567890abcde",
+    authToken: "your_auth_token_here",
+    fromNumber: "+1234567890",
+  },
 );
 
 console.log(`Sent to ${response.recipients} recipients`);
-console.log(`Message IDs: ${response.messageIds.join(', ')}`);
+console.log(`Message IDs: ${response.messageIds.join(", ")}`);
 ```
 
 ## Validation Rules
@@ -162,13 +164,13 @@ console.log(`Message IDs: ${response.messageIds.join(', ')}`);
 
 ### Common Errors
 
-| Error | Status | Cause | Solution |
-|-------|--------|-------|----------|
-| Missing required fields | 400 | 'to' or 'message' not provided | Include both fields in request |
-| Missing SMS provider credentials | 400 | Missing accountSid, authToken, or fromNumber | Provide all credentials |
-| No valid phone numbers | 400 | All phone numbers failed validation | Use E.164 format |
-| Invalid message length | 400 | Message > 1600 chars | Split into multiple messages |
-| Internal server error | 500 | Server-side error during API call | Check logs and credentials |
+| Error                            | Status | Cause                                        | Solution                       |
+| -------------------------------- | ------ | -------------------------------------------- | ------------------------------ |
+| Missing required fields          | 400    | 'to' or 'message' not provided               | Include both fields in request |
+| Missing SMS provider credentials | 400    | Missing accountSid, authToken, or fromNumber | Provide all credentials        |
+| No valid phone numbers           | 400    | All phone numbers failed validation          | Use E.164 format               |
+| Invalid message length           | 400    | Message > 1600 chars                         | Split into multiple messages   |
+| Internal server error            | 500    | Server-side error during API call            | Check logs and credentials     |
 
 ## Integration with Settings Page
 
@@ -192,6 +194,7 @@ The SMS API integrates with the Settings page SMS Provider Configuration:
    - Implement actual API calls instead of mock logging
 
 2. **Environment Variables**: Store credentials securely
+
    ```
    SMS_PROVIDER=twilio
    SMS_ACCOUNT_SID=your_account_sid
@@ -200,8 +203,13 @@ The SMS API integrates with the Settings page SMS Provider Configuration:
    ```
 
 3. **Rate Limiting**: Add rate limiting to prevent abuse
+
    ```typescript
-   app.post('/api/sms/send', rateLimit({ windowMs: 60000, max: 100 }), handleSendSms);
+   app.post(
+     "/api/sms/send",
+     rateLimit({ windowMs: 60000, max: 100 }),
+     handleSendSms,
+   );
    ```
 
 4. **Logging**: Enhanced logging for audit trail
@@ -212,20 +220,20 @@ The SMS API integrates with the Settings page SMS Provider Configuration:
 ## Testing
 
 ### Manual Testing
+
 Use the Settings page to configure SMS credentials, then use the provided client library to send test messages.
 
 ### Automated Testing
-```typescript
-import { describe, it, expect } from 'vitest';
-import { sendSmsToPhone } from '@/lib/sms-client';
 
-describe('SMS API', () => {
-  it('should send SMS to valid phone number', async () => {
-    const response = await sendSmsToPhone(
-      '+1234567890',
-      'Test message',
-      { /* credentials */ }
-    );
+```typescript
+import { describe, it, expect } from "vitest";
+import { sendSmsToPhone } from "@/lib/sms-client";
+
+describe("SMS API", () => {
+  it("should send SMS to valid phone number", async () => {
+    const response = await sendSmsToPhone("+1234567890", "Test message", {
+      /* credentials */
+    });
     expect(response.success).toBe(true);
     expect(response.recipients).toBe(1);
   });

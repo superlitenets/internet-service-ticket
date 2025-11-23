@@ -141,10 +141,7 @@ export default function SettingsPage() {
     setUserSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleNotificationToggle = (
-    type: string,
-    channel: "email" | "sms"
-  ) => {
+  const handleNotificationToggle = (type: string, channel: "email" | "sms") => {
     setNotificationPrefs((prev) => ({
       ...prev,
       [type]: {
@@ -183,7 +180,11 @@ export default function SettingsPage() {
         </div>
 
         {/* Settings Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
             <TabsTrigger value="sms" className="gap-2">
               <MessageSquare size={16} />
@@ -220,8 +221,8 @@ export default function SettingsPage() {
                     SMS Provider Configuration
                   </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Configure your SMS service provider for sending notifications
-                    to customers and technicians
+                    Configure your SMS service provider for sending
+                    notifications to customers and technicians
                   </p>
                 </div>
 
@@ -278,7 +279,7 @@ export default function SettingsPage() {
                       <button
                         onClick={() =>
                           setVisibleKey(
-                            visibleKey === "authToken" ? null : "authToken"
+                            visibleKey === "authToken" ? null : "authToken",
                           )
                         }
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
@@ -317,9 +318,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant={
-                          smsSettings.enabled ? "default" : "secondary"
-                        }
+                        variant={smsSettings.enabled ? "default" : "secondary"}
                         className="gap-1.5"
                       >
                         {smsSettings.enabled ? (
@@ -431,7 +430,9 @@ export default function SettingsPage() {
                                 key as keyof typeof notificationPrefs
                               ].sms
                             }
-                            onChange={() => handleNotificationToggle(key, "sms")}
+                            onChange={() =>
+                              handleNotificationToggle(key, "sms")
+                            }
                             className="w-4 h-4 rounded border-border"
                           />
                           <span className="text-sm text-foreground">SMS</span>
@@ -581,7 +582,10 @@ export default function SettingsPage() {
                       min="1"
                       value={companySettings.slaResponse}
                       onChange={(e) =>
-                        handleCompanySettingChange("slaResponse", e.target.value)
+                        handleCompanySettingChange(
+                          "slaResponse",
+                          e.target.value,
+                        )
                       }
                       placeholder="4"
                     />
@@ -598,7 +602,7 @@ export default function SettingsPage() {
                       onChange={(e) =>
                         handleCompanySettingChange(
                           "slaResolution",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       placeholder="24"

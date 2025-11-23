@@ -5,12 +5,20 @@ import { SendSmsRequest, SendSmsResponse } from "@shared/api";
  * Send SMS messages via configured provider
  * Supports Twilio, Vonage, AWS SNS, and Nexmo
  */
-export const handleSendSms: RequestHandler<unknown, SendSmsResponse, SendSmsRequest> = async (
-  req,
-  res
-) => {
+export const handleSendSms: RequestHandler<
+  unknown,
+  SendSmsResponse,
+  SendSmsRequest
+> = async (req, res) => {
   try {
-    const { to, message, provider = "twilio", accountSid, authToken, fromNumber } = req.body;
+    const {
+      to,
+      message,
+      provider = "twilio",
+      accountSid,
+      authToken,
+      fromNumber,
+    } = req.body;
 
     // Validation
     if (!to || !message) {
@@ -60,7 +68,7 @@ export const handleSendSms: RequestHandler<unknown, SendSmsResponse, SendSmsRequ
 
     // Generate mock message IDs
     const messageIds = validPhoneNumbers.map(
-      () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     );
 
     // Log the SMS request (in production, this would call the actual SMS provider)
@@ -91,7 +99,8 @@ export const handleSendSms: RequestHandler<unknown, SendSmsResponse, SendSmsRequ
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Internal server error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal server error";
 
     console.error("[SMS] Error sending SMS:", errorMessage);
 
