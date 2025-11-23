@@ -207,6 +207,13 @@ export default function MikrotikPage() {
   useEffect(() => {
     const initializeData = async () => {
       try {
+        // Load Mikrotik instances
+        const instances = getMikrotikInstances();
+        setMikrotikInstances(instances);
+
+        const defaultInstance = getDefaultMikrotikInstance();
+        setSelectedInstance(defaultInstance);
+
         await Promise.allSettled([
           loadData(),
           loadRouterOSConfig(),
