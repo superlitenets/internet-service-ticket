@@ -34,6 +34,13 @@ import {
   saveSmsSettings,
   type SmsSettings,
 } from "@/lib/sms-settings-storage";
+import {
+  getSmsTemplates,
+  saveSmsTemplates,
+  updateTemplate,
+  resetSmsTemplates,
+  type SmsTemplate,
+} from "@/lib/sms-templates";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -56,12 +63,21 @@ export default function SettingsPage() {
     enabled: true,
   });
 
-  // Load SMS settings from storage on mount
+  // SMS Templates State
+  const [smsTemplates, setSmsTemplates] = useState<SmsTemplate[]>([]);
+  const [editingTemplate, setEditingTemplate] = useState<SmsTemplate | null>(
+    null,
+  );
+  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+
+  // Load SMS settings and templates from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
       setSmsSettings(saved);
     }
+    const templates = getSmsTemplates();
+    setSmsTemplates(templates);
   }, []);
 
   // Notification Preferences State
@@ -221,10 +237,14 @@ export default function SettingsPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-7 gap-2">
             <TabsTrigger value="sms" className="gap-2">
               <MessageSquare size={16} />
               <span className="hidden sm:inline">SMS</span>
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="gap-2">
+              <MessageSquare size={16} />
+              <span className="hidden sm:inline">Templates</span>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell size={16} />
