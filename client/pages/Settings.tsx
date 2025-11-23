@@ -325,6 +325,20 @@ export default function SettingsPage() {
           variant: "destructive",
         });
       }
+    } else if (section === "Company") {
+      try {
+        saveCompanySettings(companySettings);
+        toast({
+          title: "Success",
+          description: "Company settings saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save company settings.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Success",
