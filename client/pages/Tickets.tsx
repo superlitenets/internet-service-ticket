@@ -148,6 +148,8 @@ export default function TicketsPage() {
         return;
       }
 
+      const technicianPhone = getTechnicianPhone(ticket.assignedTo);
+
       // Send to customer
       const customerTemplate = getTemplate(eventType, "customer");
       if (customerTemplate) {
@@ -156,6 +158,7 @@ export default function TicketsPage() {
           ticketId: ticket.id,
           title: ticket.title,
           technicianName: ticket.assignedTo,
+          technicianPhone: technicianPhone || "N/A",
           status: ticket.status,
           priority: ticket.priority,
         });
@@ -164,23 +167,21 @@ export default function TicketsPage() {
       }
 
       // Send to technician if assigned
-      if (ticket.assignedTo !== "Unassigned") {
+      if (ticket.assignedTo !== "Unassigned" && technicianPhone) {
         const technicianTemplate = getTemplate(eventType, "technician");
         if (technicianTemplate) {
-          const technicianPhone = getTechnicianPhone(ticket.assignedTo);
-          if (technicianPhone) {
-            const technicianMessage = renderTemplate(technicianTemplate, {
-              customerName: ticket.customer,
-              ticketId: ticket.id,
-              title: ticket.title,
-              technicianName: ticket.assignedTo,
-              status: ticket.status,
-              priority: ticket.priority,
-              updatedBy: "System",
-            });
+          const technicianMessage = renderTemplate(technicianTemplate, {
+            customerName: ticket.customer,
+            ticketId: ticket.id,
+            title: ticket.title,
+            technicianName: ticket.assignedTo,
+            technicianPhone: technicianPhone,
+            status: ticket.status,
+            priority: ticket.priority,
+            updatedBy: "System",
+          });
 
-            await sendSmsToPhone(technicianPhone, technicianMessage);
-          }
+          await sendSmsToPhone(technicianPhone, technicianMessage);
         }
       }
     } catch (error) {
