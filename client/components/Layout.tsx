@@ -41,6 +41,8 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/performance", label: "Performance", icon: TrendingUp },
     // Payments
     { path: "/payments", label: "Payments", icon: DollarSign },
+    // ISP Billing
+    { path: "/mikrotik", label: "Mikrotik Billing", icon: Wifi },
     // Settings
     { path: "/settings", label: "Settings", icon: Settings },
   ];
