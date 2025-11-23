@@ -349,51 +349,72 @@ export default function AccountDetail() {
           </Card>
 
           {/* Billing & Service Details */}
-          <Card className="p-6 border-0 shadow-sm">
-            <h2 className="text-xl font-semibold text-foreground mb-6">
-              Billing & Service Details
+          <Card className="p-8 border-0 shadow-sm">
+            <h2 className="text-xl font-bold text-foreground mb-8">
+              Billing & Service
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Plan</p>
-                <p className="font-medium text-foreground">{account.planName}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Monthly Fee
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Plan */}
+              <div className="border-l-4 border-blue-500 pl-6">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Active Plan
                 </p>
-                <p className="font-medium text-foreground">
+                <p className="text-lg font-bold text-foreground mb-1">
+                  {account.planName}
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
                   KES {account.monthlyFee.toLocaleString()}
+                  <span className="text-sm text-muted-foreground font-normal">/month</span>
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Registration Date
+
+              {/* Dates */}
+              <div className="border-l-4 border-purple-500 pl-6">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                  Service Period
                 </p>
-                <p className="font-medium text-foreground">
-                  {new Date(account.registrationDate).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Next Billing Date
-                </p>
-                <div className="flex items-center gap-2">
-                  <p className="font-medium text-foreground">
-                    {account.nextBillingDate
+                <div className="space-y-2">
+                  <p className="text-sm text-foreground">
+                    <span className="font-semibold">From:</span> {new Date(account.registrationDate).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-foreground">
+                    <span className="font-semibold">To:</span> {account.nextBillingDate
                       ? new Date(account.nextBillingDate).toLocaleDateString()
                       : "Not set"}
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowExpiryDialog(true)}
-                    className="gap-1"
-                  >
-                    <Calendar size={14} />
-                  </Button>
                 </div>
+              </div>
+
+              {/* Expiry Action */}
+              <div className="border-l-4 border-amber-500 pl-6 flex flex-col justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Next Renewal
+                  </p>
+                  <p className="text-lg font-bold text-amber-600">
+                    {account.nextBillingDate
+                      ? Math.max(
+                          0,
+                          Math.ceil(
+                            (new Date(account.nextBillingDate).getTime() -
+                              new Date().getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          )
+                        )
+                      : "—"}
+                    <span className="text-sm text-muted-foreground font-normal"> days</span>
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowExpiryDialog(true)}
+                  className="gap-2 w-full justify-center"
+                >
+                  <Calendar size={14} />
+                  Update Date
+                </Button>
               </div>
             </div>
           </Card>
