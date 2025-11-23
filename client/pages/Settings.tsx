@@ -64,6 +64,12 @@ import {
   logoutWhatsAppWeb,
   type WhatsAppMode,
 } from "@/lib/whatsapp-unified-client";
+import {
+  getMpesaSettings,
+  saveMpesaSettings,
+  resetMpesaSettings,
+  type MpesaConfig,
+} from "@/lib/mpesa-settings-storage";
 
 export default function SettingsPage() {
   const { toast } = useToast();
