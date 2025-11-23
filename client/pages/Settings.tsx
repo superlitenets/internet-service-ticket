@@ -75,6 +75,15 @@ import {
   saveCompanySettings,
   type CompanySettings,
 } from "@/lib/company-settings-storage";
+import {
+  getMikrotikInstances,
+  saveMikrotikInstances,
+  addMikrotikInstance,
+  updateMikrotikInstance,
+  deleteMikrotikInstance,
+  setDefaultMikrotikInstance,
+  type MikrotikInstance,
+} from "@/lib/mikrotik-instances-storage";
 
 export default function SettingsPage() {
   const { toast } = useToast();
