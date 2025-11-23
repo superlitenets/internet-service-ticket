@@ -153,9 +153,12 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
+    const accountNumber = `ACC-${accounts.length + 1000}`;
+    const credentials = generatePPPoECredentials(accountNumber);
+
     const newAccount: MikrotikAccount = {
       id: `ACC-${Date.now()}`,
-      accountNumber: `ACC-${accounts.length + 1000}`,
+      accountNumber,
       customerName,
       customerEmail,
       customerPhone,
@@ -169,10 +172,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       totalPaid: 0,
       outstandingBalance: plan.monthlyFee + (plan.activationFee || 0),
       registrationDate: new Date().toISOString(),
-      pppoeUsername: `user_${accounts.length + 1}`,
-      pppoePassword: `pass_${Math.random().toString(36).substring(7)}`,
-      hotspotUsername: `hotspot_${accounts.length + 1}`,
-      hotspotPassword: `hpass_${Math.random().toString(36).substring(7)}`,
+      ...credentials,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
