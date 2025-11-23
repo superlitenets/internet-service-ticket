@@ -17,12 +17,34 @@ import { getBillingAutomation } from "../lib/mikrotik-billing-automation";
 import { getNotificationService } from "../lib/mikrotik-notifications";
 import { getAnalyticsService } from "../lib/mikrotik-analytics";
 
-// In-memory storage (for demo purposes)
-let accounts: MikrotikAccount[] = [];
-let plans: MikrotikPlan[] = [];
-let invoices: MikrotikInvoice[] = [];
-let payments: MikrotikPayment[] = [];
-let usageRecords: MikrotikUsage[] = [];
+// In-memory storage per instance (for demo purposes)
+const instanceData: Record<string, {
+  accounts: MikrotikAccount[];
+  plans: MikrotikPlan[];
+  invoices: MikrotikInvoice[];
+  payments: MikrotikPayment[];
+  usageRecords: MikrotikUsage[];
+}> = {};
+
+// Default instance ID for backwards compatibility
+const DEFAULT_INSTANCE_ID = "default";
+
+/**
+ * Get or initialize data for an instance
+ */
+function getInstanceData(instanceId?: string) {
+  const id = instanceId || DEFAULT_INSTANCE_ID;
+  if (!instanceData[id]) {
+    instanceData[id] = {
+      accounts: [],
+      plans: [],
+      invoices: [],
+      payments: [],
+      usageRecords: [],
+    };
+  }
+  return instanceData[id];
+}
 
 /**
  * Generate secure PPPoE and Hotspot credentials based on account number
@@ -47,10 +69,11 @@ function generatePPPoECredentials(accountNumber: string) {
   };
 }
 
-// Initialize default plans
-function initializeDefaultPlans() {
-  if (plans.length === 0) {
-    plans = [
+// Initialize default plans for an instance
+function initializeDefaultPlans(instanceId?: string) {
+  const data = getInstanceData(instanceId);
+  if (data.plans.length === 0) {
+    data.plans = [
       {
         id: "plan-1",
         planName: "Basic Residential",
