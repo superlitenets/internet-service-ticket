@@ -15,6 +15,7 @@ import {
 import { getBandwidthMonitor } from "../lib/mikrotik-bandwidth-monitor";
 import { getBillingAutomation } from "../lib/mikrotik-billing-automation";
 import { getNotificationService } from "../lib/mikrotik-notifications";
+import { getAnalyticsService } from "../lib/mikrotik-analytics";
 
 // In-memory storage (for demo purposes)
 let accounts: MikrotikAccount[] = [];
