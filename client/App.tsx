@@ -12,6 +12,11 @@ import Customers from "./pages/Customers";
 import Team from "./pages/Team";
 import Inventory from "./pages/Inventory";
 import Settings from "./pages/Settings";
+import Employees from "./pages/Employees";
+import Attendance from "./pages/Attendance";
+import Leave from "./pages/Leave";
+import Payroll from "./pages/Payroll";
+import Performance from "./pages/Performance";
 import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
@@ -23,6 +28,11 @@ const AppRoutes = () => (
     <Route path="/customers" element={<Customers />} />
     <Route path="/team" element={<Team />} />
     <Route path="/inventory" element={<Inventory />} />
+    <Route path="/employees" element={<Employees />} />
+    <Route path="/attendance" element={<Attendance />} />
+    <Route path="/leave" element={<Leave />} />
+    <Route path="/payroll" element={<Payroll />} />
+    <Route path="/performance" element={<Performance />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
