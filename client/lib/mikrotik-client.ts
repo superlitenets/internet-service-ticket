@@ -125,6 +125,35 @@ export async function deleteMikrotikAccount(accountId: string): Promise<void> {
 }
 
 /**
+ * Regenerate PPPoE and Hotspot credentials for an account
+ */
+export async function regenerateAccountCredentials(
+  accountId: string
+): Promise<MikrotikAccount> {
+  try {
+    const response = await fetch(
+      `/api/mikrotik/accounts/${accountId}/regenerate-credentials`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to regenerate credentials");
+    }
+
+    const result = await response.json();
+    return result.account;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to regenerate credentials"
+    );
+  }
+}
+
+/**
  * Get all billing plans
  */
 export async function getMikrotikPlans(): Promise<MikrotikPlan[]> {
