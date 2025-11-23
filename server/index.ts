@@ -184,5 +184,14 @@ export function createServer() {
   app.get("/api/mikrotik/bandwidth/alerts/:accountId", getAccountQuotaAlerts);
   app.get("/api/mikrotik/bandwidth/status", getMonitoringStatus);
 
+  // Automated Billing
+  app.post("/api/mikrotik/billing/schedule", scheduleBilling);
+  app.post("/api/mikrotik/billing/cancel", cancelBilling);
+  app.post("/api/mikrotik/billing/test", testBillingAutomation);
+  app.post("/api/mikrotik/billing/process-overdue", processOverdueInvoices);
+  app.post("/api/mikrotik/billing/apply-credits", autoApplyCredits);
+  app.get("/api/mikrotik/billing/status", getBillingStatus);
+  app.get("/api/mikrotik/billing/logs", getAutomationLogs);
+
   return app;
 }
