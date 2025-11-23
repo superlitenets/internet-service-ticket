@@ -169,12 +169,19 @@ export default function MikrotikPage() {
   const [selectedAccountForBilling, setSelectedAccountForBilling] = useState<string>("");
   const [billingCycleDay, setBillingCycleDay] = useState(1);
 
+  // Notifications State
+  const [notificationStats, setNotificationStats] = useState<any>(null);
+  const [notificationLogs, setNotificationLogs] = useState<any[]>([]);
+  const [selectedInvoiceForNotification, setSelectedInvoiceForNotification] = useState<string>("");
+  const [notificationType, setNotificationType] = useState<string>("invoice");
+
   // Load data on mount
   useEffect(() => {
     loadData();
     loadRouterOSConfig();
     loadMonitoringStatus();
     loadBillingStatus();
+    loadNotificationStats();
   }, []);
 
   const loadData = async () => {
