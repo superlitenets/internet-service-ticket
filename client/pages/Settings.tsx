@@ -50,6 +50,13 @@ import {
   resetDeductionSettings,
   type LateDeductionSettings,
 } from "@/lib/deduction-settings-storage";
+import {
+  getWhatsAppConfig,
+  saveWhatsAppConfig,
+  isWhatsAppConfigured,
+  type WhatsAppConfig,
+} from "@/lib/whatsapp-settings-storage";
+import { testWhatsAppConnection } from "@/lib/whatsapp-client";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -81,6 +88,18 @@ export default function SettingsPage() {
   );
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
 
+  // WhatsApp Settings State
+  const [whatsappSettings, setWhatsappSettings] = useState<WhatsAppConfig>({
+    enabled: false,
+    phoneNumberId: "",
+    accessToken: "",
+    businessAccountId: "",
+    webhookToken: "",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  const [testingWhatsApp, setTestingWhatsApp] = useState(false);
+
   // Deduction Settings State
   const [deductionSettings, setDeductionSettings] = useState<LateDeductionSettings>({
     enabled: false,
@@ -102,7 +121,7 @@ export default function SettingsPage() {
   });
   const [testingSms, setTestingSms] = useState(false);
 
-  // Load SMS settings, templates, and deduction settings from storage on mount
+  // Load SMS settings, templates, deduction settings, and WhatsApp config from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
@@ -112,6 +131,8 @@ export default function SettingsPage() {
     setSmsTemplates(templates);
     const deductions = getDeductionSettings();
     setDeductionSettings(deductions);
+    const whatsappConfig = getWhatsAppConfig();
+    setWhatsappSettings(whatsappConfig);
   }, []);
 
   // Notification Preferences State
@@ -236,11 +257,61 @@ export default function SettingsPage() {
           variant: "destructive",
         });
       }
+    } else if (section === "WhatsApp") {
+      try {
+        saveWhatsAppConfig(whatsappSettings);
+        toast({
+          title: "Success",
+          description: "WhatsApp settings saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save WhatsApp settings.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Success",
         description: `${section} settings saved successfully.`,
       });
+    }
+  };
+
+  const handleTestWhatsApp = async () => {
+    try {
+      setTestingWhatsApp(true);
+
+      if (!whatsappSettings.phoneNumberId || !whatsappSettings.accessToken) {
+        toast({
+          title: "Error",
+          description: "Please configure WhatsApp credentials first",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await testWhatsAppConnection(
+        whatsappSettings.phoneNumberId,
+        whatsappSettings.accessToken,
+      );
+
+      toast({
+        title: "Success",
+        description: result.message,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to test WhatsApp connection",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingWhatsApp(false);
     }
   };
 
