@@ -113,5 +113,33 @@ export function createServer() {
   app.post("/api/mpesa/callback", handleMpesaCallback);
   app.post("/api/mpesa/validation", handleMpesaValidation);
 
+  // Mikrotik ISP Billing endpoints
+  // Accounts
+  app.get("/api/mikrotik/accounts", getMikrotikAccounts);
+  app.post("/api/mikrotik/accounts", createMikrotikAccount);
+  app.get("/api/mikrotik/accounts/:accountId", getMikrotikAccount);
+  app.put("/api/mikrotik/accounts/:accountId", updateMikrotikAccount);
+  app.delete("/api/mikrotik/accounts/:accountId", deleteMikrotikAccount);
+
+  // Plans
+  app.get("/api/mikrotik/plans", getMikrotikPlans);
+  app.post("/api/mikrotik/plans", createMikrotikPlan);
+
+  // Invoicing
+  app.post("/api/mikrotik/invoices", generateInvoice);
+  app.get("/api/mikrotik/invoices", getAllInvoices);
+  app.get("/api/mikrotik/accounts/:accountId/invoices", getAccountInvoices);
+
+  // Payments
+  app.post("/api/mikrotik/payments", recordPayment);
+  app.get("/api/mikrotik/accounts/:accountId/payments", getAccountPayments);
+
+  // Usage
+  app.get("/api/mikrotik/accounts/:accountId/usage", getAccountUsage);
+  app.post("/api/mikrotik/usage", recordUsage);
+
+  // Statistics
+  app.get("/api/mikrotik/stats", getMikrotikStats);
+
   return app;
 }
