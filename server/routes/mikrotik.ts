@@ -281,7 +281,7 @@ export const getMikrotikAccount: RequestHandler = (req, res) => {
 /**
  * Update Mikrotik account
  */
-export const updateMikrotikAccount: RequestHandler = (req, res) => {
+export const updateMikrotikAccount: RequestHandler = async (req, res) => {
   try {
     const { accountId } = req.params;
     const { instanceId, ...updates } = req.body;
@@ -297,7 +297,8 @@ export const updateMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    data.accounts[accountIndex] = {
+    const oldAccount = data.accounts[accountIndex];
+    const newAccount = {
       ...data.accounts[accountIndex],
       ...updates,
       id: data.accounts[accountIndex].id,
@@ -306,10 +307,34 @@ export const updateMikrotikAccount: RequestHandler = (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
+    data.accounts[accountIndex] = newAccount;
+
+    // Sync status changes to RADIUS if enabled
+    let radiusSync: any = { skipped: true };
+    if (data.radiusConfig?.enabled && updates.status && oldAccount.status !== updates.status) {
+      const radiusClient = getRADIUSClient(data.radiusConfig);
+      if (updates.status === "suspended" || updates.status === "closed") {
+        const result1 = await radiusClient.disableUser(oldAccount.pppoeUsername);
+        const result2 = await radiusClient.disableUser(oldAccount.hotspotUsername);
+        radiusSync = {
+          success: result1.success && result2.success,
+          message: `Suspended PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+        };
+      } else if (updates.status === "active") {
+        const result1 = await radiusClient.enableUser(oldAccount.pppoeUsername);
+        const result2 = await radiusClient.enableUser(oldAccount.hotspotUsername);
+        radiusSync = {
+          success: result1.success && result2.success,
+          message: `Resumed PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
+        };
+      }
+    }
+
     return res.json({
       success: true,
       message: "Account updated successfully",
-      account: data.accounts[accountIndex],
+      account: newAccount,
+      radiusSync,
     });
   } catch (error) {
     return res.status(500).json({
