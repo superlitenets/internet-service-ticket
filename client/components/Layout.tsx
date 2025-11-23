@@ -14,10 +14,10 @@ export default function Layout({ children }: LayoutProps) {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: BarChart3 },
-    { path: "/tickets", label: "Tickets", icon: Ticket },
-    { path: "/customers", label: "Customers", icon: BarChart3 },
-    { path: "/team", label: "Team", icon: BarChart3 },
+    { path: "/", label: "Dashboard", icon: Home },
+    { path: "/tickets", label: "Tickets", icon: BarChart3 },
+    { path: "/customers", label: "Customers", icon: Users },
+    { path: "/team", label: "Team", icon: Users },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
