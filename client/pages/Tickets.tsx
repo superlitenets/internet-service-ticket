@@ -33,6 +33,12 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { sendSmsToPhone } from "@/lib/sms-client";
+import {
+  getTemplate,
+  renderTemplate,
+  getSmsTemplates,
+} from "@/lib/sms-templates";
+import { getSmsSettings } from "@/lib/sms-settings-storage";
 
 interface Ticket {
   id: string;
@@ -47,6 +53,11 @@ interface Ticket {
   updatedAt: string;
   assignedTo: string;
   smsNotificationsSent: number;
+}
+
+interface TeamMember {
+  name: string;
+  phone: string;
 }
 
 export default function TicketsPage() {
@@ -115,12 +126,67 @@ export default function TicketsPage() {
     },
   ]);
 
-  const teamMembers = [
-    "Mike Johnson",
-    "Sarah Smith",
-    "Alex Chen",
-    "David Brown",
+  const teamMembers: TeamMember[] = [
+    { name: "Mike Johnson", phone: "+1555111111" },
+    { name: "Sarah Smith", phone: "+1555222222" },
+    { name: "Alex Chen", phone: "+1555333333" },
+    { name: "David Brown", phone: "+1555444444" },
   ];
+
+  const getTechnicianPhone = (technicianName: string): string | undefined => {
+    return teamMembers.find((t) => t.name === technicianName)?.phone;
+  };
+
+  const sendTicketSms = async (
+    eventType: "ticket_created" | "ticket_assigned",
+    ticket: Ticket,
+  ) => {
+    try {
+      const settings = getSmsSettings();
+      if (!settings || !settings.enabled) {
+        console.log("SMS notifications disabled or not configured");
+        return;
+      }
+
+      // Send to customer
+      const customerTemplate = getTemplate(eventType, "customer");
+      if (customerTemplate) {
+        const customerMessage = renderTemplate(customerTemplate, {
+          customerName: ticket.customer,
+          ticketId: ticket.id,
+          title: ticket.title,
+          technicianName: ticket.assignedTo,
+          status: ticket.status,
+          priority: ticket.priority,
+        });
+
+        await sendSmsToPhone(ticket.customerPhone, customerMessage);
+      }
+
+      // Send to technician if assigned
+      if (ticket.assignedTo !== "Unassigned") {
+        const technicianTemplate = getTemplate(eventType, "technician");
+        if (technicianTemplate) {
+          const technicianPhone = getTechnicianPhone(ticket.assignedTo);
+          if (technicianPhone) {
+            const technicianMessage = renderTemplate(technicianTemplate, {
+              customerName: ticket.customer,
+              ticketId: ticket.id,
+              title: ticket.title,
+              technicianName: ticket.assignedTo,
+              status: ticket.status,
+              priority: ticket.priority,
+              updatedBy: "System",
+            });
+
+            await sendSmsToPhone(technicianPhone, technicianMessage);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to send SMS notifications:", error);
+    }
+  };
 
   const filteredTickets = allTickets.filter((ticket) => {
     const matchesSearch =
@@ -165,7 +231,7 @@ export default function TicketsPage() {
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.customer || !formData.title || !formData.description) {
       toast({
         title: "Error",
@@ -200,6 +266,10 @@ export default function TicketsPage() {
         smsNotificationsSent: 0,
       };
       setAllTickets((prev) => [...prev, newTicket]);
+
+      // Send SMS notifications for new ticket
+      await sendTicketSms("ticket_created", newTicket);
+
       toast({
         title: "Success",
         description: "Ticket created successfully",
@@ -209,18 +279,23 @@ export default function TicketsPage() {
     setDialogOpen(false);
   };
 
-  const handleAssignTicket = (ticketId: string, assignee: string) => {
+  const handleAssignTicket = async (ticketId: string, assignee: string) => {
+    const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
+    if (!ticketToUpdate) return;
+
+    const updatedTicket: Ticket = {
+      ...ticketToUpdate,
+      assignedTo: assignee,
+      updatedAt: new Date().toLocaleString(),
+    };
+
     setAllTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId
-          ? {
-              ...t,
-              assignedTo: assignee,
-              updatedAt: new Date().toLocaleString(),
-            }
-          : t
-      )
+      prev.map((t) => (t.id === ticketId ? updatedTicket : t))
     );
+
+    // Send SMS notifications for assignment
+    await sendTicketSms("ticket_assigned", updatedTicket);
+
     toast({
       title: "Success",
       description: `Ticket assigned to ${assignee}`,
