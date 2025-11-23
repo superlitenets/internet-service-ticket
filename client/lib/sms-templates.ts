@@ -39,8 +39,8 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     recipientType: "customer",
     name: "Ticket Assigned - Customer",
     message:
-      "Hi {{customerName}}, your ticket #{{ticketId}} has been assigned to {{technicianName}}. They will contact you shortly.",
-    variables: ["customerName", "ticketId", "technicianName"],
+      "Hi {{customerName}}, your ticket #{{ticketId}} has been assigned to {{technicianName}}. Contact: {{technicianPhone}}. They will reach out shortly.",
+    variables: ["customerName", "ticketId", "technicianName", "technicianPhone"],
   },
   {
     id: "template_ticket_assigned_technician",
