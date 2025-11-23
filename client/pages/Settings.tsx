@@ -790,7 +790,7 @@ export default function SettingsPage() {
                     WhatsApp Configuration
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Configure Meta WhatsApp Business API for sending WhatsApp messages
+                    Configure WhatsApp using Business API, Web, or both with automatic failover
                   </p>
                 </div>
 
@@ -818,142 +818,270 @@ export default function SettingsPage() {
 
                 {whatsappSettings.enabled && (
                   <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Business Account ID
-                        </label>
-                        <Input
-                          type="text"
-                          value={whatsappSettings.businessAccountId}
-                          onChange={(e) =>
-                            setWhatsappSettings({
-                              ...whatsappSettings,
-                              businessAccountId: e.target.value,
-                            })
-                          }
-                          placeholder="Your Business Account ID"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Phone Number ID
-                        </label>
-                        <Input
-                          type="text"
-                          value={whatsappSettings.phoneNumberId}
-                          onChange={(e) =>
-                            setWhatsappSettings({
-                              ...whatsappSettings,
-                              phoneNumberId: e.target.value,
-                            })
-                          }
-                          placeholder="Your Phone Number ID"
-                        />
-                      </div>
-                    </div>
-
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        Access Token
+                        WhatsApp Mode
                       </label>
-                      <div className="relative">
-                        <Input
-                          type={visibleKey === "whatsappToken" ? "text" : "password"}
-                          value={whatsappSettings.accessToken}
-                          onChange={(e) =>
-                            setWhatsappSettings({
-                              ...whatsappSettings,
-                              accessToken: e.target.value,
-                            })
-                          }
-                          placeholder="Your WhatsApp Access Token"
-                        />
-                        <button
-                          onClick={() =>
-                            setVisibleKey(
-                              visibleKey === "whatsappToken"
-                                ? null
-                                : "whatsappToken",
-                            )
-                          }
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        >
-                          {visibleKey === "whatsappToken" ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Get this from Meta App Dashboard → Settings → System User Tokens
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Webhook Token (Optional)
-                      </label>
-                      <Input
-                        type="password"
-                        value={whatsappSettings.webhookToken}
-                        onChange={(e) =>
+                      <Select
+                        value={whatsappSettings.mode}
+                        onValueChange={(value) =>
                           setWhatsappSettings({
                             ...whatsappSettings,
-                            webhookToken: e.target.value,
+                            mode: value as "business" | "web" | "both",
                           })
                         }
-                        placeholder="Webhook verification token"
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="business">Business API Only</SelectItem>
+                          <SelectItem value="web">Web Only</SelectItem>
+                          <SelectItem value="both">Both (with Failover)</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <p className="text-xs text-muted-foreground mt-2">
-                        Used to verify incoming webhooks from WhatsApp
+                        • Business API: Official, recommended, requires Meta credentials
+                        <br />• Web: Works when API unavailable, uses WhatsApp Web
+                        <br />• Both: Try API first, failback to Web if needed
                       </p>
                     </div>
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="text-sm text-blue-900 mb-2">
-                        <strong>Setup Instructions:</strong>
-                      </p>
-                      <ul className="text-sm text-blue-800 list-disc list-inside space-y-1">
-                        <li>
-                          Create a Meta Business Account at{" "}
-                          <a
-                            href="https://business.facebook.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline"
-                          >
-                            business.facebook.com
-                          </a>
-                        </li>
-                        <li>Create a WhatsApp Business App</li>
-                        <li>Get your Phone Number ID from App Dashboard</li>
-                        <li>Generate System User Access Token with whatsapp_business_messaging scope</li>
-                      </ul>
-                    </div>
+                    {(whatsappSettings.mode === "business" ||
+                      whatsappSettings.mode === "both") && (
+                      <>
+                        <div className="border-t pt-6">
+                          <h4 className="font-medium text-foreground mb-4">
+                            Business API Configuration
+                          </h4>
+
+                          <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <label className="block text-sm font-medium text-foreground mb-2">
+                                Business Account ID
+                              </label>
+                              <Input
+                                type="text"
+                                value={whatsappSettings.businessApi.businessAccountId}
+                                onChange={(e) =>
+                                  setWhatsappSettings({
+                                    ...whatsappSettings,
+                                    businessApi: {
+                                      ...whatsappSettings.businessApi,
+                                      businessAccountId: e.target.value,
+                                    },
+                                  })
+                                }
+                                placeholder="Your Business Account ID"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-foreground mb-2">
+                                Phone Number ID
+                              </label>
+                              <Input
+                                type="text"
+                                value={whatsappSettings.businessApi.phoneNumberId}
+                                onChange={(e) =>
+                                  setWhatsappSettings({
+                                    ...whatsappSettings,
+                                    businessApi: {
+                                      ...whatsappSettings.businessApi,
+                                      phoneNumberId: e.target.value,
+                                    },
+                                  })
+                                }
+                                placeholder="Your Phone Number ID"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-foreground mb-2">
+                              Access Token
+                            </label>
+                            <div className="relative">
+                              <Input
+                                type={visibleKey === "whatsappToken" ? "text" : "password"}
+                                value={whatsappSettings.businessApi.accessToken}
+                                onChange={(e) =>
+                                  setWhatsappSettings({
+                                    ...whatsappSettings,
+                                    businessApi: {
+                                      ...whatsappSettings.businessApi,
+                                      accessToken: e.target.value,
+                                    },
+                                  })
+                                }
+                                placeholder="Your WhatsApp Access Token"
+                              />
+                              <button
+                                onClick={() =>
+                                  setVisibleKey(
+                                    visibleKey === "whatsappToken"
+                                      ? null
+                                      : "whatsappToken",
+                                  )
+                                }
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                              >
+                                {visibleKey === "whatsappToken" ? (
+                                  <EyeOff size={18} />
+                                ) : (
+                                  <Eye size={18} />
+                                )}
+                              </button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Get from Meta App Dashboard → Settings → System User Tokens
+                            </p>
+                          </div>
+
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                            <p className="text-sm text-blue-900 mb-2">
+                              <strong>Setup Instructions:</strong>
+                            </p>
+                            <ul className="text-sm text-blue-800 list-disc list-inside space-y-1">
+                              <li>
+                                Create Meta Business Account at{" "}
+                                <a
+                                  href="https://business.facebook.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="underline"
+                                >
+                                  business.facebook.com
+                                </a>
+                              </li>
+                              <li>Create WhatsApp Business App</li>
+                              <li>Get Phone Number ID from App Dashboard</li>
+                              <li>Generate System User token with whatsapp_business_messaging scope</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {(whatsappSettings.mode === "web" ||
+                      whatsappSettings.mode === "both") && (
+                      <>
+                        <div className="border-t pt-6">
+                          <h4 className="font-medium text-foreground mb-4">
+                            WhatsApp Web Configuration
+                          </h4>
+
+                          <div className="space-y-4">
+                            {whatsappWebQR && !whatsappWebStatus && (
+                              <div className="p-4 rounded-lg border border-border bg-muted/30 text-center">
+                                <p className="text-sm font-medium text-foreground mb-3">
+                                  Scan QR Code with WhatsApp
+                                </p>
+                                <div className="bg-white p-4 rounded inline-block">
+                                  {/* Placeholder for QR code - in production use qr library */}
+                                  <div className="w-32 h-32 bg-gray-200 flex items-center justify-center">
+                                    <p className="text-xs text-gray-500">QR Code Image</p>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-3">
+                                  Waiting for authentication...
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="p-4 rounded-lg border border-border">
+                              <p className="text-sm font-medium mb-2">
+                                Status:{" "}
+                                <Badge variant={whatsappWebStatus ? "default" : "secondary"}>
+                                  {whatsappWebStatus ? "Connected" : "Not Connected"}
+                                </Badge>
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {whatsappWebStatus
+                                  ? "WhatsApp Web is authenticated and ready to send messages"
+                                  : "Click Initialize to start authentication"}
+                              </p>
+                            </div>
+
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                              <p className="text-sm text-amber-900 mb-2">
+                                <strong>⚠️ Important Notice:</strong>
+                              </p>
+                              <p className="text-xs text-amber-800">
+                                WhatsApp Web automation may violate WhatsApp Terms of Service and can
+                                result in account suspension. Use Business API when possible.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {whatsappSettings.mode === "both" && (
+                      <div className="p-4 rounded-lg border border-border bg-green-50">
+                        <p className="text-sm text-green-900">
+                          ✓ <strong>Failover Enabled:</strong> System will try Business API first,
+                          then fall back to WhatsApp Web if needed
+                        </p>
+                      </div>
+                    )}
                   </>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={() => handleSaveSettings("WhatsApp")}
                     className="gap-2"
                   >
                     <Save size={16} />
-                    Save WhatsApp Settings
+                    Save Settings
                   </Button>
-                  {whatsappSettings.enabled && (
-                    <Button
-                      onClick={handleTestWhatsApp}
-                      variant="outline"
-                      className="gap-2"
-                      disabled={testingWhatsApp}
-                    >
-                      <MessageSquare size={16} />
-                      {testingWhatsApp ? "Testing..." : "Test Connection"}
-                    </Button>
-                  )}
+                  {whatsappSettings.enabled &&
+                    (whatsappSettings.mode === "business" ||
+                      whatsappSettings.mode === "both") && (
+                      <Button
+                        onClick={handleTestWhatsApp}
+                        variant="outline"
+                        className="gap-2"
+                        disabled={testingWhatsApp}
+                      >
+                        <MessageSquare size={16} />
+                        {testingWhatsApp ? "Testing..." : "Test Business API"}
+                      </Button>
+                    )}
+                  {whatsappSettings.enabled &&
+                    (whatsappSettings.mode === "web" ||
+                      whatsappSettings.mode === "both") && (
+                      <>
+                        {!whatsappWebStatus ? (
+                          <Button
+                            onClick={handleInitWhatsAppWeb}
+                            variant="outline"
+                            className="gap-2"
+                            disabled={initializingWeb}
+                          >
+                            <MessageSquare size={16} />
+                            {initializingWeb ? "Initializing..." : "Initialize Web"}
+                          </Button>
+                        ) : (
+                          <>
+                            <Button
+                              onClick={handleCheckWebStatus}
+                              variant="outline"
+                              className="gap-2"
+                            >
+                              Check Status
+                            </Button>
+                            <Button
+                              onClick={handleLogoutWeb}
+                              variant="outline"
+                              className="gap-2 text-destructive"
+                            >
+                              Logout Web
+                            </Button>
+                          </>
+                        )}
+                      </>
+                    )}
                 </div>
               </div>
             </Card>
