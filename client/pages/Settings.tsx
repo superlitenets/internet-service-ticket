@@ -486,6 +486,94 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          {/* SMS Templates */}
+          <TabsContent value="templates" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-1">
+                      SMS Message Templates
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Customize SMS messages sent to customers and technicians
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      resetSmsTemplates();
+                      setSmsTemplates(getSmsTemplates());
+                      toast({
+                        title: "Reset",
+                        description: "SMS templates reset to defaults",
+                      });
+                    }}
+                  >
+                    Reset to Defaults
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {smsTemplates.map((template) => (
+                    <div
+                      key={template.id}
+                      className="p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">
+                            {template.name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <Badge variant="secondary" className="text-xs">
+                              {template.eventType.replace(/_/g, " ")}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-accent/10"
+                            >
+                              {template.recipientType}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-muted/30 rounded p-3 text-sm text-foreground mb-3 font-mono whitespace-pre-wrap break-words">
+                        {template.message}
+                      </div>
+
+                      <div className="mb-3">
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Available variables:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {template.variables.map((variable) => (
+                            <Badge key={variable} variant="outline" className="text-xs">
+                              {`{{${variable}}}`}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingTemplate(template);
+                          setTemplateDialogOpen(true);
+                        }}
+                      >
+                        <Edit size={14} className="mr-1" />
+                        Edit
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Notification Preferences */}
           <TabsContent value="notifications" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
