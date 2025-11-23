@@ -34,6 +34,7 @@ import {
   Settings,
   Network,
   Loader,
+  Bell,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -1800,7 +1801,7 @@ export default function MikrotikPage() {
                             password: e.target.value,
                           })
                         }
-                        placeholder="••••••••"
+                        placeholder="•••••���••"
                       />
                     </div>
 
