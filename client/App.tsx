@@ -44,7 +44,6 @@ const AppRoutes = () => (
     <Route path="/mikrotik/accounts" element={<MikrotikAccounts />} />
     <Route path="/mikrotik/billing" element={<MikrotikBilling />} />
     <Route path="/mikrotik/monitoring" element={<MikrotikMonitoring />} />
-    <Route path="/mikrotik" element={<Mikrotik />} />
     <Route path="/reports" element={<Reports />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
