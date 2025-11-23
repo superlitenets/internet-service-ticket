@@ -317,3 +317,142 @@ export interface MpesaTransaction {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * Mikrotik ISP Account
+ */
+export interface MikrotikAccount {
+  id: string;
+  accountNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  accountType: "residential" | "business" | "prepaid" | "postpaid";
+  status: "active" | "inactive" | "suspended" | "closed";
+  planId: string;
+  planName: string;
+  monthlyFee: number;
+  dataQuota?: number; // in GB
+  pppoeUsername?: string;
+  pppoePassword?: string;
+  hotspotUsername?: string;
+  hotspotPassword?: string;
+  macAddress?: string;
+  ipAddress?: string;
+  registrationDate: string;
+  lastBillingDate?: string;
+  nextBillingDate?: string;
+  balance: number;
+  totalPaid: number;
+  outstandingBalance: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Mikrotik Billing Plan
+ */
+export interface MikrotikPlan {
+  id: string;
+  planName: string;
+  description: string;
+  planType: "flat-rate" | "quota-based" | "tiered";
+  monthlyFee: number;
+  dataQuota?: number; // in GB for quota-based plans
+  speed?: {
+    uploadMbps: number;
+    downloadMbps: number;
+  };
+  fairUsagePolicy?: string;
+  dataCapLimit?: number; // in GB, after which throttling applies
+  setupFee: number;
+  activationFee: number;
+  discount?: number; // percentage
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Mikrotik Invoice
+ */
+export interface MikrotikInvoice {
+  id: string;
+  invoiceNumber: string;
+  accountId: string;
+  accountNumber: string;
+  customerName: string;
+  planId: string;
+  planName: string;
+  billingPeriod: string; // "2024-01"
+  amount: number;
+  discount: number;
+  tax: number;
+  total: number;
+  status: "draft" | "issued" | "paid" | "overdue" | "cancelled";
+  issueDate: string;
+  dueDate: string;
+  paidDate?: string;
+  paymentMethod?: string;
+  transactionReference?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Mikrotik Payment Record
+ */
+export interface MikrotikPayment {
+  id: string;
+  paymentId: string;
+  accountId: string;
+  accountNumber: string;
+  invoiceId?: string;
+  amount: number;
+  paymentMethod: "mpesa" | "bank-transfer" | "cash" | "cheque";
+  mpesaReceiptNumber?: string;
+  bankReference?: string;
+  status: "pending" | "completed" | "failed" | "cancelled";
+  paymentDate: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Mikrotik Usage Record
+ */
+export interface MikrotikUsage {
+  id: string;
+  accountId: string;
+  accountNumber: string;
+  date: string;
+  uploadMB: number;
+  downloadMB: number;
+  totalMB: number;
+  sessionCount: number;
+  activeTime: number; // in minutes
+  createdAt: string;
+}
+
+/**
+ * Mikrotik Configuration
+ */
+export interface MikrotikConfig {
+  enabled: boolean;
+  apiUrl: string;
+  username: string;
+  password: string;
+  port: number;
+  useSsl: boolean;
+  interfaceName: string; // e.g., "ether1"
+  enableDataMonitoring: boolean;
+  autoGenerateBills: boolean;
+  billingCycleDay: number; // 1-28
+  gracePeriodDays: number; // days before suspension
+  suspensionDelay: number; // days after suspension
+  createdAt: string;
+  updatedAt: string;
+}
