@@ -70,6 +70,11 @@ import {
   resetMpesaSettings,
   type MpesaConfig,
 } from "@/lib/mpesa-settings-storage";
+import {
+  getCompanySettings,
+  saveCompanySettings,
+  type CompanySettings,
+} from "@/lib/company-settings-storage";
 
 export default function SettingsPage() {
   const { toast } = useToast();
