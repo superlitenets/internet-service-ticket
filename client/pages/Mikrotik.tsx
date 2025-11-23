@@ -105,6 +105,10 @@ export default function MikrotikPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Mikrotik Instance State
+  const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
+  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+
   // State
   const [accounts, setAccounts] = useState<MikrotikAccount[]>([]);
   const [plans, setPlans] = useState<MikrotikPlan[]>([]);
