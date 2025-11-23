@@ -147,6 +147,9 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Mikrotik ISP Statistics */}
+        <MikrotikStats />
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow">
