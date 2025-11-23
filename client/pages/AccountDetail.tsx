@@ -267,56 +267,82 @@ export default function AccountDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Customer Details Card */}
-          <Card className="p-6 border-0 shadow-sm">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-foreground">
-                  Customer Details
-                </h2>
+          {/* Customer Profile Card */}
+          <Card className="p-8 border-0 shadow-sm bg-gradient-to-br from-background to-muted/20">
+            <div className="space-y-8">
+              {/* Header with Avatar and Name */}
+              <div className="flex items-start justify-between gap-6">
+                <div className="flex items-start gap-6">
+                  {/* Avatar */}
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                      {account.customerName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)}
+                    </div>
+                  </div>
+
+                  {/* Name and Account Type */}
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                      {account.customerName}
+                    </h2>
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="capitalize bg-blue-50 text-blue-700 border-blue-200"
+                      >
+                        {account.accountType}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        Since {new Date(account.registrationDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowEditDialog(true)}
-                  className="gap-2"
+                  className="gap-2 whitespace-nowrap"
                 >
                   <Edit size={16} />
-                  Edit
+                  Edit Details
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Name
-                  </p>
-                  <p className="font-medium text-foreground">
-                    {account.customerName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Email
-                  </p>
-                  <p className="font-medium text-foreground">
-                    {account.customerEmail}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Phone
-                  </p>
-                  <p className="font-medium text-foreground">
-                    {account.customerPhone}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Account Type
-                  </p>
-                  <Badge variant="outline" className="capitalize">
-                    {account.accountType}
-                  </Badge>
+              {/* Contact Information */}
+              <div className="border-t border-border pt-8">
+                <h3 className="text-sm font-semibold text-foreground mb-6 uppercase tracking-wide">
+                  Contact Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Email Address
+                    </p>
+                    <p className="text-base font-medium text-foreground">
+                      {account.customerEmail}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Primary contact
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Phone Number
+                    </p>
+                    <p className="text-base font-medium text-foreground">
+                      {account.customerPhone}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Mobile
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
