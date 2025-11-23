@@ -706,6 +706,254 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          {/* Late Attendance Deductions */}
+          <TabsContent value="deductions" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    Late Attendance Deductions
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure automatic salary deductions for late arrivals
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">Enable Late Deductions</p>
+                    <p className="text-sm text-muted-foreground">
+                      {deductionSettings.enabled
+                        ? "Deductions are enabled and will be applied to payroll"
+                        : "Deductions are disabled"}
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={deductionSettings.enabled}
+                    onChange={(e) =>
+                      setDeductionSettings({
+                        ...deductionSettings,
+                        enabled: e.target.checked,
+                      })
+                    }
+                    className="w-5 h-5 cursor-pointer"
+                  />
+                </div>
+
+                {deductionSettings.enabled && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Late Threshold (minutes)
+                        </label>
+                        <Input
+                          type="number"
+                          value={deductionSettings.lateThresholdMinutes}
+                          onChange={(e) =>
+                            setDeductionSettings({
+                              ...deductionSettings,
+                              lateThresholdMinutes: parseInt(e.target.value) || 0,
+                            })
+                          }
+                          placeholder="15"
+                          min="1"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Minutes after official time before deduction applies
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Apply After (days)
+                        </label>
+                        <Input
+                          type="number"
+                          value={deductionSettings.applyAfterDays}
+                          onChange={(e) =>
+                            setDeductionSettings({
+                              ...deductionSettings,
+                              applyAfterDays: parseInt(e.target.value) || 1,
+                            })
+                          }
+                          placeholder="1"
+                          min="1"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Minimum late days before applying deduction
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Deduction Type
+                      </label>
+                      <Select
+                        value={deductionSettings.deductionType}
+                        onValueChange={(value) =>
+                          setDeductionSettings({
+                            ...deductionSettings,
+                            deductionType: value as "fixed" | "percentage" | "scaled",
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fixed">Fixed Amount</SelectItem>
+                          <SelectItem value="percentage">Percentage</SelectItem>
+                          <SelectItem value="scaled">Scaled by Minutes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {deductionSettings.deductionType === "fixed" && (
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Deduction Amount
+                        </label>
+                        <Input
+                          type="number"
+                          value={deductionSettings.fixedDeductionAmount}
+                          onChange={(e) =>
+                            setDeductionSettings({
+                              ...deductionSettings,
+                              fixedDeductionAmount: parseInt(e.target.value) || 0,
+                            })
+                          }
+                          placeholder="50"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Fixed amount deducted per late day
+                        </p>
+                      </div>
+                    )}
+
+                    {deductionSettings.deductionType === "percentage" && (
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Deduction Percentage
+                        </label>
+                        <Input
+                          type="number"
+                          value={deductionSettings.percentageDeduction}
+                          onChange={(e) =>
+                            setDeductionSettings({
+                              ...deductionSettings,
+                              percentageDeduction: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          placeholder="2"
+                          step="0.1"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Percentage of daily salary to deduct
+                        </p>
+                      </div>
+                    )}
+
+                    {deductionSettings.deductionType === "scaled" && (
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Scaled Deductions
+                        </label>
+                        <div className="space-y-3 mb-3">
+                          {deductionSettings.scaledDeductions?.map((scaled, idx) => (
+                            <div
+                              key={idx}
+                              className="p-3 rounded-lg border border-border flex items-center justify-between"
+                            >
+                              <div>
+                                <p className="text-sm font-medium text-foreground">
+                                  {scaled.minutesRange.min}-{scaled.minutesRange.max} minutes late
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  Deduct: ${scaled.deductionAmount}
+                                </p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const updated = [
+                                    ...(deductionSettings.scaledDeductions || []),
+                                  ];
+                                  updated.splice(idx, 1);
+                                  setDeductionSettings({
+                                    ...deductionSettings,
+                                    scaledDeductions: updated,
+                                  });
+                                }}
+                              >
+                                <Trash size={14} />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">
+                          Exclude Weekends
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Don't count late arrivals on weekends
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={deductionSettings.excludeWeekends}
+                        onChange={(e) =>
+                          setDeductionSettings({
+                            ...deductionSettings,
+                            excludeWeekends: e.target.checked,
+                          })
+                        }
+                        className="w-5 h-5 cursor-pointer"
+                      />
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm text-blue-900">
+                        <strong>Example:</strong> If a technician is 20 minutes late on 2 days
+                        in a month with fixed $50 deduction, their total deduction will be $100.
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleSaveSettings("Deductions")}
+                    className="gap-2"
+                  >
+                    <Save size={16} />
+                    Save Deduction Settings
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      resetDeductionSettings();
+                      setDeductionSettings(getDeductionSettings());
+                      toast({
+                        title: "Reset",
+                        description:
+                          "Deduction settings reset to defaults",
+                      });
+                    }}
+                    variant="outline"
+                  >
+                    Reset to Defaults
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* Notification Preferences */}
           <TabsContent value="notifications" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
