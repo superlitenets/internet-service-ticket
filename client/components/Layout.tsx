@@ -13,6 +13,7 @@ import {
   DollarSign,
   TrendingUp,
   Wifi,
+  FileText,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,8 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/payments", label: "Payments", icon: DollarSign },
     // ISP Billing
     { path: "/mikrotik", label: "Mikrotik ISP", icon: Wifi },
+    // Reports
+    { path: "/reports", label: "Reports", icon: FileText },
     // Settings
     { path: "/settings", label: "Settings", icon: Settings },
   ];
