@@ -2047,6 +2047,309 @@ export default function SettingsPage() {
               </div>
             </Card>
           </TabsContent>
+
+          {/* MPESA Settings */}
+          <TabsContent value="mpesa" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    MPESA Configuration
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure Safaricom M-Pesa Daraja API for C2B, B2B, and STK Push payments
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">Enable MPESA</p>
+                    <p className="text-sm text-muted-foreground">
+                      {mpesaSettings.enabled
+                        ? "MPESA integration is active"
+                        : "MPESA integration is disabled"}
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={mpesaSettings.enabled}
+                    onChange={(e) =>
+                      setMpesaSettings({
+                        ...mpesaSettings,
+                        enabled: e.target.checked,
+                      })
+                    }
+                    className="w-5 h-5 cursor-pointer"
+                  />
+                </div>
+
+                {mpesaSettings.enabled && (
+                  <>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm text-blue-900 mb-2">
+                        <strong>📋 Get Your Credentials:</strong>
+                      </p>
+                      <ol className="text-sm text-blue-800 list-decimal list-inside space-y-1">
+                        <li>
+                          Visit{" "}
+                          <a
+                            href="https://developer.safaricom.co.ke"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline font-medium"
+                          >
+                            Safaricom Developer Portal
+                          </a>
+                        </li>
+                        <li>Create a sandbox app in the M-Pesa category</li>
+                        <li>
+                          Get your Consumer Key and Consumer Secret from app
+                          details
+                        </li>
+                        <li>Get your Business Short Code (test till number)</li>
+                        <li>Get your Passkey from test credentials</li>
+                      </ol>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Consumer Key
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={visibleKey === "consumerKey" ? "text" : "password"}
+                            value={mpesaSettings.consumerKey}
+                            onChange={(e) =>
+                              setMpesaSettings({
+                                ...mpesaSettings,
+                                consumerKey: e.target.value,
+                              })
+                            }
+                            placeholder="Your Consumer Key"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "consumerKey"
+                                  ? null
+                                  : "consumerKey",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "consumerKey" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Consumer Secret
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={
+                              visibleKey === "consumerSecret"
+                                ? "text"
+                                : "password"
+                            }
+                            value={mpesaSettings.consumerSecret}
+                            onChange={(e) =>
+                              setMpesaSettings({
+                                ...mpesaSettings,
+                                consumerSecret: e.target.value,
+                              })
+                            }
+                            placeholder="Your Consumer Secret"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "consumerSecret"
+                                  ? null
+                                  : "consumerSecret",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "consumerSecret" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Business Short Code
+                        </label>
+                        <Input
+                          value={mpesaSettings.businessShortCode}
+                          onChange={(e) =>
+                            setMpesaSettings({
+                              ...mpesaSettings,
+                              businessShortCode: e.target.value,
+                            })
+                          }
+                          placeholder="174379 (sandbox) or your till number"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Your M-Pesa till/paybill number
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Passkey
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={visibleKey === "passkey" ? "text" : "password"}
+                            value={mpesaSettings.passkey}
+                            onChange={(e) =>
+                              setMpesaSettings({
+                                ...mpesaSettings,
+                                passkey: e.target.value,
+                              })
+                            }
+                            placeholder="Your M-Pesa Passkey"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "passkey" ? null : "passkey",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "passkey" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          12-character passkey from test credentials
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Callback URL
+                        </label>
+                        <Input
+                          value={mpesaSettings.callbackUrl}
+                          onChange={(e) =>
+                            setMpesaSettings({
+                              ...mpesaSettings,
+                              callbackUrl: e.target.value,
+                            })
+                          }
+                          placeholder="https://yourdomain.com/api/mpesa/callback"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          URL to receive payment confirmations from MPESA
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Validation URL
+                        </label>
+                        <Input
+                          value={mpesaSettings.validationUrl}
+                          onChange={(e) =>
+                            setMpesaSettings({
+                              ...mpesaSettings,
+                              validationUrl: e.target.value,
+                            })
+                          }
+                          placeholder="https://yourdomain.com/api/mpesa/validation"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          URL for validating incoming payments
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Confirmation URL
+                        </label>
+                        <Input
+                          value={mpesaSettings.confirmationUrl}
+                          onChange={(e) =>
+                            setMpesaSettings({
+                              ...mpesaSettings,
+                              confirmationUrl: e.target.value,
+                            })
+                          }
+                          placeholder="https://yourdomain.com/api/mpesa/confirmation"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          URL to receive final payment confirmation
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <p className="text-sm text-amber-900 mb-2">
+                        <strong>⚠️ Important:</strong>
+                      </p>
+                      <ul className="text-sm text-amber-800 list-disc list-inside space-y-1">
+                        <li>
+                          These credentials are sensitive - store them securely
+                        </li>
+                        <li>
+                          Never commit credentials to version control or public
+                          code
+                        </li>
+                        <li>
+                          Callback URLs must be publicly accessible for MPESA to
+                          send notifications
+                        </li>
+                        <li>
+                          Test your setup in sandbox before going to production
+                        </li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleSaveSettings("MPESA")}
+                    className="gap-2"
+                  >
+                    <Save size={16} />
+                    Save MPESA Settings
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      resetMpesaSettings();
+                      setMpesaSettings(getMpesaSettings());
+                      toast({
+                        title: "Reset",
+                        description: "MPESA settings reset to defaults",
+                      });
+                    }}
+                    variant="outline"
+                  >
+                    Reset to Defaults
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
