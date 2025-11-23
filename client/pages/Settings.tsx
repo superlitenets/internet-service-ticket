@@ -27,8 +27,13 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  getSmsSettings,
+  saveSmsSettings,
+  type SmsSettings,
+} from "@/lib/sms-settings-storage";
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -36,13 +41,21 @@ export default function SettingsPage() {
   const [visibleKey, setVisibleKey] = useState<string | null>(null);
 
   // SMS Settings State
-  const [smsSettings, setSmsSettings] = useState({
+  const [smsSettings, setSmsSettings] = useState<SmsSettings>({
     provider: "twilio",
-    accountSid: "AC1234567890abcdef1234567890abcde",
-    authToken: "your_auth_token_here",
-    fromNumber: "+1234567890",
+    accountSid: "",
+    authToken: "",
+    fromNumber: "",
     enabled: true,
   });
+
+  // Load SMS settings from storage on mount
+  useEffect(() => {
+    const saved = getSmsSettings();
+    if (saved) {
+      setSmsSettings(saved);
+    }
+  }, []);
 
   // Notification Preferences State
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -152,10 +165,26 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = (section: string) => {
-    toast({
-      title: "Success",
-      description: `${section} settings saved successfully.`,
-    });
+    if (section === "SMS") {
+      try {
+        saveSmsSettings(smsSettings);
+        toast({
+          title: "Success",
+          description: "SMS settings saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save SMS settings.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Success",
+        description: `${section} settings saved successfully.`,
+      });
+    }
   };
 
   const copyToClipboard = (text: string) => {
