@@ -75,7 +75,6 @@ export default function Layout({ children }: LayoutProps) {
       label: "Mikrotik ISP",
       icon: Wifi,
       subItems: [
-        { path: "/mikrotik", label: "Dashboard", icon: TrendingUp },
         { path: "/mikrotik/accounts", label: "Accounts", icon: Users },
         { path: "/mikrotik/billing", label: "Billing", icon: DollarSign },
         { path: "/mikrotik/monitoring", label: "Monitoring", icon: TrendingUp },
