@@ -271,7 +271,11 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      const newAccount = await createMikrotikAccount(accountForm);
+      const prefix = getCompanyPrefix();
+      const newAccount = await createMikrotikAccount({
+        ...accountForm,
+        prefix,
+      });
 
       setAccounts((prev) => [...prev, newAccount]);
       toast({
