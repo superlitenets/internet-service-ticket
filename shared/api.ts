@@ -10,3 +10,27 @@
 export interface DemoResponse {
   message: string;
 }
+
+/**
+ * SMS Send Request
+ */
+export interface SendSmsRequest {
+  to: string | string[];
+  message: string;
+  provider?: string;
+  accountSid?: string;
+  authToken?: string;
+  fromNumber?: string;
+}
+
+/**
+ * SMS Send Response
+ */
+export interface SendSmsResponse {
+  success: boolean;
+  message: string;
+  messageIds?: string[];
+  recipients?: number;
+  timestamp: string;
+  error?: string;
+}
