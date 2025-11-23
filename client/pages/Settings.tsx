@@ -27,6 +27,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Edit,
+  DollarSign,
+  Trash,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
