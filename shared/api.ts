@@ -21,6 +21,9 @@ export interface SendSmsRequest {
   accountSid?: string;
   authToken?: string;
   fromNumber?: string;
+  apiKey?: string;
+  partnerId?: string;
+  shortcode?: string;
 }
 
 /**

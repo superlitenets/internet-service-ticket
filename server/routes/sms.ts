@@ -18,6 +18,9 @@ export const handleSendSms: RequestHandler<
       accountSid,
       authToken,
       fromNumber,
+      apiKey,
+      partnerId,
+      shortcode,
     } = req.body;
 
     // Validation
@@ -30,13 +33,34 @@ export const handleSendSms: RequestHandler<
       });
     }
 
-    if (!accountSid || !authToken || !fromNumber) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing SMS provider credentials",
-        timestamp: new Date().toISOString(),
-        error: "Invalid credentials",
-      });
+    // Provider-specific credential validation
+    if (provider === "twilio") {
+      if (!accountSid || !authToken || !fromNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing Twilio credentials: accountSid, authToken, fromNumber",
+          timestamp: new Date().toISOString(),
+          error: "Invalid credentials",
+        });
+      }
+    } else if (provider === "advanta") {
+      if (!apiKey || !partnerId || !shortcode) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing Advanta SMS credentials: apiKey, partnerId, shortcode",
+          timestamp: new Date().toISOString(),
+          error: "Invalid credentials",
+        });
+      }
+    } else {
+      if (!accountSid || !authToken || !fromNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing SMS provider credentials",
+          timestamp: new Date().toISOString(),
+          error: "Invalid credentials",
+        });
+      }
     }
 
     // Convert single phone number to array
@@ -72,24 +96,49 @@ export const handleSendSms: RequestHandler<
     );
 
     // Log the SMS request (in production, this would call the actual SMS provider)
-    console.log(`[SMS] Sending via ${provider}`, {
-      provider,
-      recipients: validPhoneNumbers,
-      messageLength: message.length,
-      fromNumber,
-      timestamp: new Date().toISOString(),
-    });
+    if (provider === "advanta") {
+      console.log(`[SMS] Sending via Advanta SMS`, {
+        provider,
+        partnerId,
+        shortcode,
+        recipients: validPhoneNumbers,
+        messageLength: message.length,
+        timestamp: new Date().toISOString(),
+      });
 
-    // In a production environment, you would call the actual SMS provider API here
-    // Example for Twilio:
-    // const twilio = require('twilio')(accountSid, authToken);
-    // for (const phone of validPhoneNumbers) {
-    //   await twilio.messages.create({
-    //     body: message,
-    //     from: fromNumber,
-    //     to: phone,
-    //   });
-    // }
+      // In production: Call Advanta SMS API
+      // Example:
+      // const response = await fetch('https://api.advantasms.com/send', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     username: partnerId,
+      //     password: apiKey,
+      //     message,
+      //     recipients: validPhoneNumbers,
+      //     sender: shortcode,
+      //   }),
+      // });
+    } else {
+      console.log(`[SMS] Sending via ${provider}`, {
+        provider,
+        recipients: validPhoneNumbers,
+        messageLength: message.length,
+        fromNumber,
+        timestamp: new Date().toISOString(),
+      });
+
+      // In a production environment, you would call the actual SMS provider API here
+      // Example for Twilio:
+      // const twilio = require('twilio')(accountSid, authToken);
+      // for (const phone of validPhoneNumbers) {
+      //   await twilio.messages.create({
+      //     body: message,
+      //     from: fromNumber,
+      //     to: phone,
+      //   });
+      // }
+    }
 
     return res.status(200).json({
       success: true,

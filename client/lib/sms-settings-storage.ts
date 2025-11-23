@@ -5,9 +5,12 @@
 
 export interface SmsSettings {
   provider: string;
-  accountSid: string;
-  authToken: string;
-  fromNumber: string;
+  accountSid?: string;
+  authToken?: string;
+  fromNumber?: string;
+  apiKey?: string;
+  partnerId?: string;
+  shortcode?: string;
   enabled: boolean;
 }
 
