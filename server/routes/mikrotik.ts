@@ -1428,3 +1428,349 @@ export const autoApplyCredits: RequestHandler = async (req, res) => {
     });
   }
 };
+
+/**
+ * Send invoice notification
+ */
+export const sendInvoiceNotification: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, invoiceId } = req.body;
+
+    if (!accountId || !invoiceId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "accountId and invoiceId are required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    const invoice = invoices.find((i) => i.id === invoiceId);
+
+    if (!account || !invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Account or invoice not found",
+        error: "Invalid IDs",
+      });
+    }
+
+    const notificationService = getNotificationService();
+    const success = await notificationService.sendInvoiceNotification(
+      accountId,
+      account.customerPhone,
+      account.customerName,
+      {
+        invoiceNumber: invoice.invoiceNumber,
+        amount: invoice.total,
+        dueDate: new Date(invoice.dueDate).toLocaleDateString(),
+        paybillNumber: "400123",
+      }
+    );
+
+    return res.json({
+      success,
+      message: success
+        ? "Invoice notification sent"
+        : "Failed to send notification",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send invoice notification",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Send payment reminder notification
+ */
+export const sendPaymentReminderNotification: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, invoiceId } = req.body;
+
+    if (!accountId || !invoiceId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "accountId and invoiceId are required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    const invoice = invoices.find((i) => i.id === invoiceId);
+
+    if (!account || !invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Account or invoice not found",
+        error: "Invalid IDs",
+      });
+    }
+
+    const notificationService = getNotificationService();
+    const success = await notificationService.sendPaymentReminderNotification(
+      accountId,
+      account.customerPhone,
+      account.customerName,
+      {
+        invoiceNumber: invoice.invoiceNumber,
+        amount: invoice.total,
+        dueDate: new Date(invoice.dueDate).toLocaleDateString(),
+        paybillNumber: "400123",
+      }
+    );
+
+    return res.json({
+      success,
+      message: success
+        ? "Payment reminder sent"
+        : "Failed to send reminder",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send payment reminder",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Send overdue invoice notification
+ */
+export const sendOverdueNotification: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, invoiceId } = req.body;
+
+    if (!accountId || !invoiceId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "accountId and invoiceId are required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    const invoice = invoices.find((i) => i.id === invoiceId);
+
+    if (!account || !invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Account or invoice not found",
+        error: "Invalid IDs",
+      });
+    }
+
+    const daysOverdue = Math.floor(
+      (Date.now() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    const notificationService = getNotificationService();
+    const success = await notificationService.sendOverdueNotification(
+      accountId,
+      account.customerPhone,
+      account.customerName,
+      {
+        invoiceNumber: invoice.invoiceNumber,
+        amount: invoice.total,
+        overdueDays: Math.max(0, daysOverdue),
+      }
+    );
+
+    return res.json({
+      success,
+      message: success
+        ? "Overdue notification sent"
+        : "Failed to send notification",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send overdue notification",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Send payment received notification
+ */
+export const sendPaymentReceivedNotification: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, paymentId } = req.body;
+
+    if (!accountId || !paymentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "accountId and paymentId are required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    const payment = payments.find((p) => p.id === paymentId);
+
+    if (!account || !payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Account or payment not found",
+        error: "Invalid IDs",
+      });
+    }
+
+    const notificationService = getNotificationService();
+    const success = await notificationService.sendPaymentReceivedNotification(
+      accountId,
+      account.customerPhone,
+      account.customerName,
+      {
+        amount: payment.amount,
+        paymentDate: new Date(payment.paymentDate).toLocaleDateString(),
+        invoiceNumber: payment.invoiceId || "Multiple invoices",
+        transactionRef: payment.mpesaReceiptNumber || payment.bankReference || payment.id,
+      }
+    );
+
+    return res.json({
+      success,
+      message: success
+        ? "Payment received notification sent"
+        : "Failed to send notification",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send payment received notification",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Send quota alert notification
+ */
+export const sendQuotaAlertNotification: RequestHandler = async (req, res) => {
+  try {
+    const { accountId, percentageUsed, usedData, totalQuota } = req.body;
+
+    if (!accountId || percentageUsed === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: "accountId and percentageUsed are required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Invalid account ID",
+      });
+    }
+
+    const notificationService = getNotificationService();
+    const success = await notificationService.sendQuotaAlertNotification(
+      accountId,
+      account.customerPhone,
+      account.customerName,
+      {
+        percentageUsed: Math.round(percentageUsed),
+        usedData: usedData || 0,
+        totalQuota: totalQuota || account.dataQuota || 0,
+      }
+    );
+
+    return res.json({
+      success,
+      message: success
+        ? "Quota alert sent"
+        : "Failed to send alert",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send quota alert",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get notification logs
+ */
+export const getNotificationLogs: RequestHandler = (req, res) => {
+  try {
+    const { accountId, limit = 100 } = req.query;
+
+    const notificationService = getNotificationService();
+    const logs = notificationService.getNotificationLogs(
+      accountId as string | undefined,
+      parseInt(limit as string)
+    );
+
+    return res.json({
+      success: true,
+      logs,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch notification logs",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get notification templates
+ */
+export const getNotificationTemplates: RequestHandler = (req, res) => {
+  try {
+    const notificationService = getNotificationService();
+    const templates = notificationService.getTemplates();
+
+    return res.json({
+      success: true,
+      templates,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch notification templates",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get notification statistics
+ */
+export const getNotificationStats: RequestHandler = (req, res) => {
+  try {
+    const notificationService = getNotificationService();
+    const stats = notificationService.getNotificationStats();
+
+    return res.json({
+      success: true,
+      stats,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch notification statistics",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
