@@ -1074,48 +1074,212 @@ export default function MikrotikPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 text-xs">
-            <TabsTrigger value="dashboard" className="gap-1">
-              <TrendingUp size={14} />
-              <span className="hidden sm:inline">Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger value="accounts" className="gap-1">
-              <Users size={14} />
-              <span className="hidden sm:inline">Accounts</span>
-            </TabsTrigger>
-            <TabsTrigger value="invoices" className="gap-1">
-              <FileText size={14} />
-              <span className="hidden sm:inline">Invoices</span>
-            </TabsTrigger>
-            <TabsTrigger value="plans" className="gap-1">
-              <DollarSign size={14} />
-              <span className="hidden sm:inline">Plans</span>
-            </TabsTrigger>
-            <TabsTrigger value="bandwidth" className="gap-1">
-              <TrendingUp size={14} />
-              <span className="hidden sm:inline">Bandwidth</span>
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="gap-1">
-              <DollarSign size={14} />
-              <span className="hidden sm:inline">Billing</span>
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="gap-1">
-              <Bell size={14} />
-              <span className="hidden sm:inline">Notifications</span>
-            </TabsTrigger>
-            <TabsTrigger value="expiration" className="gap-1">
-              <Clock size={14} />
-              <span className="hidden sm:inline">Expiration</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="gap-1">
-              <TrendingUp size={14} />
-              <span className="hidden sm:inline">Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="routeros" className="gap-1">
-              <Network size={14} />
-              <span className="hidden sm:inline">RouterOS</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Grouped Tab Navigation */}
+          <div className="bg-card border border-border rounded-lg p-4 space-y-3">
+            {/* Dashboard */}
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeTab === "dashboard"
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent text-foreground"
+              }`}
+            >
+              <TrendingUp size={16} />
+              Dashboard
+            </button>
+
+            {/* Accounts Group */}
+            <div>
+              <button
+                onClick={() => toggleTabGroup("Accounts")}
+                className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <Users size={16} />
+                  Accounts
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    expandedGroups.includes("Accounts") ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedGroups.includes("Accounts") && (
+                <div className="ml-4 mt-2 space-y-1 border-l border-border pl-2">
+                  <button
+                    onClick={() => setActiveTab("accounts")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "accounts"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <Users size={14} />
+                    Accounts
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Billing Group */}
+            <div>
+              <button
+                onClick={() => toggleTabGroup("Billing")}
+                className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <DollarSign size={16} />
+                  Billing
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    expandedGroups.includes("Billing") ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedGroups.includes("Billing") && (
+                <div className="ml-4 mt-2 space-y-1 border-l border-border pl-2">
+                  <button
+                    onClick={() => setActiveTab("invoices")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "invoices"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <FileText size={14} />
+                    Invoices
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("plans")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "plans"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <DollarSign size={14} />
+                    Plans
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("billing")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "billing"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <DollarSign size={14} />
+                    Billing
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Monitoring Group */}
+            <div>
+              <button
+                onClick={() => toggleTabGroup("Monitoring")}
+                className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingUp size={16} />
+                  Monitoring
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    expandedGroups.includes("Monitoring") ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedGroups.includes("Monitoring") && (
+                <div className="ml-4 mt-2 space-y-1 border-l border-border pl-2">
+                  <button
+                    onClick={() => setActiveTab("bandwidth")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "bandwidth"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <TrendingUp size={14} />
+                    Bandwidth
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("analytics")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "analytics"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <TrendingUp size={14} />
+                    Analytics
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Management Group */}
+            <div>
+              <button
+                onClick={() => toggleTabGroup("Management")}
+                className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <Settings size={16} />
+                  Management
+                </div>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform ${
+                    expandedGroups.includes("Management") ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedGroups.includes("Management") && (
+                <div className="ml-4 mt-2 space-y-1 border-l border-border pl-2">
+                  <button
+                    onClick={() => setActiveTab("notifications")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "notifications"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <Bell size={14} />
+                    Notifications
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("expiration")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "expiration"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <Clock size={14} />
+                    Expiration
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("routeros")}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded text-sm transition-all ${
+                      activeTab === "routeros"
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <Network size={14} />
+                    RouterOS
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
