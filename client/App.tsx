@@ -19,6 +19,7 @@ import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
 import Payments from "./pages/Payments";
 import Mikrotik from "./pages/Mikrotik";
+import AccountDetail from "./pages/AccountDetail";
 import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
