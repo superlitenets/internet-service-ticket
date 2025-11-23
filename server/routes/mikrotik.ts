@@ -128,6 +128,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       customerPhone,
       accountType,
       planId,
+      prefix = "ACC",
     } = req.body;
 
     if (
@@ -153,7 +154,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    const accountNumber = `ACC-${accounts.length + 1000}`;
+    const accountNumber = `${prefix}-${accounts.length + 1000}`;
     const credentials = generatePPPoECredentials(accountNumber);
 
     const newAccount: MikrotikAccount = {
