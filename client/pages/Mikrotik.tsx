@@ -1037,6 +1037,265 @@ export default function MikrotikPage() {
             </Card>
           </TabsContent>
 
+          {/* Bandwidth Monitoring Tab */}
+          <TabsContent value="bandwidth" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Bandwidth Monitoring & Usage Tracking
+                </h3>
+
+                {/* Monitoring Status */}
+                {monitoringStatus && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                      <p className="text-sm text-blue-600 font-medium">
+                        Active Monitoring
+                      </p>
+                      <p className="text-2xl font-bold text-blue-900 mt-2">
+                        {monitoringStatus.activeAccounts}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                      <p className="text-sm text-green-600 font-medium">
+                        Total Records
+                      </p>
+                      <p className="text-2xl font-bold text-green-900 mt-2">
+                        {monitoringStatus.totalRecords}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600 font-medium">
+                        Quota Alerts
+                      </p>
+                      <p className="text-2xl font-bold text-red-900 mt-2">
+                        {monitoringStatus.totalAlerts}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Account Selection & Controls */}
+                <div className="border rounded-lg p-4 space-y-4">
+                  <h4 className="font-medium text-foreground">
+                    Start Monitoring Account
+                  </h4>
+
+                  <div className="flex gap-2">
+                    <Select
+                      value={selectedAccountForMonitoring}
+                      onValueChange={setSelectedAccountForMonitoring}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select an account..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {accounts.map((account) => (
+                          <SelectItem key={account.id} value={account.id}>
+                            {account.customerName} ({account.accountNumber})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={handleStartMonitoring}
+                      disabled={loading || !selectedAccountForMonitoring}
+                      variant="default"
+                      className="gap-2"
+                    >
+                      <Network size={16} />
+                      Start Monitoring
+                    </Button>
+                    <Button
+                      onClick={handleStopMonitoring}
+                      disabled={loading || !selectedAccountForMonitoring}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Network size={16} />
+                      Stop Monitoring
+                    </Button>
+                    <Button
+                      onClick={handleLoadBandwidthData}
+                      disabled={loading || !selectedAccountForMonitoring}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Loader size={16} />
+                      Load Data
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Bandwidth Stats */}
+                {averageUsage && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <h4 className="font-medium text-foreground">
+                      24-Hour Usage Statistics
+                    </h4>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Avg Download
+                        </p>
+                        <p className="text-lg font-bold text-foreground">
+                          {averageUsage.downloadMBps.toFixed(2)} Mbps
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Avg Upload
+                        </p>
+                        <p className="text-lg font-bold text-foreground">
+                          {averageUsage.uploadMBps.toFixed(2)} Mbps
+                        </p>
+                      </div>
+                      {peakUsage && (
+                        <>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Peak Download
+                            </p>
+                            <p className="text-lg font-bold text-foreground">
+                              {peakUsage.downloadMBps.toFixed(2)} Mbps
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Peak Upload
+                            </p>
+                            <p className="text-lg font-bold text-foreground">
+                              {peakUsage.uploadMBps.toFixed(2)} Mbps
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Quota Alerts */}
+                {quotaAlerts.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <h4 className="font-medium text-foreground">
+                      Quota Alerts ({quotaAlerts.length})
+                    </h4>
+
+                    <div className="space-y-3">
+                      {quotaAlerts.map((alert: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className={`p-4 rounded-lg border ${
+                            alert.alertLevel === "critical"
+                              ? "bg-red-50 border-red-200"
+                              : "bg-yellow-50 border-yellow-200"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium text-foreground">
+                                {alert.customerName}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {alert.currentUsageMB.toFixed(0)} MB / {alert.quotaMB} MB
+                              </p>
+                            </div>
+                            <Badge
+                              variant={
+                                alert.alertLevel === "critical"
+                                  ? "destructive"
+                                  : "secondary"
+                              }
+                              className="text-xs capitalize"
+                            >
+                              {alert.alertLevel}
+                            </Badge>
+                          </div>
+                          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${
+                                alert.alertLevel === "critical"
+                                  ? "bg-red-600"
+                                  : "bg-yellow-600"
+                              }`}
+                              style={{
+                                width: `${Math.min(alert.percentageUsed, 100)}%`,
+                              }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {alert.percentageUsed}% of quota used
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Usage History */}
+                {bandwidthHistory.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <h4 className="font-medium text-foreground">
+                      Usage History ({bandwidthHistory.length} records)
+                    </h4>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="border-b border-border">
+                          <tr>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Time
+                            </th>
+                            <th className="py-2 px-4 text-right font-medium">
+                              Download
+                            </th>
+                            <th className="py-2 px-4 text-right font-medium">
+                              Upload
+                            </th>
+                            <th className="py-2 px-4 text-right font-medium">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {bandwidthHistory.slice(-10).map((record: any, idx: number) => (
+                            <tr key={idx} className="border-b border-border">
+                              <td className="py-3 px-4 text-sm">
+                                {new Date(record.timestamp).toLocaleTimeString()}
+                              </td>
+                              <td className="py-3 px-4 text-right text-sm">
+                                {record.downloadMBps.toFixed(2)} Mbps
+                              </td>
+                              <td className="py-3 px-4 text-right text-sm">
+                                {record.uploadMBps.toFixed(2)} Mbps
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <Badge
+                                  variant={
+                                    record.status === "normal"
+                                      ? "default"
+                                      : "destructive"
+                                  }
+                                  className="text-xs capitalize"
+                                >
+                                  {record.status}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* RouterOS Settings Tab */}
           <TabsContent value="routeros" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
