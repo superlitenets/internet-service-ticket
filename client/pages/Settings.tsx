@@ -761,6 +761,10 @@ export default function SettingsPage() {
               <DollarSign size={16} />
               <span className="hidden sm:inline">MPESA</span>
             </TabsTrigger>
+            <TabsTrigger value="mikrotik" className="gap-2">
+              <Network size={16} />
+              <span className="hidden sm:inline">Mikrotik</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* SMS Notification Settings */}
