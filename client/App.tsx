@@ -42,12 +42,12 @@ const AppRoutes = () => (
     <Route path="/payroll" element={<Payroll />} />
     <Route path="/performance" element={<Performance />} />
     <Route path="/payments" element={<Payments />} />
-    <Route path="/mikrotik" element={<Mikrotik />} />
-    <Route path="/mikrotik/accounts" element={<MikrotikAccounts />} />
     <Route path="/mikrotik/accounts/:accountId" element={<AccountDetail />} />
+    <Route path="/mikrotik/accounts" element={<MikrotikAccounts />} />
     <Route path="/mikrotik/billing" element={<MikrotikBilling />} />
     <Route path="/mikrotik/monitoring" element={<MikrotikMonitoring />} />
     <Route path="/mikrotik/management" element={<MikrotikManagement />} />
+    <Route path="/mikrotik" element={<Mikrotik />} />
     <Route path="/reports" element={<Reports />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
