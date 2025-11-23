@@ -58,6 +58,14 @@ import {
   getRouterOSPPPoEConnections,
   getRouterOSHotspotUsers,
   getRouterOSQueues,
+  startBandwidthMonitoring,
+  stopBandwidthMonitoring,
+  getBandwidthHistory,
+  getPeakUsageTime,
+  getAverageUsage,
+  getQuotaAlerts,
+  getAccountQuotaAlerts,
+  getMonitoringStatus,
 } from "./routes/mikrotik";
 
 export function createServer() {
