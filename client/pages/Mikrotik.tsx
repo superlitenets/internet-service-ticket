@@ -104,8 +104,17 @@ export default function MikrotikPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(["Accounts"]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const toggleTabGroup = (groupName: string) => {
+    setExpandedGroups((prev) =>
+      prev.includes(groupName)
+        ? prev.filter((g) => g !== groupName)
+        : [...prev, groupName]
+    );
+  };
 
   // Mikrotik Instance State
   const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
