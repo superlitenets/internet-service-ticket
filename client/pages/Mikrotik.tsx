@@ -904,6 +904,15 @@ export default function MikrotikPage() {
       inv.customerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Log component state for debugging
+  useEffect(() => {
+    console.log("Mikrotik component mounted. Current state:", {
+      accountsCount: accounts.length,
+      plansCount: plans.length,
+      statsLoaded: stats.totalAccounts !== undefined,
+    });
+  }, [accounts, plans, stats]);
+
   return (
     <Layout>
       <div className="p-6 md:p-8 space-y-8">
