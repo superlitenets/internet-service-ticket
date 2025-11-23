@@ -801,29 +801,33 @@ export default function MikrotikPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="dashboard" className="gap-2">
-              <TrendingUp size={16} />
+          <TabsList className="grid w-full grid-cols-7 text-xs">
+            <TabsTrigger value="dashboard" className="gap-1">
+              <TrendingUp size={14} />
               <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="accounts" className="gap-2">
-              <Users size={16} />
+            <TabsTrigger value="accounts" className="gap-1">
+              <Users size={14} />
               <span className="hidden sm:inline">Accounts</span>
             </TabsTrigger>
-            <TabsTrigger value="invoices" className="gap-2">
-              <FileText size={16} />
+            <TabsTrigger value="invoices" className="gap-1">
+              <FileText size={14} />
               <span className="hidden sm:inline">Invoices</span>
             </TabsTrigger>
-            <TabsTrigger value="plans" className="gap-2">
-              <DollarSign size={16} />
+            <TabsTrigger value="plans" className="gap-1">
+              <DollarSign size={14} />
               <span className="hidden sm:inline">Plans</span>
             </TabsTrigger>
-            <TabsTrigger value="bandwidth" className="gap-2">
-              <TrendingUp size={16} />
+            <TabsTrigger value="bandwidth" className="gap-1">
+              <TrendingUp size={14} />
               <span className="hidden sm:inline">Bandwidth</span>
             </TabsTrigger>
-            <TabsTrigger value="routeros" className="gap-2">
-              <Network size={16} />
+            <TabsTrigger value="billing" className="gap-1">
+              <DollarSign size={14} />
+              <span className="hidden sm:inline">Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="routeros" className="gap-1">
+              <Network size={14} />
               <span className="hidden sm:inline">RouterOS</span>
             </TabsTrigger>
           </TabsList>
