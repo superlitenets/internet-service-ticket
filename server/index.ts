@@ -18,6 +18,13 @@ import {
   handleSendWhatsApp,
   testWhatsAppConnection,
 } from "./routes/whatsapp";
+import {
+  handleSendWhatsAppUnified,
+  handleInitWhatsAppWeb,
+  handleGetQRCode,
+  handleCheckWhatsAppStatus,
+  handleLogoutWhatsAppWeb,
+} from "./routes/whatsapp-unified";
 
 export function createServer() {
   const app = express();
@@ -63,6 +70,13 @@ export function createServer() {
   // WhatsApp API endpoints
   app.post("/api/whatsapp/send", handleSendWhatsApp);
   app.post("/api/whatsapp/test", testWhatsAppConnection);
+
+  // Unified WhatsApp endpoints (Business API + Web with failover)
+  app.post("/api/whatsapp/send-unified", handleSendWhatsAppUnified);
+  app.post("/api/whatsapp/web/init", handleInitWhatsAppWeb);
+  app.get("/api/whatsapp/web/qrcode", handleGetQRCode);
+  app.get("/api/whatsapp/web/status", handleCheckWhatsAppStatus);
+  app.post("/api/whatsapp/web/logout", handleLogoutWhatsAppWeb);
 
   return app;
 }
