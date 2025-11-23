@@ -557,7 +557,7 @@ export default function TicketsPage() {
                       <td className="px-6 py-4 text-sm font-semibold text-primary">
                         {ticket.id}
                       </td>
-                      <td className="px-6 py-4 text-sm text-foreground">
+                      <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
                         {ticket.customer}
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
