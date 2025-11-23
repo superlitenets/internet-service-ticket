@@ -149,7 +149,7 @@ export const getMikrotikAccounts: RequestHandler = (req, res) => {
 /**
  * Create new Mikrotik account
  */
-export const createMikrotikAccount: RequestHandler = (req, res) => {
+export const createMikrotikAccount: RequestHandler = async (req, res) => {
   try {
     const {
       customerName,
@@ -213,10 +213,30 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
 
     data.accounts.push(newAccount);
 
+    // Sync to RADIUS if enabled
+    let radiusSync: any = { skipped: true };
+    if (data.radiusConfig?.enabled && data.radiusConfig.syncOnCreate) {
+      const radiusClient = getRADIUSClient(data.radiusConfig);
+      const users = [
+        {
+          username: newAccount.pppoeUsername,
+          password: newAccount.pppoePassword,
+          userType: "pppoe" as const,
+        },
+        {
+          username: newAccount.hotspotUsername,
+          password: newAccount.hotspotPassword,
+          userType: "hotspot" as const,
+        },
+      ];
+      radiusSync = await radiusClient.createUsers(users);
+    }
+
     return res.json({
       success: true,
       message: "Account created successfully",
       account: newAccount,
+      radiusSync,
     });
   } catch (error) {
     return res.status(500).json({
