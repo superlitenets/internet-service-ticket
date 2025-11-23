@@ -1119,3 +1119,172 @@ export async function getNotificationStatsAPI(): Promise<any> {
     );
   }
 }
+
+/**
+ * Get dashboard analytics
+ */
+export async function getDashboardAnalytics(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/analytics/dashboard");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch dashboard analytics");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch dashboard analytics"
+    );
+  }
+}
+
+/**
+ * Get revenue analytics
+ */
+export async function getRevenueAnalytics(startDate?: string, endDate?: string): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/analytics/revenue", window.location.origin);
+    if (startDate) url.searchParams.append("startDate", startDate);
+    if (endDate) url.searchParams.append("endDate", endDate);
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch revenue analytics");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch revenue analytics"
+    );
+  }
+}
+
+/**
+ * Get monthly revenue trend
+ */
+export async function getMonthlyRevenueTrend(months: number = 12): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/analytics/revenue-trend", window.location.origin);
+    url.searchParams.append("months", months.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch revenue trend");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch revenue trend"
+    );
+  }
+}
+
+/**
+ * Get account growth trend
+ */
+export async function getAccountGrowthTrend(months: number = 12): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/analytics/account-trend", window.location.origin);
+    url.searchParams.append("months", months.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch account trend");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch account trend"
+    );
+  }
+}
+
+/**
+ * Get payment method distribution
+ */
+export async function getPaymentMethodDistribution(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/analytics/payment-methods");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch payment methods");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch payment methods"
+    );
+  }
+}
+
+/**
+ * Get service plan distribution
+ */
+export async function getServicePlanDistribution(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/analytics/service-plans");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch service plans");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch service plans"
+    );
+  }
+}
+
+/**
+ * Get top customers by revenue
+ */
+export async function getTopCustomersByRevenue(limit: number = 10): Promise<any> {
+  try {
+    const url = new URL("/api/mikrotik/analytics/top-customers", window.location.origin);
+    url.searchParams.append("limit", limit.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch top customers");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch top customers"
+    );
+  }
+}
+
+/**
+ * Generate monthly billing report
+ */
+export async function generateMonthlyBillingReport(month: number, year: number): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/analytics/monthly-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ month, year }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate monthly report");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to generate monthly report"
+    );
+  }
+}
