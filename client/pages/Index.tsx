@@ -279,9 +279,7 @@ export default function Dashboard() {
                       <div className="space-y-2">
                         <Badge
                           variant="outline"
-                          className={`gap-1.5 ${getStatusColor(
-                            ticket.status,
-                          )}`}
+                          className={`gap-1.5 ${getStatusColor(ticket.status)}`}
                         >
                           {getStatusIcon(ticket.status)}
                           {ticket.status === "in-progress"
