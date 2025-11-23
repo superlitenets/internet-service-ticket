@@ -340,8 +340,10 @@ export const deleteMikrotikAccount: RequestHandler = (req, res) => {
 export const regenerateAccountCredentials: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const { instanceId } = req.body;
+    const data = getInstanceData(instanceId);
 
-    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+    const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
 
     if (accountIndex === -1) {
       return res.status(404).json({
@@ -351,11 +353,11 @@ export const regenerateAccountCredentials: RequestHandler = (req, res) => {
       });
     }
 
-    const account = accounts[accountIndex];
+    const account = data.accounts[accountIndex];
     const credentials = generatePPPoECredentials(account.accountNumber);
 
-    accounts[accountIndex] = {
-      ...accounts[accountIndex],
+    data.accounts[accountIndex] = {
+      ...data.accounts[accountIndex],
       ...credentials,
       updatedAt: new Date().toISOString(),
     };
@@ -363,7 +365,7 @@ export const regenerateAccountCredentials: RequestHandler = (req, res) => {
     return res.json({
       success: true,
       message: "Account credentials regenerated successfully",
-      account: accounts[accountIndex],
+      account: data.accounts[accountIndex],
     });
   } catch (error) {
     return res.status(500).json({
@@ -378,10 +380,12 @@ export const regenerateAccountCredentials: RequestHandler = (req, res) => {
 /**
  * Get all billing plans
  */
-export const getMikrotikPlans: RequestHandler = (_req, res) => {
+export const getMikrotikPlans: RequestHandler = (req, res) => {
   try {
-    initializeDefaultPlans();
-    return res.json(plans);
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
+    initializeDefaultPlans(instanceId);
+    return res.json(data.plans);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -397,7 +401,7 @@ export const getMikrotikPlans: RequestHandler = (_req, res) => {
  */
 export const createMikrotikPlan: RequestHandler = (req, res) => {
   try {
-    const { planName, planType, monthlyFee, description } = req.body;
+    const { planName, planType, monthlyFee, description, instanceId } = req.body;
 
     if (!planName || !planType || monthlyFee === undefined) {
       return res.status(400).json({
@@ -406,6 +410,8 @@ export const createMikrotikPlan: RequestHandler = (req, res) => {
         error: "Validation error",
       });
     }
+
+    const data = getInstanceData(instanceId);
 
     const newPlan: MikrotikPlan = {
       id: `PLAN-${Date.now()}`,
@@ -430,7 +436,7 @@ export const createMikrotikPlan: RequestHandler = (req, res) => {
       newPlan.speed = req.body.speed;
     }
 
-    plans.push(newPlan);
+    data.plans.push(newPlan);
 
     return res.json({
       success: true,
@@ -452,9 +458,10 @@ export const createMikrotikPlan: RequestHandler = (req, res) => {
  */
 export const generateInvoice: RequestHandler = (req, res) => {
   try {
-    const { accountId, billingPeriod } = req.body;
+    const { accountId, billingPeriod, instanceId } = req.body;
+    const data = getInstanceData(instanceId);
 
-    const account = accounts.find((a) => a.id === accountId);
+    const account = data.accounts.find((a) => a.id === accountId);
 
     if (!account) {
       return res.status(404).json({
@@ -471,7 +478,7 @@ export const generateInvoice: RequestHandler = (req, res) => {
 
     const newInvoice: MikrotikInvoice = {
       id: `INV-${Date.now()}`,
-      invoiceNumber: `INV-${invoices.length + 1000}`,
+      invoiceNumber: `INV-${data.invoices.length + 1000}`,
       accountId,
       accountNumber: account.accountNumber,
       customerName: account.customerName,
