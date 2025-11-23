@@ -563,3 +563,194 @@ export async function getRouterOSQueues(): Promise<any> {
     );
   }
 }
+
+/**
+ * Start bandwidth monitoring for an account
+ */
+export async function startBandwidthMonitoring(accountId: string): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/bandwidth/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to start bandwidth monitoring");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to start bandwidth monitoring"
+    );
+  }
+}
+
+/**
+ * Stop bandwidth monitoring for an account
+ */
+export async function stopBandwidthMonitoring(accountId: string): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/bandwidth/stop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to stop bandwidth monitoring");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Failed to stop bandwidth monitoring"
+    );
+  }
+}
+
+/**
+ * Get bandwidth usage history for an account
+ */
+export async function getBandwidthHistory(
+  accountId: string,
+  hours: number = 24
+): Promise<any> {
+  try {
+    const url = new URL(
+      `/api/mikrotik/bandwidth/history/${accountId}`,
+      window.location.origin
+    );
+    url.searchParams.append("hours", hours.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch bandwidth history");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch bandwidth history"
+    );
+  }
+}
+
+/**
+ * Get peak usage time for an account
+ */
+export async function getPeakUsageTime(
+  accountId: string,
+  hours: number = 24
+): Promise<any> {
+  try {
+    const url = new URL(
+      `/api/mikrotik/bandwidth/peak/${accountId}`,
+      window.location.origin
+    );
+    url.searchParams.append("hours", hours.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch peak usage time");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch peak usage time"
+    );
+  }
+}
+
+/**
+ * Get average bandwidth usage for an account
+ */
+export async function getAverageBandwidthUsage(
+  accountId: string,
+  hours: number = 24
+): Promise<any> {
+  try {
+    const url = new URL(
+      `/api/mikrotik/bandwidth/average/${accountId}`,
+      window.location.origin
+    );
+    url.searchParams.append("hours", hours.toString());
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch average usage");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch average usage"
+    );
+  }
+}
+
+/**
+ * Get all quota alerts
+ */
+export async function getAllQuotaAlerts(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/bandwidth/alerts");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch quota alerts");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch quota alerts"
+    );
+  }
+}
+
+/**
+ * Get quota alerts for a specific account
+ */
+export async function getAccountQuotaAlerts(accountId: string): Promise<any> {
+  try {
+    const response = await fetch(`/api/mikrotik/bandwidth/alerts/${accountId}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch account alerts");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch account alerts"
+    );
+  }
+}
+
+/**
+ * Get bandwidth monitoring status
+ */
+export async function getMonitoringStatus(): Promise<any> {
+  try {
+    const response = await fetch("/api/mikrotik/bandwidth/status");
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch monitoring status");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch monitoring status"
+    );
+  }
+}
