@@ -31,6 +31,9 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
+  Settings,
+  Network,
+  Loader,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
