@@ -496,14 +496,14 @@ export const generateInvoice: RequestHandler = (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    invoices.push(newInvoice);
+    data.invoices.push(newInvoice);
 
     // Update account outstanding balance
-    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+    const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
     if (accountIndex !== -1) {
-      accounts[accountIndex].outstandingBalance += total;
-      accounts[accountIndex].lastBillingDate = new Date().toISOString();
-      accounts[accountIndex].nextBillingDate = new Date(
+      data.accounts[accountIndex].outstandingBalance += total;
+      data.accounts[accountIndex].lastBillingDate = new Date().toISOString();
+      data.accounts[accountIndex].nextBillingDate = new Date(
         Date.now() + 30 * 24 * 60 * 60 * 1000
       ).toISOString();
     }
@@ -529,8 +529,10 @@ export const generateInvoice: RequestHandler = (req, res) => {
 export const getAccountInvoices: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
 
-    const accountInvoices = invoices.filter((i) => i.accountId === accountId);
+    const accountInvoices = data.invoices.filter((i) => i.accountId === accountId);
 
     return res.json(accountInvoices);
   } catch (error) {
@@ -548,7 +550,7 @@ export const getAccountInvoices: RequestHandler = (req, res) => {
  */
 export const recordPayment: RequestHandler = (req, res) => {
   try {
-    const { accountId, invoiceId, amount, paymentMethod, mpesaReceiptNumber } =
+    const { accountId, invoiceId, amount, paymentMethod, mpesaReceiptNumber, instanceId } =
       req.body;
 
     if (!accountId || !amount || !paymentMethod) {
@@ -559,7 +561,8 @@ export const recordPayment: RequestHandler = (req, res) => {
       });
     }
 
-    const account = accounts.find((a) => a.id === accountId);
+    const data = getInstanceData(instanceId);
+    const account = data.accounts.find((a) => a.id === accountId);
 
     if (!account) {
       return res.status(404).json({
@@ -571,7 +574,7 @@ export const recordPayment: RequestHandler = (req, res) => {
 
     const newPayment: MikrotikPayment = {
       id: `PAY-${Date.now()}`,
-      paymentId: `PAY-${payments.length + 1000}`,
+      paymentId: `PAY-${data.payments.length + 1000}`,
       accountId,
       accountNumber: account.accountNumber,
       invoiceId,
