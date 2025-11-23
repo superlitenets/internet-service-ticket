@@ -465,7 +465,10 @@ export default function MikrotikPage() {
       }
 
       setTestingConnection(true);
-      const result = await testRouterOSConnection(routerOSConfigForm);
+      const result = await testRouterOSConnection({
+        ...routerOSConfigForm,
+        instanceId: selectedInstance?.id,
+      });
 
       if (result.success) {
         setDeviceInfo(result.deviceInfo);
@@ -475,7 +478,10 @@ export default function MikrotikPage() {
         });
 
         // Save configuration
-        await updateRouterOSConfig(routerOSConfigForm);
+        await updateRouterOSConfig({
+          ...routerOSConfigForm,
+          instanceId: selectedInstance?.id,
+        });
         setRouterOSConfig(routerOSConfigForm);
       } else {
         toast({
@@ -499,7 +505,7 @@ export default function MikrotikPage() {
   const handleLoadDeviceInfo = async () => {
     try {
       setLoading(true);
-      const result = await getRouterOSDeviceInfo();
+      const result = await getRouterOSDeviceInfo(selectedInstance?.id);
       if (result.success) {
         setDeviceInfo(result.deviceInfo);
         toast({
@@ -522,7 +528,7 @@ export default function MikrotikPage() {
   const handleLoadInterfaceStats = async () => {
     try {
       setLoading(true);
-      const result = await getRouterOSInterfaceStats();
+      const result = await getRouterOSInterfaceStats(undefined, selectedInstance?.id);
       if (result.success) {
         setInterfaceStats(result.interfaces);
         toast({
@@ -545,7 +551,7 @@ export default function MikrotikPage() {
   const handleLoadPPPoEConnections = async () => {
     try {
       setLoading(true);
-      const result = await getRouterOSPPPoEConnections();
+      const result = await getRouterOSPPPoEConnections(selectedInstance?.id);
       if (result.success) {
         setPPPoEConnections(result.connections);
         toast({
@@ -567,7 +573,7 @@ export default function MikrotikPage() {
 
   const loadMonitoringStatus = async () => {
     try {
-      const result = await getMonitoringStatus();
+      const result = await getMonitoringStatus(selectedInstance?.id);
       if (result.success) {
         setMonitoringStatus(result.status);
       }
@@ -578,7 +584,7 @@ export default function MikrotikPage() {
 
   const loadBillingStatus = async () => {
     try {
-      const result = await getBillingAutomationStatus();
+      const result = await getBillingAutomationStatus(selectedInstance?.id);
       if (result.success) {
         setBillingStatus(result.status);
       }
@@ -589,7 +595,7 @@ export default function MikrotikPage() {
 
   const loadNotificationStats = async () => {
     try {
-      const result = await getNotificationStatsAPI();
+      const result = await getNotificationStatsAPI(selectedInstance?.id);
       if (result.success) {
         setNotificationStats(result.stats);
       }
