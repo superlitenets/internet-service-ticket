@@ -216,7 +216,32 @@ export default function SettingsPage() {
   const [testingRadius, setTestingRadius] = useState(false);
   const [selectedInstanceForRadius, setSelectedInstanceForRadius] = useState<string>("");
 
-  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, Company settings, and Mikrotik instances from storage on mount
+  // Load RADIUS config when selected instance changes
+  useEffect(() => {
+    if (selectedInstanceForRadius) {
+      const loadRadiusConfig = async () => {
+        try {
+          const config = await getRADIUSConfig(selectedInstanceForRadius);
+          if (config) {
+            setRadiusConfig(config);
+            setRadiusForm({
+              host: config.host || "",
+              port: config.port || 1812,
+              sharedSecret: "",
+              syncOnCreate: config.syncOnCreate !== false,
+              syncOnUpdate: config.syncOnUpdate !== false,
+              syncOnDelete: config.syncOnDelete !== false,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to load RADIUS config:", error);
+        }
+      };
+      loadRadiusConfig();
+    }
+  }, [selectedInstanceForRadius]);
+
+  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, Company settings, Mikrotik instances, and RADIUS config from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
@@ -234,6 +259,9 @@ export default function SettingsPage() {
     setCompanySettings(companyConfig);
     const instances = getMikrotikInstances();
     setMikrotikInstances(instances);
+    if (instances.length > 0) {
+      setSelectedInstanceForRadius(instances[0].id);
+    }
   }, []);
 
   // Notification Preferences State
