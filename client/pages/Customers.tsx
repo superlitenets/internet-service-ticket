@@ -62,7 +62,7 @@ interface Customer {
   status: "active" | "inactive" | "suspended";
   createdAt: string;
   ticketCount: number;
-  mikrotikAccountId?: string; // Link to Mikrotik account
+  mikrotikAccountId?: string;
 }
 
 export default function CustomersPage() {
@@ -79,8 +79,6 @@ export default function CustomersPage() {
   // Mikrotik states
   const [mikrotikAccounts, setMikrotikAccounts] = useState<MikrotikAccount[]>([]);
   const [mikrotikPlans, setMikrotikPlans] = useState<MikrotikPlan[]>([]);
-  const [allInvoices, setAllInvoices] = useState<MikrotikInvoice[]>([]);
-  const [selectedInvoice, setSelectedInvoice] = useState<MikrotikInvoice | null>(null);
   const [paymentDialog, setPaymentDialog] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -337,52 +335,6 @@ export default function CustomersPage() {
     }
   };
 
-  const handleRecordPayment = async () => {
-    try {
-      if (!selectedInvoice || !paymentForm.amount) {
-        toast({
-          title: "Error",
-          description: "Please enter payment amount",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setLoading(true);
-      await recordPayment({
-        accountId: selectedInvoice.accountId,
-        invoiceId: selectedInvoice.id,
-        amount: paymentForm.amount,
-        paymentMethod: paymentForm.paymentMethod,
-        mpesaReceiptNumber: paymentForm.mpesaReceiptNumber || undefined,
-      });
-
-      toast({
-        title: "Success",
-        description: "Payment recorded successfully",
-      });
-
-      setPaymentDialog(false);
-      setSelectedInvoice(null);
-      setPaymentForm({
-        amount: 0,
-        paymentMethod: "mpesa",
-        mpesaReceiptNumber: "",
-      });
-
-      loadMikrotikData();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to record payment",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const getMikrotikAccount = (customerId: string) => {
     const customer = customers.find((c) => c.id === customerId);
     if (!customer?.mikrotikAccountId) return null;
@@ -496,205 +448,254 @@ export default function CustomersPage() {
               </div>
             </Card>
 
-            {/* Customers Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCustomers.length > 0 ? (
-                filteredCustomers.map((customer) => {
-                  const mikrotikAccount = getMikrotikAccount(customer.id);
-                  const isExpanded = expandedCustomer === customer.id;
-
-                  return (
-                    <Card
-                      key={customer.id}
-                      className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow flex flex-col"
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-foreground text-lg mb-1">
-                            {customer.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {customer.company}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 mb-4 flex-1">
-                        <div className="flex items-center gap-2 text-sm text-foreground">
-                          <Mail size={14} className="text-muted-foreground" />
-                          {customer.email}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-foreground">
-                          <Phone size={14} className="text-muted-foreground" />
-                          {customer.phone}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-foreground">
-                          <MapPin size={14} className="text-muted-foreground" />
-                          {customer.city}, {customer.state}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 mb-4 pt-4 border-t border-border">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
-                            Service Plan
-                          </span>
-                          <Badge
-                            className={getPlanColor(customer.plan)}
-                            variant="secondary"
-                          >
-                            {customer.plan.charAt(0).toUpperCase() +
-                              customer.plan.slice(1)}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
-                            Status
-                          </span>
-                          <Badge
-                            className={getStatusColor(customer.status)}
-                            variant="secondary"
-                          >
-                            {customer.status.charAt(0).toUpperCase() +
-                              customer.status.slice(1)}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
-                            Tickets
-                          </span>
-                          <span className="font-semibold text-foreground">
-                            {customer.ticketCount}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Mikrotik Section */}
-                      <div className="pt-4 border-t border-border">
-                        <button
-                          onClick={() =>
-                            setExpandedCustomer(
-                              isExpanded ? null : customer.id,
-                            )
-                          }
-                          className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors"
+            {/* Customers Table */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Name
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Company
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Email
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Phone
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        City/State
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Plan
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        Status
+                      </th>
+                      <th className="text-center py-3 px-4 font-semibold text-foreground">
+                        Tickets
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-foreground">
+                        ISP
+                      </th>
+                      <th className="text-center py-3 px-4 font-semibold text-foreground">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredCustomers.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={10}
+                          className="text-center py-8 text-muted-foreground"
                         >
-                          <div className="flex items-center gap-2">
-                            <Wifi size={14} className="text-blue-600" />
-                            <span className="text-sm font-medium text-foreground">
-                              ISP Billing
-                            </span>
-                          </div>
-                          {isExpanded ? (
-                            <ChevronUp size={16} />
-                          ) : (
-                            <ChevronDown size={16} />
-                          )}
-                        </button>
+                          No customers found
+                        </td>
+                      </tr>
+                    ) : null}
+                    {filteredCustomers.map((customer) => {
+                      const mikrotikAccount = getMikrotikAccount(customer.id);
+                      const isExpanded = expandedCustomer === customer.id;
 
-                        {isExpanded && (
-                          <div className="mt-3 space-y-3 pl-6 border-l-2 border-blue-200">
-                            {mikrotikAccount ? (
-                              <>
-                                <div>
-                                  <p className="text-xs text-muted-foreground">
-                                    Account
-                                  </p>
-                                  <p className="font-mono text-xs text-foreground">
-                                    {mikrotikAccount.accountNumber}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-muted-foreground">
-                                    Balance
-                                  </p>
-                                  <p className="font-semibold text-foreground">
-                                    KES{" "}
-                                    {mikrotikAccount.balance.toLocaleString()}
-                                  </p>
-                                </div>
-                                <div>
-                                  <p className="text-xs text-muted-foreground">
-                                    Outstanding
-                                  </p>
-                                  <p className="text-xs text-red-600">
-                                    KES{" "}
-                                    {mikrotikAccount.outstandingBalance.toLocaleString()}
-                                  </p>
-                                </div>
-                                <div className="flex gap-1 pt-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="flex-1 text-xs"
-                                    onClick={() =>
-                                      handleGenerateInvoice(
-                                        mikrotikAccount.id,
-                                      )
-                                    }
-                                    disabled={loading}
-                                  >
-                                    <FileText size={12} />
-                                    Invoice
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="flex-1 text-xs"
-                                  >
-                                    <CreditCard size={12} />
-                                    Pay
-                                  </Button>
-                                </div>
-                              </>
-                            ) : (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="w-full text-xs gap-1"
-                                onClick={() =>
-                                  handleCreateMikrotikAccount(customer)
-                                }
-                                disabled={loading}
+                      return (
+                        <tbody key={customer.id}>
+                          <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+                            <td className="py-3 px-4 font-medium text-foreground whitespace-nowrap">
+                              {customer.name}
+                            </td>
+                            <td className="py-3 px-4 text-foreground">
+                              {customer.company}
+                            </td>
+                            <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">
+                              {customer.email}
+                            </td>
+                            <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">
+                              {customer.phone}
+                            </td>
+                            <td className="py-3 px-4 text-muted-foreground">
+                              {customer.city}, {customer.state}
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge
+                                className={getPlanColor(customer.plan)}
+                                variant="secondary"
                               >
-                                <Plus size={12} />
-                                Add ISP Account
-                              </Button>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                                {customer.plan
+                                  .charAt(0)
+                                  .toUpperCase() + customer.plan.slice(1)}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Badge
+                                className={getStatusColor(customer.status)}
+                                variant="secondary"
+                              >
+                                {customer.status
+                                  .charAt(0)
+                                  .toUpperCase() + customer.status.slice(1)}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-4 text-center font-semibold text-foreground">
+                              {customer.ticketCount}
+                            </td>
+                            <td className="py-3 px-4">
+                              <button
+                                onClick={() =>
+                                  setExpandedCustomer(
+                                    isExpanded ? null : customer.id,
+                                  )
+                                }
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-md hover:bg-muted/50 transition-colors"
+                                title="Toggle ISP billing details"
+                              >
+                                <Wifi size={14} className="text-blue-600" />
+                                {isExpanded ? (
+                                  <ChevronUp size={14} />
+                                ) : (
+                                  <ChevronDown size={14} />
+                                )}
+                              </button>
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex gap-1 justify-center">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenDialog(customer)}
+                                  title="Edit"
+                                >
+                                  <Edit size={14} />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => setDeleteConfirm(customer.id)}
+                                  title="Delete"
+                                >
+                                  <Trash2 size={14} />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
 
-                      <div className="flex gap-2 pt-4 border-t border-border">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 gap-1"
-                          onClick={() => handleOpenDialog(customer)}
-                        >
-                          <Edit size={14} />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => setDeleteConfirm(customer.id)}
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </Card>
-                  );
-                })
-              ) : (
-                <div className="col-span-full py-12 text-center">
-                  <p className="text-muted-foreground">
-                    No customers found. Create one to get started.
-                  </p>
-                </div>
-              )}
-            </div>
+                          {isExpanded && (
+                            <tr className="border-b border-border bg-blue-50">
+                              <td colSpan={10} className="py-4 px-4">
+                                <div className="space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <Wifi size={16} className="text-blue-600" />
+                                    <h4 className="font-semibold text-foreground">
+                                      ISP Billing Details
+                                    </h4>
+                                  </div>
+
+                                  {mikrotikAccount ? (
+                                    <>
+                                      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                                        <div className="bg-white rounded-lg p-3 border border-border">
+                                          <p className="text-xs text-muted-foreground mb-1">
+                                            Account Number
+                                          </p>
+                                          <p className="font-mono font-semibold text-foreground text-sm">
+                                            {mikrotikAccount.accountNumber}
+                                          </p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-border">
+                                          <p className="text-xs text-muted-foreground mb-1">
+                                            Plan
+                                          </p>
+                                          <p className="font-semibold text-foreground text-sm">
+                                            {mikrotikAccount.planName}
+                                          </p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-border">
+                                          <p className="text-xs text-muted-foreground mb-1">
+                                            Balance
+                                          </p>
+                                          <p className="font-semibold text-green-600 text-sm">
+                                            KES{" "}
+                                            {mikrotikAccount.balance.toLocaleString()}
+                                          </p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-border">
+                                          <p className="text-xs text-muted-foreground mb-1">
+                                            Outstanding
+                                          </p>
+                                          <p className="font-semibold text-red-600 text-sm">
+                                            KES{" "}
+                                            {mikrotikAccount.outstandingBalance.toLocaleString()}
+                                          </p>
+                                        </div>
+                                        <div className="bg-white rounded-lg p-3 border border-border">
+                                          <p className="text-xs text-muted-foreground mb-1">
+                                            Status
+                                          </p>
+                                          <Badge
+                                            className="capitalize"
+                                            variant={
+                                              mikrotikAccount.status === "active"
+                                                ? "default"
+                                                : "destructive"
+                                            }
+                                          >
+                                            {mikrotikAccount.status}
+                                          </Badge>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex gap-2 mt-3">
+                                        <Button
+                                          size="sm"
+                                          className="gap-2"
+                                          onClick={() =>
+                                            handleGenerateInvoice(
+                                              mikrotikAccount.id,
+                                            )
+                                          }
+                                          disabled={loading}
+                                        >
+                                          <FileText size={14} />
+                                          Generate Invoice
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="gap-2"
+                                        >
+                                          <CreditCard size={14} />
+                                          Record Payment
+                                        </Button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      className="gap-2"
+                                      onClick={() =>
+                                        handleCreateMikrotikAccount(customer)
+                                      }
+                                      disabled={loading}
+                                    >
+                                      <Plus size={14} />
+                                      Create ISP Account
+                                    </Button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           </TabsContent>
 
           {/* Mikrotik Billing Tab */}
@@ -741,7 +742,7 @@ export default function CustomersPage() {
                             colSpan={6}
                             className="text-center py-8 text-muted-foreground"
                           >
-                            No ISP billing accounts. Link a customer to create one.
+                            No ISP billing accounts
                           </td>
                         </tr>
                       ) : (
@@ -755,10 +756,8 @@ export default function CustomersPage() {
                                 {account.accountNumber}
                               </p>
                             </td>
-                            <td className="py-3 px-4">
-                              <p className="text-foreground">
-                                {account.customerName}
-                              </p>
+                            <td className="py-3 px-4 text-foreground">
+                              {account.customerName}
                             </td>
                             <td className="py-3 px-4 text-sm">
                               {account.planName}
@@ -775,12 +774,11 @@ export default function CustomersPage() {
                                 {account.status}
                               </Badge>
                             </td>
-                            <td className="py-3 px-4 text-right font-semibold text-foreground">
+                            <td className="py-3 px-4 text-right font-semibold text-green-600">
                               KES {account.balance.toLocaleString()}
                             </td>
-                            <td className="py-3 px-4 text-right text-red-600">
-                              KES{" "}
-                              {account.outstandingBalance.toLocaleString()}
+                            <td className="py-3 px-4 text-right font-semibold text-red-600">
+                              KES {account.outstandingBalance.toLocaleString()}
                             </td>
                           </tr>
                         ))
@@ -1012,107 +1010,6 @@ export default function CustomersPage() {
                 onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
               >
                 Delete
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Payment Dialog */}
-        <Dialog open={paymentDialog} onOpenChange={setPaymentDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Record Payment</DialogTitle>
-              <DialogDescription>
-                {selectedInvoice &&
-                  `Payment for invoice ${selectedInvoice.invoiceNumber}`}
-              </DialogDescription>
-            </DialogHeader>
-
-            {selectedInvoice && (
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Invoice Amount:
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      KES {selectedInvoice.total.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Payment Amount (KES)
-                  </label>
-                  <Input
-                    type="number"
-                    value={paymentForm.amount}
-                    onChange={(e) =>
-                      setPaymentForm({
-                        ...paymentForm,
-                        amount: parseFloat(e.target.value),
-                      })
-                    }
-                    placeholder="0"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Payment Method
-                  </label>
-                  <Select
-                    value={paymentForm.paymentMethod}
-                    onValueChange={(value) =>
-                      setPaymentForm({
-                        ...paymentForm,
-                        paymentMethod: value as any,
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mpesa">M-Pesa</SelectItem>
-                      <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="cheque">Cheque</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {paymentForm.paymentMethod === "mpesa" && (
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      M-Pesa Receipt Number
-                    </label>
-                    <Input
-                      value={paymentForm.mpesaReceiptNumber}
-                      onChange={(e) =>
-                        setPaymentForm({
-                          ...paymentForm,
-                          mpesaReceiptNumber: e.target.value,
-                        })
-                      }
-                      placeholder="e.g., RVFT1234567"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setPaymentDialog(false)}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleRecordPayment} disabled={loading}>
-                {loading ? "Processing..." : "Record Payment"}
               </Button>
             </DialogFooter>
           </DialogContent>
