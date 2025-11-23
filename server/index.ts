@@ -219,5 +219,15 @@ export function createServer() {
   app.get("/api/mikrotik/notifications/templates", getNotificationTemplates);
   app.get("/api/mikrotik/notifications/stats", getNotificationStats);
 
+  // Analytics & Reporting
+  app.get("/api/mikrotik/analytics/dashboard", getDashboardAnalytics);
+  app.get("/api/mikrotik/analytics/revenue", getRevenueAnalytics);
+  app.get("/api/mikrotik/analytics/revenue-trend", getMonthlyRevenueTrend);
+  app.get("/api/mikrotik/analytics/account-trend", getAccountGrowthTrend);
+  app.get("/api/mikrotik/analytics/payment-methods", getPaymentMethodDistribution);
+  app.get("/api/mikrotik/analytics/service-plans", getServicePlanDistribution);
+  app.get("/api/mikrotik/analytics/top-customers", getTopCustomers);
+  app.post("/api/mikrotik/analytics/monthly-report", generateMonthlyBillingReport);
+
   return app;
 }
