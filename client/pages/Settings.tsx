@@ -1678,6 +1678,23 @@ export default function SettingsPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
+                      Account Prefix
+                    </label>
+                    <Input
+                      value={companySettings.prefix}
+                      onChange={(e) =>
+                        handleCompanySettingChange("prefix", e.target.value.toUpperCase())
+                      }
+                      placeholder="ACC"
+                      maxLength={10}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Used for generating account numbers (e.g., {companySettings.prefix}-1000)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Timezone
                     </label>
                     <Select
