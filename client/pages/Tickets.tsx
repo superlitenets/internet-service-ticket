@@ -11,6 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   AlertCircle,
   CheckCircle2,
   Clock,
@@ -18,13 +26,19 @@ import {
   Search,
   Filter,
   MessageCircle,
+  Edit,
+  Trash2,
+  Send,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { sendSmsToPhone } from "@/lib/sms-client";
 
 interface Ticket {
   id: string;
   customer: string;
+  customerEmail: string;
+  customerPhone: string;
   title: string;
   description: string;
   status: "open" | "in-progress" | "pending" | "resolved";
@@ -36,16 +50,34 @@ interface Ticket {
 }
 
 export default function TicketsPage() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [sendingSms, setSendingSms] = useState(false);
 
-  const allTickets: Ticket[] = [
+  const [formData, setFormData] = useState({
+    customer: "",
+    customerEmail: "",
+    customerPhone: "",
+    title: "",
+    description: "",
+    status: "open" as const,
+    priority: "medium" as const,
+    assignedTo: "Unassigned" as string,
+  });
+
+  const [allTickets, setAllTickets] = useState<Ticket[]>([
     {
       id: "TK-001",
       customer: "Acme Corp",
+      customerEmail: "contact@acme.com",
+      customerPhone: "+1234567890",
       title: "Internet connectivity issues on Floor 3",
-      description: "Experiencing intermittent disconnections",
+      description: "Experiencing intermittent disconnections and slow speeds",
       status: "in-progress",
       priority: "high",
       createdAt: "2024-01-15 10:30 AM",
@@ -56,8 +88,10 @@ export default function TicketsPage() {
     {
       id: "TK-002",
       customer: "Tech Startup Inc",
+      customerEmail: "support@techstartup.com",
+      customerPhone: "+1987654321",
       title: "Monthly billing inquiry",
-      description: "Questions about invoice charges",
+      description: "Questions about invoice charges for January",
       status: "pending",
       priority: "low",
       createdAt: "2024-01-15 09:15 AM",
@@ -68,6 +102,8 @@ export default function TicketsPage() {
     {
       id: "TK-003",
       customer: "Global Industries",
+      customerEmail: "info@global-ind.com",
+      customerPhone: "+1555555555",
       title: "Router replacement request",
       description: "Old router needs replacement",
       status: "open",
@@ -77,66 +113,13 @@ export default function TicketsPage() {
       assignedTo: "Unassigned",
       smsNotificationsSent: 0,
     },
-    {
-      id: "TK-004",
-      customer: "Finance Corp",
-      title: "VPN configuration setup",
-      description: "Need help with VPN setup for remote team",
-      status: "in-progress",
-      priority: "high",
-      createdAt: "2024-01-14 11:20 AM",
-      updatedAt: "2024-01-15 10:15 AM",
-      assignedTo: "Alex Chen",
-      smsNotificationsSent: 3,
-    },
-    {
-      id: "TK-005",
-      customer: "Retail Solutions",
-      title: "Speed upgrade completed",
-      description: "Upgraded to 1GB fiber plan",
-      status: "resolved",
-      priority: "low",
-      createdAt: "2024-01-12 08:00 AM",
-      updatedAt: "2024-01-15 04:30 PM",
-      assignedTo: "Mike Johnson",
-      smsNotificationsSent: 2,
-    },
-    {
-      id: "TK-006",
-      customer: "Medical Center",
-      title: "Network outage - Emergency",
-      description: "Complete network failure affecting operations",
-      status: "in-progress",
-      priority: "high",
-      createdAt: "2024-01-15 11:50 AM",
-      updatedAt: "2024-01-15 12:45 PM",
-      assignedTo: "Mike Johnson",
-      smsNotificationsSent: 4,
-    },
-    {
-      id: "TK-007",
-      customer: "Education Institute",
-      title: "WiFi coverage improvement",
-      description: "Weak signal in library area",
-      status: "pending",
-      priority: "medium",
-      createdAt: "2024-01-13 02:30 PM",
-      updatedAt: "2024-01-15 10:00 AM",
-      assignedTo: "Sarah Smith",
-      smsNotificationsSent: 1,
-    },
-    {
-      id: "TK-008",
-      customer: "Enterprise Solutions",
-      title: "Bandwidth throttling investigation",
-      description: "Customer reports slower than expected speeds",
-      status: "open",
-      priority: "medium",
-      createdAt: "2024-01-15 08:20 AM",
-      updatedAt: "2024-01-15 08:20 AM",
-      assignedTo: "Unassigned",
-      smsNotificationsSent: 0,
-    },
+  ]);
+
+  const teamMembers = [
+    "Mike Johnson",
+    "Sarah Smith",
+    "Alex Chen",
+    "David Brown",
   ];
 
   const filteredTickets = allTickets.filter((ticket) => {
@@ -152,6 +135,162 @@ export default function TicketsPage() {
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  const handleOpenDialog = (ticket?: Ticket) => {
+    if (ticket) {
+      setEditingTicket(ticket);
+      setFormData({
+        customer: ticket.customer,
+        customerEmail: ticket.customerEmail,
+        customerPhone: ticket.customerPhone,
+        title: ticket.title,
+        description: ticket.description,
+        status: ticket.status,
+        priority: ticket.priority,
+        assignedTo: ticket.assignedTo,
+      });
+    } else {
+      setEditingTicket(null);
+      setFormData({
+        customer: "",
+        customerEmail: "",
+        customerPhone: "",
+        title: "",
+        description: "",
+        status: "open",
+        priority: "medium",
+        assignedTo: "Unassigned",
+      });
+    }
+    setDialogOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!formData.customer || !formData.title || !formData.description) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (editingTicket) {
+      setAllTickets((prev) =>
+        prev.map((t) =>
+          t.id === editingTicket.id
+            ? {
+                ...t,
+                ...formData,
+                updatedAt: new Date().toLocaleString(),
+              }
+            : t
+        )
+      );
+      toast({
+        title: "Success",
+        description: "Ticket updated successfully",
+      });
+    } else {
+      const newTicket: Ticket = {
+        id: `TK-${String(allTickets.length + 1).padStart(3, "0")}`,
+        ...formData,
+        createdAt: new Date().toLocaleString(),
+        updatedAt: new Date().toLocaleString(),
+        smsNotificationsSent: 0,
+      };
+      setAllTickets((prev) => [...prev, newTicket]);
+      toast({
+        title: "Success",
+        description: "Ticket created successfully",
+      });
+    }
+
+    setDialogOpen(false);
+  };
+
+  const handleAssignTicket = (ticketId: string, assignee: string) => {
+    setAllTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              assignedTo: assignee,
+              updatedAt: new Date().toLocaleString(),
+            }
+          : t
+      )
+    );
+    toast({
+      title: "Success",
+      description: `Ticket assigned to ${assignee}`,
+    });
+  };
+
+  const handleStatusChange = (ticketId: string, newStatus: string) => {
+    setAllTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status: newStatus as "open" | "in-progress" | "pending" | "resolved",
+              updatedAt: new Date().toLocaleString(),
+            }
+          : t
+      )
+    );
+    toast({
+      title: "Success",
+      description: `Ticket status updated to ${newStatus}`,
+    });
+  };
+
+  const handleSendSmsNotification = async (ticket: Ticket) => {
+    setSendingSms(true);
+    try {
+      // Get SMS credentials from settings (in production, these would come from backend)
+      const smsSettings = {
+        provider: "twilio",
+        accountSid: "AC1234567890abcdef1234567890abcde",
+        authToken: "your_auth_token_here",
+        fromNumber: "+1234567890",
+      };
+
+      const message = `Hello ${ticket.customer}! Your support ticket (${ticket.id}) has been assigned to ${ticket.assignedTo}. Status: ${ticket.status}. We'll help you resolve this shortly.`;
+
+      await sendSmsToPhone(ticket.customerPhone, message, smsSettings);
+
+      setAllTickets((prev) =>
+        prev.map((t) =>
+          t.id === ticket.id
+            ? { ...t, smsNotificationsSent: t.smsNotificationsSent + 1 }
+            : t
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: `SMS notification sent to ${ticket.customerPhone}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send SMS notification",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingSms(false);
+    }
+  };
+
+  const handleDelete = (ticketId: string) => {
+    setAllTickets((prev) => prev.filter((t) => t.id !== ticketId));
+    setDeleteConfirm(null);
+    toast({
+      title: "Success",
+      description: "Ticket deleted successfully",
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -215,7 +354,11 @@ export default function TicketsPage() {
               Manage and track all customer support tickets
             </p>
           </div>
-          <Button className="w-full md:w-auto gap-2" size="lg">
+          <Button
+            onClick={() => handleOpenDialog()}
+            className="w-full md:w-auto gap-2"
+            size="lg"
+          >
             <Plus size={18} />
             Create Ticket
           </Button>
@@ -271,7 +414,7 @@ export default function TicketsPage() {
           </div>
         </Card>
 
-        {/* Tickets List */}
+        {/* Tickets Table */}
         <Card className="border-0 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -299,7 +442,7 @@ export default function TicketsPage() {
                     SMS
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Created
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -311,12 +454,7 @@ export default function TicketsPage() {
                       className="hover:bg-muted/30 transition-colors"
                     >
                       <td className="px-6 py-4 text-sm font-semibold text-primary">
-                        <Link
-                          to={`/tickets/${ticket.id}`}
-                          className="hover:underline"
-                        >
-                          {ticket.id}
-                        </Link>
+                        {ticket.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground">
                         {ticket.customer}
@@ -325,13 +463,24 @@ export default function TicketsPage() {
                         {ticket.title}
                       </td>
                       <td className="px-6 py-4 text-sm">
-                        <Badge
-                          variant="outline"
-                          className={`gap-1.5 ${getStatusColor(ticket.status)}`}
+                        <Select
+                          value={ticket.status}
+                          onValueChange={(value) =>
+                            handleStatusChange(ticket.id, value)
+                          }
                         >
-                          {getStatusIcon(ticket.status)}
-                          {getStatusLabel(ticket.status)}
-                        </Badge>
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="open">Open</SelectItem>
+                            <SelectItem value="in-progress">
+                              In Progress
+                            </SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="resolved">Resolved</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <Badge
@@ -342,8 +491,25 @@ export default function TicketsPage() {
                             ticket.priority.slice(1)}
                         </Badge>
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {ticket.assignedTo}
+                      <td className="px-6 py-4 text-sm">
+                        <Select
+                          value={ticket.assignedTo}
+                          onValueChange={(value) =>
+                            handleAssignTicket(ticket.id, value)
+                          }
+                        >
+                          <SelectTrigger className="w-40">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Unassigned">Unassigned</SelectItem>
+                            {teamMembers.map((member) => (
+                              <SelectItem key={member} value={member}>
+                                {member}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </td>
                       <td className="px-6 py-4 text-sm">
                         {ticket.smsNotificationsSent > 0 ? (
@@ -355,8 +521,37 @@ export default function TicketsPage() {
                           <span className="text-muted-foreground">-</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {ticket.createdAt.split(" ")[0]}
+                      <td className="px-6 py-4 text-sm">
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenDialog(ticket)}
+                            title="Edit ticket"
+                          >
+                            <Edit size={14} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleSendSmsNotification(ticket)
+                            }
+                            disabled={sendingSms}
+                            title="Send SMS notification"
+                          >
+                            <Send size={14} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => setDeleteConfirm(ticket.id)}
+                            title="Delete ticket"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -386,6 +581,213 @@ export default function TicketsPage() {
             </div>
           </div>
         </Card>
+
+        {/* Create/Edit Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingTicket ? "Edit Ticket" : "Create New Ticket"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingTicket
+                  ? "Update ticket information"
+                  : "Create a new support ticket"}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Customer Name *
+                  </label>
+                  <Input
+                    value={formData.customer}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customer: e.target.value })
+                    }
+                    placeholder="e.g., Acme Corp"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email *
+                  </label>
+                  <Input
+                    type="email"
+                    value={formData.customerEmail}
+                    onChange={(e) =>
+                      setFormData({ ...formData, customerEmail: e.target.value })
+                    }
+                    placeholder="contact@company.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Phone *
+                </label>
+                <Input
+                  type="tel"
+                  value={formData.customerPhone}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      customerPhone: e.target.value,
+                    })
+                  }
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Ticket Title *
+                </label>
+                <Input
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  placeholder="e.g., Internet connectivity issue"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Description *
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder="Describe the issue in detail..."
+                  className="w-full p-2 rounded border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Status
+                  </label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        status: value as "open" | "in-progress" | "pending" | "resolved",
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="resolved">Resolved</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Priority
+                  </label>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        priority: value as "high" | "medium" | "low",
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Assign To
+                  </label>
+                  <Select
+                    value={formData.assignedTo}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, assignedTo: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Unassigned">Unassigned</SelectItem>
+                      {teamMembers.map((member) => (
+                        <SelectItem key={member} value={member}>
+                          {member}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSave}>
+                {editingTicket ? "Update" : "Create"} Ticket
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Ticket</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this ticket? This action cannot
+                be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteConfirm(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() =>
+                  deleteConfirm && handleDelete(deleteConfirm)
+                }
+              >
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
