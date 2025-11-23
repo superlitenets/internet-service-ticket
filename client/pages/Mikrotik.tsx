@@ -1961,6 +1961,163 @@ export default function MikrotikPage() {
             </Card>
           </TabsContent>
 
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Analytics & Reporting Dashboard
+                  </h3>
+                  <Button
+                    onClick={loadAnalyticsData}
+                    disabled={loading}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Loader size={14} className={loading ? "animate-spin" : ""} />
+                    Refresh
+                  </Button>
+                </div>
+
+                {/* Key Metrics */}
+                {analyticsData && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                        <p className="text-xs text-blue-600 font-medium">Total Revenue</p>
+                        <p className="text-2xl font-bold text-blue-900 mt-1">
+                          KES {(analyticsData.revenue.totalRevenue / 1000).toFixed(0)}K
+                        </p>
+                        <p className="text-xs text-blue-600 mt-1">
+                          Paid: {(analyticsData.revenue.paidRevenue / 1000).toFixed(0)}K
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                        <p className="text-xs text-green-600 font-medium">Total Accounts</p>
+                        <p className="text-2xl font-bold text-green-900 mt-1">
+                          {analyticsData.accounts.totalAccounts}
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          Active: {analyticsData.accounts.activeAccounts}
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-purple-50 border border-purple-200">
+                        <p className="text-xs text-purple-600 font-medium">Success Rate</p>
+                        <p className="text-2xl font-bold text-purple-900 mt-1">
+                          {analyticsData.payments.successRate.toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-purple-600 mt-1">
+                          {analyticsData.payments.successfulPayments} successful
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-lg bg-orange-50 border border-orange-200">
+                        <p className="text-xs text-orange-600 font-medium">Avg Bandwidth</p>
+                        <p className="text-2xl font-bold text-orange-900 mt-1">
+                          {analyticsData.bandwidth.averageUserBandwidth.toFixed(0)} GB
+                        </p>
+                        <p className="text-xs text-orange-600 mt-1">per account</p>
+                      </div>
+                    </div>
+
+                    {/* Revenue & Account Trends */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="border rounded-lg p-4">
+                        <h4 className="font-medium text-foreground mb-4">
+                          Revenue Trend (Last 6 Months)
+                        </h4>
+                        {revenueTrend.length > 0 && (
+                          <div className="space-y-2">
+                            {revenueTrend.map((item: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">{item.month}</span>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-blue-500"
+                                      style={{
+                                        width: `${Math.min((item.revenue / 100000) * 100, 100)}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <span className="font-medium text-foreground">
+                                    KES {(item.revenue / 1000).toFixed(0)}K
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="border rounded-lg p-4">
+                        <h4 className="font-medium text-foreground mb-4">
+                          Account Growth (Last 6 Months)
+                        </h4>
+                        {accountTrend.length > 0 && (
+                          <div className="space-y-2">
+                            {accountTrend.map((item: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">{item.month}</span>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-green-500"
+                                      style={{
+                                        width: `${Math.min((item.activeAccounts / 200) * 100, 100)}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <span className="font-medium text-foreground">
+                                    {item.activeAccounts} active
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Top Customers */}
+                    {topCustomers.length > 0 && (
+                      <div className="border rounded-lg p-4">
+                        <h4 className="font-medium text-foreground mb-4">
+                          Top 5 Customers by Revenue
+                        </h4>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="border-b border-border">
+                              <tr>
+                                <th className="py-2 px-4 text-left font-medium">Customer</th>
+                                <th className="py-2 px-4 text-right font-medium">Total Spent</th>
+                                <th className="py-2 px-4 text-right font-medium">Accounts</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {topCustomers.map((customer: any, idx: number) => (
+                                <tr key={idx} className="border-b border-border">
+                                  <td className="py-3 px-4 text-sm">{customer.customerName}</td>
+                                  <td className="py-3 px-4 text-right text-sm font-medium">
+                                    KES {(customer.totalSpent / 1000).toFixed(0)}K
+                                  </td>
+                                  <td className="py-3 px-4 text-right text-sm">
+                                    {customer.accountCount}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* RouterOS Settings Tab */}
           <TabsContent value="routeros" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
