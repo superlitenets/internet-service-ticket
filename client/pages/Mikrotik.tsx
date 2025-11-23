@@ -608,11 +608,11 @@ export default function MikrotikPage() {
     try {
       const [analyticsResult, revenueResult, trendResult, accountTrendResult, topCustomersResult] =
         await Promise.all([
-          getDashboardAnalytics(),
-          getRevenueAnalytics(),
-          getMonthlyRevenueTrend(6),
-          getAccountGrowthTrend(6),
-          getTopCustomersByRevenue(5),
+          getDashboardAnalytics(selectedInstance?.id),
+          getRevenueAnalytics(undefined, undefined, selectedInstance?.id),
+          getMonthlyRevenueTrend(6, selectedInstance?.id),
+          getAccountGrowthTrend(6, selectedInstance?.id),
+          getTopCustomersByRevenue(5, selectedInstance?.id),
         ]);
 
       if (analyticsResult.success) setAnalyticsData(analyticsResult.summary);
@@ -637,7 +637,7 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await startBandwidthMonitoring(selectedAccountForMonitoring);
+      await startBandwidthMonitoring(selectedAccountForMonitoring, selectedInstance?.id);
       toast({
         title: "Success",
         description: "Bandwidth monitoring started",
@@ -667,7 +667,7 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await stopBandwidthMonitoring(selectedAccountForMonitoring);
+      await stopBandwidthMonitoring(selectedAccountForMonitoring, selectedInstance?.id);
       toast({
         title: "Success",
         description: "Bandwidth monitoring stopped",
@@ -698,10 +698,10 @@ export default function MikrotikPage() {
 
       setLoading(true);
       const [historyResult, averageResult, peakResult, alertsResult] = await Promise.all([
-        getBandwidthHistory(selectedAccountForMonitoring, 24),
-        getAverageBandwidthUsage(selectedAccountForMonitoring, 24),
-        getPeakUsageTime(selectedAccountForMonitoring, 24),
-        getAccountQuotaAlerts(selectedAccountForMonitoring),
+        getBandwidthHistory(selectedAccountForMonitoring, 24, selectedInstance?.id),
+        getAverageBandwidthUsage(selectedAccountForMonitoring, 24, selectedInstance?.id),
+        getPeakUsageTime(selectedAccountForMonitoring, 24, selectedInstance?.id),
+        getAccountQuotaAlerts(selectedAccountForMonitoring, selectedInstance?.id),
       ]);
 
       if (historyResult.success) {
