@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Tickets from "./pages/Tickets";
 import Customers from "./pages/Customers";
 import Team from "./pages/Team";
+import Inventory from "./pages/Inventory";
 import Settings from "./pages/Settings";
 import { createRoot } from "react-dom/client";
 
@@ -21,6 +22,7 @@ const AppRoutes = () => (
     <Route path="/tickets" element={<Tickets />} />
     <Route path="/customers" element={<Customers />} />
     <Route path="/team" element={<Team />} />
+    <Route path="/inventory" element={<Inventory />} />
     <Route path="/settings" element={<Settings />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
