@@ -541,6 +541,27 @@ export default function MikrotikPage() {
     }
   };
 
+  const loadAnalyticsData = async () => {
+    try {
+      const [analyticsResult, revenueResult, trendResult, accountTrendResult, topCustomersResult] =
+        await Promise.all([
+          getDashboardAnalytics(),
+          getRevenueAnalytics(),
+          getMonthlyRevenueTrend(6),
+          getAccountGrowthTrend(6),
+          getTopCustomersByRevenue(5),
+        ]);
+
+      if (analyticsResult.success) setAnalyticsData(analyticsResult.summary);
+      if (revenueResult.success) setRevenueData(revenueResult.revenue);
+      if (trendResult.success) setRevenueTrend(trendResult.trend);
+      if (accountTrendResult.success) setAccountTrend(accountTrendResult.trend);
+      if (topCustomersResult.success) setTopCustomers(topCustomersResult.topCustomers);
+    } catch (error) {
+      console.error("Failed to load analytics data:", error);
+    }
+  };
+
   const handleStartMonitoring = async () => {
     try {
       if (!selectedAccountForMonitoring) {
