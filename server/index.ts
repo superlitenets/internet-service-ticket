@@ -160,6 +160,7 @@ export function createServer() {
   app.get("/api/mikrotik/accounts/:accountId", getMikrotikAccount);
   app.put("/api/mikrotik/accounts/:accountId", updateMikrotikAccount);
   app.delete("/api/mikrotik/accounts/:accountId", deleteMikrotikAccount);
+  app.post("/api/mikrotik/accounts/:accountId/regenerate-credentials", regenerateAccountCredentials);
 
   // Plans
   app.get("/api/mikrotik/plans", getMikrotikPlans);
