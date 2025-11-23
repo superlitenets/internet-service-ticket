@@ -606,6 +606,126 @@ export default function MikrotikPage() {
     }
   };
 
+  const handleScheduleBilling = async () => {
+    try {
+      if (!selectedAccountForBilling) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      await scheduleBilling(selectedAccountForBilling, billingCycleDay);
+      toast({
+        title: "Success",
+        description: "Billing schedule activated",
+      });
+      loadBillingStatus();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to schedule billing",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelBilling = async () => {
+    try {
+      if (!selectedAccountForBilling) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      await cancelBillingAutomation(selectedAccountForBilling);
+      toast({
+        title: "Success",
+        description: "Billing schedule cancelled",
+      });
+      loadBillingStatus();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to cancel billing",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestBilling = async () => {
+    try {
+      if (!selectedAccountForBilling) {
+        toast({
+          title: "Error",
+          description: "Please select an account",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      const result = await testBillingAutomation(selectedAccountForBilling);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to test billing",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLoadAutomationLogs = async () => {
+    try {
+      setLoading(true);
+      const result = await fetchAutomationLogs(selectedAccountForBilling || undefined, 50);
+      if (result.success) {
+        setAutomationLogs(result.logs);
+        toast({
+          title: "Success",
+          description: "Automation logs loaded",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to load logs",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredAccounts = accounts.filter(
     (acc) =>
       acc.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
