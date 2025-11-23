@@ -39,7 +39,10 @@ import {
   getSmsTemplates,
 } from "@/lib/sms-templates";
 import { getSmsSettings } from "@/lib/sms-settings-storage";
-import { sendWhatsAppToPhone } from "@/lib/whatsapp-client";
+import {
+  sendWhatsAppUnifiedToPhone,
+  sendWhatsAppUnifiedBatch,
+} from "@/lib/whatsapp-unified-client";
 import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
 
 interface Ticket {
@@ -183,13 +186,18 @@ export default function TicketsPage() {
         }
       }
 
-      // Send to customer via WhatsApp
+      // Send to customer via WhatsApp (unified with Business API + Web failover)
       if (whatsappSettings?.enabled) {
         const customerTemplate = getTemplate(eventType, "customer");
         if (customerTemplate) {
           const customerMessage = renderTemplate(customerTemplate, messageVars);
           try {
-            await sendWhatsAppToPhone(ticket.customerPhone, customerMessage);
+            await sendWhatsAppUnifiedToPhone(
+              ticket.customerPhone,
+              customerMessage,
+              whatsappSettings.mode,
+              whatsappSettings.failoverEnabled,
+            );
           } catch (error) {
             console.warn("WhatsApp send failed, continuing...", error);
           }
@@ -207,10 +215,15 @@ export default function TicketsPage() {
             await sendSmsToPhone(technicianPhone, technicianMessage);
           }
 
-          // Send via WhatsApp
+          // Send via WhatsApp (unified with Business API + Web failover)
           if (whatsappSettings?.enabled) {
             try {
-              await sendWhatsAppToPhone(technicianPhone, technicianMessage);
+              await sendWhatsAppUnifiedToPhone(
+                technicianPhone,
+                technicianMessage,
+                whatsappSettings.mode,
+                whatsappSettings.failoverEnabled,
+              );
             } catch (error) {
               console.warn("WhatsApp send failed, continuing...", error);
             }
