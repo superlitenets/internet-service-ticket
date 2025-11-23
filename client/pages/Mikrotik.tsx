@@ -76,6 +76,14 @@ import {
   getNotificationLogsAPI,
   getNotificationTemplatesAPI,
   getNotificationStatsAPI,
+  getDashboardAnalytics,
+  getRevenueAnalytics,
+  getMonthlyRevenueTrend,
+  getAccountGrowthTrend,
+  getPaymentMethodDistribution,
+  getServicePlanDistribution,
+  getTopCustomersByRevenue,
+  generateMonthlyBillingReport,
 } from "@/lib/mikrotik-client";
 import {
   MikrotikAccount,
