@@ -183,13 +183,14 @@ export default function SettingsPage() {
   });
 
   // Company Settings State
-  const [companySettings, setCompanySettings] = useState({
+  const [companySettings, setCompanySettings] = useState<CompanySettings>({
     name: "NetFlow ISP",
     email: "support@netflow-isp.com",
     phone: "+1 (555) 123-4567",
     address: "123 Tech Street, San Francisco, CA 94105",
     website: "https://netflow-isp.com",
     timezone: "America/Los_Angeles",
+    prefix: "ACC",
     slaResponse: "4",
     slaResolution: "24",
   });
