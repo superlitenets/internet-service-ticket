@@ -191,3 +191,41 @@ export interface DeductionRecord {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * WhatsApp Send Request
+ */
+export interface SendWhatsAppRequest {
+  to: string | string[];
+  message: string;
+  provider?: string;
+  phoneNumberId?: string;
+  accessToken?: string;
+  templateName?: string;
+  templateParams?: Record<string, string>;
+}
+
+/**
+ * WhatsApp Send Response
+ */
+export interface SendWhatsAppResponse {
+  success: boolean;
+  message: string;
+  messageIds?: string[];
+  recipients?: number;
+  timestamp: string;
+  error?: string;
+}
+
+/**
+ * WhatsApp Configuration
+ */
+export interface WhatsAppConfig {
+  enabled: boolean;
+  phoneNumberId: string;
+  accessToken: string;
+  businessAccountId: string;
+  webhookToken?: string;
+  createdAt: string;
+  updatedAt: string;
+}
