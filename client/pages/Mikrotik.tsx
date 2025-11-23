@@ -184,6 +184,13 @@ export default function MikrotikPage() {
   const [selectedInvoiceForNotification, setSelectedInvoiceForNotification] = useState<string>("");
   const [notificationType, setNotificationType] = useState<string>("invoice");
 
+  // Analytics State
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [revenueData, setRevenueData] = useState<any>(null);
+  const [revenueTrend, setRevenueTrend] = useState<any[]>([]);
+  const [accountTrend, setAccountTrend] = useState<any[]>([]);
+  const [topCustomers, setTopCustomers] = useState<any[]>([]);
+
   // Load data on mount
   useEffect(() => {
     loadData();
@@ -191,6 +198,7 @@ export default function MikrotikPage() {
     loadMonitoringStatus();
     loadBillingStatus();
     loadNotificationStats();
+    loadAnalyticsData();
   }, []);
 
   const loadData = async () => {
