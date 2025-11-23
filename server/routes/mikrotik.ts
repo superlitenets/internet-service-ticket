@@ -587,28 +587,28 @@ export const recordPayment: RequestHandler = (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    payments.push(newPayment);
+    data.payments.push(newPayment);
 
     // Update account balance
-    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+    const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
     if (accountIndex !== -1) {
-      accounts[accountIndex].balance += amount;
-      accounts[accountIndex].totalPaid += amount;
-      accounts[accountIndex].outstandingBalance = Math.max(
+      data.accounts[accountIndex].balance += amount;
+      data.accounts[accountIndex].totalPaid += amount;
+      data.accounts[accountIndex].outstandingBalance = Math.max(
         0,
-        accounts[accountIndex].outstandingBalance - amount
+        data.accounts[accountIndex].outstandingBalance - amount
       );
-      accounts[accountIndex].updatedAt = new Date().toISOString();
+      data.accounts[accountIndex].updatedAt = new Date().toISOString();
     }
 
     // Update invoice status if fully paid
     if (invoiceId) {
-      const invoiceIndex = invoices.findIndex((i) => i.id === invoiceId);
+      const invoiceIndex = data.invoices.findIndex((i) => i.id === invoiceId);
       if (invoiceIndex !== -1) {
-        invoices[invoiceIndex].status = "paid";
-        invoices[invoiceIndex].paidDate = new Date().toISOString();
-        invoices[invoiceIndex].paymentMethod = paymentMethod;
-        invoices[invoiceIndex].updatedAt = new Date().toISOString();
+        data.invoices[invoiceIndex].status = "paid";
+        data.invoices[invoiceIndex].paidDate = new Date().toISOString();
+        data.invoices[invoiceIndex].paymentMethod = paymentMethod;
+        data.invoices[invoiceIndex].updatedAt = new Date().toISOString();
       }
     }
 
@@ -616,7 +616,7 @@ export const recordPayment: RequestHandler = (req, res) => {
       success: true,
       message: "Payment recorded successfully",
       payment: newPayment,
-      updatedAccount: accounts[accountIndex],
+      updatedAccount: data.accounts[accountIndex],
     });
   } catch (error) {
     return res.status(500).json({
@@ -634,8 +634,10 @@ export const recordPayment: RequestHandler = (req, res) => {
 export const getAccountPayments: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
 
-    const accountPayments = payments.filter((p) => p.accountId === accountId);
+    const accountPayments = data.payments.filter((p) => p.accountId === accountId);
 
     return res.json(accountPayments);
   } catch (error) {
@@ -654,8 +656,10 @@ export const getAccountPayments: RequestHandler = (req, res) => {
 export const getAccountUsage: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
 
-    const accountUsage = usageRecords.filter((u) => u.accountId === accountId);
+    const accountUsage = data.usageRecords.filter((u) => u.accountId === accountId);
 
     return res.json(accountUsage);
   } catch (error) {
@@ -673,7 +677,7 @@ export const getAccountUsage: RequestHandler = (req, res) => {
  */
 export const recordUsage: RequestHandler = (req, res) => {
   try {
-    const { accountId, uploadMB, downloadMB, sessionCount } = req.body;
+    const { accountId, uploadMB, downloadMB, sessionCount, instanceId } = req.body;
 
     if (!accountId || uploadMB === undefined || downloadMB === undefined) {
       return res.status(400).json({
@@ -683,7 +687,8 @@ export const recordUsage: RequestHandler = (req, res) => {
       });
     }
 
-    const account = accounts.find((a) => a.id === accountId);
+    const data = getInstanceData(instanceId);
+    const account = data.accounts.find((a) => a.id === accountId);
 
     if (!account) {
       return res.status(404).json({
@@ -708,7 +713,7 @@ export const recordUsage: RequestHandler = (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
-    usageRecords.push(newUsage);
+    data.usageRecords.push(newUsage);
 
     return res.json({
       success: true,
@@ -728,9 +733,11 @@ export const recordUsage: RequestHandler = (req, res) => {
 /**
  * Get all invoices
  */
-export const getAllInvoices: RequestHandler = (_req, res) => {
+export const getAllInvoices: RequestHandler = (req, res) => {
   try {
-    return res.json(invoices);
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
+    return res.json(data.invoices);
   } catch (error) {
     return res.status(500).json({
       success: false,
