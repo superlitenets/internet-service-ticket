@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: netflow-crm
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Add your custom environment variables here:
+      # - DATABASE_URL=your_database_url
+      # - API_KEY=your_api_key
+    volumes:
+      # Optional: persist data if your app stores files locally
+      # - ./data:/app/data
+    restart: unless-stopped
+    # Optional: Set resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 2G
+
+  # Optional: Use Nginx as reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: netflow-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # For HTTPS, mount SSL certificates:
+      # - ./certs/:/etc/nginx/certs/:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - netflow
+
+  # Optional: Database service example (PostgreSQL)
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: netflow-db
+  #   environment:
+  #     - POSTGRES_DB=netflow
+  #     - POSTGRES_USER=admin
+  #     - POSTGRES_PASSWORD=secure_password_here
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - netflow
+
+networks:
+  netflow:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
