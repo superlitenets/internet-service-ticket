@@ -48,10 +48,6 @@ export default function MikrotikAccountsPage() {
     customerPhone: "",
     accountType: "residential" as const,
     planId: "",
-    pppoeUsername: "",
-    pppoePassword: "",
-    hotspotUsername: "",
-    hotspotPassword: "",
   });
 
   useEffect(() => {
