@@ -45,6 +45,7 @@ interface Ticket {
   customer: string;
   customerEmail: string;
   customerPhone: string;
+  customerLocation?: string;
   title: string;
   description: string;
   status: "open" | "in-progress" | "pending" | "resolved";
@@ -74,6 +75,7 @@ export default function TicketsPage() {
     customer: "",
     customerEmail: "",
     customerPhone: "",
+    customerLocation: "",
     title: "",
     description: "",
     status: "open" as const,
@@ -172,12 +174,15 @@ export default function TicketsPage() {
         if (technicianTemplate) {
           const technicianMessage = renderTemplate(technicianTemplate, {
             customerName: ticket.customer,
+            customerPhone: ticket.customerPhone,
+            customerLocation: ticket.customerLocation || "N/A",
             ticketId: ticket.id,
             title: ticket.title,
             technicianName: ticket.assignedTo,
             technicianPhone: technicianPhone,
             status: ticket.status,
             priority: ticket.priority,
+            description: ticket.description,
             updatedBy: "System",
           });
 
@@ -210,6 +215,7 @@ export default function TicketsPage() {
         customer: ticket.customer,
         customerEmail: ticket.customerEmail,
         customerPhone: ticket.customerPhone,
+        customerLocation: ticket.customerLocation || "",
         title: ticket.title,
         description: ticket.description,
         status: ticket.status,
@@ -222,6 +228,7 @@ export default function TicketsPage() {
         customer: "",
         customerEmail: "",
         customerPhone: "",
+        customerLocation: "",
         title: "",
         description: "",
         status: "open",
