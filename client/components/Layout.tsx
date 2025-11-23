@@ -38,6 +38,8 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/leave", label: "Leave", icon: Calendar },
     { path: "/payroll", label: "Payroll", icon: DollarSign },
     { path: "/performance", label: "Performance", icon: TrendingUp },
+    // Payments
+    { path: "/payments", label: "Payments", icon: DollarSign },
     // Settings
     { path: "/settings", label: "Settings", icon: Settings },
   ];
