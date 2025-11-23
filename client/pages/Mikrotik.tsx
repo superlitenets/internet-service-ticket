@@ -155,11 +155,18 @@ export default function MikrotikPage() {
   const [averageUsage, setAverageUsage] = useState<any>(null);
   const [peakUsage, setPeakUsage] = useState<any>(null);
 
+  // Billing Automation State
+  const [billingStatus, setBillingStatus] = useState<any>(null);
+  const [automationLogs, setAutomationLogs] = useState<any[]>([]);
+  const [selectedAccountForBilling, setSelectedAccountForBilling] = useState<string>("");
+  const [billingCycleDay, setBillingCycleDay] = useState(1);
+
   // Load data on mount
   useEffect(() => {
     loadData();
     loadRouterOSConfig();
     loadMonitoringStatus();
+    loadBillingStatus();
   }, []);
 
   const loadData = async () => {
