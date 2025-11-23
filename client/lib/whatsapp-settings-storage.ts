@@ -1,6 +1,6 @@
 /**
  * WhatsApp Settings Storage
- * Manages WhatsApp Business API configuration
+ * Manages WhatsApp Business API and Web configuration
  */
 
 import type { WhatsAppConfig } from "@shared/api";
@@ -9,10 +9,19 @@ const WHATSAPP_CONFIG_KEY = "whatsapp_config";
 
 const DEFAULT_CONFIG: WhatsAppConfig = {
   enabled: false,
-  phoneNumberId: "",
-  accessToken: "",
-  businessAccountId: "",
-  webhookToken: "",
+  mode: "both",
+  businessApi: {
+    phoneNumberId: "",
+    accessToken: "",
+    businessAccountId: "",
+    webhookToken: "",
+  },
+  web: {
+    authenticated: false,
+    sessionId: undefined,
+    phoneNumber: undefined,
+  },
+  failoverEnabled: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -63,10 +72,20 @@ export function clearWhatsAppConfig(): void {
  */
 export function isWhatsAppConfigured(): boolean {
   const config = getWhatsAppConfig();
-  return !!(
-    config.enabled &&
-    config.phoneNumberId &&
-    config.accessToken &&
-    config.businessAccountId
-  );
+
+  if (!config.enabled) {
+    return false;
+  }
+
+  // Check Business API config
+  const hasBusinessApi =
+    config.businessApi.phoneNumberId &&
+    config.businessApi.accessToken &&
+    config.businessApi.businessAccountId;
+
+  // Check Web config
+  const hasWebAuth = config.web.authenticated;
+
+  // At least one method must be configured
+  return hasBusinessApi || hasWebAuth;
 }
