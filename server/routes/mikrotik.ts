@@ -127,9 +127,12 @@ function initializeDefaultPlans(instanceId?: string) {
 /**
  * Get all Mikrotik accounts
  */
-export const getMikrotikAccounts: RequestHandler = (_req, res) => {
+export const getMikrotikAccounts: RequestHandler = (req, res) => {
   try {
-    return res.json(accounts);
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
+    initializeDefaultPlans(instanceId);
+    return res.json(data.accounts);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -152,6 +155,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       accountType,
       planId,
       prefix = "ACC",
+      instanceId,
     } = req.body;
 
     if (
@@ -168,7 +172,10 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    const plan = plans.find((p) => p.id === planId);
+    const data = getInstanceData(instanceId);
+    initializeDefaultPlans(instanceId);
+
+    const plan = data.plans.find((p) => p.id === planId);
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -177,7 +184,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    const accountNumber = `${prefix}-${accounts.length + 1000}`;
+    const accountNumber = `${prefix}-${data.accounts.length + 1000}`;
     const credentials = generatePPPoECredentials(accountNumber);
 
     const newAccount: MikrotikAccount = {
@@ -201,7 +208,7 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    accounts.push(newAccount);
+    data.accounts.push(newAccount);
 
     return res.json({
       success: true,
@@ -224,8 +231,10 @@ export const createMikrotikAccount: RequestHandler = (req, res) => {
 export const getMikrotikAccount: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
 
-    const account = accounts.find((a) => a.id === accountId);
+    const account = data.accounts.find((a) => a.id === accountId);
 
     if (!account) {
       return res.status(404).json({
@@ -252,9 +261,10 @@ export const getMikrotikAccount: RequestHandler = (req, res) => {
 export const updateMikrotikAccount: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
-    const updates = req.body;
+    const { instanceId, ...updates } = req.body;
+    const data = getInstanceData(instanceId);
 
-    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+    const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
 
     if (accountIndex === -1) {
       return res.status(404).json({
@@ -264,19 +274,19 @@ export const updateMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    accounts[accountIndex] = {
-      ...accounts[accountIndex],
+    data.accounts[accountIndex] = {
+      ...data.accounts[accountIndex],
       ...updates,
-      id: accounts[accountIndex].id,
-      accountNumber: accounts[accountIndex].accountNumber,
-      createdAt: accounts[accountIndex].createdAt,
+      id: data.accounts[accountIndex].id,
+      accountNumber: data.accounts[accountIndex].accountNumber,
+      createdAt: data.accounts[accountIndex].createdAt,
       updatedAt: new Date().toISOString(),
     };
 
     return res.json({
       success: true,
       message: "Account updated successfully",
-      account: accounts[accountIndex],
+      account: data.accounts[accountIndex],
     });
   } catch (error) {
     return res.status(500).json({
@@ -294,8 +304,10 @@ export const updateMikrotikAccount: RequestHandler = (req, res) => {
 export const deleteMikrotikAccount: RequestHandler = (req, res) => {
   try {
     const { accountId } = req.params;
+    const instanceId = req.query.instanceId as string | undefined;
+    const data = getInstanceData(instanceId);
 
-    const accountIndex = accounts.findIndex((a) => a.id === accountId);
+    const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
 
     if (accountIndex === -1) {
       return res.status(404).json({
@@ -305,7 +317,7 @@ export const deleteMikrotikAccount: RequestHandler = (req, res) => {
       });
     }
 
-    const deleted = accounts.splice(accountIndex, 1)[0];
+    const deleted = data.accounts.splice(accountIndex, 1)[0];
 
     return res.json({
       success: true,
