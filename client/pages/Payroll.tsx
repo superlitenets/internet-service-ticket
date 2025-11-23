@@ -341,7 +341,7 @@ export default function PayrollPage() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <Card className="p-4 border-0 shadow-sm">
             <p className="text-sm text-muted-foreground mb-1">Total Payroll</p>
             <p className="text-2xl font-bold">
@@ -364,6 +364,17 @@ export default function PayrollPage() {
               {allRecords.filter((r) => r.status === "draft").length}
             </p>
           </Card>
+          {deductionSettings.enabled && (
+            <Card className="p-4 border-0 shadow-sm bg-orange-50">
+              <p className="text-sm text-muted-foreground mb-1">Late Deductions</p>
+              <p className="text-2xl font-bold text-orange-600">
+                $
+                {Array.from(monthlyDeductions.values())
+                  .reduce((sum, d) => sum + d.deductionAmount, 0)
+                  .toLocaleString()}
+              </p>
+            </Card>
+          )}
         </div>
 
         <Card className="p-6 border-0 shadow-sm">
