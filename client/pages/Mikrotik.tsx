@@ -110,18 +110,14 @@ export default function MikrotikPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [accountsData, plansData, invoicesData, statsData] = await Promise.all(
-        [
-          getMikrotikAccounts(),
-          getMikrotikPlans(),
-          getAllInvoices(),
-          getMikrotikStats(),
-        ]
-      );
+      const [accountsData, plansData, statsData] = await Promise.all([
+        getMikrotikAccounts(),
+        getMikrotikPlans(),
+        getMikrotikStats(),
+      ]);
 
       setAccounts(accountsData);
       setPlans(plansData);
-      setInvoices(invoicesData);
       setStats(statsData);
     } catch (error) {
       toast({
@@ -151,8 +147,9 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await createMikrotikAccount(accountForm);
+      const newAccount = await createMikrotikAccount(accountForm);
 
+      setAccounts((prev) => [...prev, newAccount]);
       toast({
         title: "Success",
         description: "Account created successfully",
@@ -192,8 +189,9 @@ export default function MikrotikPage() {
       }
 
       setLoading(true);
-      await createMikrotikPlan(planForm);
+      const newPlan = await createMikrotikPlan(planForm);
 
+      setPlans((prev) => [...prev, newPlan]);
       toast({
         title: "Success",
         description: "Plan created successfully",
@@ -216,6 +214,27 @@ export default function MikrotikPage() {
         title: "Error",
         description:
           error instanceof Error ? error.message : "Failed to create plan",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateInvoice = async (accountId: string) => {
+    try {
+      setLoading(true);
+      await generateInvoice({ accountId });
+      toast({
+        title: "Success",
+        description: "Invoice generated successfully",
+      });
+      loadData();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to generate invoice",
         variant: "destructive",
       });
     } finally {
@@ -290,7 +309,7 @@ export default function MikrotikPage() {
             Mikrotik ISP Billing
           </h1>
           <p className="text-muted-foreground">
-            Manage accounts, plans, billing, and payments
+            Manage ISP accounts, billing plans, invoices, and payments
           </p>
         </div>
 
@@ -353,7 +372,7 @@ export default function MikrotikPage() {
               <Users size={16} />
               <span className="hidden sm:inline">Accounts</span>
             </TabsTrigger>
-            <TabsTrigger value="billing" className="gap-2">
+            <TabsTrigger value="invoices" className="gap-2">
               <FileText size={16} />
               <span className="hidden sm:inline">Invoices</span>
             </TabsTrigger>
@@ -521,7 +540,7 @@ export default function MikrotikPage() {
           </TabsContent>
 
           {/* Invoices Tab */}
-          <TabsContent value="billing" className="space-y-6">
+          <TabsContent value="invoices" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
               <div className="space-y-6">
                 <div className="flex items-center justify-between gap-4">
@@ -567,7 +586,7 @@ export default function MikrotikPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredInvoices.length === 0 ? (
+                      {invoices.length === 0 ? (
                         <tr>
                           <td
                             colSpan={7}
@@ -577,7 +596,7 @@ export default function MikrotikPage() {
                           </td>
                         </tr>
                       ) : (
-                        filteredInvoices.map((invoice) => (
+                        invoices.map((invoice) => (
                           <tr
                             key={invoice.id}
                             className="border-b border-border hover:bg-muted/30 transition-colors"
@@ -723,9 +742,9 @@ export default function MikrotikPage() {
       <Dialog open={newAccountDialog} onOpenChange={setNewAccountDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Account</DialogTitle>
+            <DialogTitle>Create New ISP Account</DialogTitle>
             <DialogDescription>
-              Add a new customer account to the system
+              Add a new customer ISP account to the system
             </DialogDescription>
           </DialogHeader>
 
