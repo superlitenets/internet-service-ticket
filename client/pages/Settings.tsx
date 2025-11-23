@@ -274,6 +274,7 @@ export default function SettingsPage() {
                         <SelectItem value="vonage">Vonage</SelectItem>
                         <SelectItem value="aws">AWS SNS</SelectItem>
                         <SelectItem value="nexmo">Nexmo</SelectItem>
+                        <SelectItem value="custom">Custom SMS</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
