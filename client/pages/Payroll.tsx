@@ -438,7 +438,7 @@ export default function PayrollPage() {
                           {record.month} {record.year}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-5 gap-4 text-sm mt-3">
+                      <div className="grid grid-cols-6 gap-4 text-sm mt-3">
                         <div>
                           <p className="text-muted-foreground">Base Salary</p>
                           <p className="font-semibold">
@@ -455,16 +455,24 @@ export default function PayrollPage() {
                         )}
                         {record.deductions > 0 && (
                           <div>
-                            <p className="text-muted-foreground">Deductions</p>
+                            <p className="text-muted-foreground">Standard Ded.</p>
                             <p className="font-semibold text-red-600">
                               -${record.deductions.toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+                        {getEmployeeDeduction(record.employeeId) > 0 && (
+                          <div>
+                            <p className="text-muted-foreground">Late Ded.</p>
+                            <p className="font-semibold text-orange-600">
+                              -${getEmployeeDeduction(record.employeeId).toLocaleString()}
                             </p>
                           </div>
                         )}
                         <div>
                           <p className="text-muted-foreground">Net Salary</p>
                           <p className="font-semibold text-lg">
-                            ${record.netSalary.toLocaleString()}
+                            ${(record.netSalary - getEmployeeDeduction(record.employeeId)).toLocaleString()}
                           </p>
                         </div>
                         {record.paymentDate && (
