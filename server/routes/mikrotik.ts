@@ -952,3 +952,252 @@ export const getRouterOSQueues: RequestHandler = async (req, res) => {
     });
   }
 };
+
+/**
+ * Start bandwidth monitoring for an account
+ */
+export const startBandwidthMonitoring: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+        error: "Invalid account ID",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    const quotaMB = account.dataQuota ? account.dataQuota * 1024 : undefined; // Convert GB to MB
+    monitor.startMonitoring(accountId, quotaMB);
+
+    return res.json({
+      success: true,
+      message: `Bandwidth monitoring started for account ${accountId}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to start bandwidth monitoring",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Stop bandwidth monitoring for an account
+ */
+export const stopBandwidthMonitoring: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.body;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    monitor.stopMonitoring(accountId);
+
+    return res.json({
+      success: true,
+      message: `Bandwidth monitoring stopped for account ${accountId}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to stop bandwidth monitoring",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get bandwidth usage history for an account
+ */
+export const getBandwidthHistory: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const { hours = 24 } = req.query;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    const history = monitor.getUsageHistory(accountId, parseInt(hours as string));
+
+    return res.json({
+      success: true,
+      history,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch bandwidth history",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get peak usage time for an account
+ */
+export const getPeakUsageTime: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const { hours = 24 } = req.query;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    const peakUsage = monitor.getPeakUsageTime(accountId, parseInt(hours as string));
+
+    return res.json({
+      success: true,
+      peakUsage,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch peak usage time",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get average bandwidth usage for an account
+ */
+export const getAverageUsage: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const { hours = 24 } = req.query;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    const average = monitor.getAverageUsage(accountId, parseInt(hours as string));
+
+    return res.json({
+      success: true,
+      average,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch average usage",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get quota alerts
+ */
+export const getQuotaAlerts: RequestHandler = (req, res) => {
+  try {
+    const monitor = getBandwidthMonitor();
+    const alerts = monitor.getQuotaAlerts();
+
+    return res.json({
+      success: true,
+      alerts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch quota alerts",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get account-specific quota alerts
+ */
+export const getAccountQuotaAlerts: RequestHandler = (req, res) => {
+  try {
+    const { accountId } = req.params;
+
+    if (!accountId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing account ID",
+        error: "accountId is required",
+      });
+    }
+
+    const monitor = getBandwidthMonitor();
+    const alerts = monitor.getAccountAlerts(accountId);
+
+    return res.json({
+      success: true,
+      alerts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch account alerts",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
+
+/**
+ * Get bandwidth monitoring status
+ */
+export const getMonitoringStatus: RequestHandler = (req, res) => {
+  try {
+    const monitor = getBandwidthMonitor();
+    const status = monitor.getMonitoringStatus();
+
+    return res.json({
+      success: true,
+      status,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch monitoring status",
+      error:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    });
+  }
+};
