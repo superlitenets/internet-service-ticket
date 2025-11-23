@@ -115,10 +115,6 @@ export default function MikrotikAccountsPage() {
         customerPhone: "",
         accountType: "residential",
         planId: "",
-        pppoeUsername: "",
-        pppoePassword: "",
-        hotspotUsername: "",
-        hotspotPassword: "",
       });
       toast({
         title: "Success",
