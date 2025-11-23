@@ -50,6 +50,14 @@ import {
   recordUsage,
   getAllInvoices,
   getMikrotikStats,
+  getRouterOSConfig,
+  updateRouterOSConfig,
+  testRouterOSConnection,
+  getRouterOSDeviceInfo,
+  getRouterOSInterfaceStats,
+  getRouterOSPPPoEConnections,
+  getRouterOSHotspotUsers,
+  getRouterOSQueues,
 } from "./routes/mikrotik";
 
 export function createServer() {
