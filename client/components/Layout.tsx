@@ -107,22 +107,83 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path}
-                to={path}
-                onClick={() => setSidebarOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                  isActive(path)
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                )}
-              >
-                <Icon size={20} />
-                <span className="font-medium">{label}</span>
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              // If item has subItems, render as collapsible group
+              if (item.subItems) {
+                const isExpanded = expandedGroups.includes(item.label);
+                const Icon = item.icon;
+
+                return (
+                  <div key={item.label}>
+                    <button
+                      onClick={() => toggleGroup(item.label)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200",
+                        isExpanded
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon size={20} />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className={cn(
+                          "transition-transform duration-200",
+                          isExpanded ? "rotate-180" : "",
+                        )}
+                      />
+                    </button>
+
+                    {/* Submenu */}
+                    {isExpanded && (
+                      <div className="ml-2 mt-2 space-y-1 pl-2 border-l border-sidebar-border">
+                        {item.subItems.map((subItem) => {
+                          const SubIcon = subItem.icon;
+                          return (
+                            <Link
+                              key={subItem.path}
+                              to={subItem.path!}
+                              onClick={() => setSidebarOpen(false)}
+                              className={cn(
+                                "flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-200",
+                                isActive(subItem.path)
+                                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
+                                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                              )}
+                            >
+                              <SubIcon size={16} />
+                              <span className="font-medium">{subItem.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Regular flat menu item
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path!}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                    isActive(item.path)
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-lg"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  )}
+                >
+                  <Icon size={20} />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* User Section */}
