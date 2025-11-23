@@ -163,17 +163,9 @@ export default function CustomersPage() {
   const loadMikrotikData = async () => {
     try {
       setLoading(true);
-      const [accounts, plans, invoices] = await Promise.all([
+      const [accounts, plans] = await Promise.all([
         getMikrotikAccounts(),
         getMikrotikPlans(),
-        async () => {
-          try {
-            const result = await getMikrotikStats();
-            return [];
-          } catch {
-            return [];
-          }
-        }(),
       ]);
 
       setMikrotikAccounts(accounts);
