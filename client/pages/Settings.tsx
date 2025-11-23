@@ -165,7 +165,20 @@ export default function SettingsPage() {
     updatedAt: new Date().toISOString(),
   });
 
-  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, and Company settings from storage on mount
+  // Mikrotik Instances State
+  const [mikrotikInstances, setMikrotikInstances] = useState<MikrotikInstance[]>([]);
+  const [showInstanceDialog, setShowInstanceDialog] = useState(false);
+  const [editingInstance, setEditingInstance] = useState<MikrotikInstance | null>(null);
+  const [instanceForm, setInstanceForm] = useState({
+    name: "",
+    apiUrl: "",
+    username: "",
+    password: "",
+    port: 8728,
+    useSsl: false,
+  });
+
+  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, Company settings, and Mikrotik instances from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
