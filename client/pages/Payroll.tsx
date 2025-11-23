@@ -125,6 +125,14 @@ export default function PayrollPage() {
     "all" | "draft" | "approved" | "paid" | "pending"
   >("all");
   const [filterMonth, setFilterMonth] = useState("all");
+  const [deductionSettings] = useState(() => getDeductionSettings());
+  const [monthlyDeductions] = useState(() =>
+    calculateMonthlyDeductions(
+      mockAttendanceData,
+      allRecords,
+      deductionSettings,
+    ),
+  );
 
   const [formData, setFormData] = useState({
     employeeId: "",
