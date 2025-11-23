@@ -140,10 +140,19 @@ export default function MikrotikPage() {
   const [pppoeConnections, setPPPoEConnections] = useState<any[]>([]);
   const [testingConnection, setTestingConnection] = useState(false);
 
+  // Bandwidth Monitoring State
+  const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
+  const [quotaAlerts, setQuotaAlerts] = useState<any[]>([]);
+  const [selectedAccountForMonitoring, setSelectedAccountForMonitoring] = useState<string>("");
+  const [bandwidthHistory, setBandwidthHistory] = useState<any[]>([]);
+  const [averageUsage, setAverageUsage] = useState<any>(null);
+  const [peakUsage, setPeakUsage] = useState<any>(null);
+
   // Load data on mount
   useEffect(() => {
     loadData();
     loadRouterOSConfig();
+    loadMonitoringStatus();
   }, []);
 
   const loadData = async () => {
