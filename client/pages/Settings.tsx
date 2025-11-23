@@ -689,6 +689,184 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          {/* WhatsApp Settings */}
+          <TabsContent value="whatsapp" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    WhatsApp Configuration
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure Meta WhatsApp Business API for sending WhatsApp messages
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground">Enable WhatsApp</p>
+                    <p className="text-sm text-muted-foreground">
+                      {whatsappSettings.enabled
+                        ? "WhatsApp is enabled and active"
+                        : "WhatsApp is disabled"}
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={whatsappSettings.enabled}
+                    onChange={(e) =>
+                      setWhatsappSettings({
+                        ...whatsappSettings,
+                        enabled: e.target.checked,
+                      })
+                    }
+                    className="w-5 h-5 cursor-pointer"
+                  />
+                </div>
+
+                {whatsappSettings.enabled && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Business Account ID
+                        </label>
+                        <Input
+                          type="text"
+                          value={whatsappSettings.businessAccountId}
+                          onChange={(e) =>
+                            setWhatsappSettings({
+                              ...whatsappSettings,
+                              businessAccountId: e.target.value,
+                            })
+                          }
+                          placeholder="Your Business Account ID"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Phone Number ID
+                        </label>
+                        <Input
+                          type="text"
+                          value={whatsappSettings.phoneNumberId}
+                          onChange={(e) =>
+                            setWhatsappSettings({
+                              ...whatsappSettings,
+                              phoneNumberId: e.target.value,
+                            })
+                          }
+                          placeholder="Your Phone Number ID"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Access Token
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={visibleKey === "whatsappToken" ? "text" : "password"}
+                          value={whatsappSettings.accessToken}
+                          onChange={(e) =>
+                            setWhatsappSettings({
+                              ...whatsappSettings,
+                              accessToken: e.target.value,
+                            })
+                          }
+                          placeholder="Your WhatsApp Access Token"
+                        />
+                        <button
+                          onClick={() =>
+                            setVisibleKey(
+                              visibleKey === "whatsappToken"
+                                ? null
+                                : "whatsappToken",
+                            )
+                          }
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {visibleKey === "whatsappToken" ? (
+                            <EyeOff size={18} />
+                          ) : (
+                            <Eye size={18} />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Get this from Meta App Dashboard → Settings → System User Tokens
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Webhook Token (Optional)
+                      </label>
+                      <Input
+                        type="password"
+                        value={whatsappSettings.webhookToken}
+                        onChange={(e) =>
+                          setWhatsappSettings({
+                            ...whatsappSettings,
+                            webhookToken: e.target.value,
+                          })
+                        }
+                        placeholder="Webhook verification token"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Used to verify incoming webhooks from WhatsApp
+                      </p>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm text-blue-900 mb-2">
+                        <strong>Setup Instructions:</strong>
+                      </p>
+                      <ul className="text-sm text-blue-800 list-disc list-inside space-y-1">
+                        <li>
+                          Create a Meta Business Account at{" "}
+                          <a
+                            href="https://business.facebook.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                          >
+                            business.facebook.com
+                          </a>
+                        </li>
+                        <li>Create a WhatsApp Business App</li>
+                        <li>Get your Phone Number ID from App Dashboard</li>
+                        <li>Generate System User Access Token with whatsapp_business_messaging scope</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleSaveSettings("WhatsApp")}
+                    className="gap-2"
+                  >
+                    <Save size={16} />
+                    Save WhatsApp Settings
+                  </Button>
+                  {whatsappSettings.enabled && (
+                    <Button
+                      onClick={handleTestWhatsApp}
+                      variant="outline"
+                      className="gap-2"
+                      disabled={testingWhatsApp}
+                    >
+                      <MessageSquare size={16} />
+                      {testingWhatsApp ? "Testing..." : "Test Connection"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* SMS Templates */}
           <TabsContent value="templates" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
