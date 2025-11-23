@@ -28,7 +28,7 @@ import {
   AlertCircle,
   Edit,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
   getSmsSettings,
@@ -70,6 +70,7 @@ export default function SettingsPage() {
     null,
   );
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [testingSms, setTestingSms] = useState(false);
 
   // Load SMS settings and templates from storage on mount
   useEffect(() => {
@@ -208,6 +209,72 @@ export default function SettingsPage() {
         title: "Success",
         description: `${section} settings saved successfully.`,
       });
+    }
+  };
+
+  const handleTestSms = async () => {
+    try {
+      setTestingSms(true);
+
+      // Check if settings are configured
+      if (
+        !smsSettings.accountSid &&
+        !smsSettings.apiKey &&
+        smsSettings.provider !== "custom"
+      ) {
+        toast({
+          title: "Error",
+          description: "Please configure SMS settings first",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check provider-specific credentials
+      if (smsSettings.provider === "twilio") {
+        if (!smsSettings.accountSid || !smsSettings.authToken || !smsSettings.fromNumber) {
+          toast({
+            title: "Error",
+            description: "Please configure all Twilio credentials",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else if (smsSettings.provider === "advanta") {
+        if (!smsSettings.apiKey || !smsSettings.partnerId || !smsSettings.shortcode) {
+          toast({
+            title: "Error",
+            description: "Please configure all Advanta SMS credentials",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Send test SMS
+      const { sendSmsToPhone } = await import("@/lib/sms-client");
+
+      const testMessage = `SMS Test - This is a test message from your ISP CRM system. Provider: ${smsSettings.provider}. If you received this, SMS is working correctly! [${new Date().toLocaleTimeString()}]`;
+
+      // Use a test phone number or the configured from number
+      const testPhoneNumber = smsSettings.fromNumber || "+1234567890";
+
+      await sendSmsToPhone(testPhoneNumber, testMessage);
+
+      toast({
+        title: "Success",
+        description: "Test SMS sent successfully! Check your phone.",
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send test SMS";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setTestingSms(false);
     }
   };
 
@@ -476,13 +543,24 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <Button
-                  onClick={() => handleSaveSettings("SMS")}
-                  className="gap-2"
-                >
-                  <Save size={16} />
-                  Save SMS Settings
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleSaveSettings("SMS")}
+                    className="gap-2"
+                  >
+                    <Save size={16} />
+                    Save SMS Settings
+                  </Button>
+                  <Button
+                    onClick={handleTestSms}
+                    variant="outline"
+                    className="gap-2"
+                    disabled={testingSms || !smsSettings.enabled}
+                  >
+                    <MessageSquare size={16} />
+                    {testingSms ? "Testing..." : "Test SMS"}
+                  </Button>
+                </div>
               </div>
             </Card>
           </TabsContent>
