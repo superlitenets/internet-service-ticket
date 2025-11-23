@@ -6,6 +6,7 @@ import {
   MikrotikPayment,
   MikrotikUsage,
   MikrotikConfig,
+  RADIUSConfig,
 } from "@shared/api";
 import {
   createRouterOSClient,
@@ -16,6 +17,7 @@ import { getBandwidthMonitor } from "../lib/mikrotik-bandwidth-monitor";
 import { getBillingAutomation } from "../lib/mikrotik-billing-automation";
 import { getNotificationService } from "../lib/mikrotik-notifications";
 import { getAnalyticsService } from "../lib/mikrotik-analytics";
+import { getRADIUSClient, RADIUSUser, RADIUSResponse } from "../lib/radius-client";
 
 // In-memory storage per instance (for demo purposes)
 const instanceData: Record<string, {
@@ -24,6 +26,7 @@ const instanceData: Record<string, {
   invoices: MikrotikInvoice[];
   payments: MikrotikPayment[];
   usageRecords: MikrotikUsage[];
+  radiusConfig?: RADIUSConfig;
 }> = {};
 
 // Default instance ID for backwards compatibility
