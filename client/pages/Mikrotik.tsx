@@ -1741,6 +1741,185 @@ export default function MikrotikPage() {
             </Card>
           </TabsContent>
 
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Notification Management
+                </h3>
+
+                {/* Notification Stats */}
+                {notificationStats && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                      <p className="text-sm text-blue-600 font-medium">
+                        Total Sent
+                      </p>
+                      <p className="text-2xl font-bold text-blue-900 mt-2">
+                        {notificationStats.totalSent}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                      <p className="text-sm text-green-600 font-medium">
+                        Today Sent
+                      </p>
+                      <p className="text-2xl font-bold text-green-900 mt-2">
+                        {notificationStats.todaySent}
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                      <p className="text-sm text-red-600 font-medium">
+                        Failed
+                      </p>
+                      <p className="text-2xl font-bold text-red-900 mt-2">
+                        {notificationStats.totalFailed}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Send Notification */}
+                <div className="border rounded-lg p-4 space-y-4">
+                  <h4 className="font-medium text-foreground">
+                    Send Notification
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Select Invoice
+                      </label>
+                      <Select
+                        value={selectedInvoiceForNotification}
+                        onValueChange={setSelectedInvoiceForNotification}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose invoice..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {invoices.slice(-20).map((invoice) => (
+                            <SelectItem key={invoice.id} value={invoice.id}>
+                              {invoice.invoiceNumber} - {invoice.customerName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Notification Type
+                      </label>
+                      <Select
+                        value={notificationType}
+                        onValueChange={setNotificationType}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="invoice">Invoice Generated</SelectItem>
+                          <SelectItem value="reminder">Payment Reminder</SelectItem>
+                          <SelectItem value="overdue">Overdue Alert</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={handleSendNotification}
+                      disabled={loading || !selectedInvoiceForNotification}
+                      className="gap-2"
+                    >
+                      <Bell size={16} />
+                      Send Notification
+                    </Button>
+                    <Button
+                      onClick={handleLoadNotificationLogs}
+                      disabled={loading}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <FileText size={16} />
+                      Load Logs
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Notification Logs */}
+                {notificationLogs.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <h4 className="font-medium text-foreground">
+                      Notification Logs ({notificationLogs.length})
+                    </h4>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="border-b border-border">
+                          <tr>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Time
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Type
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Customer Phone
+                            </th>
+                            <th className="py-2 px-4 text-left font-medium">
+                              Channel
+                            </th>
+                            <th className="py-2 px-4 text-center font-medium">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {notificationLogs.slice(-20).map((log: any, idx: number) => (
+                            <tr key={idx} className="border-b border-border">
+                              <td className="py-3 px-4 text-sm whitespace-nowrap">
+                                {new Date(log.timestamp).toLocaleTimeString()}
+                              </td>
+                              <td className="py-3 px-4 text-sm">
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {log.notificationType}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {log.customerPhone}
+                              </td>
+                              <td className="py-3 px-4 text-sm capitalize">
+                                <Badge variant="secondary" className="text-xs">
+                                  {log.channel}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-center">
+                                <Badge
+                                  variant={
+                                    log.status === "sent"
+                                      ? "default"
+                                      : log.status === "failed"
+                                        ? "destructive"
+                                        : "secondary"
+                                  }
+                                  className="text-xs capitalize"
+                                >
+                                  {log.status}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+
           {/* RouterOS Settings Tab */}
           <TabsContent value="routeros" className="space-y-6">
             <Card className="p-6 border-0 shadow-sm">
@@ -1801,7 +1980,7 @@ export default function MikrotikPage() {
                             password: e.target.value,
                           })
                         }
-                        placeholder="•••••���••"
+                        placeholder="••••••••"
                       />
                     </div>
 
