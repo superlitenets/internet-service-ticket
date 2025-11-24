@@ -246,6 +246,7 @@ export const handleMpesaB2B: RequestHandler<
     const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
     const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
     const senderShortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    const initiatorPassword = credentials?.initiatorPassword || process.env.MPESA_INITIATOR_PASSWORD || "";
 
     if (!consumerKey || !consumerSecret || !senderShortCode) {
       return res.status(400).json({
@@ -261,7 +262,7 @@ export const handleMpesaB2B: RequestHandler<
 
     const b2bPayload = {
       InitiatorName: "testapi",
-      InitiatorPassword: process.env.MPESA_INITIATOR_PASSWORD || "",
+      InitiatorPassword: initiatorPassword,
       CommandID: commandId, // "BusinessPayBill" or "MerchantToMerchantTransfer" or "SendRemittance"
       SenderIdentifierType: "4", // 4 = Organization shortcode
       RecieverIdentifierType: "4",
