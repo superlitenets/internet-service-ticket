@@ -43,6 +43,7 @@ function getDefaultMpesaConfig(): MpesaConfig {
     consumerSecret: "",
     businessShortCode: "",
     passkey: "",
+    initiatorPassword: "",
     callbackUrl: "",
     validationUrl: "",
     confirmationUrl: "",
