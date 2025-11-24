@@ -116,18 +116,18 @@ export default function Layout({ children }: LayoutProps) {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-sidebar-border">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:shadow-lg transition-shadow">
-                <span className="text-white font-bold text-sm">CRM</span>
+          <div className="flex items-center justify-between px-6 py-3 border-b border-sidebar-border">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:shadow-lg transition-shadow">
+                <span className="text-white font-bold text-xs">CRM</span>
               </div>
-              <span className="font-bold text-lg text-sidebar-foreground hidden sm:inline">
+              <span className="font-bold text-sm text-sidebar-foreground hidden sm:inline truncate">
                 NetFlow
               </span>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="md:hidden text-sidebar-foreground hover:text-sidebar-primary"
+              className="md:hidden flex-shrink-0 text-sidebar-foreground hover:text-sidebar-primary"
             >
               <X size={20} />
             </button>
