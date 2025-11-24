@@ -108,8 +108,6 @@ import {
   getExpirationAutomationStatus,
 } from "./routes/mikrotik";
 
-import path from "path";
-
 export function createServer() {
   const app = express();
 
