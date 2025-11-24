@@ -264,7 +264,7 @@ export default function Layout({ children }: LayoutProps) {
           </button>
           <div className="flex-1 md:flex-none" />
           <div className="text-sm text-muted-foreground">
-            Welcome to NetFlow CRM
+            {user ? `Welcome back, ${user.name}` : "Welcome to NetFlow CRM"}
           </div>
         </header>
 
