@@ -87,7 +87,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/payments", label: "Payments", icon: DollarSign },
     {
       label: "Accounting",
-      icon: Ledger,
+      icon: BookOpen,
       subItems: [
         { path: "/accounting", label: "General Accounting", icon: BarChart3 },
       ],
