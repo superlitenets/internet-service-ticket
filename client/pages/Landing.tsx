@@ -217,11 +217,11 @@ export default function Landing() {
       </section>
 
       {/* Internet Packages Section */}
-      <section className="py-20">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Our Internet Packages</h2>
-            <p className="text-xl text-slate-400">
+            <h2 className="text-4xl font-bold mb-4 text-slate-900">Our Internet Packages</h2>
+            <p className="text-xl text-slate-600">
               Choose the perfect internet speed for your needs
             </p>
           </div>
@@ -229,8 +229,8 @@ export default function Landing() {
           {loadingPlans ? (
             <div className="flex justify-center items-center py-16">
               <div className="flex items-center gap-3">
-                <Loader className="animate-spin" size={24} />
-                <p className="text-slate-400">Loading packages...</p>
+                <Loader className="animate-spin text-blue-600" size={24} />
+                <p className="text-slate-600">Loading packages...</p>
               </div>
             </div>
           ) : plans.length > 0 ? (
@@ -240,8 +240,8 @@ export default function Landing() {
                   key={plan.id}
                   className={`p-8 rounded-xl border transition-all transform hover:scale-105 ${
                     i === 1
-                      ? "border-blue-500 bg-blue-600/10 shadow-lg shadow-blue-500/20"
-                      : "border-slate-700/50 bg-slate-800/30 hover:border-blue-500/30"
+                      ? "border-blue-500 bg-blue-50 shadow-lg"
+                      : "border-slate-200 bg-white hover:border-blue-400 hover:shadow-md"
                   }`}
                 >
                   {i === 1 && (
@@ -249,25 +249,25 @@ export default function Landing() {
                       MOST POPULAR
                     </div>
                   )}
-                  <h3 className="text-2xl font-bold mb-2">{plan.planName}</h3>
-                  <p className="text-slate-400 mb-4 text-sm line-clamp-2">
+                  <h3 className="text-2xl font-bold mb-2 text-slate-900">{plan.planName}</h3>
+                  <p className="text-slate-600 mb-4 text-sm line-clamp-2">
                     {plan.description || "High-speed internet package"}
                   </p>
 
                   <div className="mb-6">
-                    <div className="text-4xl font-bold text-blue-400">
+                    <div className="text-4xl font-bold text-blue-600">
                       KES {plan.monthlyFee.toLocaleString()}
                     </div>
-                    <span className="text-slate-400">/month</span>
+                    <span className="text-slate-600">/month</span>
                   </div>
 
-                  <div className="space-y-3 mb-8 pb-8 border-b border-slate-700">
+                  <div className="space-y-3 mb-8 pb-8 border-b border-slate-200">
                     {plan.speed && (
                       <div className="flex items-center gap-3">
-                        <Zap size={18} className="text-yellow-400 flex-shrink-0" />
+                        <Zap size={18} className="text-yellow-600 flex-shrink-0" />
                         <div>
-                          <p className="font-semibold text-white">Speed</p>
-                          <p className="text-sm text-slate-400">
+                          <p className="font-semibold text-slate-900">Speed</p>
+                          <p className="text-sm text-slate-600">
                             {plan.speed.uploadMbps} ↑ / {plan.speed.downloadMbps} ↓ Mbps
                           </p>
                         </div>
@@ -276,10 +276,10 @@ export default function Landing() {
 
                     {plan.dataQuota && (
                       <div className="flex items-center gap-3">
-                        <BarChart3 size={18} className="text-cyan-400 flex-shrink-0" />
+                        <BarChart3 size={18} className="text-cyan-600 flex-shrink-0" />
                         <div>
-                          <p className="font-semibold text-white">Data Quota</p>
-                          <p className="text-sm text-slate-400">
+                          <p className="font-semibold text-slate-900">Data Quota</p>
+                          <p className="text-sm text-slate-600">
                             {plan.dataQuota} GB / month
                           </p>
                         </div>
@@ -288,10 +288,10 @@ export default function Landing() {
 
                     {plan.planType && (
                       <div className="flex items-center gap-3">
-                        <Wifi size={18} className="text-green-400 flex-shrink-0" />
+                        <Wifi size={18} className="text-green-600 flex-shrink-0" />
                         <div>
-                          <p className="font-semibold text-white">Plan Type</p>
-                          <p className="text-sm text-slate-400 capitalize">
+                          <p className="font-semibold text-slate-900">Plan Type</p>
+                          <p className="text-sm text-slate-600 capitalize">
                             {plan.planType.replace("-", " ")}
                           </p>
                         </div>
@@ -300,10 +300,10 @@ export default function Landing() {
 
                     {plan.setupFee > 0 && (
                       <div className="flex items-center gap-3">
-                        <Check size={18} className="text-blue-400 flex-shrink-0" />
+                        <Check size={18} className="text-blue-600 flex-shrink-0" />
                         <div>
-                          <p className="font-semibold text-white">Setup Fee</p>
-                          <p className="text-sm text-slate-400">
+                          <p className="font-semibold text-slate-900">Setup Fee</p>
+                          <p className="text-sm text-slate-600">
                             KES {plan.setupFee.toLocaleString()}
                           </p>
                         </div>
@@ -313,10 +313,10 @@ export default function Landing() {
 
                   <Button
                     onClick={() => navigate("/login")}
-                    className={`w-full ${
+                    className={`w-full text-white ${
                       i === 1
                         ? "bg-blue-600 hover:bg-blue-700"
-                        : "bg-slate-700 hover:bg-slate-600"
+                        : "bg-slate-600 hover:bg-slate-700"
                     }`}
                   >
                     Subscribe Now
@@ -326,7 +326,7 @@ export default function Landing() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-slate-400 text-lg">No packages available yet. Please check back soon!</p>
+              <p className="text-slate-600 text-lg">No packages available yet. Please check back soon!</p>
             </div>
           )}
         </div>
