@@ -256,6 +256,17 @@ export interface MpesaConfig {
 }
 
 /**
+ * MPESA Credentials
+ */
+export interface MpesaCredentials {
+  consumerKey: string;
+  consumerSecret: string;
+  businessShortCode: string;
+  passkey?: string;
+  callbackUrl?: string;
+}
+
+/**
  * MPESA C2B Request
  */
 export interface MpesaC2BRequest {
@@ -263,6 +274,7 @@ export interface MpesaC2BRequest {
   amount: number;
   accountReference: string;
   transactionDescription: string;
+  credentials?: MpesaCredentials;
 }
 
 /**
@@ -274,6 +286,7 @@ export interface MpesaB2BRequest {
   commandId: string;
   accountReference: string;
   transactionDescription: string;
+  credentials?: MpesaCredentials;
 }
 
 /**
@@ -285,6 +298,7 @@ export interface MpesaStkPushRequest {
   accountReference: string;
   transactionDescription: string;
   callbackUrl?: string;
+  credentials?: MpesaCredentials;
 }
 
 /**
