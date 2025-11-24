@@ -325,6 +325,34 @@ export function createServer() {
     generateMonthlyBillingReport,
   );
 
+  // Accounting Routes
+  // Chart of Accounts
+  app.get("/api/accounting/accounts", getChartOfAccounts);
+  app.post("/api/accounting/accounts", createChartOfAccount);
+  app.put("/api/accounting/accounts/:id", updateChartOfAccount);
+
+  // General Ledger / Journal Entries
+  app.get("/api/accounting/ledger", getJournalEntries);
+  app.post("/api/accounting/ledger", createJournalEntry);
+  app.post("/api/accounting/ledger/:id/reverse", reverseJournalEntry);
+
+  // Expense Management
+  app.get("/api/accounting/expense-categories", getExpenseCategories);
+  app.post("/api/accounting/expense-categories", createExpenseCategory);
+  app.get("/api/accounting/expenses", getExpenses);
+  app.post("/api/accounting/expenses", createExpense);
+  app.put("/api/accounting/expenses/:id", updateExpense);
+
+  // POS System
+  app.get("/api/pos/items", getPOSItems);
+  app.post("/api/pos/items", createPOSItem);
+  app.post("/api/pos/transactions", createPOSTransaction);
+  app.get("/api/pos/transactions", getPOSTransactions);
+
+  // Financial Reports
+  app.get("/api/accounting/summary", getAccountingSummary);
+  app.get("/api/accounting/trial-balance", getTrialBalance);
+
   // SPA catch-all route - serve index.html for all non-API routes
   // This must be after all API routes
   app.get(/^(?!\/api).*/, (req, res) => {
