@@ -5,11 +5,13 @@ import { useToast } from "@/hooks/use-toast";
 import { LogIn, AlertCircle, Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
 import { LoginRequest } from "@shared/api";
 
 export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login: authLogin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
