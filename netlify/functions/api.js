@@ -1,15 +1,14 @@
-const serverless = require("serverless-http");
 const express = require("express");
 const cors = require("cors");
+const serverless = require("serverless-http");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Simple auth in-memory store
+// In-memory user database
 const users = new Map([
   [
     "admin@example.com",
@@ -70,7 +69,7 @@ function validateToken(token) {
 }
 
 // Auth endpoints
-app.post("/api/auth/login", (req, res) => {
+app.post("/auth/login", (req, res) => {
   try {
     const { identifier, password } = req.body;
 
@@ -126,15 +125,16 @@ app.post("/api/auth/login", (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
       message: "Login failed",
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error.message || "Unknown error",
     });
   }
 });
 
-app.post("/api/auth/logout", (req, res) => {
+app.post("/auth/logout", (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -147,15 +147,16 @@ app.post("/api/auth/logout", (req, res) => {
       message: "Logged out successfully",
     });
   } catch (error) {
+    console.error("Logout error:", error);
     return res.status(500).json({
       success: false,
       message: "Logout failed",
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error.message || "Unknown error",
     });
   }
 });
 
-app.get("/api/auth/verify", (req, res) => {
+app.get("/auth/verify", (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -200,15 +201,16 @@ app.get("/api/auth/verify", (req, res) => {
       message: "Token is valid",
     });
   } catch (error) {
+    console.error("Verify error:", error);
     return res.status(500).json({
       success: false,
       message: "Token verification failed",
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error.message || "Unknown error",
     });
   }
 });
 
-app.get("/api/auth/me", (req, res) => {
+app.get("/auth/me", (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -250,15 +252,16 @@ app.get("/api/auth/me", (req, res) => {
       user: userWithoutPassword,
     });
   } catch (error) {
+    console.error("Me error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to get current user",
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error.message || "Unknown error",
     });
   }
 });
 
-app.get("/api/auth/users", (_req, res) => {
+app.get("/auth/users", (_req, res) => {
   try {
     const allUsers = [];
     for (const user of users.values()) {
@@ -271,20 +274,19 @@ app.get("/api/auth/users", (_req, res) => {
       users: allUsers,
     });
   } catch (error) {
+    console.error("Get users error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch users",
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error.message || "Unknown error",
     });
   }
 });
 
-// Health check
-app.get("/api/ping", (_req, res) => {
+app.get("/ping", (_req, res) => {
   res.json({ message: "pong" });
 });
 
-// Catch-all 404
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
