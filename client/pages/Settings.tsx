@@ -2677,65 +2677,6 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Callback URL
-                        </label>
-                        <Input
-                          value={mpesaSettings.callbackUrl}
-                          onChange={(e) =>
-                            setMpesaSettings({
-                              ...mpesaSettings,
-                              callbackUrl: e.target.value,
-                            })
-                          }
-                          placeholder="https://yourdomain.com/api/mpesa/callback"
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          URL to receive payment confirmations from MPESA
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Validation URL
-                        </label>
-                        <Input
-                          value={mpesaSettings.validationUrl}
-                          onChange={(e) =>
-                            setMpesaSettings({
-                              ...mpesaSettings,
-                              validationUrl: e.target.value,
-                            })
-                          }
-                          placeholder="https://yourdomain.com/api/mpesa/validation"
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          URL for validating incoming payments
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Confirmation URL
-                        </label>
-                        <Input
-                          value={mpesaSettings.confirmationUrl}
-                          onChange={(e) =>
-                            setMpesaSettings({
-                              ...mpesaSettings,
-                              confirmationUrl: e.target.value,
-                            })
-                          }
-                          placeholder="https://yourdomain.com/api/mpesa/confirmation"
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          URL to receive final payment confirmation
-                        </p>
-                      </div>
-                    </div>
-
                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                       <p className="text-sm text-amber-900 mb-2">
                         <strong>⚠️ Important:</strong>
@@ -2747,10 +2688,6 @@ export default function SettingsPage() {
                         <li>
                           Never commit credentials to version control or public
                           code
-                        </li>
-                        <li>
-                          Callback URLs must be publicly accessible for MPESA to
-                          send notifications
                         </li>
                         <li>
                           Test your setup in sandbox before going to production
