@@ -255,12 +255,12 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 md:px-8">
+        <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 md:px-8">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="md:hidden text-foreground hover:text-primary transition-colors"
+            className="md:hidden flex-shrink-0 text-foreground hover:text-primary transition-colors"
           >
-            <Menu size={24} />
+            <Menu size={20} />
           </button>
           <div className="flex-1 md:flex-none" />
           <div className="text-sm text-muted-foreground">
