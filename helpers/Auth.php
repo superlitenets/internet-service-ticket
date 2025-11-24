@@ -29,6 +29,7 @@ class Auth
             'username' => $userData['username'],
             'email' => $userData['email'],
             'role' => $userData['role'] ?? 'user',
+            'tenant_id' => $userData['tenant_id'] ?? null,
         ];
 
         return JWT::encode($payload, $secret, $algorithm);
