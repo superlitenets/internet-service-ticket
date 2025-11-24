@@ -74,7 +74,8 @@ export default function MikrotikRouterOSIntegrationPage() {
   const { toast } = useToast();
   const [selectedInstanceId, setSelectedInstanceId] = useState<string>("");
   const [instances, setInstances] = useState<MikrotikInstance[]>([]);
-  const [selectedInstance, setSelectedInstance] = useState<MikrotikInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    useState<MikrotikInstance | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(false);
 
@@ -147,14 +148,18 @@ export default function MikrotikRouterOSIntegrationPage() {
             RouterOS Integration
           </h1>
           <p className="text-muted-foreground">
-            Monitor and manage Mikrotik RouterOS instances with live statistics and analytics
+            Monitor and manage Mikrotik RouterOS instances with live statistics
+            and analytics
           </p>
         </div>
 
         {/* Instance Selector */}
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="w-full md:w-48">
-            <Select value={selectedInstanceId} onValueChange={setSelectedInstanceId}>
+            <Select
+              value={selectedInstanceId}
+              onValueChange={setSelectedInstanceId}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select RouterOS Instance" />
               </SelectTrigger>
@@ -200,7 +205,9 @@ export default function MikrotikRouterOSIntegrationPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Instance</p>
-                  <p className="font-semibold text-foreground">{selectedInstance.name}</p>
+                  <p className="font-semibold text-foreground">
+                    {selectedInstance.name}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -237,7 +244,11 @@ export default function MikrotikRouterOSIntegrationPage() {
         )}
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4 gap-2">
             <TabsTrigger value="overview" className="gap-2">
               <Activity size={16} />
@@ -264,9 +275,13 @@ export default function MikrotikRouterOSIntegrationPage() {
               <Card className="p-4 border-0 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-2">CPU Usage</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      CPU Usage
+                    </p>
                     <p className="text-3xl font-bold text-foreground">42%</p>
-                    <p className="text-xs text-muted-foreground mt-1">Last update: 2s ago</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Last update: 2s ago
+                    </p>
                   </div>
                   <div className="text-orange-500">
                     <Zap size={32} />
@@ -278,7 +293,9 @@ export default function MikrotikRouterOSIntegrationPage() {
               <Card className="p-4 border-0 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-2">Memory Usage</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Memory Usage
+                    </p>
                     <p className="text-3xl font-bold text-foreground">58%</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       1.2GB / 2GB
@@ -315,7 +332,9 @@ export default function MikrotikRouterOSIntegrationPage() {
                     <p className="text-sm text-muted-foreground mb-2">
                       Total Bandwidth
                     </p>
-                    <p className="text-3xl font-bold text-foreground">2.4 Gb/s</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      2.4 Gb/s
+                    </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Peak: 3.2 Gb/s
                     </p>
@@ -397,7 +416,9 @@ export default function MikrotikRouterOSIntegrationPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="p-4 border-0 shadow-sm">
-                <p className="text-sm text-muted-foreground mb-2">Avg Download</p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Avg Download
+                </p>
                 <p className="text-2xl font-bold text-foreground">368 Mb/s</p>
               </Card>
               <Card className="p-4 border-0 shadow-sm">
