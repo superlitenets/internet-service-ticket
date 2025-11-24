@@ -170,6 +170,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/mikrotik/routeros"
+      element={
+        <ProtectedRoute>
+          <MikrotikRouterOSIntegration />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/reports"
       element={
         <ProtectedRoute requiredRole={["admin", "manager"]}>
