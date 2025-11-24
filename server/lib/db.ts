@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
 
-let prisma: PrismaClient | undefined;
+let prisma: any | undefined;
 
-export function getPrismaClient(): PrismaClient {
+export function getPrismaClient(): any {
   if (!prisma) {
     prisma = new PrismaClient();
   }
