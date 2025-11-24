@@ -146,10 +146,15 @@ class Auth
     public static function login(string $email, string $password): ?array
     {
         try {
+            // Disable tenant isolation for login query (we need to search all tenants to find the user)
+            Database::setTenantIsolation(false);
+
             $user = Database::fetch(
-                'SELECT id, username, email, password, full_name, role, status FROM users WHERE email = ?',
+                'SELECT id, username, email, password, full_name, role, status, tenant_id FROM users WHERE email = ?',
                 [$email]
             );
+
+            Database::setTenantIsolation(true);
 
             if (!$user) {
                 return null;
@@ -161,6 +166,11 @@ class Auth
 
             if (!self::verifyPassword($password, $user['password'])) {
                 return null;
+            }
+
+            // Set tenant context
+            if ($user['tenant_id']) {
+                \Core\TenantContext::setTenant($user['tenant_id']);
             }
 
             // Update last login
@@ -180,6 +190,7 @@ class Auth
                     'email' => $user['email'],
                     'full_name' => $user['full_name'],
                     'role' => $user['role'],
+                    'tenant_id' => $user['tenant_id'],
                 ],
             ];
         } catch (\Exception $e) {
