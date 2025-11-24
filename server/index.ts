@@ -8,6 +8,10 @@ import {
   getCurrentUser,
   verifyToken,
   handleRegister,
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
 } from "./routes/auth";
 import { handleSendSms } from "./routes/sms";
 import {
