@@ -47,43 +47,21 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identifier: formData.identifier.trim(),
-          password: formData.password,
-        } as LoginRequest),
+      await authLogin(formData.identifier.trim(), formData.password);
+
+      toast({
+        title: "Success",
+        description: "Login successful. Redirecting...",
       });
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        toast({
-          title: "Login Failed",
-          description: data.error || data.message || "Invalid credentials",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (data.user && data.token) {
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("auth_user", JSON.stringify(data.user));
-
-        toast({
-          title: "Success",
-          description: `Welcome back, ${data.user.name}!`,
-        });
-
-        navigate("/");
-      }
+      // Navigate after a brief delay to allow the toast to display
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 500);
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Login failed",
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "Invalid credentials",
         variant: "destructive",
       });
     } finally {
