@@ -425,7 +425,6 @@ export const handleMpesaStkPush: RequestHandler<
       PartyB: shortCode,
       PhoneNumber: formattedPhone,
       CallBackURL:
-        callbackUrl ||
         process.env.MPESA_CALLBACK_URL ||
         "https://example.com/mpesa/callback",
       AccountReference: accountReference,
