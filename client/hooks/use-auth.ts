@@ -32,13 +32,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedUser = localStorage.getItem("auth_user");
 
         if (savedToken && savedUser) {
-          setToken(savedToken);
-          setUser(JSON.parse(savedUser));
-
-          // Verify token with server
+          // Verify token with server first
           const isValid = await checkAuthWithServer(savedToken);
-          if (!isValid) {
-            // Token expired, clear auth
+          if (isValid) {
+            // Token is valid, restore auth
+            setToken(savedToken);
+            setUser(JSON.parse(savedUser));
+          } else {
+            // Token invalid/expired, clear auth
             localStorage.removeItem("auth_token");
             localStorage.removeItem("auth_user");
             setToken(null);
