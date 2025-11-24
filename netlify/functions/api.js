@@ -525,6 +525,17 @@ exports.handler = async (event) => {
           consumerKey,
           consumerSecret,
         );
+
+        if (!accessToken) {
+          throw new Error("Access token is empty or null");
+        }
+
+        console.log("STK Push Request:", {
+          accessTokenLength: accessToken?.length,
+          accessTokenPrefix: accessToken?.substring(0, 20),
+          timestamp: new Date().toISOString(),
+        });
+
         const formattedPhone = phoneNumber
           .replace(/^0/, "254")
           .replace(/[^0-9]/g, "");
