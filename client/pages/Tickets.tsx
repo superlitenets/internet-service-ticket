@@ -741,6 +741,14 @@ export default function TicketsPage() {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => handleOpenDetail(ticket)}
+                            title="View details and replies"
+                          >
+                            <MessageSquare size={14} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleOpenDialog(ticket)}
                             title="Edit ticket"
                           >
