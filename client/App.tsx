@@ -233,7 +233,6 @@ const AppRoutes = () => (
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Sonner />
       <BrowserRouter>
         <AuthProvider>
           <AppRoutes />
