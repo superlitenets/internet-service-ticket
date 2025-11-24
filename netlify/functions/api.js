@@ -573,11 +573,13 @@ exports.handler = async (event) => {
           timestamp: new Date().toISOString(),
         });
       } catch (error) {
+        console.error("STK Push Error:", error);
         return createJsonResponse(500, {
           success: false,
           message: "Failed to initiate STK push",
           timestamp: new Date().toISOString(),
-          error: error.message,
+          error: error instanceof Error ? error.message : "Unknown error",
+          details: error instanceof Error ? error.stack : String(error),
         });
       }
     }
