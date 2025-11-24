@@ -471,3 +471,51 @@ export interface RADIUSConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * User Roles
+ */
+export type UserRole = "admin" | "manager" | "support" | "technician" | "customer";
+
+/**
+ * User Account
+ */
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  phone: string;
+  role: UserRole;
+  password?: string; // Should not be sent to client
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Login Request
+ */
+export interface LoginRequest {
+  identifier: string; // phone or email
+  password: string;
+}
+
+/**
+ * Login Response
+ */
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+  token?: string;
+  error?: string;
+}
+
+/**
+ * Auth Session
+ */
+export interface AuthSession {
+  user: User;
+  token: string;
+  expiresAt: number;
+}
