@@ -1033,10 +1033,9 @@ export const getRouterOSInterfaceStats: RequestHandler = async (req, res) => {
 export const getRouterOSPPPoEConnections: RequestHandler = async (req, res) => {
   try {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
-      return res.status(400).json({
-        success: false,
-        message: "RouterOS connection not configured",
-        error: "Please configure RouterOS connection first",
+      return res.json({
+        connections: [],
+        message: "RouterOS not configured. Configure it in Settings to see active connections.",
       });
     }
 
