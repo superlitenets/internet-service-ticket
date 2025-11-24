@@ -153,11 +153,11 @@ export default function Landing() {
       </section>
 
       {/* Infrastructure & Deployment Section */}
-      <section className="border-t border-slate-700/50 py-20 bg-slate-800/30">
+      <section className="border-t border-slate-200 py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Cloud Hosting & Server Deployment</h2>
-            <p className="text-xl text-slate-400">
+            <h2 className="text-4xl font-bold mb-4 text-slate-900">Cloud Hosting & Server Deployment</h2>
+            <p className="text-xl text-slate-600">
               Enterprise infrastructure designed for high-performance ISP operations
             </p>
           </div>
@@ -203,13 +203,13 @@ export default function Landing() {
             ].map((feature, i) => (
               <div
                 key={i}
-                className="p-8 border border-slate-700/50 rounded-xl bg-slate-800/50 hover:border-blue-500/30 transition-colors"
+                className="p-8 border border-slate-200 rounded-xl bg-white hover:border-blue-400 hover:shadow-md transition-all"
               >
-                <div className="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center mb-4">
-                  <feature.icon size={24} className="text-blue-400" />
+                <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                  <feature.icon size={24} className="text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-slate-400">{feature.description}</p>
+                <h3 className="text-lg font-semibold mb-2 text-slate-900">{feature.title}</h3>
+                <p className="text-slate-600">{feature.description}</p>
               </div>
             ))}
           </div>
