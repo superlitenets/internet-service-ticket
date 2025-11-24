@@ -88,10 +88,15 @@ class Auth
             return null;
         }
 
+        // Set tenant context from JWT
+        if (isset($decoded['tenant_id']) && $decoded['tenant_id']) {
+            \Core\TenantContext::setTenant($decoded['tenant_id']);
+        }
+
         // Fetch full user data from database
         try {
             $user = Database::fetch(
-                'SELECT id, username, email, full_name, role, status FROM users WHERE id = ?',
+                'SELECT id, username, email, full_name, role, status, tenant_id FROM users WHERE id = ?',
                 [$decoded['user_id']]
             );
 
