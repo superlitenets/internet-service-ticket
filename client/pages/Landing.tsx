@@ -64,26 +64,30 @@ export default function Landing() {
             {/* Contact & Action Section */}
             <div className="flex items-center gap-8">
               <div className="hidden md:flex items-center gap-6">
-                <a
-                  href="mailto:support@superlite.co.ke"
-                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                >
-                  <Mail size={18} />
-                  <div>
-                    <p className="text-xs text-slate-500">Email</p>
-                    <p className="font-medium">support@superlite.co.ke</p>
-                  </div>
-                </a>
-                <a
-                  href="tel:+254709367600"
-                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                >
-                  <Phone size={18} />
-                  <div>
-                    <p className="text-xs text-slate-500">Support</p>
-                    <p className="font-medium">0709367600</p>
-                  </div>
-                </a>
+                {landingContent && (
+                  <>
+                    <a
+                      href={`mailto:${landingContent.email}`}
+                      className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                    >
+                      <Mail size={18} />
+                      <div>
+                        <p className="text-xs text-slate-500">Email</p>
+                        <p className="font-medium">{landingContent.email}</p>
+                      </div>
+                    </a>
+                    <a
+                      href={`tel:${landingContent.phone.replace(/\D/g, "")}`}
+                      className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                    >
+                      <Phone size={18} />
+                      <div>
+                        <p className="text-xs text-slate-500">Support</p>
+                        <p className="font-medium">{landingContent.phone}</p>
+                      </div>
+                    </a>
+                  </>
+                )}
               </div>
 
               <Button
