@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Tickets from "./pages/Tickets";
 import TicketDetailPage from "./pages/TicketDetailPage";
+import Leads from "./pages/Leads";
 import Customers from "./pages/Customers";
 import Team from "./pages/Team";
 import Inventory from "./pages/Inventory";
