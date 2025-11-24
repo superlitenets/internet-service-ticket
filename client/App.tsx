@@ -68,6 +68,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/leads"
+      element={
+        <ProtectedRoute>
+          <Leads />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/customers"
       element={
         <ProtectedRoute>
