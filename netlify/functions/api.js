@@ -422,12 +422,27 @@ exports.handler = async (event) => {
       // If Advanta with custom URL, make the actual API call
       if (provider === "advanta" && customApiUrl) {
         try {
+          // Format phone numbers for Advanta (add country code 254 for Kenya if needed)
+          const formattedPhones = validPhoneNumbers.map((phone) => {
+            // Remove all non-digits
+            const digits = phone.replace(/\D/g, "");
+            // If starts with 0 (Kenya format), replace with 254
+            if (digits.startsWith("0")) {
+              return "254" + digits.substring(1);
+            }
+            // If doesn't have country code, add 254
+            if (!digits.startsWith("254")) {
+              return "254" + digits;
+            }
+            return digits;
+          });
+
           // Format Advanta SMS request payload
           const advantaPayload = {
             apikey: apiKey,
             partnerID: partnerId,
             shortcode: shortcode,
-            recipients: validPhoneNumbers.join(","), // Advanta expects comma-separated recipients
+            mobile: formattedPhones.join(","), // Advanta uses "mobile" field
             message: message,
           };
 
