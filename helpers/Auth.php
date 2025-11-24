@@ -204,6 +204,9 @@ class Auth
     public static function register(array $data): ?array
     {
         try {
+            // Disable tenant isolation for registration
+            Database::setTenantIsolation(false);
+
             // Check if user exists
             $existing = Database::fetch(
                 'SELECT id FROM users WHERE email = ? OR username = ?',
@@ -211,21 +214,48 @@ class Auth
             );
 
             if ($existing) {
+                Database::setTenantIsolation(true);
                 return null;
             }
 
+            // Get tenant context - either from request or use default tenant
+            $tenant_id = \Core\TenantContext::getTenantId();
+            if (!$tenant_id) {
+                // Try to get or create default tenant
+                $defaultTenant = Database::fetch(
+                    'SELECT id FROM tenants WHERE is_default = true LIMIT 1'
+                );
+                if ($defaultTenant) {
+                    $tenant_id = $defaultTenant['id'];
+                } else {
+                    // Create default tenant if it doesn't exist
+                    Database::execute(
+                        'INSERT INTO tenants (name, slug, subdomain, is_default, status) VALUES (?, ?, ?, ?, ?)',
+                        ['Default', 'default', 'default', true, 'active']
+                    );
+                    $tenant_id = Database::lastInsertId();
+                }
+            }
+
+            Database::setTenantIsolation(true);
+            \Core\TenantContext::setTenant($tenant_id);
+
             // Insert new user
             $hashedPassword = self::hashPassword($data['password']);
-            Database::execute(
-                'INSERT INTO users (username, email, password, full_name, role) VALUES (?, ?, ?, ?, ?)',
-                [$data['username'], $data['email'], $hashedPassword, $data['full_name'] ?? '', 'user']
-            );
+            Database::insert('users', [
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'password' => $hashedPassword,
+                'full_name' => $data['full_name'] ?? '',
+                'role' => 'user',
+                'tenant_id' => $tenant_id
+            ]);
 
             $userId = Database::lastInsertId();
 
             // Fetch created user
             $user = Database::fetch(
-                'SELECT id, username, email, full_name, role FROM users WHERE id = ?',
+                'SELECT id, username, email, full_name, role, tenant_id FROM users WHERE id = ?',
                 [$userId]
             );
 
@@ -241,6 +271,7 @@ class Auth
                 'user' => $user,
             ];
         } catch (\Exception $e) {
+            Database::setTenantIsolation(true);
             return null;
         }
     }
