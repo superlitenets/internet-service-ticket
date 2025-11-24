@@ -268,9 +268,33 @@ fi
 # Step 17: Install SSL (optional - Let's Encrypt)
 echo -e "${YELLOW}Step 17: Would you like to install SSL with Let's Encrypt? (y/n)${NC}"
 read -r ssl_choice
-if [ "$ssl_choice" = "y" ]; then
+if [ "$ssl_choice" = "y" ] && [ "$DOMAIN" != "localhost" ]; then
   apt-get install -y certbot python3-certbot-nginx
-  certbot --nginx -d "$DOMAIN"
+  certbot --nginx -d "$DOMAIN" --agree-tos -n -m admin@$DOMAIN || echo -e "${YELLOW}SSL installation skipped${NC}"
+else
+  echo -e "${YELLOW}Skipping SSL (localhost or declined)${NC}"
+fi
+
+# Step 18: Verify installation
+echo -e "${YELLOW}Step 18: Verifying installation...${NC}"
+sleep 5
+if systemctl is-active --quiet netflow; then
+  echo -e "${GREEN}✓ NetFlow service is running${NC}"
+else
+  echo -e "${RED}✗ NetFlow service is not running${NC}"
+  echo "Check logs: journalctl -u netflow -n 50"
+fi
+
+if systemctl is-active --quiet nginx; then
+  echo -e "${GREEN}✓ Nginx is running${NC}"
+else
+  echo -e "${RED}✗ Nginx is not running${NC}"
+fi
+
+if sudo -u postgres psql -d "$DB_NAME" -c "SELECT 1;" >/dev/null 2>&1; then
+  echo -e "${GREEN}✓ Database connection successful${NC}"
+else
+  echo -e "${RED}✗ Database connection failed${NC}"
 fi
 
 # Summary
