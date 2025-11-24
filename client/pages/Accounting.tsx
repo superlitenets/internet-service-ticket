@@ -111,9 +111,7 @@ export function AccountingPage() {
                       <IconComponent size={24} className="text-foreground" />
                     </div>
                     <div className="flex-1">
-                      <CardTitle className="text-lg">
-                        {module.title}
-                      </CardTitle>
+                      <CardTitle className="text-lg">{module.title}</CardTitle>
                       <CardDescription className="text-sm mt-1">
                         {module.description}
                       </CardDescription>
@@ -136,7 +134,10 @@ export function AccountingPage() {
                 <CardContent className="pt-0 space-y-3">
                   <div className="border-t pt-4">
                     <div className="space-y-2">
-                      <Button className="w-full justify-between" variant="outline">
+                      <Button
+                        className="w-full justify-between"
+                        variant="outline"
+                      >
                         <span>View {module.title}</span>
                         <ArrowRight size={16} />
                       </Button>
@@ -186,9 +187,7 @@ export function AccountingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">KES 36,340</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              This month
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
           </CardContent>
         </Card>
 
@@ -228,9 +227,7 @@ export function AccountingPage() {
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div>
                 <p className="font-medium">Expense Recorded</p>
-                <p className="text-sm text-muted-foreground">
-                  Office Supplies
-                </p>
+                <p className="text-sm text-muted-foreground">Office Supplies</p>
               </div>
               <p className="text-sm font-medium">-KES 850</p>
             </div>
