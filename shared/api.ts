@@ -538,3 +538,142 @@ export interface AuthSession {
   token: string;
   expiresAt: number;
 }
+
+/**
+ * Chart of Accounts
+ */
+export interface ChartOfAccount {
+  id: string;
+  accountCode: string;
+  accountName: string;
+  type: "Asset" | "Liability" | "Equity" | "Revenue" | "Expense";
+  category?: string;
+  description?: string;
+  balance: number;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Journal Entry for General Ledger
+ */
+export interface JournalEntry {
+  id: string;
+  entryNumber: string;
+  description: string;
+  referenceNo?: string;
+  debitAccountCode: string;
+  creditAccountCode: string;
+  amount: number;
+  entryDate: string;
+  status: "draft" | "posted" | "reversed";
+  reversedBy?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Expense Category
+ */
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  code: string;
+  type: "Fixed" | "Variable" | "Capital";
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Expense Record
+ */
+export interface Expense {
+  id: string;
+  expenseNumber: string;
+  categoryId: string;
+  description: string;
+  amount: number;
+  vendor?: string;
+  paymentMethod: "cash" | "bank-transfer" | "mpesa" | "check";
+  referenceNo?: string;
+  status: "draft" | "submitted" | "approved" | "paid" | "rejected";
+  attachmentUrl?: string;
+  expenseDate: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  paidAt?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * POS Item for inventory
+ */
+export interface POSItem {
+  id: string;
+  sku: string;
+  name: string;
+  description?: string;
+  category?: string;
+  unitPrice: number;
+  quantity: number;
+  reorderLevel: number;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * POS Transaction
+ */
+export interface POSTransaction {
+  id: string;
+  receiptNumber: string;
+  customerId?: string;
+  customerName?: string;
+  subtotal: number;
+  taxAmount: number;
+  discountAmount: number;
+  totalAmount: number;
+  paymentMethod: "cash" | "card" | "mpesa" | "check";
+  paymentStatus: "pending" | "completed" | "refunded";
+  cashier?: string;
+  notes?: string;
+  items: POSTransactionItem[];
+  transactionDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * POS Transaction Item
+ */
+export interface POSTransactionItem {
+  id: string;
+  itemId: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  discount: number;
+  createdAt: string;
+}
+
+/**
+ * Accounting Summary
+ */
+export interface AccountingSummary {
+  id: string;
+  summaryDate: string;
+  totalAssets: number;
+  totalLiabilities: number;
+  totalEquity: number;
+  totalRevenue: number;
+  totalExpenses: number;
+  netProfit: number;
+  createdAt: string;
+  updatedAt: string;
+}
