@@ -17,6 +17,24 @@ import { MikrotikPlan } from "@shared/api";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [plans, setPlans] = useState<MikrotikPlan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const fetchedPlans = await getMikrotikPlans();
+        setPlans(fetchedPlans);
+      } catch (error) {
+        console.error("Failed to fetch plans:", error);
+        // Fall back to empty plans if fetch fails
+        setPlans([]);
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
