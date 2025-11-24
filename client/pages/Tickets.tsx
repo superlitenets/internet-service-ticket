@@ -61,6 +61,8 @@ interface Ticket {
   customerEmail: string;
   customerPhone: string;
   customerLocation?: string;
+  apartment?: string;
+  roomNumber?: string;
   title: string;
   description: string;
   status: "open" | "in-progress" | "pending" | "resolved";
