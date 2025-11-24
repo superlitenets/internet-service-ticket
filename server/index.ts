@@ -44,6 +44,14 @@ import {
   handleMpesaValidation,
 } from "./routes/mpesa";
 import {
+  createLead,
+  getLeads,
+  getLeadById,
+  updateLead,
+  deleteLead,
+  convertLeadToTicket,
+} from "./routes/leads";
+import {
   getChartOfAccounts,
   createChartOfAccount,
   updateChartOfAccount,
