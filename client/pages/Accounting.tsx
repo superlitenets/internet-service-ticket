@@ -146,15 +146,20 @@ export function AccountingPage() {
     notes: "",
   });
 
-  const filteredTransactions = transactions.filter((tx) => {
-    const matchesSearch =
-      tx.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === "all" || tx.type === filterType;
-    const matchesStatus = filterStatus === "all" || tx.status === filterStatus;
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  const filteredTransactions = transactions
+    .filter((tx) => {
+      const matchesSearch =
+        tx.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.id.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = filterType === "all" || tx.type === filterType;
+      const matchesStatus = filterStatus === "all" || tx.status === filterStatus;
+      return matchesSearch && matchesType && matchesStatus;
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 
   const handleOpenDialog = (transaction?: AccountingTransaction) => {
     if (transaction) {
