@@ -61,11 +61,11 @@ export default function Landing() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+              <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-slate-900">
                 Manage Your ISP Business
-                <span className="text-blue-400"> with Confidence</span>
+                <span className="text-blue-600"> with Confidence</span>
               </h1>
-              <p className="text-xl text-slate-300">
+              <p className="text-xl text-slate-600">
                 NetFlow CRM is the complete solution for managing ISP customers,
                 billing, support tickets, and network monitoring all in one place.
               </p>
