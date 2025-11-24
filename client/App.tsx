@@ -30,6 +30,7 @@ import MikrotikMonitoring from "./pages/MikrotikMonitoring";
 import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
 import LandingContentEditor from "./pages/LandingContentEditor";
+import MikrotikRouterOSIntegration from "./pages/MikrotikRouterOSIntegration";
 
 const queryClient = new QueryClient();
 
