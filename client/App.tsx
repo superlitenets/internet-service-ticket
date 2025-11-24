@@ -183,6 +183,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/landing-content"
+      element={
+        <ProtectedRoute requiredRole={["admin"]}>
+          <LandingContentEditor />
+        </ProtectedRoute>
+      }
+    />
     {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
   </Routes>
