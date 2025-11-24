@@ -18,7 +18,7 @@ let tokenCache: { accessToken: string; expiresAt: number } | null = null;
  */
 async function getMpesaAccessToken(
   consumerKey: string,
-  consumerSecret: string
+  consumerSecret: string,
 ): Promise<string> {
   // Check if token is still valid
   if (
@@ -30,7 +30,7 @@ async function getMpesaAccessToken(
 
   try {
     const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString(
-      "base64"
+      "base64",
     );
 
     const response = await fetch(
@@ -40,7 +40,7 @@ async function getMpesaAccessToken(
         headers: {
           Authorization: `Basic ${auth}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -58,7 +58,7 @@ async function getMpesaAccessToken(
     return data.access_token;
   } catch (error) {
     throw new Error(
-      `Failed to authenticate with MPESA: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to authenticate with MPESA: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
@@ -83,7 +83,7 @@ function generateTimestamp(): string {
 function generateStkPassword(
   shortCode: string,
   passkey: string,
-  timestamp: string
+  timestamp: string,
 ): string {
   const text = `${shortCode}${passkey}${timestamp}`;
   return Buffer.from(text).toString("base64");
@@ -98,11 +98,21 @@ export const handleMpesaC2B: RequestHandler<
   MpesaC2BRequest
 > = async (req, res) => {
   try {
-    const { phoneNumber, amount, accountReference, transactionDescription, credentials } =
-      req.body;
+    const {
+      phoneNumber,
+      amount,
+      accountReference,
+      transactionDescription,
+      credentials,
+    } = req.body;
 
     // Validation
-    if (!phoneNumber || !amount || !accountReference || !transactionDescription) {
+    if (
+      !phoneNumber ||
+      !amount ||
+      !accountReference ||
+      !transactionDescription
+    ) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
@@ -112,9 +122,14 @@ export const handleMpesaC2B: RequestHandler<
     }
 
     // Get MPESA settings from request or environment
-    const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
-    const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
-    const shortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    const consumerKey =
+      credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
+    const consumerSecret =
+      credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
+    const shortCode =
+      credentials?.businessShortCode ||
+      process.env.MPESA_BUSINESS_SHORT_CODE ||
+      "";
     const passkey = credentials?.passkey || process.env.MPESA_PASSKEY || "";
 
     if (!consumerKey || !consumerSecret || !shortCode || !passkey) {
@@ -148,8 +163,7 @@ export const handleMpesaC2B: RequestHandler<
       PartyB: shortCode,
       PhoneNumber: formattedPhone,
       CallBackURL:
-        process.env.MPESA_CALLBACK_URL ||
-        "https://example.com/mpesa/callback",
+        process.env.MPESA_CALLBACK_URL || "https://example.com/mpesa/callback",
       AccountReference: accountReference,
       TransactionDesc: transactionDescription,
     };
@@ -163,14 +177,14 @@ export const handleMpesaC2B: RequestHandler<
           "Content-Type": "application/json",
         },
         body: JSON.stringify(stkPushPayload),
-      }
+      },
     );
 
     const stkData: any = await stkResponse.json();
 
     if (!stkResponse.ok || stkData.ResponseCode !== "0") {
       throw new Error(
-        stkData.ResponseDescription || "Failed to initiate C2B payment"
+        stkData.ResponseDescription || "Failed to initiate C2B payment",
       );
     }
 
@@ -202,8 +216,7 @@ export const handleMpesaC2B: RequestHandler<
       success: false,
       message: "Failed to initiate C2B payment",
       timestamp: new Date().toISOString(),
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -243,10 +256,18 @@ export const handleMpesaB2B: RequestHandler<
     }
 
     // Get MPESA settings from request or environment
-    const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
-    const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
-    const senderShortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
-    const initiatorPassword = credentials?.initiatorPassword || process.env.MPESA_INITIATOR_PASSWORD || "";
+    const consumerKey =
+      credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
+    const consumerSecret =
+      credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
+    const senderShortCode =
+      credentials?.businessShortCode ||
+      process.env.MPESA_BUSINESS_SHORT_CODE ||
+      "";
+    const initiatorPassword =
+      credentials?.initiatorPassword ||
+      process.env.MPESA_INITIATOR_PASSWORD ||
+      "";
 
     if (!consumerKey || !consumerSecret || !senderShortCode) {
       return res.status(400).json({
@@ -271,8 +292,7 @@ export const handleMpesaB2B: RequestHandler<
       PartyB: receiverShortCode,
       Remarks: transactionDescription,
       QueueTimeOutURL:
-        process.env.MPESA_TIMEOUT_URL ||
-        "https://example.com/mpesa/timeout",
+        process.env.MPESA_TIMEOUT_URL || "https://example.com/mpesa/timeout",
       ResultURL:
         process.env.MPESA_RESULT_URL || "https://example.com/mpesa/result",
       AccountReference: accountReference,
@@ -287,16 +307,15 @@ export const handleMpesaB2B: RequestHandler<
           "Content-Type": "application/json",
         },
         body: JSON.stringify(b2bPayload),
-      }
+      },
     );
 
     const b2bData: any = await b2bResponse.json();
 
-    if (
-      !b2bResponse.ok ||
-      b2bData.ResponseCode !== "0"
-    ) {
-      throw new Error(b2bData.ResponseDescription || "Failed to initiate B2B payment");
+    if (!b2bResponse.ok || b2bData.ResponseCode !== "0") {
+      throw new Error(
+        b2bData.ResponseDescription || "Failed to initiate B2B payment",
+      );
     }
 
     // Store transaction record
@@ -326,8 +345,7 @@ export const handleMpesaB2B: RequestHandler<
       success: false,
       message: "Failed to initiate B2B payment",
       timestamp: new Date().toISOString(),
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -351,7 +369,12 @@ export const handleMpesaStkPush: RequestHandler<
     } = req.body;
 
     // Validation
-    if (!phoneNumber || !amount || !accountReference || !transactionDescription) {
+    if (
+      !phoneNumber ||
+      !amount ||
+      !accountReference ||
+      !transactionDescription
+    ) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
@@ -361,9 +384,14 @@ export const handleMpesaStkPush: RequestHandler<
     }
 
     // Get MPESA settings from request or environment
-    const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
-    const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
-    const shortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    const consumerKey =
+      credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
+    const consumerSecret =
+      credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
+    const shortCode =
+      credentials?.businessShortCode ||
+      process.env.MPESA_BUSINESS_SHORT_CODE ||
+      "";
     const passkey = credentials?.passkey || process.env.MPESA_PASSKEY || "";
 
     if (!consumerKey || !consumerSecret || !shortCode || !passkey) {
@@ -413,14 +441,14 @@ export const handleMpesaStkPush: RequestHandler<
           "Content-Type": "application/json",
         },
         body: JSON.stringify(stkPayload),
-      }
+      },
     );
 
     const stkData: any = await stkResponse.json();
 
     if (!stkResponse.ok || stkData.ResponseCode !== "0") {
       throw new Error(
-        stkData.ResponseDescription || "Failed to initiate STK push"
+        stkData.ResponseDescription || "Failed to initiate STK push",
       );
     }
 
@@ -452,8 +480,7 @@ export const handleMpesaStkPush: RequestHandler<
       success: false,
       message: "Failed to initiate STK push",
       timestamp: new Date().toISOString(),
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -469,8 +496,7 @@ export const getMpesaTransactions: RequestHandler = (_req, res) => {
       success: false,
       message: "Failed to fetch transactions",
       timestamp: new Date().toISOString(),
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -499,8 +525,7 @@ export const getMpesaTransaction: RequestHandler = (req, res) => {
       success: false,
       message: "Failed to fetch transaction",
       timestamp: new Date().toISOString(),
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -533,7 +558,7 @@ export const handleMpesaCallback: RequestHandler = (req, res) => {
 
     // Find and update transaction
     const transaction = transactions.find(
-      (t) => t.transactionId === CheckoutRequestID
+      (t) => t.transactionId === CheckoutRequestID,
     );
 
     if (transaction) {
@@ -542,11 +567,7 @@ export const handleMpesaCallback: RequestHandler = (req, res) => {
       transaction.resultDescription = ResultDesc;
 
       // Extract payment details if successful
-      if (
-        ResultCode === 0 &&
-        CallbackMetadata &&
-        CallbackMetadata.Item
-      ) {
+      if (ResultCode === 0 && CallbackMetadata && CallbackMetadata.Item) {
         const items: any = {};
         for (const item of CallbackMetadata.Item) {
           items[item.Name] = item.Value;

@@ -2641,7 +2641,9 @@ export default function SettingsPage() {
                         <div className="relative">
                           <Input
                             type={
-                              visibleKey === "initiatorPassword" ? "text" : "password"
+                              visibleKey === "initiatorPassword"
+                                ? "text"
+                                : "password"
                             }
                             value={mpesaSettings.initiatorPassword || ""}
                             onChange={(e) =>
@@ -2655,7 +2657,9 @@ export default function SettingsPage() {
                           <button
                             onClick={() =>
                               setVisibleKey(
-                                visibleKey === "initiatorPassword" ? null : "initiatorPassword",
+                                visibleKey === "initiatorPassword"
+                                  ? null
+                                  : "initiatorPassword",
                               )
                             }
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"

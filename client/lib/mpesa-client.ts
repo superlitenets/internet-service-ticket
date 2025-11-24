@@ -7,7 +7,7 @@ import {
 import { getMpesaSettings } from "./mpesa-settings-storage";
 
 export async function initiateMpesaC2B(
-  request: MpesaC2BRequest
+  request: MpesaC2BRequest,
 ): Promise<MpesaResponse> {
   try {
     const settings = getMpesaSettings();
@@ -15,11 +15,14 @@ export async function initiateMpesaC2B(
       ...request,
       credentials: {
         consumerKey: request.credentials?.consumerKey || settings.consumerKey,
-        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
-        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        consumerSecret:
+          request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode:
+          request.credentials?.businessShortCode || settings.businessShortCode,
         passkey: request.credentials?.passkey || settings.passkey,
         callbackUrl: request.credentials?.callbackUrl || settings.callbackUrl,
-        initiatorPassword: request.credentials?.initiatorPassword || settings.initiatorPassword,
+        initiatorPassword:
+          request.credentials?.initiatorPassword || settings.initiatorPassword,
       },
     };
 
@@ -39,15 +42,13 @@ export async function initiateMpesaC2B(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to initiate C2B payment"
+      error instanceof Error ? error.message : "Failed to initiate C2B payment",
     );
   }
 }
 
 export async function initiateMpesaB2B(
-  request: MpesaB2BRequest
+  request: MpesaB2BRequest,
 ): Promise<MpesaResponse> {
   try {
     const settings = getMpesaSettings();
@@ -55,11 +56,14 @@ export async function initiateMpesaB2B(
       ...request,
       credentials: {
         consumerKey: request.credentials?.consumerKey || settings.consumerKey,
-        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
-        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        consumerSecret:
+          request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode:
+          request.credentials?.businessShortCode || settings.businessShortCode,
         passkey: request.credentials?.passkey || settings.passkey,
         callbackUrl: request.credentials?.callbackUrl || settings.callbackUrl,
-        initiatorPassword: request.credentials?.initiatorPassword || settings.initiatorPassword,
+        initiatorPassword:
+          request.credentials?.initiatorPassword || settings.initiatorPassword,
       },
     };
 
@@ -79,15 +83,13 @@ export async function initiateMpesaB2B(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to initiate B2B payment"
+      error instanceof Error ? error.message : "Failed to initiate B2B payment",
     );
   }
 }
 
 export async function initiateMpesaStkPush(
-  request: MpesaStkPushRequest
+  request: MpesaStkPushRequest,
 ): Promise<MpesaResponse> {
   try {
     const settings = getMpesaSettings();
@@ -95,11 +97,17 @@ export async function initiateMpesaStkPush(
       ...request,
       credentials: {
         consumerKey: request.credentials?.consumerKey || settings.consumerKey,
-        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
-        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        consumerSecret:
+          request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode:
+          request.credentials?.businessShortCode || settings.businessShortCode,
         passkey: request.credentials?.passkey || settings.passkey,
-        callbackUrl: request.credentials?.callbackUrl || request.callbackUrl || settings.callbackUrl,
-        initiatorPassword: request.credentials?.initiatorPassword || settings.initiatorPassword,
+        callbackUrl:
+          request.credentials?.callbackUrl ||
+          request.callbackUrl ||
+          settings.callbackUrl,
+        initiatorPassword:
+          request.credentials?.initiatorPassword || settings.initiatorPassword,
       },
     };
 
@@ -119,7 +127,7 @@ export async function initiateMpesaStkPush(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to initiate STK push"
+      error instanceof Error ? error.message : "Failed to initiate STK push",
     );
   }
 }
@@ -135,15 +143,13 @@ export async function getMpesaTransactions(): Promise<any[]> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error
-        ? error.message
-        : "Failed to fetch transactions"
+      error instanceof Error ? error.message : "Failed to fetch transactions",
     );
   }
 }
 
 export async function getMpesaTransactionStatus(
-  transactionId: string
+  transactionId: string,
 ): Promise<any> {
   try {
     const response = await fetch(`/api/mpesa/transactions/${transactionId}`);
@@ -157,7 +163,7 @@ export async function getMpesaTransactionStatus(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to fetch transaction status"
+        : "Failed to fetch transaction status",
     );
   }
 }
