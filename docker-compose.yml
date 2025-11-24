@@ -1,29 +1,82 @@
-version: "3.8"
+version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: netflow-db
+    environment:
+      POSTGRES_USER: netflow
+      POSTGRES_PASSWORD: Mgathoni.2016#
+      POSTGRES_DB: netflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - netflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netflow -d netflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # NetFlow CRM Application
   app:
-    build: .
-    container_name: netflow-crm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: netflow-app
+    environment:
+      NODE_ENV: production
+      PORT: 9000
+      DATABASE_URL: postgresql://netflow:Mgathoni.2016%23@postgres:5432/netflow
+      JWT_SECRET: ${JWT_SECRET:-change-this-to-a-secure-value-in-production}
+      
+      # Optional: Mikrotik Configuration
+      # MIKROTIK_API_URL: https://your-router-ip:8728
+      # MIKROTIK_USERNAME: admin
+      # MIKROTIK_PASSWORD: your_password
+      
+      # Optional: M-Pesa Configuration
+      # MPESA_CONSUMER_KEY: your_key
+      # MPESA_CONSUMER_SECRET: your_secret
+      # MPESA_BUSINESS_SHORT_CODE: your_code
+      # MPESA_PASSKEY: your_passkey
+      
+      # Optional: SMS Configuration
+      # SMS_PROVIDER: advanta
+      # ADVANTA_API_KEY: your_key
+      # ADVANTA_PARTNER_ID: your_id
     ports:
       - "9000:9000"
-    environment:
-      - NODE_ENV=production
-      - PORT=9000
-      # Add your custom environment variables here:
-      # - DATABASE_URL=your_database_url
-      # - API_KEY=your_api_key
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
-      # Optional: persist data if your app stores files locally
-      # - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - netflow-network
     restart: unless-stopped
-    # Optional: Set resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '1'
-    #       memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/api/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
-  # Optional: Use Nginx as reverse proxy
+  # Optional: Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     container_name: netflow-nginx
@@ -32,30 +85,23 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      # For HTTPS, mount SSL certificates:
-      # - ./certs/:/etc/nginx/certs/:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
     depends_on:
       - app
-    restart: unless-stopped
     networks:
-      - netflow
+      - netflow-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # Optional: Database service example (PostgreSQL)
-  # db:
-  #   image: postgres:16-alpine
-  #   container_name: netflow-db
-  #   environment:
-  #     - POSTGRES_DB=netflow
-  #     - POSTGRES_USER=admin
-  #     - POSTGRES_PASSWORD=secure_password_here
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   restart: unless-stopped
-  #   networks:
-  #     - netflow
+volumes:
+  postgres_data:
+    driver: local
 
 networks:
-  netflow:
+  netflow-network:
     driver: bridge
-# volumes:
-#   postgres_data:
