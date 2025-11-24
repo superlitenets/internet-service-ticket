@@ -246,7 +246,9 @@ export const createJournalEntry: RequestHandler = (req, res) => {
     }
 
     // Validate accounts exist
-    const debit = chartOfAccounts.find((a) => a.accountCode === debitAccountCode);
+    const debit = chartOfAccounts.find(
+      (a) => a.accountCode === debitAccountCode,
+    );
     const credit = chartOfAccounts.find(
       (a) => a.accountCode === creditAccountCode,
     );
@@ -672,9 +674,7 @@ export const createPOSTransaction: RequestHandler = (req, res) => {
 
     // Create journal entries for the transaction
     if (totalAmount > 0) {
-      const cashAccount = chartOfAccounts.find(
-        (a) => a.accountCode === "1000",
-      );
+      const cashAccount = chartOfAccounts.find((a) => a.accountCode === "1000");
       const revenueAccount = chartOfAccounts.find(
         (a) => a.accountCode === "4000",
       );

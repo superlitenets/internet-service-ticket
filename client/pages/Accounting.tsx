@@ -184,7 +184,11 @@ export function AccountingPage() {
         </div>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview" className="gap-2">
             <TrendingUp size={16} />
@@ -292,9 +296,7 @@ export function AccountingPage() {
                       <TableCell>
                         <Badge
                           variant={
-                            entry.status === "posted"
-                              ? "default"
-                              : "secondary"
+                            entry.status === "posted" ? "default" : "secondary"
                           }
                         >
                           {entry.status}
@@ -345,9 +347,7 @@ export function AccountingPage() {
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={
-                            account.enabled ? "default" : "secondary"
-                          }
+                          variant={account.enabled ? "default" : "secondary"}
                         >
                           {account.enabled ? "Active" : "Inactive"}
                         </Badge>
@@ -509,8 +509,12 @@ export function AccountingPage() {
                         {transaction.receiptNumber}
                       </TableCell>
                       <TableCell>{transaction.customerName || "-"}</TableCell>
-                      <TableCell>KES {transaction.subtotal.toFixed(2)}</TableCell>
-                      <TableCell>KES {transaction.taxAmount.toFixed(2)}</TableCell>
+                      <TableCell>
+                        KES {transaction.subtotal.toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        KES {transaction.taxAmount.toFixed(2)}
+                      </TableCell>
                       <TableCell className="font-bold">
                         KES {transaction.totalAmount.toFixed(2)}
                       </TableCell>

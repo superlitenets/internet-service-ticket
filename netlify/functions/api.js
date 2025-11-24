@@ -28,10 +28,7 @@ function generateToken() {
 // MPESA OAuth token cache
 async function getMpesaAccessToken(consumerKey, consumerSecret) {
   // Check if token is still valid
-  if (
-    mpesaTokenCache &&
-    mpesaTokenCache.expiresAt > Date.now() + 60000
-  ) {
+  if (mpesaTokenCache && mpesaTokenCache.expiresAt > Date.now() + 60000) {
     return mpesaTokenCache.accessToken;
   }
 
@@ -64,9 +61,7 @@ async function getMpesaAccessToken(consumerKey, consumerSecret) {
 
     return data.access_token;
   } catch (error) {
-    throw new Error(
-      `Failed to authenticate with MPESA: ${error.message}`,
-    );
+    throw new Error(`Failed to authenticate with MPESA: ${error.message}`);
   }
 }
 
@@ -587,10 +582,7 @@ exports.handler = async (event) => {
       }
     }
 
-    if (
-      event.path === "/api/mpesa/c2b" &&
-      event.httpMethod === "POST"
-    ) {
+    if (event.path === "/api/mpesa/c2b" && event.httpMethod === "POST") {
       const {
         phoneNumber,
         amount,
@@ -711,10 +703,7 @@ exports.handler = async (event) => {
       }
     }
 
-    if (
-      event.path === "/api/mpesa/b2b" &&
-      event.httpMethod === "POST"
-    ) {
+    if (event.path === "/api/mpesa/b2b" && event.httpMethod === "POST") {
       const {
         receiverShortCode,
         amount,
@@ -781,8 +770,7 @@ exports.handler = async (event) => {
             process.env.MPESA_TIMEOUT_URL ||
             "https://example.com/mpesa/timeout",
           ResultURL:
-            process.env.MPESA_RESULT_URL ||
-            "https://example.com/mpesa/result",
+            process.env.MPESA_RESULT_URL || "https://example.com/mpesa/result",
           AccountReference: accountReference,
         };
 
@@ -911,10 +899,7 @@ exports.handler = async (event) => {
       });
     }
 
-    if (
-      event.path === "/api/mpesa/validation" &&
-      event.httpMethod === "POST"
-    ) {
+    if (event.path === "/api/mpesa/validation" && event.httpMethod === "POST") {
       return createJsonResponse(200, {
         ResultCode: 0,
         ResultDesc: "Validation accepted",
@@ -942,7 +927,7 @@ exports.handler = async (event) => {
       debug: {
         path: event.path,
         method: event.httpMethod,
-      }
+      },
     });
   } catch (error) {
     console.error("Error:", error);
