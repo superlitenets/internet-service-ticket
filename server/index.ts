@@ -371,8 +371,12 @@ export function createServer() {
 
   // SPA catch-all route - serve index.html for all non-API routes
   // This must be after all API routes
-  app.get(/^(?!\/api).*/, (req, res) => {
-    res.sendFile(path.join(process.cwd(), "dist/spa/index.html"));
+  app.use((req, res, next) => {
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(process.cwd(), "dist/spa/index.html"));
+    } else {
+      next();
+    }
   });
 
   return app;
