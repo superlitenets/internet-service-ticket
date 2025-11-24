@@ -168,6 +168,7 @@ export default function SettingsPage() {
       updatedAt: new Date().toISOString(),
     });
   const [testingSms, setTestingSms] = useState(false);
+  const [testPhoneNumber, setTestPhoneNumber] = useState("");
 
   // MPESA Settings State
   const [mpesaSettings, setMpesaSettings] = useState<MpesaConfig>({
