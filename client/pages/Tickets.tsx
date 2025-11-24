@@ -94,6 +94,8 @@ export default function TicketsPage() {
     customerEmail: "",
     customerPhone: "",
     customerLocation: "",
+    apartment: "",
+    roomNumber: "",
     title: "",
     description: "",
     status: "open" as const,
