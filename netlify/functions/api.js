@@ -906,6 +906,74 @@ exports.handler = async (event) => {
       });
     }
 
+    // Accounting - Chart of Accounts
+    if (event.path === "/api/accounting/accounts" && event.httpMethod === "GET") {
+      return createJsonResponse(200, [
+        {
+          id: "1000",
+          accountCode: "1000",
+          accountName: "Cash",
+          type: "Asset",
+          category: "Cash",
+          balance: 0,
+          enabled: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]);
+    }
+
+    // Accounting - General Ledger
+    if (event.path === "/api/accounting/ledger" && event.httpMethod === "GET") {
+      return createJsonResponse(200, []);
+    }
+
+    // Accounting - Expenses
+    if (event.path === "/api/accounting/expenses" && event.httpMethod === "GET") {
+      return createJsonResponse(200, []);
+    }
+
+    // Accounting - Expense Categories
+    if (event.path === "/api/accounting/expense-categories" && event.httpMethod === "GET") {
+      return createJsonResponse(200, []);
+    }
+
+    // POS - Items
+    if (event.path === "/api/pos/items" && event.httpMethod === "GET") {
+      return createJsonResponse(200, []);
+    }
+
+    // POS - Transactions
+    if (event.path === "/api/pos/transactions" && event.httpMethod === "GET") {
+      return createJsonResponse(200, []);
+    }
+
+    // Accounting - Summary
+    if (event.path === "/api/accounting/summary" && event.httpMethod === "GET") {
+      return createJsonResponse(200, {
+        id: "summary",
+        summaryDate: new Date().toISOString(),
+        totalAssets: 0,
+        totalLiabilities: 0,
+        totalEquity: 0,
+        totalRevenue: 0,
+        totalExpenses: 0,
+        netProfit: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    // Accounting - Trial Balance
+    if (event.path === "/api/accounting/trial-balance" && event.httpMethod === "GET") {
+      return createJsonResponse(200, {
+        items: [],
+        totalDebit: 0,
+        totalCredit: 0,
+        isBalanced: true,
+      });
+    }
+
     // Demo route
     if (event.path === "/api/demo" && event.httpMethod === "GET") {
       return createJsonResponse(200, {
