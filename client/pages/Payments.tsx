@@ -253,11 +253,10 @@ export default function PaymentsPage() {
     }
   };
 
-  const filteredTransactions = transactions.filter((txn) =>
-    txn.accountReference
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()) ||
-    txn.phoneNumber.includes(searchTerm)
+  const filteredTransactions = transactions.filter(
+    (txn) =>
+      txn.accountReference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      txn.phoneNumber.includes(searchTerm),
   );
 
   const getStatusIcon = (status: string) => {
@@ -303,7 +302,9 @@ export default function PaymentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-6 border-0 shadow-sm">
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Total Transactions</p>
+              <p className="text-sm text-muted-foreground">
+                Total Transactions
+              </p>
               <p className="text-2xl md:text-3xl font-bold text-foreground">
                 {transactions.length}
               </p>
@@ -353,13 +354,17 @@ export default function PaymentsPage() {
         {!isConfigured && (
           <div className="p-4 rounded-lg border border-yellow-200 bg-yellow-50">
             <div className="flex items-start gap-3">
-              <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle
+                size={20}
+                className="text-yellow-600 flex-shrink-0 mt-0.5"
+              />
               <div>
                 <p className="font-medium text-yellow-900">
                   MPESA Not Configured
                 </p>
                 <p className="text-sm text-yellow-800 mt-1">
-                  Please configure MPESA settings in Settings page to start processing payments
+                  Please configure MPESA settings in Settings page to start
+                  processing payments
                 </p>
               </div>
             </div>
@@ -367,7 +372,11 @@ export default function PaymentsPage() {
         )}
 
         {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="transactions" className="gap-2">
               <DollarSign size={16} />
@@ -432,7 +441,10 @@ export default function PaymentsPage() {
                     <tbody>
                       {filteredTransactions.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-8 text-muted-foreground">
+                          <td
+                            colSpan={6}
+                            className="text-center py-8 text-muted-foreground"
+                          >
                             No transactions found
                           </td>
                         </tr>
@@ -488,7 +500,8 @@ export default function PaymentsPage() {
           <TabsContent value="initiate" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Money Request Card */}
-              <Card className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+              <Card
+                className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => {
                   setPaymentType("stk");
                   setDialogOpen(true);
@@ -499,9 +512,12 @@ export default function PaymentsPage() {
                     <Phone size={24} className="text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Money Request</h3>
+                    <h3 className="font-semibold text-foreground">
+                      Money Request
+                    </h3>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Send a payment prompt to customer's phone. They enter their M-Pesa PIN to pay.
+                      Send a payment prompt to customer's phone. They enter
+                      their M-Pesa PIN to pay.
                     </p>
                   </div>
                   <Button className="w-full gap-2">
@@ -512,7 +528,8 @@ export default function PaymentsPage() {
               </Card>
 
               {/* C2B Card */}
-              <Card className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+              <Card
+                className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => {
                   setPaymentType("c2b");
                   setDialogOpen(true);
@@ -523,9 +540,12 @@ export default function PaymentsPage() {
                     <Phone size={24} className="text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">C2B Payment</h3>
+                    <h3 className="font-semibold text-foreground">
+                      C2B Payment
+                    </h3>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Customer to Business payment. Customer initiates payment to your till.
+                      Customer to Business payment. Customer initiates payment
+                      to your till.
                     </p>
                   </div>
                   <Button className="w-full gap-2" variant="outline">
@@ -536,7 +556,8 @@ export default function PaymentsPage() {
               </Card>
 
               {/* B2B Card */}
-              <Card className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+              <Card
+                className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => {
                   setPaymentType("b2b");
                   setDialogOpen(true);
@@ -547,9 +568,12 @@ export default function PaymentsPage() {
                     <Building2 size={24} className="text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">B2B Transfer</h3>
+                    <h3 className="font-semibold text-foreground">
+                      B2B Transfer
+                    </h3>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Business to Business payment. Send funds to another business account.
+                      Business to Business payment. Send funds to another
+                      business account.
                     </p>
                   </div>
                   <Button className="w-full gap-2" variant="outline">
@@ -571,14 +595,16 @@ export default function PaymentsPage() {
               <DialogHeader>
                 <DialogTitle>Request Money via M-Pesa</DialogTitle>
                 <DialogDescription>
-                  Send a payment prompt to customer's phone. They'll enter their M-Pesa PIN to pay.
+                  Send a payment prompt to customer's phone. They'll enter their
+                  M-Pesa PIN to pay.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Customer Phone Number <span className="text-red-500">*</span>
+                    Customer Phone Number{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <Input
                     placeholder="e.g., 0722123456"
@@ -589,13 +615,15 @@ export default function PaymentsPage() {
                     disabled={loading}
                   />
                   <p className="text-xs text-muted-foreground mt-1.5">
-                    Enter a valid Safaricom phone number (254 prefix also accepted)
+                    Enter a valid Safaricom phone number (254 prefix also
+                    accepted)
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Amount to Request (KES) <span className="text-red-500">*</span>
+                    Amount to Request (KES){" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <Input
                     type="number"
@@ -615,7 +643,8 @@ export default function PaymentsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Reference / Invoice Number <span className="text-red-500">*</span>
+                    Reference / Invoice Number{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <Input
                     placeholder="e.g., INV-001 or ORDER-12345"

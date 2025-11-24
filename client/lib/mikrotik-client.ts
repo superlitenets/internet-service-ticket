@@ -9,7 +9,9 @@ import {
 /**
  * Get all accounts
  */
-export async function getMikrotikAccounts(instanceId?: string): Promise<MikrotikAccount[]> {
+export async function getMikrotikAccounts(
+  instanceId?: string,
+): Promise<MikrotikAccount[]> {
   try {
     const url = new URL("/api/mikrotik/accounts", window.location.origin);
     if (instanceId) {
@@ -25,7 +27,7 @@ export async function getMikrotikAccounts(instanceId?: string): Promise<Mikrotik
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch accounts"
+      error instanceof Error ? error.message : "Failed to fetch accounts",
     );
   }
 }
@@ -58,7 +60,7 @@ export async function createMikrotikAccount(data: {
     return result.account;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to create account"
+      error instanceof Error ? error.message : "Failed to create account",
     );
   }
 }
@@ -68,10 +70,13 @@ export async function createMikrotikAccount(data: {
  */
 export async function getMikrotikAccount(
   accountId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<MikrotikAccount> {
   try {
-    const url = new URL(`/api/mikrotik/accounts/${accountId}`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/accounts/${accountId}`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -85,7 +90,7 @@ export async function getMikrotikAccount(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch account"
+      error instanceof Error ? error.message : "Failed to fetch account",
     );
   }
 }
@@ -95,7 +100,7 @@ export async function getMikrotikAccount(
  */
 export async function updateMikrotikAccount(
   accountId: string,
-  data: Partial<MikrotikAccount> & { instanceId?: string }
+  data: Partial<MikrotikAccount> & { instanceId?: string },
 ): Promise<MikrotikAccount> {
   try {
     const response = await fetch(`/api/mikrotik/accounts/${accountId}`, {
@@ -113,7 +118,7 @@ export async function updateMikrotikAccount(
     return result.account;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to update account"
+      error instanceof Error ? error.message : "Failed to update account",
     );
   }
 }
@@ -121,9 +126,15 @@ export async function updateMikrotikAccount(
 /**
  * Delete account
  */
-export async function deleteMikrotikAccount(accountId: string, instanceId?: string): Promise<void> {
+export async function deleteMikrotikAccount(
+  accountId: string,
+  instanceId?: string,
+): Promise<void> {
   try {
-    const url = new URL(`/api/mikrotik/accounts/${accountId}`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/accounts/${accountId}`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -137,7 +148,7 @@ export async function deleteMikrotikAccount(accountId: string, instanceId?: stri
     }
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to delete account"
+      error instanceof Error ? error.message : "Failed to delete account",
     );
   }
 }
@@ -147,7 +158,7 @@ export async function deleteMikrotikAccount(accountId: string, instanceId?: stri
  */
 export async function regenerateAccountCredentials(
   accountId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<MikrotikAccount> {
   try {
     const response = await fetch(
@@ -156,7 +167,7 @@ export async function regenerateAccountCredentials(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ instanceId }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -168,7 +179,9 @@ export async function regenerateAccountCredentials(
     return result.account;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to regenerate credentials"
+      error instanceof Error
+        ? error.message
+        : "Failed to regenerate credentials",
     );
   }
 }
@@ -176,7 +189,9 @@ export async function regenerateAccountCredentials(
 /**
  * Get all billing plans
  */
-export async function getMikrotikPlans(instanceId?: string): Promise<MikrotikPlan[]> {
+export async function getMikrotikPlans(
+  instanceId?: string,
+): Promise<MikrotikPlan[]> {
   try {
     const url = new URL("/api/mikrotik/plans", window.location.origin);
     if (instanceId) {
@@ -192,7 +207,7 @@ export async function getMikrotikPlans(instanceId?: string): Promise<MikrotikPla
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch plans"
+      error instanceof Error ? error.message : "Failed to fetch plans",
     );
   }
 }
@@ -226,7 +241,7 @@ export async function createMikrotikPlan(data: {
     return result.plan;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to create plan"
+      error instanceof Error ? error.message : "Failed to create plan",
     );
   }
 }
@@ -255,7 +270,7 @@ export async function generateInvoice(data: {
     return result.invoice;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to generate invoice"
+      error instanceof Error ? error.message : "Failed to generate invoice",
     );
   }
 }
@@ -265,10 +280,13 @@ export async function generateInvoice(data: {
  */
 export async function getAccountInvoices(
   accountId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<MikrotikInvoice[]> {
   try {
-    const url = new URL(`/api/mikrotik/accounts/${accountId}/invoices`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/accounts/${accountId}/invoices`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -282,7 +300,7 @@ export async function getAccountInvoices(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch invoices"
+      error instanceof Error ? error.message : "Failed to fetch invoices",
     );
   }
 }
@@ -290,7 +308,9 @@ export async function getAccountInvoices(
 /**
  * Get all invoices
  */
-export async function getAllInvoices(instanceId?: string): Promise<MikrotikInvoice[]> {
+export async function getAllInvoices(
+  instanceId?: string,
+): Promise<MikrotikInvoice[]> {
   try {
     const url = new URL("/api/mikrotik/invoices", window.location.origin);
     if (instanceId) {
@@ -306,7 +326,7 @@ export async function getAllInvoices(instanceId?: string): Promise<MikrotikInvoi
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch invoices"
+      error instanceof Error ? error.message : "Failed to fetch invoices",
     );
   }
 }
@@ -338,7 +358,7 @@ export async function recordPayment(data: {
     return result.payment;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to record payment"
+      error instanceof Error ? error.message : "Failed to record payment",
     );
   }
 }
@@ -348,10 +368,13 @@ export async function recordPayment(data: {
  */
 export async function getAccountPayments(
   accountId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<MikrotikPayment[]> {
   try {
-    const url = new URL(`/api/mikrotik/accounts/${accountId}/payments`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/accounts/${accountId}/payments`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -365,7 +388,7 @@ export async function getAccountPayments(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch payments"
+      error instanceof Error ? error.message : "Failed to fetch payments",
     );
   }
 }
@@ -373,9 +396,15 @@ export async function getAccountPayments(
 /**
  * Get usage for account
  */
-export async function getAccountUsage(accountId: string, instanceId?: string): Promise<MikrotikUsage[]> {
+export async function getAccountUsage(
+  accountId: string,
+  instanceId?: string,
+): Promise<MikrotikUsage[]> {
   try {
-    const url = new URL(`/api/mikrotik/accounts/${accountId}/usage`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/accounts/${accountId}/usage`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -389,7 +418,7 @@ export async function getAccountUsage(accountId: string, instanceId?: string): P
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch usage"
+      error instanceof Error ? error.message : "Failed to fetch usage",
     );
   }
 }
@@ -421,7 +450,7 @@ export async function recordUsage(data: {
     return result.usage;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to record usage"
+      error instanceof Error ? error.message : "Failed to record usage",
     );
   }
 }
@@ -452,7 +481,7 @@ export async function getMikrotikStats(instanceId?: string): Promise<{
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch statistics"
+      error instanceof Error ? error.message : "Failed to fetch statistics",
     );
   }
 }
@@ -462,7 +491,10 @@ export async function getMikrotikStats(instanceId?: string): Promise<{
  */
 export async function getRouterOSConfig(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/routeros/config", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/routeros/config",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -478,7 +510,7 @@ export async function getRouterOSConfig(instanceId?: string): Promise<any> {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to fetch RouterOS configuration"
+        : "Failed to fetch RouterOS configuration",
     );
   }
 }
@@ -504,7 +536,9 @@ export async function updateRouterOSConfig(data: {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Failed to update RouterOS configuration");
+      throw new Error(
+        error.message || "Failed to update RouterOS configuration",
+      );
     }
 
     return await response.json();
@@ -512,7 +546,7 @@ export async function updateRouterOSConfig(data: {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to update RouterOS configuration"
+        : "Failed to update RouterOS configuration",
     );
   }
 }
@@ -543,7 +577,9 @@ export async function testRouterOSConnection(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to test RouterOS connection"
+      error instanceof Error
+        ? error.message
+        : "Failed to test RouterOS connection",
     );
   }
 }
@@ -553,7 +589,10 @@ export async function testRouterOSConnection(data: {
  */
 export async function getRouterOSDeviceInfo(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/routeros/device-info", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/routeros/device-info",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -569,7 +608,7 @@ export async function getRouterOSDeviceInfo(instanceId?: string): Promise<any> {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to fetch device information"
+        : "Failed to fetch device information",
     );
   }
 }
@@ -579,10 +618,13 @@ export async function getRouterOSDeviceInfo(instanceId?: string): Promise<any> {
  */
 export async function getRouterOSInterfaceStats(
   interfaceName?: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/routeros/interfaces", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/routeros/interfaces",
+      window.location.origin,
+    );
     if (interfaceName) {
       url.searchParams.append("interfaceName", interfaceName);
     }
@@ -601,7 +643,7 @@ export async function getRouterOSInterfaceStats(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to fetch interface statistics"
+        : "Failed to fetch interface statistics",
     );
   }
 }
@@ -609,7 +651,9 @@ export async function getRouterOSInterfaceStats(
 /**
  * Get RouterOS PPPoE connections
  */
-export async function getRouterOSPPPoEConnections(instanceId?: string): Promise<any> {
+export async function getRouterOSPPPoEConnections(
+  instanceId?: string,
+): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/routeros/pppoe", window.location.origin);
     if (instanceId) {
@@ -630,7 +674,7 @@ export async function getRouterOSPPPoEConnections(instanceId?: string): Promise<
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to fetch PPPoE connections"
+        : "Failed to fetch PPPoE connections",
     );
   }
 }
@@ -638,9 +682,14 @@ export async function getRouterOSPPPoEConnections(instanceId?: string): Promise<
 /**
  * Get RouterOS Hotspot users
  */
-export async function getRouterOSHotspotUsers(instanceId?: string): Promise<any> {
+export async function getRouterOSHotspotUsers(
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/routeros/hotspot", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/routeros/hotspot",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -657,7 +706,7 @@ export async function getRouterOSHotspotUsers(instanceId?: string): Promise<any>
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch Hotspot users"
+      error instanceof Error ? error.message : "Failed to fetch Hotspot users",
     );
   }
 }
@@ -667,7 +716,10 @@ export async function getRouterOSHotspotUsers(instanceId?: string): Promise<any>
  */
 export async function getRouterOSQueues(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/routeros/queues", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/routeros/queues",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -684,7 +736,7 @@ export async function getRouterOSQueues(instanceId?: string): Promise<any> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch queues"
+      error instanceof Error ? error.message : "Failed to fetch queues",
     );
   }
 }
@@ -692,7 +744,10 @@ export async function getRouterOSQueues(instanceId?: string): Promise<any> {
 /**
  * Start bandwidth monitoring for an account
  */
-export async function startBandwidthMonitoring(accountId: string, instanceId?: string): Promise<any> {
+export async function startBandwidthMonitoring(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/bandwidth/start", {
       method: "POST",
@@ -709,7 +764,7 @@ export async function startBandwidthMonitoring(accountId: string, instanceId?: s
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to start bandwidth monitoring"
+        : "Failed to start bandwidth monitoring",
     );
   }
 }
@@ -717,7 +772,10 @@ export async function startBandwidthMonitoring(accountId: string, instanceId?: s
 /**
  * Stop bandwidth monitoring for an account
  */
-export async function stopBandwidthMonitoring(accountId: string, instanceId?: string): Promise<any> {
+export async function stopBandwidthMonitoring(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/bandwidth/stop", {
       method: "POST",
@@ -734,7 +792,7 @@ export async function stopBandwidthMonitoring(accountId: string, instanceId?: st
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to stop bandwidth monitoring"
+        : "Failed to stop bandwidth monitoring",
     );
   }
 }
@@ -745,12 +803,12 @@ export async function stopBandwidthMonitoring(accountId: string, instanceId?: st
 export async function getBandwidthHistory(
   accountId: string,
   hours: number = 24,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const url = new URL(
       `/api/mikrotik/bandwidth/history/${accountId}`,
-      window.location.origin
+      window.location.origin,
     );
     url.searchParams.append("hours", hours.toString());
     if (instanceId) {
@@ -766,7 +824,9 @@ export async function getBandwidthHistory(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch bandwidth history"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch bandwidth history",
     );
   }
 }
@@ -777,12 +837,12 @@ export async function getBandwidthHistory(
 export async function getPeakUsageTime(
   accountId: string,
   hours: number = 24,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const url = new URL(
       `/api/mikrotik/bandwidth/peak/${accountId}`,
-      window.location.origin
+      window.location.origin,
     );
     url.searchParams.append("hours", hours.toString());
     if (instanceId) {
@@ -798,7 +858,9 @@ export async function getPeakUsageTime(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch peak usage time"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch peak usage time",
     );
   }
 }
@@ -809,12 +871,12 @@ export async function getPeakUsageTime(
 export async function getAverageBandwidthUsage(
   accountId: string,
   hours: number = 24,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const url = new URL(
       `/api/mikrotik/bandwidth/average/${accountId}`,
-      window.location.origin
+      window.location.origin,
     );
     url.searchParams.append("hours", hours.toString());
     if (instanceId) {
@@ -830,7 +892,7 @@ export async function getAverageBandwidthUsage(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch average usage"
+      error instanceof Error ? error.message : "Failed to fetch average usage",
     );
   }
 }
@@ -840,7 +902,10 @@ export async function getAverageBandwidthUsage(
  */
 export async function getAllQuotaAlerts(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/bandwidth/alerts", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/bandwidth/alerts",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -854,7 +919,7 @@ export async function getAllQuotaAlerts(instanceId?: string): Promise<any> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch quota alerts"
+      error instanceof Error ? error.message : "Failed to fetch quota alerts",
     );
   }
 }
@@ -862,9 +927,15 @@ export async function getAllQuotaAlerts(instanceId?: string): Promise<any> {
 /**
  * Get quota alerts for a specific account
  */
-export async function getAccountQuotaAlerts(accountId: string, instanceId?: string): Promise<any> {
+export async function getAccountQuotaAlerts(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL(`/api/mikrotik/bandwidth/alerts/${accountId}`, window.location.origin);
+    const url = new URL(
+      `/api/mikrotik/bandwidth/alerts/${accountId}`,
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -878,7 +949,7 @@ export async function getAccountQuotaAlerts(accountId: string, instanceId?: stri
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch account alerts"
+      error instanceof Error ? error.message : "Failed to fetch account alerts",
     );
   }
 }
@@ -888,7 +959,10 @@ export async function getAccountQuotaAlerts(accountId: string, instanceId?: stri
  */
 export async function getMonitoringStatus(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/bandwidth/status", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/bandwidth/status",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -902,7 +976,9 @@ export async function getMonitoringStatus(instanceId?: string): Promise<any> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch monitoring status"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch monitoring status",
     );
   }
 }
@@ -913,7 +989,7 @@ export async function getMonitoringStatus(instanceId?: string): Promise<any> {
 export async function scheduleBilling(
   accountId: string,
   billingCycleDay: number = 1,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/schedule", {
@@ -929,7 +1005,7 @@ export async function scheduleBilling(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to schedule billing"
+      error instanceof Error ? error.message : "Failed to schedule billing",
     );
   }
 }
@@ -937,7 +1013,10 @@ export async function scheduleBilling(
 /**
  * Cancel automatic billing for an account
  */
-export async function cancelBillingAutomation(accountId: string, instanceId?: string): Promise<any> {
+export async function cancelBillingAutomation(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/cancel", {
       method: "POST",
@@ -952,7 +1031,7 @@ export async function cancelBillingAutomation(accountId: string, instanceId?: st
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to cancel billing"
+      error instanceof Error ? error.message : "Failed to cancel billing",
     );
   }
 }
@@ -960,7 +1039,9 @@ export async function cancelBillingAutomation(accountId: string, instanceId?: st
 /**
  * Get billing automation status
  */
-export async function getBillingAutomationStatus(instanceId?: string): Promise<any> {
+export async function getBillingAutomationStatus(
+  instanceId?: string,
+): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/billing/status", window.location.origin);
     if (instanceId) {
@@ -976,7 +1057,7 @@ export async function getBillingAutomationStatus(instanceId?: string): Promise<a
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch billing status"
+      error instanceof Error ? error.message : "Failed to fetch billing status",
     );
   }
 }
@@ -987,7 +1068,7 @@ export async function getBillingAutomationStatus(instanceId?: string): Promise<a
 export async function fetchAutomationLogs(
   accountId?: string,
   limit: number = 100,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const url = new URL("/api/mikrotik/billing/logs", window.location.origin);
@@ -1008,7 +1089,9 @@ export async function fetchAutomationLogs(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch automation logs"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch automation logs",
     );
   }
 }
@@ -1016,7 +1099,10 @@ export async function fetchAutomationLogs(
 /**
  * Test billing automation
  */
-export async function testBillingAutomation(accountId: string, instanceId?: string): Promise<any> {
+export async function testBillingAutomation(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/test", {
       method: "POST",
@@ -1031,7 +1117,9 @@ export async function testBillingAutomation(accountId: string, instanceId?: stri
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to test billing automation"
+      error instanceof Error
+        ? error.message
+        : "Failed to test billing automation",
     );
   }
 }
@@ -1039,7 +1127,10 @@ export async function testBillingAutomation(accountId: string, instanceId?: stri
 /**
  * Process overdue invoices
  */
-export async function processOverdueInvoices(overdueDays: number = 7, instanceId?: string): Promise<any> {
+export async function processOverdueInvoices(
+  overdueDays: number = 7,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/process-overdue", {
       method: "POST",
@@ -1054,7 +1145,9 @@ export async function processOverdueInvoices(overdueDays: number = 7, instanceId
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to process overdue invoices"
+      error instanceof Error
+        ? error.message
+        : "Failed to process overdue invoices",
     );
   }
 }
@@ -1062,7 +1155,10 @@ export async function processOverdueInvoices(overdueDays: number = 7, instanceId
 /**
  * Auto-apply credits to invoices
  */
-export async function autoApplyCreditsToInvoices(accountId: string, instanceId?: string): Promise<any> {
+export async function autoApplyCreditsToInvoices(
+  accountId: string,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/billing/apply-credits", {
       method: "POST",
@@ -1077,7 +1173,7 @@ export async function autoApplyCreditsToInvoices(accountId: string, instanceId?:
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to apply credits"
+      error instanceof Error ? error.message : "Failed to apply credits",
     );
   }
 }
@@ -1088,7 +1184,7 @@ export async function autoApplyCreditsToInvoices(accountId: string, instanceId?:
 export async function sendInvoiceNotificationAPI(
   accountId: string,
   invoiceId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-invoice", {
@@ -1104,7 +1200,9 @@ export async function sendInvoiceNotificationAPI(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to send invoice notification"
+      error instanceof Error
+        ? error.message
+        : "Failed to send invoice notification",
     );
   }
 }
@@ -1115,7 +1213,7 @@ export async function sendInvoiceNotificationAPI(
 export async function sendPaymentReminderNotificationAPI(
   accountId: string,
   invoiceId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-reminder", {
@@ -1131,7 +1229,9 @@ export async function sendPaymentReminderNotificationAPI(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to send payment reminder"
+      error instanceof Error
+        ? error.message
+        : "Failed to send payment reminder",
     );
   }
 }
@@ -1142,7 +1242,7 @@ export async function sendPaymentReminderNotificationAPI(
 export async function sendOverdueNotificationAPI(
   accountId: string,
   invoiceId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/notifications/send-overdue", {
@@ -1158,7 +1258,9 @@ export async function sendOverdueNotificationAPI(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to send overdue notification"
+      error instanceof Error
+        ? error.message
+        : "Failed to send overdue notification",
     );
   }
 }
@@ -1169,14 +1271,17 @@ export async function sendOverdueNotificationAPI(
 export async function sendPaymentReceivedNotificationAPI(
   accountId: string,
   paymentId: string,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/notifications/send-payment-received", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, paymentId, instanceId }),
-    });
+    const response = await fetch(
+      "/api/mikrotik/notifications/send-payment-received",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId, paymentId, instanceId }),
+      },
+    );
 
     if (!response.ok) {
       throw new Error("Failed to send payment received notification");
@@ -1187,7 +1292,7 @@ export async function sendPaymentReceivedNotificationAPI(
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Failed to send payment received notification"
+        : "Failed to send payment received notification",
     );
   }
 }
@@ -1200,14 +1305,23 @@ export async function sendQuotaAlertNotificationAPI(
   percentageUsed: number,
   usedData?: number,
   totalQuota?: number,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
-    const response = await fetch("/api/mikrotik/notifications/send-quota-alert", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, percentageUsed, usedData, totalQuota, instanceId }),
-    });
+    const response = await fetch(
+      "/api/mikrotik/notifications/send-quota-alert",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountId,
+          percentageUsed,
+          usedData,
+          totalQuota,
+          instanceId,
+        }),
+      },
+    );
 
     if (!response.ok) {
       throw new Error("Failed to send quota alert");
@@ -1216,7 +1330,7 @@ export async function sendQuotaAlertNotificationAPI(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to send quota alert"
+      error instanceof Error ? error.message : "Failed to send quota alert",
     );
   }
 }
@@ -1227,10 +1341,13 @@ export async function sendQuotaAlertNotificationAPI(
 export async function getNotificationLogsAPI(
   accountId?: string,
   limit: number = 100,
-  instanceId?: string
+  instanceId?: string,
 ): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/notifications/logs", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/notifications/logs",
+      window.location.origin,
+    );
     if (accountId) {
       url.searchParams.append("accountId", accountId);
     }
@@ -1248,7 +1365,9 @@ export async function getNotificationLogsAPI(
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch notification logs"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch notification logs",
     );
   }
 }
@@ -1256,9 +1375,14 @@ export async function getNotificationLogsAPI(
 /**
  * Get notification templates
  */
-export async function getNotificationTemplatesAPI(instanceId?: string): Promise<any> {
+export async function getNotificationTemplatesAPI(
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/notifications/templates", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/notifications/templates",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -1272,7 +1396,9 @@ export async function getNotificationTemplatesAPI(instanceId?: string): Promise<
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch notification templates"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch notification templates",
     );
   }
 }
@@ -1280,9 +1406,14 @@ export async function getNotificationTemplatesAPI(instanceId?: string): Promise<
 /**
  * Get notification statistics
  */
-export async function getNotificationStatsAPI(instanceId?: string): Promise<any> {
+export async function getNotificationStatsAPI(
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/notifications/stats", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/notifications/stats",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -1296,7 +1427,9 @@ export async function getNotificationStatsAPI(instanceId?: string): Promise<any>
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch notification statistics"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch notification statistics",
     );
   }
 }
@@ -1306,7 +1439,10 @@ export async function getNotificationStatsAPI(instanceId?: string): Promise<any>
  */
 export async function getDashboardAnalytics(instanceId?: string): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/dashboard", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/dashboard",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -1320,7 +1456,9 @@ export async function getDashboardAnalytics(instanceId?: string): Promise<any> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch dashboard analytics"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch dashboard analytics",
     );
   }
 }
@@ -1328,9 +1466,16 @@ export async function getDashboardAnalytics(instanceId?: string): Promise<any> {
 /**
  * Get revenue analytics
  */
-export async function getRevenueAnalytics(startDate?: string, endDate?: string, instanceId?: string): Promise<any> {
+export async function getRevenueAnalytics(
+  startDate?: string,
+  endDate?: string,
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/revenue", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/revenue",
+      window.location.origin,
+    );
     if (startDate) url.searchParams.append("startDate", startDate);
     if (endDate) url.searchParams.append("endDate", endDate);
     if (instanceId) url.searchParams.append("instanceId", instanceId);
@@ -1344,7 +1489,9 @@ export async function getRevenueAnalytics(startDate?: string, endDate?: string, 
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch revenue analytics"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch revenue analytics",
     );
   }
 }
@@ -1352,9 +1499,15 @@ export async function getRevenueAnalytics(startDate?: string, endDate?: string, 
 /**
  * Get monthly revenue trend
  */
-export async function getMonthlyRevenueTrend(months: number = 12, instanceId?: string): Promise<any> {
+export async function getMonthlyRevenueTrend(
+  months: number = 12,
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/revenue-trend", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/revenue-trend",
+      window.location.origin,
+    );
     url.searchParams.append("months", months.toString());
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
@@ -1369,7 +1522,7 @@ export async function getMonthlyRevenueTrend(months: number = 12, instanceId?: s
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch revenue trend"
+      error instanceof Error ? error.message : "Failed to fetch revenue trend",
     );
   }
 }
@@ -1377,9 +1530,15 @@ export async function getMonthlyRevenueTrend(months: number = 12, instanceId?: s
 /**
  * Get account growth trend
  */
-export async function getAccountGrowthTrend(months: number = 12, instanceId?: string): Promise<any> {
+export async function getAccountGrowthTrend(
+  months: number = 12,
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/account-trend", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/account-trend",
+      window.location.origin,
+    );
     url.searchParams.append("months", months.toString());
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
@@ -1394,7 +1553,7 @@ export async function getAccountGrowthTrend(months: number = 12, instanceId?: st
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch account trend"
+      error instanceof Error ? error.message : "Failed to fetch account trend",
     );
   }
 }
@@ -1402,9 +1561,14 @@ export async function getAccountGrowthTrend(months: number = 12, instanceId?: st
 /**
  * Get payment method distribution
  */
-export async function getPaymentMethodDistribution(instanceId?: string): Promise<any> {
+export async function getPaymentMethodDistribution(
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/payment-methods", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/payment-methods",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -1418,7 +1582,9 @@ export async function getPaymentMethodDistribution(instanceId?: string): Promise
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch payment methods"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch payment methods",
     );
   }
 }
@@ -1426,9 +1592,14 @@ export async function getPaymentMethodDistribution(instanceId?: string): Promise
 /**
  * Get service plan distribution
  */
-export async function getServicePlanDistribution(instanceId?: string): Promise<any> {
+export async function getServicePlanDistribution(
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/service-plans", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/service-plans",
+      window.location.origin,
+    );
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
     }
@@ -1442,7 +1613,7 @@ export async function getServicePlanDistribution(instanceId?: string): Promise<a
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch service plans"
+      error instanceof Error ? error.message : "Failed to fetch service plans",
     );
   }
 }
@@ -1450,9 +1621,15 @@ export async function getServicePlanDistribution(instanceId?: string): Promise<a
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomersByRevenue(limit: number = 10, instanceId?: string): Promise<any> {
+export async function getTopCustomersByRevenue(
+  limit: number = 10,
+  instanceId?: string,
+): Promise<any> {
   try {
-    const url = new URL("/api/mikrotik/analytics/top-customers", window.location.origin);
+    const url = new URL(
+      "/api/mikrotik/analytics/top-customers",
+      window.location.origin,
+    );
     url.searchParams.append("limit", limit.toString());
     if (instanceId) {
       url.searchParams.append("instanceId", instanceId);
@@ -1467,7 +1644,7 @@ export async function getTopCustomersByRevenue(limit: number = 10, instanceId?: 
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch top customers"
+      error instanceof Error ? error.message : "Failed to fetch top customers",
     );
   }
 }
@@ -1475,7 +1652,11 @@ export async function getTopCustomersByRevenue(limit: number = 10, instanceId?: 
 /**
  * Generate monthly billing report
  */
-export async function generateMonthlyBillingReport(month: number, year: number, instanceId?: string): Promise<any> {
+export async function generateMonthlyBillingReport(
+  month: number,
+  year: number,
+  instanceId?: string,
+): Promise<any> {
   try {
     const response = await fetch("/api/mikrotik/analytics/monthly-report", {
       method: "POST",
@@ -1490,7 +1671,9 @@ export async function generateMonthlyBillingReport(month: number, year: number, 
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to generate monthly report"
+      error instanceof Error
+        ? error.message
+        : "Failed to generate monthly report",
     );
   }
 }

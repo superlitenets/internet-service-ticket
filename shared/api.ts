@@ -475,7 +475,12 @@ export interface RADIUSConfig {
 /**
  * User Roles
  */
-export type UserRole = "admin" | "manager" | "support" | "technician" | "customer";
+export type UserRole =
+  | "admin"
+  | "manager"
+  | "support"
+  | "technician"
+  | "customer";
 
 /**
  * User Account

@@ -54,7 +54,13 @@ export default function UserManagement() {
     active: true,
   });
 
-  const roles: UserRole[] = ["admin", "manager", "support", "technician", "customer"];
+  const roles: UserRole[] = [
+    "admin",
+    "manager",
+    "support",
+    "technician",
+    "customer",
+  ];
 
   // Load users on mount
   useEffect(() => {
@@ -79,7 +85,8 @@ export default function UserManagement() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to load users",
+        description:
+          error instanceof Error ? error.message : "Failed to load users",
         variant: "destructive",
       });
     } finally {
@@ -116,7 +123,11 @@ export default function UserManagement() {
   };
 
   const handleSaveUser = async () => {
-    if (!formData.name || !formData.phone || ((!isEditing) && !formData.password)) {
+    if (
+      !formData.name ||
+      !formData.phone ||
+      (!isEditing && !formData.password)
+    ) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields",
@@ -187,7 +198,8 @@ export default function UserManagement() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Operation failed",
+        description:
+          error instanceof Error ? error.message : "Operation failed",
         variant: "destructive",
       });
     } finally {
@@ -231,7 +243,8 @@ export default function UserManagement() {
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.phone.includes(searchTerm) ||
-      (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+      (user.email &&
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   const getRoleColor = (role: UserRole) => {
@@ -286,13 +299,21 @@ export default function UserManagement() {
             {/* Users Table */}
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader size={32} className="animate-spin text-muted-foreground" />
+                <Loader
+                  size={32}
+                  className="animate-spin text-muted-foreground"
+                />
               </div>
             ) : filteredUsers.length === 0 ? (
               <div className="text-center py-12">
-                <Users size={48} className="mx-auto text-muted-foreground mb-4" />
+                <Users
+                  size={48}
+                  className="mx-auto text-muted-foreground mb-4"
+                />
                 <p className="text-muted-foreground">
-                  {searchTerm ? "No users found" : "No users yet. Create your first user!"}
+                  {searchTerm
+                    ? "No users found"
+                    : "No users yet. Create your first user!"}
                 </p>
               </div>
             ) : (
@@ -324,19 +345,29 @@ export default function UserManagement() {
                         className="border-b border-border hover:bg-muted/30 transition-colors"
                       >
                         <td className="py-3 px-4">
-                          <p className="font-medium text-foreground">{user.name}</p>
+                          <p className="font-medium text-foreground">
+                            {user.name}
+                          </p>
                         </td>
                         <td className="py-3 px-4">
                           <div className="space-y-1">
-                            <p className="text-sm text-muted-foreground">{user.phone}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {user.phone}
+                            </p>
                             {user.email && (
-                              <p className="text-xs text-muted-foreground">{user.email}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {user.email}
+                              </p>
                             )}
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <Badge variant="outline" className={getRoleColor(user.role)}>
-                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          <Badge
+                            variant="outline"
+                            className={getRoleColor(user.role)}
+                          >
+                            {user.role.charAt(0).toUpperCase() +
+                              user.role.slice(1)}
                           </Badge>
                         </td>
                         <td className="py-3 px-4">
@@ -387,9 +418,13 @@ export default function UserManagement() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Edit User" : "Create New User"}</DialogTitle>
+            <DialogTitle>
+              {isEditing ? "Edit User" : "Create New User"}
+            </DialogTitle>
             <DialogDescription>
-              {isEditing ? "Update user details and role" : "Add a new user account"}
+              {isEditing
+                ? "Update user details and role"
+                : "Add a new user account"}
             </DialogDescription>
           </DialogHeader>
 
@@ -499,11 +534,21 @@ export default function UserManagement() {
               <div className="text-xs text-blue-800">
                 <p className="font-medium mb-1">Role Permissions:</p>
                 <ul className="list-disc list-inside space-y-0.5">
-                  <li><strong>Admin:</strong> Full access to all features</li>
-                  <li><strong>Manager:</strong> Team, payroll, reports</li>
-                  <li><strong>Support:</strong> Payments, customers, tickets</li>
-                  <li><strong>Technician:</strong> Inventory, monitoring</li>
-                  <li><strong>Customer:</strong> View own account only</li>
+                  <li>
+                    <strong>Admin:</strong> Full access to all features
+                  </li>
+                  <li>
+                    <strong>Manager:</strong> Team, payroll, reports
+                  </li>
+                  <li>
+                    <strong>Support:</strong> Payments, customers, tickets
+                  </li>
+                  <li>
+                    <strong>Technician:</strong> Inventory, monitoring
+                  </li>
+                  <li>
+                    <strong>Customer:</strong> View own account only
+                  </li>
                 </ul>
               </div>
             </div>
@@ -523,7 +568,11 @@ export default function UserManagement() {
               className="gap-2"
             >
               {submitting && <Loader size={16} className="animate-spin" />}
-              {submitting ? "Saving..." : isEditing ? "Update User" : "Create User"}
+              {submitting
+                ? "Saving..."
+                : isEditing
+                  ? "Update User"
+                  : "Create User"}
             </Button>
           </DialogFooter>
         </DialogContent>

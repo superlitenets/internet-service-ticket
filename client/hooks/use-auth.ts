@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, createContext, ReactNode } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  ReactNode,
+} from "react";
 import { User } from "@shared/api";
 
 interface AuthContextType {

@@ -25,10 +25,7 @@ import {
   syncZKtecoAttendance,
   getZKtecoRealtime,
 } from "./routes/hrm";
-import {
-  handleSendWhatsApp,
-  testWhatsAppConnection,
-} from "./routes/whatsapp";
+import { handleSendWhatsApp, testWhatsAppConnection } from "./routes/whatsapp";
 import {
   handleSendWhatsAppUnified,
   handleInitWhatsAppWeb,
@@ -191,7 +188,10 @@ export function createServer() {
   app.get("/api/mikrotik/accounts/:accountId", getMikrotikAccount);
   app.put("/api/mikrotik/accounts/:accountId", updateMikrotikAccount);
   app.delete("/api/mikrotik/accounts/:accountId", deleteMikrotikAccount);
-  app.post("/api/mikrotik/accounts/:accountId/regenerate-credentials", regenerateAccountCredentials);
+  app.post(
+    "/api/mikrotik/accounts/:accountId/regenerate-credentials",
+    regenerateAccountCredentials,
+  );
 
   // Plans
   app.get("/api/mikrotik/plans", getMikrotikPlans);
@@ -247,7 +247,10 @@ export function createServer() {
   app.post("/api/mikrotik/radius/resume", resumeAccountInRADIUS);
 
   // Account Expiration & Renewal Automation
-  app.post("/api/mikrotik/expiration/check-status", checkAccountExpirationStatus);
+  app.post(
+    "/api/mikrotik/expiration/check-status",
+    checkAccountExpirationStatus,
+  );
   app.post("/api/mikrotik/expiration/process", processAccountExpirations);
   app.post("/api/mikrotik/expiration/renew", processAccountRenewal);
   app.get("/api/mikrotik/expiration/logs", getExpirationAutomationLogs);
@@ -255,10 +258,19 @@ export function createServer() {
 
   // Notifications
   app.post("/api/mikrotik/notifications/send-invoice", sendInvoiceNotification);
-  app.post("/api/mikrotik/notifications/send-reminder", sendPaymentReminderNotification);
+  app.post(
+    "/api/mikrotik/notifications/send-reminder",
+    sendPaymentReminderNotification,
+  );
   app.post("/api/mikrotik/notifications/send-overdue", sendOverdueNotification);
-  app.post("/api/mikrotik/notifications/send-payment-received", sendPaymentReceivedNotification);
-  app.post("/api/mikrotik/notifications/send-quota-alert", sendQuotaAlertNotification);
+  app.post(
+    "/api/mikrotik/notifications/send-payment-received",
+    sendPaymentReceivedNotification,
+  );
+  app.post(
+    "/api/mikrotik/notifications/send-quota-alert",
+    sendQuotaAlertNotification,
+  );
   app.get("/api/mikrotik/notifications/logs", getNotificationLogs);
   app.get("/api/mikrotik/notifications/templates", getNotificationTemplates);
   app.get("/api/mikrotik/notifications/stats", getNotificationStats);
@@ -268,10 +280,16 @@ export function createServer() {
   app.get("/api/mikrotik/analytics/revenue", getRevenueAnalytics);
   app.get("/api/mikrotik/analytics/revenue-trend", getMonthlyRevenueTrend);
   app.get("/api/mikrotik/analytics/account-trend", getAccountGrowthTrend);
-  app.get("/api/mikrotik/analytics/payment-methods", getPaymentMethodDistribution);
+  app.get(
+    "/api/mikrotik/analytics/payment-methods",
+    getPaymentMethodDistribution,
+  );
   app.get("/api/mikrotik/analytics/service-plans", getServicePlanDistribution);
   app.get("/api/mikrotik/analytics/top-customers", getTopCustomers);
-  app.post("/api/mikrotik/analytics/monthly-report", generateMonthlyBillingReport);
+  app.post(
+    "/api/mikrotik/analytics/monthly-report",
+    generateMonthlyBillingReport,
+  );
 
   return app;
 }

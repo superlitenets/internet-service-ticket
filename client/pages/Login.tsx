@@ -13,7 +13,10 @@ export default function Login() {
   const { login: authLogin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{
+    identifier?: string;
+    password?: string;
+  }>({});
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -60,7 +63,8 @@ export default function Login() {
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: error instanceof Error ? error.message : "Invalid credentials",
+        description:
+          error instanceof Error ? error.message : "Invalid credentials",
         variant: "destructive",
       });
     } finally {
@@ -156,16 +160,16 @@ export default function Login() {
               <p className="text-sm text-slate-400 mb-3">Demo Credentials:</p>
               <div className="space-y-2 text-xs text-slate-500 bg-slate-700 p-3 rounded">
                 <p>
-                  <span className="text-slate-400 font-medium">Admin:</span> admin@example.com /
-                  password123
+                  <span className="text-slate-400 font-medium">Admin:</span>{" "}
+                  admin@example.com / password123
                 </p>
                 <p>
-                  <span className="text-slate-400 font-medium">Support:</span> support@example.com /
-                  password123
+                  <span className="text-slate-400 font-medium">Support:</span>{" "}
+                  support@example.com / password123
                 </p>
                 <p>
-                  <span className="text-slate-400 font-medium">Customer:</span> 0722000000 /
-                  password123
+                  <span className="text-slate-400 font-medium">Customer:</span>{" "}
+                  0722000000 / password123
                 </p>
               </div>
             </div>

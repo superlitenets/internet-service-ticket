@@ -125,7 +125,13 @@ services:
     networks:
       - netflow
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -331,6 +337,7 @@ Wait 5-30 minutes for DNS propagation.
 - **HTTPS**: https://your-domain.com
 
 **Default login credentials:**
+
 - Admin: `admin@example.com` / `password123`
 - Support: `support@example.com` / `password123`
 - Customer: `0722000000` / `password123`
@@ -482,10 +489,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 2G
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 1G
 ```
 
