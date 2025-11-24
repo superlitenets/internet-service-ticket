@@ -322,28 +322,6 @@ export default function LandingContentEditor() {
             </div>
           </div>
         </Card>
-
-        {/* Save Actions - Bottom */}
-        <div className="flex gap-3">
-          <Button
-            onClick={handleSave}
-            disabled={loading}
-            className="gap-2"
-            size="lg"
-          >
-            <Save size={18} />
-            Save Changes
-          </Button>
-          <Button
-            onClick={handleReset}
-            variant="outline"
-            className="gap-2"
-            size="lg"
-          >
-            <RotateCcw size={18} />
-            Reset to Defaults
-          </Button>
-        </div>
       </div>
     </Layout>
   );
