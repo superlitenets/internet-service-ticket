@@ -60,11 +60,21 @@ async function getMpesaAccessToken(consumerKey, consumerSecret) {
 
     const data = await response.json();
 
+    if (!data.access_token) {
+      console.error("No access_token in MPESA response:", data);
+      throw new Error(`No access token returned from MPESA: ${JSON.stringify(data)}`);
+    }
+
     // Cache token
     mpesaTokenCache = {
       accessToken: data.access_token,
       expiresAt: Date.now() + data.expires_in * 1000,
     };
+
+    console.log("MPESA Token obtained successfully", {
+      tokenLength: data.access_token?.length,
+      expiresIn: data.expires_in,
+    });
 
     return data.access_token;
   } catch (error) {
