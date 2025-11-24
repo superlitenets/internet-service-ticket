@@ -933,7 +933,17 @@ exports.handler = async (event) => {
       return createJsonResponse(200, { message: "pong" });
     }
 
-    return createJsonResponse(404, { error: "Not found" });
+    console.log("No route matched for:", {
+      path: event.path,
+      method: event.httpMethod,
+    });
+    return createJsonResponse(404, {
+      error: "Not found",
+      debug: {
+        path: event.path,
+        method: event.httpMethod,
+      }
+    });
   } catch (error) {
     console.error("Error:", error);
     return createJsonResponse(500, {
