@@ -17,7 +17,7 @@ import {
   Briefcase,
   CheckSquare,
   Edit,
-  Ledger,
+  BookOpen,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
