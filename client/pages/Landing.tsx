@@ -16,6 +16,7 @@ import {
 import { useState, useEffect } from "react";
 import { getMikrotikPlans } from "@/lib/mikrotik-client";
 import { MikrotikPlan } from "@shared/api";
+import { getLandingContent, LandingContent } from "@/lib/landing-content-storage";
 
 export default function Landing() {
   const navigate = useNavigate();
