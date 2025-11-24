@@ -22,6 +22,7 @@ export async function sendSms(
       apiKey: request.apiKey || savedSettings?.apiKey,
       partnerId: request.partnerId || savedSettings?.partnerId,
       shortcode: request.shortcode || savedSettings?.shortcode,
+      customApiUrl: (request as any).customApiUrl || savedSettings?.customApiUrl,
     };
 
     const response = await fetch("/api/sms/send", {
