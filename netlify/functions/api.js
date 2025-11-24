@@ -545,9 +545,10 @@ exports.handler = async (event) => {
         const stkData = await stkResponse.json();
 
         if (!stkResponse.ok || stkData.ResponseCode !== "0") {
-          throw new Error(
-            stkData.ResponseDescription || "Failed to initiate STK push",
-          );
+          const errorMsg = stkData.ResponseDescription || stkData.errorMessage || "MPESA API returned an error";
+          const fullError = `${errorMsg} (ResponseCode: ${stkData.ResponseCode || "unknown"})`;
+          console.error("MPESA STK Push Error:", { status: stkResponse.status, data: stkData });
+          throw new Error(fullError);
         }
 
         const transaction = {
