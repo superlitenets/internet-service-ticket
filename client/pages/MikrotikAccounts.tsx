@@ -50,6 +50,9 @@ export default function MikrotikAccountsPage() {
     customerName: "",
     customerEmail: "",
     customerPhone: "",
+    apartment: "",
+    location: "",
+    roomNumber: "",
     accountType: "residential" as const,
     planId: "",
   });
