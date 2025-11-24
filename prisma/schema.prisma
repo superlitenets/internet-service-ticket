@@ -249,26 +249,6 @@ model AuditLog {
   @@index([entityId])
 }
 
-// Chart of Accounts for General Ledger
-model ChartOfAccount {
-  id          String   @id @default(cuid())
-  accountCode String   @unique // e.g., 1000, 2000, 3000
-  accountName String
-  type        String   // Asset, Liability, Equity, Revenue, Expense
-  category    String? // e.g., Cash, Bank, Equipment, etc
-  description String?
-  balance     Float    @default(0)
-  enabled     Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  journalEntries JournalEntry[]
-
-  @@index([accountCode])
-  @@index([type])
-}
-
 // Journal Entries for General Ledger
 model JournalEntry {
   id            String   @id @default(cuid())
@@ -295,7 +275,7 @@ model JournalEntry {
   @@index([creditAccountCode])
 }
 
-// Update ChartOfAccount relation names
+// Chart of Accounts for General Ledger
 model ChartOfAccount {
   id          String   @id @default(cuid())
   accountCode String   @unique // e.g., 1000, 2000, 3000
