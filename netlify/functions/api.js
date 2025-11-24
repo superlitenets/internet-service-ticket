@@ -142,7 +142,7 @@ exports.handler = async (event) => {
     const body = await parseBody(event);
 
     // Auth routes
-    if (event.path === "/auth/login" && event.httpMethod === "POST") {
+    if (event.path === "/api/auth/login" && event.httpMethod === "POST") {
       const { identifier, password } = body;
 
       if (!identifier || !password) {
@@ -193,7 +193,7 @@ exports.handler = async (event) => {
       });
     }
 
-    if (event.path === "/auth/verify" && event.httpMethod === "GET") {
+    if (event.path === "/api/auth/verify" && event.httpMethod === "GET") {
       const token = event.headers.authorization?.replace("Bearer ", "");
 
       if (!token) {
@@ -269,7 +269,7 @@ exports.handler = async (event) => {
       });
     }
 
-    if (event.path === "/auth/logout" && event.httpMethod === "POST") {
+    if (event.path === "/api/auth/logout" && event.httpMethod === "POST") {
       const token = event.headers.authorization?.replace("Bearer ", "");
       if (token) {
         sessions.delete(token);
@@ -280,7 +280,7 @@ exports.handler = async (event) => {
       });
     }
 
-    if (event.path === "/auth/me" && event.httpMethod === "GET") {
+    if (event.path === "/api/auth/me" && event.httpMethod === "GET") {
       const token = event.headers.authorization?.replace("Bearer ", "");
 
       if (!token) {
@@ -322,7 +322,7 @@ exports.handler = async (event) => {
     }
 
     // SMS routes
-    if (event.path === "/sms/send" && event.httpMethod === "POST") {
+    if (event.path === "/api/sms/send" && event.httpMethod === "POST") {
       const {
         to,
         message,
@@ -466,7 +466,7 @@ exports.handler = async (event) => {
     }
 
     // MPESA routes
-    if (event.path === "/mpesa/stk-push" && event.httpMethod === "POST") {
+    if (event.path === "/api/mpesa/stk-push" && event.httpMethod === "POST") {
       const {
         phoneNumber,
         amount,
@@ -588,7 +588,7 @@ exports.handler = async (event) => {
     }
 
     if (
-      event.path === "/mpesa/c2b" &&
+      event.path === "/api/mpesa/c2b" &&
       event.httpMethod === "POST"
     ) {
       const {
@@ -712,7 +712,7 @@ exports.handler = async (event) => {
     }
 
     if (
-      event.path === "/mpesa/b2b" &&
+      event.path === "/api/mpesa/b2b" &&
       event.httpMethod === "POST"
     ) {
       const {
@@ -838,14 +838,14 @@ exports.handler = async (event) => {
     }
 
     if (
-      event.path === "/mpesa/transactions" &&
+      event.path === "/api/mpesa/transactions" &&
       event.httpMethod === "GET"
     ) {
       return createJsonResponse(200, mpesaTransactions);
     }
 
     if (
-      event.path.match(/^\/mpesa\/transactions\/[^/]+$/) &&
+      event.path.match(/^\/api\/mpesa\/transactions\/[^/]+$/) &&
       event.httpMethod === "GET"
     ) {
       const transactionId = event.path.split("/").pop();
@@ -863,7 +863,7 @@ exports.handler = async (event) => {
       return createJsonResponse(200, transaction);
     }
 
-    if (event.path === "/mpesa/callback" && event.httpMethod === "POST") {
+    if (event.path === "/api/mpesa/callback" && event.httpMethod === "POST") {
       const { Body } = body;
 
       if (!Body) {
@@ -912,7 +912,7 @@ exports.handler = async (event) => {
     }
 
     if (
-      event.path === "/mpesa/validation" &&
+      event.path === "/api/mpesa/validation" &&
       event.httpMethod === "POST"
     ) {
       return createJsonResponse(200, {
@@ -922,14 +922,14 @@ exports.handler = async (event) => {
     }
 
     // Demo route
-    if (event.path === "/demo" && event.httpMethod === "GET") {
+    if (event.path === "/api/demo" && event.httpMethod === "GET") {
       return createJsonResponse(200, {
         message: "Hello from the server!",
       });
     }
 
     // Ping route
-    if (event.path === "/ping" && event.httpMethod === "GET") {
+    if (event.path === "/api/ping" && event.httpMethod === "GET") {
       return createJsonResponse(200, { message: "pong" });
     }
 
