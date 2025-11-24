@@ -28,6 +28,7 @@ import MikrotikBilling from "./pages/MikrotikBilling";
 import MikrotikMonitoring from "./pages/MikrotikMonitoring";
 import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
+import LandingContentEditor from "./pages/LandingContentEditor";
 
 const queryClient = new QueryClient();
 
