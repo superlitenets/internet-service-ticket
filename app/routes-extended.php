@@ -16,9 +16,9 @@ $app->group('/api/invoices', function (RouteCollectorProxy $group) {
                     ->withBody(json_encode(['success' => false, 'message' => 'Unauthorized']));
             }
 
-            $invoices = Database::fetchAll(
-                'SELECT i.*, c.name as customer_name, c.email as customer_email FROM invoices i 
-                LEFT JOIN customers c ON i.customer_id = c.id 
+            $invoices = Database::fetchAllWithTenant(
+                'SELECT i.*, c.name as customer_name, c.email as customer_email FROM invoices i
+                LEFT JOIN customers c ON i.customer_id = c.id
                 ORDER BY i.created_at DESC LIMIT 100'
             );
 
@@ -49,22 +49,19 @@ $app->group('/api/invoices', function (RouteCollectorProxy $group) {
             // Generate invoice number
             $invoiceNumber = 'INV-' . date('Ymd') . '-' . rand(1000, 9999);
 
-            Database::execute(
-                'INSERT INTO invoices (invoice_number, customer_id, amount, tax, total, status, due_date, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    $invoiceNumber,
-                    $data['customer_id'],
-                    $data['amount'] ?? 0,
-                    $data['tax'] ?? 0,
-                    $data['total'] ?? $data['amount'] ?? 0,
-                    $data['status'] ?? 'unpaid',
-                    $data['due_date'] ?? null,
-                    $user['id'],
-                ]
-            );
+            Database::insert('invoices', [
+                'invoice_number' => $invoiceNumber,
+                'customer_id' => $data['customer_id'],
+                'amount' => $data['amount'] ?? 0,
+                'tax' => $data['tax'] ?? 0,
+                'total' => $data['total'] ?? $data['amount'] ?? 0,
+                'status' => $data['status'] ?? 'unpaid',
+                'due_date' => $data['due_date'] ?? null,
+                'created_by' => $user['id'],
+            ]);
 
             $invoiceId = Database::lastInsertId();
-            $invoice = Database::fetch('SELECT * FROM invoices WHERE id = ?', [$invoiceId]);
+            $invoice = Database::fetchWithTenant('SELECT * FROM invoices WHERE id = ?', [$invoiceId]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
