@@ -572,6 +572,13 @@ exports.handler = async (event) => {
 
         const stkData = await stkResponse.json();
 
+        console.log("MPESA STK Response:", {
+          status: stkResponse.status,
+          responseCode: stkData.ResponseCode,
+          description: stkData.ResponseDescription,
+          fullResponse: stkData
+        });
+
         if (!stkResponse.ok || stkData.ResponseCode !== "0") {
           const errorMsg =
             stkData.ResponseDescription ||
