@@ -345,6 +345,7 @@ export const handleMpesaStkPush: RequestHandler<
       accountReference,
       transactionDescription,
       callbackUrl,
+      credentials,
     } = req.body;
 
     // Validation
@@ -357,16 +358,16 @@ export const handleMpesaStkPush: RequestHandler<
       });
     }
 
-    // Get MPESA settings
-    const consumerKey = process.env.MPESA_CONSUMER_KEY || "";
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET || "";
-    const shortCode = process.env.MPESA_BUSINESS_SHORT_CODE || "";
-    const passkey = process.env.MPESA_PASSKEY || "";
+    // Get MPESA settings from request or environment
+    const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
+    const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
+    const shortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    const passkey = credentials?.passkey || process.env.MPESA_PASSKEY || "";
 
     if (!consumerKey || !consumerSecret || !shortCode || !passkey) {
       return res.status(400).json({
         success: false,
-        message: "MPESA settings not configured on server",
+        message: "MPESA settings not configured",
         timestamp: new Date().toISOString(),
         error: "Server configuration error",
       });
