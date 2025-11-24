@@ -28,7 +28,6 @@ import MikrotikBilling from "./pages/MikrotikBilling";
 import MikrotikMonitoring from "./pages/MikrotikMonitoring";
 import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
-import { createRoot } from "react-dom/client";
 
 const queryClient = new QueryClient();
 
