@@ -32,7 +32,8 @@ export default function LandingContentEditor() {
       saveLandingContent(content);
       toast({
         title: "Success",
-        description: "Landing page content updated successfully. Changes are live!",
+        description:
+          "Landing page content updated successfully. Changes are live!",
       });
     } catch (error) {
       toast({

@@ -1096,7 +1096,11 @@ export default function SettingsPage() {
                     onClick={handleTestSms}
                     variant="outline"
                     className="gap-2"
-                    disabled={testingSms || !smsSettings.enabled || !testPhoneNumber.trim()}
+                    disabled={
+                      testingSms ||
+                      !smsSettings.enabled ||
+                      !testPhoneNumber.trim()
+                    }
                   >
                     <MessageSquare size={16} />
                     {testingSms ? "Testing..." : "Test SMS"}
