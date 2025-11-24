@@ -33,5 +33,12 @@ require_once __DIR__ . '/../app/routes-extended.php';
 // Add integration routes
 require_once __DIR__ . '/../app/integrations.php';
 
+// Add ISP billing module routes
+require_once __DIR__ . '/../app/isp-mikrotik.php';
+require_once __DIR__ . '/../app/isp-billing.php';
+require_once __DIR__ . '/../app/isp-monitoring.php';
+require_once __DIR__ . '/../app/isp-reports.php';
+require_once __DIR__ . '/../app/isp-customer-portal.php';
+
 // Run app
 $app->run();
