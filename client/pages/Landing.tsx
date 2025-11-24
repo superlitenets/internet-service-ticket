@@ -42,39 +42,51 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-white text-slate-900">
       {/* Header */}
       <header className="border-b border-slate-200 backdrop-blur-sm sticky top-0 z-50 bg-white/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Bar with Contact Info */}
-          <div className="flex items-center justify-end gap-6 py-2 text-sm text-slate-600 border-b border-slate-100">
-            <a
-              href="mailto:support@superlite.co.ke"
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-            >
-              <Mail size={16} />
-              support@superlite.co.ke
-            </a>
-            <a
-              href="tel:+254709367600"
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-            >
-              <Phone size={16} />
-              0709367600
-            </a>
-          </div>
-
-          {/* Main Header */}
-          <div className="py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
-                <Wifi size={24} className="text-white" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo Section */}
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+                <Wifi size={28} className="text-white" />
               </div>
-              <span className="text-2xl font-bold text-slate-900">NetFlow</span>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900">NetFlow</h1>
+                <p className="text-xs text-slate-500">ISP Management System</p>
+              </div>
             </div>
-            <Button
-              onClick={() => navigate("/login")}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Login
-            </Button>
+
+            {/* Contact & Action Section */}
+            <div className="flex items-center gap-8">
+              <div className="hidden md:flex items-center gap-6">
+                <a
+                  href="mailto:support@superlite.co.ke"
+                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  <Mail size={18} />
+                  <div>
+                    <p className="text-xs text-slate-500">Email</p>
+                    <p className="font-medium">support@superlite.co.ke</p>
+                  </div>
+                </a>
+                <a
+                  href="tel:+254709367600"
+                  className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  <Phone size={18} />
+                  <div>
+                    <p className="text-xs text-slate-500">Support</p>
+                    <p className="font-medium">0709367600</p>
+                  </div>
+                </a>
+              </div>
+
+              <Button
+                onClick={() => navigate("/login")}
+                className="bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+              >
+                Login
+              </Button>
+            </div>
           </div>
         </div>
       </header>
