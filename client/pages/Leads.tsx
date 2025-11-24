@@ -290,6 +290,18 @@ export default function Leads() {
         convertForm.assignedTo,
       );
 
+      if (result && result.ticket) {
+        const ticket = result.ticket;
+        try {
+          const existingTickets = localStorage.getItem("tickets_data");
+          const ticketsArray = existingTickets ? JSON.parse(existingTickets) : [];
+          ticketsArray.push(ticket);
+          localStorage.setItem("tickets_data", JSON.stringify(ticketsArray));
+        } catch (storageError) {
+          console.warn("Failed to save ticket to localStorage:", storageError);
+        }
+      }
+
       toast({
         title: "Success",
         description: "Lead converted to ticket successfully",
