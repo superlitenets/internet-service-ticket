@@ -57,6 +57,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/tickets/:ticketId"
+      element={
+        <ProtectedRoute>
+          <TicketDetailPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/customers"
       element={
         <ProtectedRoute>
