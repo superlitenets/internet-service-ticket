@@ -125,14 +125,16 @@ export default function TicketsPage() {
           id: "reply-1",
           author: "Mike Johnson",
           authorRole: "support",
-          message: "We have identified the issue. It appears to be a faulty switch on Floor 3. We are ordering a replacement.",
+          message:
+            "We have identified the issue. It appears to be a faulty switch on Floor 3. We are ordering a replacement.",
           timestamp: "2024-01-15 11:00 AM",
         },
         {
           id: "reply-2",
           author: "John Doe",
           authorRole: "customer",
-          message: "Thank you for looking into this. How soon can we expect the replacement?",
+          message:
+            "Thank you for looking into this. How soon can we expect the replacement?",
           timestamp: "2024-01-15 11:30 AM",
         },
       ],
@@ -190,7 +192,10 @@ export default function TicketsPage() {
       const smsSettings = getSmsSettings();
       const whatsappSettings = getWhatsAppConfig();
 
-      if ((!smsSettings || !smsSettings.enabled) && (!whatsappSettings || !whatsappSettings.enabled)) {
+      if (
+        (!smsSettings || !smsSettings.enabled) &&
+        (!whatsappSettings || !whatsappSettings.enabled)
+      ) {
         console.log("No messaging service enabled");
         return;
       }
@@ -243,7 +248,10 @@ export default function TicketsPage() {
       if (ticket.assignedTo !== "Unassigned" && technicianPhone) {
         const technicianTemplate = getTemplate(eventType, "technician");
         if (technicianTemplate) {
-          const technicianMessage = renderTemplate(technicianTemplate, messageVars);
+          const technicianMessage = renderTemplate(
+            technicianTemplate,
+            messageVars,
+          );
 
           // Send via SMS
           if (smsSettings?.enabled) {

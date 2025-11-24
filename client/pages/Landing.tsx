@@ -16,13 +16,18 @@ import {
 import { useState, useEffect } from "react";
 import { getMikrotikPlans } from "@/lib/mikrotik-client";
 import { MikrotikPlan } from "@shared/api";
-import { getLandingContent, LandingContent } from "@/lib/landing-content-storage";
+import {
+  getLandingContent,
+  LandingContent,
+} from "@/lib/landing-content-storage";
 
 export default function Landing() {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<MikrotikPlan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
-  const [landingContent, setLandingContent] = useState<LandingContent | null>(null);
+  const [landingContent, setLandingContent] = useState<LandingContent | null>(
+    null,
+  );
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -112,7 +117,8 @@ export default function Landing() {
               </h1>
               <p className="text-xl text-slate-600">
                 NetFlow CRM is the complete solution for managing ISP customers,
-                billing, support tickets, and network monitoring all in one place.
+                billing, support tickets, and network monitoring all in one
+                place.
               </p>
             </div>
 
@@ -160,7 +166,9 @@ export default function Landing() {
                       <BarChart3 size={24} className="text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">Real-time Analytics</p>
+                      <p className="font-semibold text-slate-900">
+                        Real-time Analytics
+                      </p>
                       <p className="text-sm text-slate-600 mt-1">
                         Track revenue and customer metrics in real-time
                       </p>
@@ -172,7 +180,9 @@ export default function Landing() {
                       <Clock size={24} className="text-green-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">24/7 Support</p>
+                      <p className="font-semibold text-slate-900">
+                        24/7 Support
+                      </p>
                       <p className="text-sm text-slate-600 mt-1">
                         Manage support tickets efficiently
                       </p>
@@ -184,7 +194,9 @@ export default function Landing() {
                       <Shield size={24} className="text-purple-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">Secure & Reliable</p>
+                      <p className="font-semibold text-slate-900">
+                        Secure & Reliable
+                      </p>
                       <p className="text-sm text-slate-600 mt-1">
                         Enterprise-grade security for your data
                       </p>
@@ -201,9 +213,12 @@ export default function Landing() {
       <section className="border-t border-slate-200 py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-slate-900">Cloud Hosting & Server Deployment</h2>
+            <h2 className="text-4xl font-bold mb-4 text-slate-900">
+              Cloud Hosting & Server Deployment
+            </h2>
             <p className="text-xl text-slate-600">
-              Enterprise infrastructure designed for high-performance ISP operations
+              Enterprise infrastructure designed for high-performance ISP
+              operations
             </p>
           </div>
 
@@ -253,7 +268,9 @@ export default function Landing() {
                 <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
                   <feature.icon size={24} className="text-blue-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-slate-900">{feature.title}</h3>
+                <h3 className="text-lg font-semibold mb-2 text-slate-900">
+                  {feature.title}
+                </h3>
                 <p className="text-slate-600">{feature.description}</p>
               </div>
             ))}
@@ -265,7 +282,9 @@ export default function Landing() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-slate-900">Our Internet Packages</h2>
+            <h2 className="text-4xl font-bold mb-4 text-slate-900">
+              Our Internet Packages
+            </h2>
             <p className="text-xl text-slate-600">
               Choose the perfect internet speed for your needs
             </p>
@@ -294,7 +313,9 @@ export default function Landing() {
                       MOST POPULAR
                     </div>
                   )}
-                  <h3 className="text-2xl font-bold mb-2 text-slate-900">{plan.planName}</h3>
+                  <h3 className="text-2xl font-bold mb-2 text-slate-900">
+                    {plan.planName}
+                  </h3>
                   <p className="text-slate-600 mb-4 text-sm line-clamp-2">
                     {plan.description || "High-speed internet package"}
                   </p>
@@ -309,11 +330,15 @@ export default function Landing() {
                   <div className="space-y-3 mb-8 pb-8 border-b border-slate-200">
                     {plan.speed && (
                       <div className="flex items-center gap-3">
-                        <Zap size={18} className="text-yellow-600 flex-shrink-0" />
+                        <Zap
+                          size={18}
+                          className="text-yellow-600 flex-shrink-0"
+                        />
                         <div>
                           <p className="font-semibold text-slate-900">Speed</p>
                           <p className="text-sm text-slate-600">
-                            {plan.speed.uploadMbps} ↑ / {plan.speed.downloadMbps} ↓ Mbps
+                            {plan.speed.uploadMbps} ↑ /{" "}
+                            {plan.speed.downloadMbps} ↓ Mbps
                           </p>
                         </div>
                       </div>
@@ -321,9 +346,14 @@ export default function Landing() {
 
                     {plan.dataQuota && (
                       <div className="flex items-center gap-3">
-                        <BarChart3 size={18} className="text-cyan-600 flex-shrink-0" />
+                        <BarChart3
+                          size={18}
+                          className="text-cyan-600 flex-shrink-0"
+                        />
                         <div>
-                          <p className="font-semibold text-slate-900">Data Quota</p>
+                          <p className="font-semibold text-slate-900">
+                            Data Quota
+                          </p>
                           <p className="text-sm text-slate-600">
                             {plan.dataQuota} GB / month
                           </p>
@@ -333,9 +363,14 @@ export default function Landing() {
 
                     {plan.planType && (
                       <div className="flex items-center gap-3">
-                        <Wifi size={18} className="text-green-600 flex-shrink-0" />
+                        <Wifi
+                          size={18}
+                          className="text-green-600 flex-shrink-0"
+                        />
                         <div>
-                          <p className="font-semibold text-slate-900">Plan Type</p>
+                          <p className="font-semibold text-slate-900">
+                            Plan Type
+                          </p>
                           <p className="text-sm text-slate-600 capitalize">
                             {plan.planType.replace("-", " ")}
                           </p>
@@ -345,9 +380,14 @@ export default function Landing() {
 
                     {plan.setupFee > 0 && (
                       <div className="flex items-center gap-3">
-                        <Check size={18} className="text-blue-600 flex-shrink-0" />
+                        <Check
+                          size={18}
+                          className="text-blue-600 flex-shrink-0"
+                        />
                         <div>
-                          <p className="font-semibold text-slate-900">Setup Fee</p>
+                          <p className="font-semibold text-slate-900">
+                            Setup Fee
+                          </p>
                           <p className="text-sm text-slate-600">
                             KES {plan.setupFee.toLocaleString()}
                           </p>
@@ -371,7 +411,9 @@ export default function Landing() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-slate-600 text-lg">No packages available yet. Please check back soon!</p>
+              <p className="text-slate-600 text-lg">
+                No packages available yet. Please check back soon!
+              </p>
             </div>
           )}
         </div>
@@ -380,9 +422,12 @@ export default function Landing() {
       {/* CTA Section */}
       <section className="border-t border-slate-200 py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4 text-slate-900">Ready to Transform Your ISP Business?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-slate-900">
+            Ready to Transform Your ISP Business?
+          </h2>
           <p className="text-xl text-slate-600 mb-8">
-            Join hundreds of ISP providers who trust NetFlow to manage their operations
+            Join hundreds of ISP providers who trust NetFlow to manage their
+            operations
           </p>
           <div className="flex gap-4 justify-center">
             <Button

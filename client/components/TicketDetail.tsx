@@ -158,7 +158,9 @@ export default function TicketDetail({
               <p className="text-sm text-muted-foreground mt-2">
                 {ticket.customerEmail}
               </p>
-              <p className="text-sm text-muted-foreground">{ticket.customerPhone}</p>
+              <p className="text-sm text-muted-foreground">
+                {ticket.customerPhone}
+              </p>
               {(ticket.apartment || ticket.roomNumber) && (
                 <>
                   {ticket.apartment && (
@@ -176,7 +178,9 @@ export default function TicketDetail({
             </Card>
 
             <Card className="p-4 border-0 shadow-sm bg-muted/30">
-              <p className="text-xs text-muted-foreground mb-1">Status & Priority</p>
+              <p className="text-xs text-muted-foreground mb-1">
+                Status & Priority
+              </p>
               <div className="flex gap-2 mt-2">
                 <Badge className={getStatusColor(ticket.status)}>
                   {getStatusLabel(ticket.status)}
@@ -193,7 +197,9 @@ export default function TicketDetail({
           {ticket.customerLocation && (
             <Card className="p-4 border-0 shadow-sm bg-muted/30">
               <p className="text-xs text-muted-foreground mb-1">Location</p>
-              <p className="text-sm text-foreground">{ticket.customerLocation}</p>
+              <p className="text-sm text-foreground">
+                {ticket.customerLocation}
+              </p>
             </Card>
           )}
 
@@ -235,9 +241,8 @@ export default function TicketDetail({
                         >
                           {reply.authorRole === "in-progress"
                             ? "In Progress"
-                            : reply.authorRole
-                                .charAt(0)
-                                .toUpperCase() + reply.authorRole.slice(1)}
+                            : reply.authorRole.charAt(0).toUpperCase() +
+                              reply.authorRole.slice(1)}
                         </Badge>
                       </div>
                       <span className="text-xs text-muted-foreground">

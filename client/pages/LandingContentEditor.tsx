@@ -46,7 +46,7 @@ export default function LandingContentEditor() {
   const handleReset = () => {
     if (
       window.confirm(
-        "Are you sure you want to reset all content to defaults? This cannot be undone."
+        "Are you sure you want to reset all content to defaults? This cannot be undone.",
       )
     ) {
       resetLandingContent();

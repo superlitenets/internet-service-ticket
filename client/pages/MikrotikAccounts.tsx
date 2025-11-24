@@ -262,9 +262,15 @@ export default function MikrotikAccountsPage() {
                             <p className="text-xs text-muted-foreground">
                               {account.customerEmail}
                             </p>
-                            {(account.location || account.apartment || account.roomNumber) && (
+                            {(account.location ||
+                              account.apartment ||
+                              account.roomNumber) && (
                               <p className="text-xs text-muted-foreground mt-1">
-                                {[account.location, account.apartment, account.roomNumber]
+                                {[
+                                  account.location,
+                                  account.apartment,
+                                  account.roomNumber,
+                                ]
                                   .filter(Boolean)
                                   .join(", ")}
                               </p>
@@ -389,7 +395,9 @@ export default function MikrotikAccountsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Location</label>
+                <label className="block text-sm font-medium mb-1">
+                  Location
+                </label>
                 <Input
                   value={formData.location}
                   onChange={(e) =>
@@ -399,7 +407,9 @@ export default function MikrotikAccountsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Apartment</label>
+                <label className="block text-sm font-medium mb-1">
+                  Apartment
+                </label>
                 <Input
                   value={formData.apartment}
                   onChange={(e) =>
@@ -411,7 +421,9 @@ export default function MikrotikAccountsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Room Number</label>
+              <label className="block text-sm font-medium mb-1">
+                Room Number
+              </label>
               <Input
                 value={formData.roomNumber}
                 onChange={(e) =>
