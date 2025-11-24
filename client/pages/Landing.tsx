@@ -216,94 +216,119 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Internet Packages Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Simple Pricing</h2>
+            <h2 className="text-4xl font-bold mb-4">Our Internet Packages</h2>
             <p className="text-xl text-slate-400">
-              Choose the plan that fits your business
+              Choose the perfect internet speed for your needs
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Starter",
-                price: "$299",
-                description: "Perfect for small ISPs",
-                features: [
-                  "Up to 100 customers",
-                  "Basic billing",
-                  "Email support",
-                  "Monthly reports",
-                ],
-              },
-              {
-                name: "Professional",
-                price: "$599",
-                description: "For growing ISPs",
-                features: [
-                  "Up to 500 customers",
-                  "Advanced billing",
-                  "Priority support",
-                  "Real-time analytics",
-                  "Custom reports",
-                  "API access",
-                ],
-                highlighted: true,
-              },
-              {
-                name: "Enterprise",
-                price: "Custom",
-                description: "For large networks",
-                features: [
-                  "Unlimited customers",
-                  "Full automation",
-                  "24/7 dedicated support",
-                  "Custom integrations",
-                  "SLA guarantee",
-                  "On-premise option",
-                ],
-              },
-            ].map((plan, i) => (
-              <div
-                key={i}
-                className={`p-8 rounded-xl border transition-all ${
-                  plan.highlighted
-                    ? "border-blue-500 bg-blue-600/10 shadow-lg shadow-blue-500/20"
-                    : "border-slate-700/50 bg-slate-800/30 hover:border-blue-500/30"
-                }`}
-              >
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-slate-400 mb-4">{plan.description}</p>
-                <div className="text-3xl font-bold mb-6">
-                  {plan.price}
-                  {plan.price !== "Custom" && (
-                    <span className="text-lg text-slate-400">/month</span>
-                  )}
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-center gap-3">
-                      <Check size={18} className="text-green-400 flex-shrink-0" />
-                      <span className="text-slate-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() => navigate("/login")}
-                  className={`w-full ${
-                    plan.highlighted
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-slate-700 hover:bg-slate-600"
+          {loadingPlans ? (
+            <div className="flex justify-center items-center py-16">
+              <div className="flex items-center gap-3">
+                <Loader className="animate-spin" size={24} />
+                <p className="text-slate-400">Loading packages...</p>
+              </div>
+            </div>
+          ) : plans.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {plans.map((plan, i) => (
+                <div
+                  key={plan.id}
+                  className={`p-8 rounded-xl border transition-all transform hover:scale-105 ${
+                    i === 1
+                      ? "border-blue-500 bg-blue-600/10 shadow-lg shadow-blue-500/20"
+                      : "border-slate-700/50 bg-slate-800/30 hover:border-blue-500/30"
                   }`}
                 >
-                  Get Started
-                </Button>
-              </div>
-            ))}
-          </div>
+                  {i === 1 && (
+                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
+                      MOST POPULAR
+                    </div>
+                  )}
+                  <h3 className="text-2xl font-bold mb-2">{plan.planName}</h3>
+                  <p className="text-slate-400 mb-4 text-sm line-clamp-2">
+                    {plan.description || "High-speed internet package"}
+                  </p>
+
+                  <div className="mb-6">
+                    <div className="text-4xl font-bold text-blue-400">
+                      KES {plan.monthlyFee.toLocaleString()}
+                    </div>
+                    <span className="text-slate-400">/month</span>
+                  </div>
+
+                  <div className="space-y-3 mb-8 pb-8 border-b border-slate-700">
+                    {plan.speed && (
+                      <div className="flex items-center gap-3">
+                        <Zap size={18} className="text-yellow-400 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-white">Speed</p>
+                          <p className="text-sm text-slate-400">
+                            {plan.speed.uploadMbps} ↑ / {plan.speed.downloadMbps} ↓ Mbps
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {plan.dataQuota && (
+                      <div className="flex items-center gap-3">
+                        <BarChart3 size={18} className="text-cyan-400 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-white">Data Quota</p>
+                          <p className="text-sm text-slate-400">
+                            {plan.dataQuota} GB / month
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {plan.planType && (
+                      <div className="flex items-center gap-3">
+                        <Wifi size={18} className="text-green-400 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-white">Plan Type</p>
+                          <p className="text-sm text-slate-400 capitalize">
+                            {plan.planType.replace("-", " ")}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {plan.setupFee > 0 && (
+                      <div className="flex items-center gap-3">
+                        <Check size={18} className="text-blue-400 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-white">Setup Fee</p>
+                          <p className="text-sm text-slate-400">
+                            KES {plan.setupFee.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={() => navigate("/login")}
+                    className={`w-full ${
+                      i === 1
+                        ? "bg-blue-600 hover:bg-blue-700"
+                        : "bg-slate-700 hover:bg-slate-600"
+                    }`}
+                  >
+                    Subscribe Now
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-slate-400 text-lg">No packages available yet. Please check back soon!</p>
+            </div>
+          )}
         </div>
       </section>
 
