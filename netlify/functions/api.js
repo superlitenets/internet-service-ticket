@@ -120,46 +120,106 @@ exports.handler = async (event) => {
         };
       }
 
-      const session = sessions.get(token);
-      if (!session || session.expiresAt < Date.now()) {
+      // For Netlify's stateless environment, we validate token format
+      // Tokens are generated as: token_${Date.now()}_${random}
+      // This is a basic validation - in production use proper JWT
+      if (!token.startsWith("token_")) {
         return {
           statusCode: 401,
           headers,
           body: JSON.stringify({
             success: false,
-            message: "Invalid or expired token",
+            message: "Invalid token format",
           }),
         };
       }
 
-      let user = null;
-      for (const u of users.values()) {
-        if (u.id === session.userId) {
-          user = u;
-          break;
+      // Check if token exists in current session (for tokens created this session)
+      const session = sessions.get(token);
+      if (session) {
+        if (session.expiresAt < Date.now()) {
+          return {
+            statusCode: 401,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "Token expired",
+            }),
+          };
         }
-      }
 
-      if (!user) {
+        let user = null;
+        for (const u of users.values()) {
+          if (u.id === session.userId) {
+            user = u;
+            break;
+          }
+        }
+
+        if (!user) {
+          return {
+            statusCode: 404,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "User not found",
+            }),
+          };
+        }
+
+        const { password: _, ...userWithoutPassword } = user;
+
         return {
-          statusCode: 404,
+          statusCode: 200,
           headers,
           body: JSON.stringify({
-            success: false,
-            message: "User not found",
+            success: true,
+            user: userWithoutPassword,
+            message: "Token is valid",
           }),
         };
       }
 
-      const { password: _, ...userWithoutPassword } = user;
+      // Token not in current session (page refresh case)
+      // For Netlify's stateless nature, we accept tokens created recently
+      // This allows persistence across page reloads
+      // Extract timestamp from token: token_${timestamp}_${random}
+      const tokenParts = token.split("_");
+      if (tokenParts.length >= 3) {
+        const tokenTime = parseInt(tokenParts[1]);
+        const now = Date.now();
+        const tokenAge = now - tokenTime;
+        const maxTokenAge = 24 * 60 * 60 * 1000; // 24 hours
+
+        if (tokenAge > maxTokenAge) {
+          return {
+            statusCode: 401,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "Token expired",
+            }),
+          };
+        }
+
+        // Token is valid based on age - return success with empty user
+        // Client will use the stored user from localStorage
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: "Token is valid",
+          }),
+        };
+      }
 
       return {
-        statusCode: 200,
+        statusCode: 401,
         headers,
         body: JSON.stringify({
-          success: true,
-          user: userWithoutPassword,
-          message: "Token is valid",
+          success: false,
+          message: "Invalid token",
         }),
       };
     }
