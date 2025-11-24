@@ -98,49 +98,55 @@ export const handleSendSms: RequestHandler<
       () => `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     );
 
-    // Log the SMS request (in production, this would call the actual SMS provider)
-    if (provider === "advanta") {
-      console.log(`[SMS] Sending via Advanta SMS`, {
-        provider,
-        partnerId,
-        shortcode,
-        recipients: validPhoneNumbers,
-        messageLength: message.length,
-        timestamp: new Date().toISOString(),
-      });
+    // Log the SMS request
+    console.log(`[SMS] Sending via ${provider}`, {
+      provider,
+      recipients: validPhoneNumbers,
+      messageLength: message.length,
+      fromNumber,
+      customApiUrl,
+      timestamp: new Date().toISOString(),
+    });
 
-      // In production: Call Advanta SMS API
-      // Example:
-      // const response = await fetch('https://api.advantasms.com/send', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     username: partnerId,
-      //     password: apiKey,
-      //     message,
-      //     recipients: validPhoneNumbers,
-      //     sender: shortcode,
-      //   }),
-      // });
-    } else {
-      console.log(`[SMS] Sending via ${provider}`, {
-        provider,
-        recipients: validPhoneNumbers,
-        messageLength: message.length,
-        fromNumber,
-        timestamp: new Date().toISOString(),
-      });
+    // If Advanta with custom URL, make the actual API call
+    if (provider === "advanta" && customApiUrl) {
+      try {
+        const response = await fetch(customApiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: partnerId,
+            password: apiKey,
+            message,
+            recipients: validPhoneNumbers,
+            sender: shortcode,
+          }),
+        });
 
-      // In a production environment, you would call the actual SMS provider API here
-      // Example for Twilio:
-      // const twilio = require('twilio')(accountSid, authToken);
-      // for (const phone of validPhoneNumbers) {
-      //   await twilio.messages.create({
-      //     body: message,
-      //     from: fromNumber,
-      //     to: phone,
-      //   });
-      // }
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("[SMS] Advanta API error:", errorText);
+          return res.status(400).json({
+            success: false,
+            message: "Failed to send SMS via Advanta API",
+            timestamp: new Date().toISOString(),
+            error: "API request failed",
+          });
+        }
+
+        const result = await response.json();
+        console.log("[SMS] Advanta API response:", result);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error("[SMS] Error calling Advanta API:", errorMessage);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to call SMS provider API",
+          timestamp: new Date().toISOString(),
+          error: errorMessage,
+        });
+      }
     }
 
     return res.status(200).json({
