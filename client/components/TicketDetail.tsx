@@ -159,6 +159,20 @@ export default function TicketDetail({
                 {ticket.customerEmail}
               </p>
               <p className="text-sm text-muted-foreground">{ticket.customerPhone}</p>
+              {(ticket.apartment || ticket.roomNumber) && (
+                <>
+                  {ticket.apartment && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Apt: {ticket.apartment}
+                    </p>
+                  )}
+                  {ticket.roomNumber && (
+                    <p className="text-sm text-muted-foreground">
+                      Room: {ticket.roomNumber}
+                    </p>
+                  )}
+                </>
+              )}
             </Card>
 
             <Card className="p-4 border-0 shadow-sm bg-muted/30">
