@@ -294,7 +294,7 @@ $app->group('/api/customers', function (RouteCollectorProxy $group) {
                 ['id' => $args['id']]
             );
 
-            $customer = Database::fetch('SELECT * FROM customers WHERE id = ?', [$args['id']]);
+            $customer = Database::fetchWithTenant('SELECT * FROM customers WHERE id = ?', [$args['id']]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
