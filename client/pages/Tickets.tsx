@@ -116,6 +116,22 @@ export default function TicketsPage() {
       updatedAt: "2024-01-15 02:45 PM",
       assignedTo: "Mike Johnson",
       smsNotificationsSent: 2,
+      replies: [
+        {
+          id: "reply-1",
+          author: "Mike Johnson",
+          authorRole: "support",
+          message: "We have identified the issue. It appears to be a faulty switch on Floor 3. We are ordering a replacement.",
+          timestamp: "2024-01-15 11:00 AM",
+        },
+        {
+          id: "reply-2",
+          author: "John Doe",
+          authorRole: "customer",
+          message: "Thank you for looking into this. How soon can we expect the replacement?",
+          timestamp: "2024-01-15 11:30 AM",
+        },
+      ],
     },
     {
       id: "TK-002",
@@ -131,6 +147,7 @@ export default function TicketsPage() {
       updatedAt: "2024-01-15 01:20 PM",
       assignedTo: "Sarah Smith",
       smsNotificationsSent: 1,
+      replies: [],
     },
     {
       id: "TK-003",
@@ -146,6 +163,7 @@ export default function TicketsPage() {
       updatedAt: "2024-01-14 03:45 PM",
       assignedTo: "Unassigned",
       smsNotificationsSent: 0,
+      replies: [],
     },
   ]);
 
