@@ -327,6 +327,9 @@ export interface MikrotikAccount {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  apartment?: string;
+  location?: string;
+  roomNumber?: string;
   accountType: "residential" | "business" | "prepaid" | "postpaid";
   status: "active" | "inactive" | "suspended" | "closed" | "paused";
   planId: string;
