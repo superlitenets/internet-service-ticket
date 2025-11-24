@@ -701,6 +701,17 @@ export default function SettingsPage() {
     try {
       setTestingSms(true);
 
+      // Check if phone number is provided
+      if (!testPhoneNumber.trim()) {
+        toast({
+          title: "Error",
+          description: "Please enter a phone number to test SMS",
+          variant: "destructive",
+        });
+        setTestingSms(false);
+        return;
+      }
+
       // Check if settings are configured
       if (
         !smsSettings.accountSid &&
@@ -749,15 +760,13 @@ export default function SettingsPage() {
 
       const testMessage = `SMS Test - This is a test message from your ISP CRM system. Provider: ${smsSettings.provider}. If you received this, SMS is working correctly! [${new Date().toLocaleTimeString()}]`;
 
-      // Use a test phone number or the configured from number
-      const testPhoneNumber = smsSettings.fromNumber || "+1234567890";
-
       await sendSmsToPhone(testPhoneNumber, testMessage);
 
       toast({
         title: "Success",
         description: "Test SMS sent successfully! Check your phone.",
       });
+      setTestPhoneNumber("");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to send test SMS";
