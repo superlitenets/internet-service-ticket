@@ -102,10 +102,6 @@ export async function initiateMpesaStkPush(
         businessShortCode:
           request.credentials?.businessShortCode || settings.businessShortCode,
         passkey: request.credentials?.passkey || settings.passkey,
-        callbackUrl:
-          request.credentials?.callbackUrl ||
-          request.callbackUrl ||
-          settings.callbackUrl,
         initiatorPassword:
           request.credentials?.initiatorPassword || settings.initiatorPassword,
       },
