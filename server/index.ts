@@ -252,7 +252,12 @@ export function createServer() {
   app.get("/api/mikrotik/billing/status", getBillingStatus);
   app.get("/api/mikrotik/billing/logs", getAutomationLogs);
 
-  // RADIUS Account Management
+  // RADIUS Configuration & Management
+  app.get("/api/mikrotik/radius/config", getRADIUSConfig);
+  app.put("/api/mikrotik/radius/config", updateRADIUSConfig);
+  app.post("/api/mikrotik/radius/test", testRADIUSConnection);
+  app.post("/api/mikrotik/radius/sync-account", syncAccountToRADIUS);
+  app.post("/api/mikrotik/radius/remove-account", removeAccountFromRADIUS);
   app.post("/api/mikrotik/radius/suspend", suspendAccountInRADIUS);
   app.post("/api/mikrotik/radius/resume", resumeAccountInRADIUS);
 
