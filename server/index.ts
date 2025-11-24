@@ -200,7 +200,7 @@ export function createServer() {
   app.post("/api/auth/login", handleLogin);
   app.post("/api/auth/logout", handleLogout);
   app.post("/api/auth/register", handleRegister);
-  app.get("/api/auth/verify", verifyToken);
+  app.get("/api/auth/verify", verifyTokenEndpoint);
   app.get("/api/auth/me", getCurrentUser);
 
   // User management endpoints
