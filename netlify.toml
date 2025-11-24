@@ -7,6 +7,10 @@
 [functions]
   node_bundler = "esbuild"
   directory = "netlify/functions"
+
+[[edge_functions]]
+  path = "/api/*"
+  function = "api"
   
 [[redirects]]
   force = true
