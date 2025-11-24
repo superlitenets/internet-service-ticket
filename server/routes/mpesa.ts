@@ -98,7 +98,7 @@ export const handleMpesaC2B: RequestHandler<
   MpesaC2BRequest
 > = async (req, res) => {
   try {
-    const { phoneNumber, amount, accountReference, transactionDescription } =
+    const { phoneNumber, amount, accountReference, transactionDescription, credentials } =
       req.body;
 
     // Validation
@@ -111,15 +111,15 @@ export const handleMpesaC2B: RequestHandler<
       });
     }
 
-    // Get MPESA settings from environment or request
-    const consumerKey = process.env.MPESA_CONSUMER_KEY || "";
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET || "";
-    const shortCode = process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    // Get MPESA settings from request or environment
+    const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
+    const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
+    const shortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
 
     if (!consumerKey || !consumerSecret || !shortCode) {
       return res.status(400).json({
         success: false,
-        message: "MPESA settings not configured on server",
+        message: "MPESA settings not configured",
         timestamp: new Date().toISOString(),
         error: "Server configuration error",
       });
