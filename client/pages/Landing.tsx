@@ -112,13 +112,15 @@ export default function Landing() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-slate-900">
-                Manage Your ISP Business
-                <span className="text-blue-600"> with Confidence</span>
+                {landingContent?.heroTitle || "Manage Your ISP Business"}
+                <span className="text-blue-600">
+                  {" "}
+                  {landingContent?.heroSubtitle || "with Confidence"}
+                </span>
               </h1>
               <p className="text-xl text-slate-600">
-                NetFlow CRM is the complete solution for managing ISP customers,
-                billing, support tickets, and network monitoring all in one
-                place.
+                {landingContent?.heroDescription ||
+                  "NetFlow CRM is the complete solution for managing ISP customers, billing, support tickets, and network monitoring all in one place."}
               </p>
             </div>
 
@@ -128,7 +130,7 @@ export default function Landing() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 gap-2 text-white"
               >
-                Get Started
+                {landingContent?.ctaPrimary || "Get Started"}
                 <ArrowRight size={18} />
               </Button>
               <Button
@@ -136,7 +138,7 @@ export default function Landing() {
                 variant="outline"
                 className="border-slate-300 text-slate-900 hover:bg-slate-100"
               >
-                Learn More
+                {landingContent?.ctaSecondary || "Learn More"}
               </Button>
             </div>
 
