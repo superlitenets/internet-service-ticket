@@ -29,7 +29,11 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./client"),
         "@shared": path.resolve(__dirname, "./shared"),
+        "~": path.resolve(__dirname, "./"),
       },
+    },
+    ssr: {
+      external: ["@tanstack/react-query", "react-router-dom", "react"],
     },
   };
 });
