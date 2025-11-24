@@ -4,13 +4,9 @@
   publish = "dist/spa"
 
 
-[functions]
+[functions."api"]
   node_bundler = "esbuild"
-  directory = "netlify/functions"
-
-[[edge_functions]]
-  path = "/api/*"
-  function = "api"
+  external_node_modules = []
   
 [[redirects]]
   force = true
