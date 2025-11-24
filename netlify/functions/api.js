@@ -49,8 +49,13 @@ async function getMpesaAccessToken(consumerKey, consumerSecret) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("MPESA Token Error:", { status: response.status, data: errorData });
-      throw new Error(`Failed to get access token from MPESA: ${errorData.error_description || response.statusText}`);
+      console.error("MPESA Token Error:", {
+        status: response.status,
+        data: errorData,
+      });
+      throw new Error(
+        `Failed to get access token from MPESA: ${errorData.error_description || response.statusText}`,
+      );
     }
 
     const data = await response.json();
@@ -547,9 +552,15 @@ exports.handler = async (event) => {
         const stkData = await stkResponse.json();
 
         if (!stkResponse.ok || stkData.ResponseCode !== "0") {
-          const errorMsg = stkData.ResponseDescription || stkData.errorMessage || "MPESA API returned an error";
+          const errorMsg =
+            stkData.ResponseDescription ||
+            stkData.errorMessage ||
+            "MPESA API returned an error";
           const fullError = `${errorMsg} (ResponseCode: ${stkData.ResponseCode || "unknown"})`;
-          console.error("MPESA STK Push Error:", { status: stkResponse.status, data: stkData });
+          console.error("MPESA STK Push Error:", {
+            status: stkResponse.status,
+            data: stkData,
+          });
           throw new Error(fullError);
         }
 
