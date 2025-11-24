@@ -32,14 +32,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedUser = localStorage.getItem("auth_user");
 
         if (savedToken && savedUser) {
-          // Verify token with server first
-          const isValid = await checkAuthWithServer(savedToken);
-          if (isValid) {
-            // Token is valid, restore auth
+          try {
+            const parsedUser = JSON.parse(savedUser);
+            // Restore auth from localStorage first
             setToken(savedToken);
-            setUser(JSON.parse(savedUser));
-          } else {
-            // Token invalid/expired, clear auth
+            setUser(parsedUser);
+
+            // Then verify token with server in the background
+            // This doesn't block rendering if verification fails
+            const isValid = await checkAuthWithServer(savedToken);
+            if (!isValid) {
+              // Token invalid/expired, clear auth
+              localStorage.removeItem("auth_token");
+              localStorage.removeItem("auth_user");
+              setToken(null);
+              setUser(null);
+            }
+          } catch (parseError) {
+            console.error("Failed to parse saved user:", parseError);
             localStorage.removeItem("auth_token");
             localStorage.removeItem("auth_user");
             setToken(null);
