@@ -109,8 +109,8 @@ echo -e "${GREEN}✓ Repository cloned${NC}"
 echo -e "${YELLOW}[8/13] Creating .env configuration...${NC}"
 JWT_SECRET=$(openssl rand -base64 32)
 
-# URL-encode the database password
-DB_PASSWORD_ENCODED=$(printf '%s' "$DB_PASSWORD" | jq -sRr @uri)
+# URL-encode the database password (# becomes %23)
+DB_PASSWORD_ENCODED="${DB_PASSWORD//#/%23}"
 
 cat > "$APP_DIR/.env" << ENVFILE
 NODE_ENV=production
