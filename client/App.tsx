@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Tickets from "./pages/Tickets";
+import TicketDetailPage from "./pages/TicketDetailPage";
 import Customers from "./pages/Customers";
 import Team from "./pages/Team";
 import Inventory from "./pages/Inventory";
