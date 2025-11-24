@@ -35,8 +35,8 @@ const queryClient = new QueryClient();
 const AppRoutes = () => (
   <Routes>
     {/* Public routes */}
+    <Route path="/" element={<Landing />} />
     <Route path="/login" element={<Login />} />
-    <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
     {/* Protected routes */}
     <Route
