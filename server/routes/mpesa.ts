@@ -115,8 +115,9 @@ export const handleMpesaC2B: RequestHandler<
     const consumerKey = credentials?.consumerKey || process.env.MPESA_CONSUMER_KEY || "";
     const consumerSecret = credentials?.consumerSecret || process.env.MPESA_CONSUMER_SECRET || "";
     const shortCode = credentials?.businessShortCode || process.env.MPESA_BUSINESS_SHORT_CODE || "";
+    const passkey = credentials?.passkey || process.env.MPESA_PASSKEY || "";
 
-    if (!consumerKey || !consumerSecret || !shortCode) {
+    if (!consumerKey || !consumerSecret || !shortCode || !passkey) {
       return res.status(400).json({
         success: false,
         message: "MPESA settings not configured",
@@ -135,7 +136,7 @@ export const handleMpesaC2B: RequestHandler<
 
     // Initiate C2B payment via STK Push for better user experience
     const timestamp = generateTimestamp();
-    const password = generateStkPassword(shortCode, process.env.MPESA_PASSKEY || "", timestamp);
+    const password = generateStkPassword(shortCode, passkey, timestamp);
 
     const stkPushPayload = {
       BusinessShortCode: shortCode,
