@@ -103,7 +103,7 @@ $app->group('/api/auth', function (RouteCollectorProxy $group) {
 $app->group('/api/leads', function (RouteCollectorProxy $group) {
     $group->get('', function (Request $request, Response $response) {
         try {
-            $leads = Database::fetchAll('SELECT * FROM leads ORDER BY created_at DESC LIMIT 100');
+            $leads = Database::fetchAllWithTenant('SELECT * FROM leads ORDER BY created_at DESC LIMIT 100');
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -129,22 +129,19 @@ $app->group('/api/leads', function (RouteCollectorProxy $group) {
 
             $data = json_decode($request->getBody(), true);
 
-            Database::execute(
-                'INSERT INTO leads (name, email, phone, company, status, source, notes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    $data['name'],
-                    $data['email'] ?? null,
-                    $data['phone'] ?? null,
-                    $data['company'] ?? null,
-                    $data['status'] ?? 'new',
-                    $data['source'] ?? null,
-                    $data['notes'] ?? null,
-                    $user['id'],
-                ]
-            );
+            Database::insert('leads', [
+                'name' => $data['name'],
+                'email' => $data['email'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'company' => $data['company'] ?? null,
+                'status' => $data['status'] ?? 'new',
+                'source' => $data['source'] ?? null,
+                'notes' => $data['notes'] ?? null,
+                'created_by' => $user['id'],
+            ]);
 
             $leadId = Database::lastInsertId();
-            $lead = Database::fetch('SELECT * FROM leads WHERE id = ?', [$leadId]);
+            $lead = Database::fetchWithTenant('SELECT * FROM leads WHERE id = ?', [$leadId]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -162,7 +159,7 @@ $app->group('/api/leads', function (RouteCollectorProxy $group) {
 
     $group->get('/{id}', function (Request $request, Response $response, array $args) {
         try {
-            $lead = Database::fetch('SELECT * FROM leads WHERE id = ?', [$args['id']]);
+            $lead = Database::fetchWithTenant('SELECT * FROM leads WHERE id = ?', [$args['id']]);
 
             if (!$lead) {
                 $response->getBody()->write(json_encode([
