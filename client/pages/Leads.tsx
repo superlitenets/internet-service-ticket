@@ -367,7 +367,8 @@ export default function Leads() {
   };
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="p-6 md:p-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Sales Leads
@@ -810,6 +811,7 @@ export default function Leads() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </Layout>
   );
 }
