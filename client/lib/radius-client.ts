@@ -11,7 +11,25 @@ export async function getRADIUSConfig(instanceId?: string): Promise<any> {
     const response = await fetch(url.toString());
 
     if (!response.ok) {
-      throw new Error("Failed to fetch RADIUS configuration");
+      // Handle non-JSON responses (404, 500, etc.)
+      const contentType = response.headers.get("content-type");
+      let errorMessage = `HTTP ${response.status}`;
+
+      if (contentType?.includes("application/json")) {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // JSON parse failed, use default message
+        }
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      throw new Error("Invalid response format from server");
     }
 
     return await response.json();
