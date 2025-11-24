@@ -9,7 +9,11 @@ import {
   Clock,
   ArrowRight,
   Check,
+  Loader,
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getMikrotikPlans } from "@/lib/mikrotik-client";
+import { MikrotikPlan } from "@shared/api";
 
 export default function Landing() {
   const navigate = useNavigate();
