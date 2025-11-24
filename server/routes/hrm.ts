@@ -56,20 +56,14 @@ export const getEmployees: RequestHandler<
 /**
  * Create employee
  */
-export const createEmployee: RequestHandler<unknown, unknown, Employee> = async (
-  req,
-  res,
-) => {
+export const createEmployee: RequestHandler<
+  unknown,
+  unknown,
+  Employee
+> = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      position,
-      department,
-      hireDate,
-      userId,
-    } = req.body;
+    const { name, email, phone, position, department, hireDate, userId } =
+      req.body;
 
     if (!name || !email || !phone) {
       return res.status(400).json({

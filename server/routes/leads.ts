@@ -250,8 +250,7 @@ export const updateLead: RequestHandler = async (req, res) => {
         email: updateData.email ?? undefined,
         location: updateData.location ?? undefined,
         package: updateData.package ?? undefined,
-        agreedInstallAmount:
-          updateData.agreedInstallAmount ?? undefined,
+        agreedInstallAmount: updateData.agreedInstallAmount ?? undefined,
         status: updateData.status ?? undefined,
         notes: updateData.notes ?? undefined,
       },

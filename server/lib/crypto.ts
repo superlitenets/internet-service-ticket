@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRY = "24h";
 const BCRYPT_ROUNDS = 10;
 
@@ -17,7 +18,7 @@ export async function hashPassword(password: string): Promise<string> {
  */
 export async function verifyPassword(
   password: string,
-  hash: string
+  hash: string,
 ): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
@@ -34,7 +35,7 @@ export function generateToken(userId: string, email: string): string {
     JWT_SECRET,
     {
       expiresIn: JWT_EXPIRY,
-    }
+    },
   );
 }
 
@@ -42,7 +43,7 @@ export function generateToken(userId: string, email: string): string {
  * Verify and decode a JWT token
  */
 export function verifyToken(
-  token: string
+  token: string,
 ): { userId: string; email: string } | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as {

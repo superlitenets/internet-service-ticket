@@ -14,6 +14,7 @@ This guide covers deploying the NetFlow CRM application to your VPS for producti
 ## Step 1: Prepare Production Environment
 
 ### 1.1 SSH into your VPS
+
 ```bash
 ssh root@your-vps-ip
 cd /path/to/netflow-crm  # Navigate to your application directory
@@ -61,6 +62,7 @@ JWT_SECRET="your-super-secret-jwt-key-change-this-to-something-secure-and-long"
 ```
 
 **Important**: Generate a strong JWT_SECRET:
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
@@ -68,11 +70,13 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ## Step 2: Install Dependencies and Build
 
 ### 2.1 Install Node Dependencies
+
 ```bash
 pnpm install --frozen-lockfile
 ```
 
 ### 2.2 Generate Prisma Client
+
 ```bash
 npx prisma generate
 ```
@@ -80,11 +84,13 @@ npx prisma generate
 ### 2.3 Apply Database Migrations
 
 **First time only - Create database schema:**
+
 ```bash
 npx prisma migrate deploy
 ```
 
 **Verify schema was created:**
+
 ```bash
 psql -U netflow -h localhost netflow
 \dt  # List all tables - should show User, Customer, Lead, Ticket, Employee, etc.
@@ -92,11 +98,13 @@ psql -U netflow -h localhost netflow
 ```
 
 ### 2.4 Build for Production
+
 ```bash
 npm run build
 ```
 
 This creates optimized production builds in:
+
 - `dist/spa/` - Frontend React app
 - `dist/server/` - Backend Node.js server
 
@@ -113,11 +121,13 @@ The server will start on port 9000. Visit `http://your-vps-ip:9000` in your brow
 ### Option B: Using PM2 (Recommended for Production)
 
 Install PM2:
+
 ```bash
 npm install -g pm2
 ```
 
 Start with PM2:
+
 ```bash
 pm2 start dist/server/node-build.mjs --name "netflow-crm"
 pm2 save
@@ -125,11 +135,13 @@ pm2 startup
 ```
 
 View logs:
+
 ```bash
 pm2 logs netflow-crm
 ```
 
 Restart on reboot:
+
 ```bash
 pm2 startup
 pm2 save
@@ -161,6 +173,7 @@ WantedBy=multi-user.target
 ```
 
 Enable and start service:
+
 ```bash
 systemctl daemon-reload
 systemctl enable netflow-crm
@@ -169,6 +182,7 @@ systemctl status netflow-crm
 ```
 
 View logs:
+
 ```bash
 journalctl -u netflow-crm -f
 ```
@@ -201,6 +215,7 @@ server {
 ```
 
 Enable site and test:
+
 ```bash
 ln -s /etc/nginx/sites-available/netflow-crm /etc/nginx/sites-enabled/
 nginx -t
@@ -210,6 +225,7 @@ systemctl restart nginx
 ## Step 5: Setup SSL Certificate (Optional but Recommended)
 
 Using Let's Encrypt:
+
 ```bash
 # Install certbot
 apt-get install certbot python3-certbot-nginx
@@ -245,11 +261,13 @@ echo "Backup completed: $BACKUP_FILE"
 ```
 
 Make executable:
+
 ```bash
 chmod +x /usr/local/bin/backup-netflow-db.sh
 ```
 
 Add to crontab:
+
 ```bash
 crontab -e
 
@@ -260,21 +278,25 @@ crontab -e
 ## Step 7: Verify Installation
 
 ### Check API Health
+
 ```bash
 curl http://localhost:9000/api/ping
 # Expected response: {"message":"ping"}
 ```
 
 ### Test Database Connection
+
 ```bash
 curl http://localhost:9000/api/auth/users
 # Should return list of users
 ```
 
 ### Access Web Interface
+
 Open browser to: `http://your-vps-ip:9000` (or your domain)
 
 Login with default credentials (if initial users were created):
+
 - Email: admin@example.com
 - Password: password123
 
@@ -295,6 +317,7 @@ Login with default credentials (if initial users were created):
 ## Step 9: Monitoring and Maintenance
 
 ### Check Application Status
+
 ```bash
 ps aux | grep node
 pm2 status  # If using PM2
@@ -302,6 +325,7 @@ systemctl status netflow-crm  # If using systemd
 ```
 
 ### View Application Logs
+
 ```bash
 pm2 logs netflow-crm  # PM2 logs
 # OR
@@ -309,11 +333,13 @@ journalctl -u netflow-crm -f  # systemd logs
 ```
 
 ### Database Health Check
+
 ```bash
 psql -U netflow -h localhost netflow -c "SELECT version();"
 ```
 
 ### Restart Application
+
 ```bash
 pm2 restart netflow-crm  # PM2
 # OR
@@ -323,12 +349,14 @@ systemctl restart netflow-crm  # systemd
 ## Troubleshooting
 
 ### Port 9000 Already in Use
+
 ```bash
 lsof -i :9000  # Find process using port
 kill -9 <PID>  # Kill the process
 ```
 
 ### Database Connection Error
+
 ```bash
 # Check PostgreSQL status
 systemctl status postgresql
@@ -338,6 +366,7 @@ psql -U netflow -h localhost netflow
 ```
 
 ### Permission Denied Errors
+
 ```bash
 # Ensure correct file permissions
 chmod 755 dist/server
@@ -345,6 +374,7 @@ chmod 644 .env
 ```
 
 ### Out of Memory
+
 ```bash
 # Check system memory
 free -h
@@ -371,31 +401,37 @@ node --max-old-space-size=4096 dist/server/node-build.mjs
 ## Upgrading in Production
 
 ### 1. Backup Database
+
 ```bash
 pg_dump -U netflow netflow > backup_$(date +%s).sql
 ```
 
 ### 2. Pull Latest Code
+
 ```bash
 git pull origin main
 ```
 
 ### 3. Install New Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 4. Run Migrations
+
 ```bash
 npx prisma migrate deploy
 ```
 
 ### 5. Rebuild
+
 ```bash
 npm run build
 ```
 
 ### 6. Restart Application
+
 ```bash
 pm2 restart netflow-crm
 # OR
@@ -403,6 +439,7 @@ systemctl restart netflow-crm
 ```
 
 ### 7. Verify
+
 ```bash
 curl http://localhost:9000/api/ping
 ```

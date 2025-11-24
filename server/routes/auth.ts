@@ -366,7 +366,8 @@ export const createUser: RequestHandler = async (req, res) => {
         phone,
         password: hashedPassword,
         role: role || "user",
-        status: active !== undefined ? (active ? "active" : "inactive") : "active",
+        status:
+          active !== undefined ? (active ? "active" : "inactive") : "active",
       },
     });
 

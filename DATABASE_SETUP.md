@@ -7,10 +7,12 @@ This project uses **Prisma ORM** with **PostgreSQL** for persistent data storage
 ## Changes Made
 
 ### 1. **Created Prisma Client Utility** (`server/lib/db.ts`)
+
 - Initializes and manages the Prisma client connection
 - Provides a singleton instance for database operations across the application
 
 ### 2. **Updated Route Handlers to Use Prisma**
+
 The following routes have been updated to use PostgreSQL instead of in-memory storage:
 
 - **Authentication** (`server/routes/auth.ts`)
@@ -29,6 +31,7 @@ The following routes have been updated to use PostgreSQL instead of in-memory st
   - Support for pagination and filtering
 
 ### 3. **Created Database Migration** (`prisma/migrations/0_init/migration.sql`)
+
 - Contains full schema for all application tables
 - Includes proper indexes for performance
 - Foreign key relationships defined
@@ -46,23 +49,27 @@ DATABASE_URL="postgresql://netflow:Mgathoni.2016%23@localhost:5432/netflow"
 ## Running Migrations
 
 ### Prerequisites
+
 - PostgreSQL database server must be running
 - Node.js and pnpm installed
 
 ### Steps to Apply Migrations
 
 1. **Ensure database is running** (locally or on your VPS):
+
    ```bash
    # Example: Start PostgreSQL locally
    sudo systemctl start postgresql
    ```
 
 2. **Apply migrations**:
+
    ```bash
    npx prisma migrate deploy
    ```
 
 3. **Verify schema was created**:
+
    ```bash
    npx prisma db push
    ```
@@ -75,6 +82,7 @@ DATABASE_URL="postgresql://netflow:Mgathoni.2016%23@localhost:5432/netflow"
 ## Testing Data Persistence
 
 ### 1. Create a User via API:
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -87,26 +95,32 @@ curl -X POST http://localhost:3000/api/auth/register \
 ```
 
 ### 2. Verify the user was saved:
+
 ```bash
 curl http://localhost:3000/api/auth/users
 ```
 
 ### 3. Restart the server and verify user still exists:
+
 - User should still appear in the API response (previously would disappear)
 
 ## Important Notes
 
 ### Session Management
+
 - Session tokens are currently stored in memory and will be lost on server restart
 - For production, implement JWT or store sessions in a database table
 
 ### Password Security
+
 - Currently using SHA256 for password hashing
 - **For production, upgrade to bcrypt**: `npm install bcrypt`
 - Update `server/lib/db.ts` and `server/routes/auth.ts` accordingly
 
 ### Additional Routes Needing Updates
+
 The following routes still use in-memory or stub implementations:
+
 - `server/routes/accounting.ts` - Needs Prisma integration
 - `server/routes/mpesa.ts` - Needs Prisma integration
 - `server/routes/mikrotik.ts` - Needs Prisma integration
@@ -117,6 +131,7 @@ The following routes still use in-memory or stub implementations:
 ## Database Schema Highlights
 
 ### Core Models
+
 - **User**: Application users with authentication
 - **Customer**: ISP customers
 - **Employee**: Team members linked to User accounts
@@ -125,6 +140,7 @@ The following routes still use in-memory or stub implementations:
 - **Lead**: Sales leads
 
 ### Related Models
+
 - **Invoice**: Billing invoices for accounts
 - **Payment**: Payment records
 - **AuditLog**: System audit trail
@@ -134,16 +150,19 @@ The following routes still use in-memory or stub implementations:
 ## Troubleshooting
 
 ### "Can't reach database server" Error
+
 - Ensure PostgreSQL is running on localhost:5432
 - Check DATABASE_URL is correct
 - Verify no firewall blocking the connection
 
 ### "relation does not exist" Error
+
 - Migrations may not have been applied
 - Run: `npx prisma migrate deploy`
 - Or reset (WARNING: deletes data): `npx prisma migrate reset`
 
 ### Performance Issues
+
 - Check if indexes were created correctly
 - Verify Prisma client is using connection pooling
 - Consider adding more indexes for frequently queried fields
@@ -160,6 +179,7 @@ The following routes still use in-memory or stub implementations:
 ## Documentation
 
 For more Prisma documentation:
+
 - https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma
 - https://www.prisma.io/docs/orm/prisma-client/queries/crud
 - https://www.prisma.io/docs/orm/tools-and-interfaces/prisma-migrate
