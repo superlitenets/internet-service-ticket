@@ -188,7 +188,7 @@ $app->group('/api/leads', function (RouteCollectorProxy $group) {
 $app->group('/api/customers', function (RouteCollectorProxy $group) {
     $group->get('', function (Request $request, Response $response) {
         try {
-            $customers = Database::fetchAll('SELECT * FROM customers ORDER BY created_at DESC LIMIT 100');
+            $customers = Database::fetchAllWithTenant('SELECT * FROM customers ORDER BY created_at DESC LIMIT 100');
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -214,23 +214,20 @@ $app->group('/api/customers', function (RouteCollectorProxy $group) {
 
             $data = json_decode($request->getBody(), true);
 
-            Database::execute(
-                'INSERT INTO customers (name, email, phone, address, city, country, account_type, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    $data['name'],
-                    $data['email'] ?? null,
-                    $data['phone'] ?? null,
-                    $data['address'] ?? null,
-                    $data['city'] ?? null,
-                    $data['country'] ?? null,
-                    $data['account_type'] ?? 'retail',
-                    $data['status'] ?? 'active',
-                    $user['id'],
-                ]
-            );
+            Database::insert('customers', [
+                'name' => $data['name'],
+                'email' => $data['email'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'address' => $data['address'] ?? null,
+                'city' => $data['city'] ?? null,
+                'country' => $data['country'] ?? null,
+                'account_type' => $data['account_type'] ?? 'retail',
+                'status' => $data['status'] ?? 'active',
+                'created_by' => $user['id'],
+            ]);
 
             $customerId = Database::lastInsertId();
-            $customer = Database::fetch('SELECT * FROM customers WHERE id = ?', [$customerId]);
+            $customer = Database::fetchWithTenant('SELECT * FROM customers WHERE id = ?', [$customerId]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -248,7 +245,7 @@ $app->group('/api/customers', function (RouteCollectorProxy $group) {
 
     $group->get('/{id}', function (Request $request, Response $response, array $args) {
         try {
-            $customer = Database::fetch('SELECT * FROM customers WHERE id = ?', [$args['id']]);
+            $customer = Database::fetchWithTenant('SELECT * FROM customers WHERE id = ?', [$args['id']]);
 
             if (!$customer) {
                 $response->getBody()->write(json_encode([
@@ -282,19 +279,19 @@ $app->group('/api/customers', function (RouteCollectorProxy $group) {
 
             $data = json_decode($request->getBody(), true);
 
-            Database::execute(
-                'UPDATE customers SET name = ?, email = ?, phone = ?, address = ?, city = ?, country = ?, account_type = ?, status = ?, updated_at = NOW() WHERE id = ?',
+            Database::update('customers',
                 [
-                    $data['name'] ?? null,
-                    $data['email'] ?? null,
-                    $data['phone'] ?? null,
-                    $data['address'] ?? null,
-                    $data['city'] ?? null,
-                    $data['country'] ?? null,
-                    $data['account_type'] ?? null,
-                    $data['status'] ?? null,
-                    $args['id'],
-                ]
+                    'name' => $data['name'] ?? null,
+                    'email' => $data['email'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                    'address' => $data['address'] ?? null,
+                    'city' => $data['city'] ?? null,
+                    'country' => $data['country'] ?? null,
+                    'account_type' => $data['account_type'] ?? null,
+                    'status' => $data['status'] ?? null,
+                    'updated_at' => new \DateTime(),
+                ],
+                ['id' => $args['id']]
             );
 
             $customer = Database::fetch('SELECT * FROM customers WHERE id = ?', [$args['id']]);
