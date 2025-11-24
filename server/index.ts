@@ -158,6 +158,13 @@ export function createServer() {
   app.get("/api/whatsapp/web/status", handleCheckWhatsAppStatus);
   app.post("/api/whatsapp/web/logout", handleLogoutWhatsAppWeb);
 
+  // Authentication endpoints
+  app.post("/api/auth/login", handleLogin);
+  app.post("/api/auth/logout", handleLogout);
+  app.post("/api/auth/register", handleRegister);
+  app.get("/api/auth/verify", verifyToken);
+  app.get("/api/auth/me", getCurrentUser);
+
   // MPESA Payment endpoints
   app.post("/api/mpesa/c2b", handleMpesaC2B);
   app.post("/api/mpesa/b2b", handleMpesaB2B);
