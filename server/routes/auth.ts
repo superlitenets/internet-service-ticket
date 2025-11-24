@@ -334,3 +334,170 @@ export const handleRegister: RequestHandler = (req, res) => {
     });
   }
 };
+
+/**
+ * Get all users
+ */
+export const getAllUsers: RequestHandler = (_req, res) => {
+  try {
+    const allUsers: User[] = [];
+    for (const user of users.values()) {
+      const { password: _, ...userWithoutPassword } = user;
+      allUsers.push(userWithoutPassword);
+    }
+
+    return res.json({
+      success: true,
+      users: allUsers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+/**
+ * Create a new user
+ */
+export const createUser: RequestHandler = (req, res) => {
+  try {
+    const { name, email, phone, password, role, active } = req.body;
+
+    if (!name || !phone || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, phone, and password are required",
+      });
+    }
+
+    // Check if user already exists
+    if (users.has(email || phone)) {
+      return res.status(409).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    const userId = `user-${Date.now()}`;
+    const newUser: User & { password: string } = {
+      id: userId,
+      name,
+      email: email || undefined,
+      phone,
+      role: role || "customer",
+      password,
+      active: active !== undefined ? active : true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const key = email || phone;
+    users.set(key, newUser);
+
+    const { password: _, ...userWithoutPassword } = newUser;
+
+    return res.status(201).json({
+      success: true,
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create user",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+/**
+ * Update a user
+ */
+export const updateUser: RequestHandler = (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, password, role, active } = req.body;
+
+    // Find user by ID
+    let userToUpdate: (User & { password: string }) | null = null;
+    let userKey: string | null = null;
+
+    for (const [key, user] of users.entries()) {
+      if (user.id === id) {
+        userToUpdate = user;
+        userKey = key;
+        break;
+      }
+    }
+
+    if (!userToUpdate || !userKey) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update user
+    const updatedUser: User & { password: string } = {
+      ...userToUpdate,
+      name: name || userToUpdate.name,
+      email: email !== undefined ? email : userToUpdate.email,
+      phone: phone || userToUpdate.phone,
+      role: role || userToUpdate.role,
+      active: active !== undefined ? active : userToUpdate.active,
+      password: password || userToUpdate.password,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Update in storage
+    users.delete(userKey);
+    const newKey = email || phone || userKey;
+    users.set(newKey, updatedUser);
+
+    const { password: _, ...userWithoutPassword } = updatedUser;
+
+    return res.json({
+      success: true,
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update user",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+/**
+ * Delete a user
+ */
+export const deleteUser: RequestHandler = (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find and delete user
+    for (const [key, user] of users.entries()) {
+      if (user.id === id) {
+        users.delete(key);
+        return res.json({
+          success: true,
+          message: "User deleted successfully",
+        });
+      }
+    }
+
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete user",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
