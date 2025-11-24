@@ -152,53 +152,53 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Infrastructure & Deployment Section */}
       <section className="border-t border-slate-700/50 py-20 bg-slate-800/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
+            <h2 className="text-4xl font-bold mb-4">Cloud Hosting & Server Deployment</h2>
             <p className="text-xl text-slate-400">
-              Everything you need to run your ISP business efficiently
+              Enterprise infrastructure designed for high-performance ISP operations
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: Users,
-                title: "Customer Management",
+                icon: Shield,
+                title: "Secure Cloud Infrastructure",
                 description:
-                  "Manage customer accounts, profiles, and service subscriptions all in one place",
-              },
-              {
-                icon: BarChart3,
-                title: "Billing & Invoicing",
-                description:
-                  "Automated billing, invoicing, and payment tracking with detailed reports",
-              },
-              {
-                icon: Wifi,
-                title: "Network Monitoring",
-                description:
-                  "Real-time monitoring of bandwidth, connections, and network health",
-              },
-              {
-                icon: Clock,
-                title: "Ticket Management",
-                description:
-                  "Efficient support ticket system with automatic assignment and tracking",
+                  "Deploy on secure, isolated cloud servers with enterprise-grade encryption and DDoS protection",
               },
               {
                 icon: Zap,
-                title: "Fast Integration",
+                title: "Lightning-Fast Performance",
                 description:
-                  "Easy integration with Mikrotik, RADIUS, and WhatsApp services",
+                  "Multi-region server deployment for low-latency access and optimized customer experience",
               },
               {
-                icon: Shield,
-                title: "Secure & Reliable",
+                icon: BarChart3,
+                title: "Auto Scaling",
                 description:
-                  "Enterprise-grade security with automatic backups and 99.9% uptime",
+                  "Automatically scale resources based on demand to handle peak traffic without downtime",
+              },
+              {
+                icon: Clock,
+                title: "99.99% Uptime SLA",
+                description:
+                  "Guaranteed uptime with redundant infrastructure and automatic failover systems",
+              },
+              {
+                icon: Wifi,
+                title: "Global CDN",
+                description:
+                  "Serve content worldwide with edge servers for faster page loads and improved reliability",
+              },
+              {
+                icon: Users,
+                title: "Containerized Deployment",
+                description:
+                  "Docker & Kubernetes support for seamless application deployment and management",
               },
             ].map((feature, i) => (
               <div
