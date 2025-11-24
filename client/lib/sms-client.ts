@@ -68,6 +68,7 @@ export async function sendSmsToPhone(
     apiKey?: string;
     partnerId?: string;
     shortcode?: string;
+    customApiUrl?: string;
   },
 ): Promise<SendSmsResponse> {
   return sendSms({
