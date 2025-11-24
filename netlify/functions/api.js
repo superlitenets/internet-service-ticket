@@ -62,7 +62,9 @@ async function getMpesaAccessToken(consumerKey, consumerSecret) {
 
     if (!data.access_token) {
       console.error("No access_token in MPESA response:", data);
-      throw new Error(`No access token returned from MPESA: ${JSON.stringify(data)}`);
+      throw new Error(
+        `No access token returned from MPESA: ${JSON.stringify(data)}`,
+      );
     }
 
     // Cache token
@@ -576,7 +578,7 @@ exports.handler = async (event) => {
           status: stkResponse.status,
           responseCode: stkData.ResponseCode,
           description: stkData.ResponseDescription,
-          fullResponse: stkData
+          fullResponse: stkData,
         });
 
         if (!stkResponse.ok || stkData.ResponseCode !== "0") {

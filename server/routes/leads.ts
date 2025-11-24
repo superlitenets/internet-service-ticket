@@ -45,11 +45,18 @@ export const createLead: RequestHandler = async (req, res) => {
       notes,
     }: CreateLeadRequest = req.body;
 
-    if (!customerName || !phone || !location || !packageName || agreedInstallAmount === undefined) {
+    if (
+      !customerName ||
+      !phone ||
+      !location ||
+      !packageName ||
+      agreedInstallAmount === undefined
+    ) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
-        error: "customerName, phone, location, package, and agreedInstallAmount are required",
+        error:
+          "customerName, phone, location, package, and agreedInstallAmount are required",
       });
     }
 
@@ -192,7 +199,9 @@ export const updateLead: RequestHandler = async (req, res) => {
     const updated = await prisma.lead.update({
       where: { id },
       data: {
-        ...(updateData.customerName && { customerName: updateData.customerName }),
+        ...(updateData.customerName && {
+          customerName: updateData.customerName,
+        }),
         ...(updateData.phone && { phone: updateData.phone }),
         ...(updateData.email && { email: updateData.email }),
         ...(updateData.location && { location: updateData.location }),

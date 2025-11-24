@@ -200,7 +200,9 @@ export async function convertLeadToTicket(
     return result.data;
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to convert lead to ticket",
+      error instanceof Error
+        ? error.message
+        : "Failed to convert lead to ticket",
     );
   }
 }

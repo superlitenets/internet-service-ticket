@@ -607,7 +607,11 @@ export default function Leads() {
               Cancel
             </Button>
             <Button onClick={handleCreateLead} disabled={loading}>
-              {loading ? "Saving..." : editingLead ? "Update Lead" : "Create Lead"}
+              {loading
+                ? "Saving..."
+                : editingLead
+                  ? "Update Lead"
+                  : "Create Lead"}
             </Button>
           </DialogFooter>
         </DialogContent>
