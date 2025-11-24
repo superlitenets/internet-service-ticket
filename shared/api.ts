@@ -295,7 +295,6 @@ export interface MpesaStkPushRequest {
   amount: number;
   accountReference: string;
   transactionDescription: string;
-  callbackUrl?: string;
   credentials?: MpesaCredentials;
 }
 
