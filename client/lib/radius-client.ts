@@ -60,8 +60,24 @@ export async function updateRADIUSConfig(data: {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to update RADIUS configuration");
+      const contentType = response.headers.get("content-type");
+      let errorMessage = `HTTP ${response.status}`;
+
+      if (contentType?.includes("application/json")) {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // JSON parse failed, use default message
+        }
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      throw new Error("Invalid response format from server");
     }
 
     return await response.json();
