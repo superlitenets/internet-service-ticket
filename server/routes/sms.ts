@@ -8,7 +8,7 @@ import { SendSmsRequest, SendSmsResponse } from "@shared/api";
 export const handleSendSms: RequestHandler<
   unknown,
   SendSmsResponse,
-  SendSmsRequest
+  SendSmsRequest & { customApiUrl?: string }
 > = async (req, res) => {
   try {
     const {
@@ -21,6 +21,7 @@ export const handleSendSms: RequestHandler<
       apiKey,
       partnerId,
       shortcode,
+      customApiUrl,
     } = req.body;
 
     // Validation
