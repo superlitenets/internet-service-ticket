@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Briefcase,
   CheckSquare,
+  Edit,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
