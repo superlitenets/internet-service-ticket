@@ -153,13 +153,11 @@ export function AccountingPage() {
         tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tx.id.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = filterType === "all" || tx.type === filterType;
-      const matchesStatus = filterStatus === "all" || tx.status === filterStatus;
+      const matchesStatus =
+        filterStatus === "all" || tx.status === filterStatus;
       return matchesSearch && matchesType && matchesStatus;
     })
-    .sort(
-      (a, b) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const handleOpenDialog = (transaction?: AccountingTransaction) => {
     if (transaction) {

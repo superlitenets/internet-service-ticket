@@ -137,7 +137,7 @@ export default function Leads() {
 
     filtered.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
     setFilteredLeads(filtered);
