@@ -22,6 +22,7 @@ export default function Landing() {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<MikrotikPlan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
+  const [landingContent, setLandingContent] = useState<LandingContent | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -37,6 +38,10 @@ export default function Landing() {
       }
     };
     fetchPlans();
+
+    // Load landing content
+    const content = getLandingContent();
+    setLandingContent(content);
   }, []);
 
   return (
