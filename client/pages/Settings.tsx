@@ -981,21 +981,6 @@ export default function SettingsPage() {
                     </>
                   )}
 
-                  {(smsSettings.provider === "vonage" ||
-                    smsSettings.provider === "aws" ||
-                    smsSettings.provider === "nexmo") && (
-                    <div className="col-span-full p-4 rounded-lg bg-muted/30 border border-border">
-                      <p className="text-sm text-muted-foreground">
-                        {smsSettings.provider === "vonage" &&
-                          "Vonage credentials required: API Key and API Secret"}
-                        {smsSettings.provider === "aws" &&
-                          "AWS SNS requires: AWS Access Key ID, Secret Access Key, and Region"}
-                        {smsSettings.provider === "nexmo" &&
-                          "Nexmo credentials required: API Key and API Secret"}
-                      </p>
-                    </div>
-                  )}
-
                   <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border">
                     <div className="flex-1">
                       <p className="font-medium text-sm text-foreground">
