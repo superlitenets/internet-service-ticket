@@ -176,6 +176,7 @@ export async function convertLeadToTicket(
   description: string,
   priority?: string,
   category?: string,
+  assignedTo?: string,
 ): Promise<any> {
   try {
     const response = await fetch(`/api/leads/${id}/convert-to-ticket`, {
@@ -188,6 +189,7 @@ export async function convertLeadToTicket(
         description,
         priority,
         category,
+        assignedTo,
       }),
     });
 
