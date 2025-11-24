@@ -98,6 +98,7 @@ export async function sendSmsBatch(
     apiKey?: string;
     partnerId?: string;
     shortcode?: string;
+    customApiUrl?: string;
   },
 ): Promise<SendSmsResponse> {
   return sendSms({
