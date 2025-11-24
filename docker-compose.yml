@@ -5,9 +5,10 @@ services:
     build: .
     container_name: netflow-crm
     ports:
-      - "3000:3000"
+      - "9000:9000"
     environment:
       - NODE_ENV=production
+      - PORT=9000
       # Add your custom environment variables here:
       # - DATABASE_URL=your_database_url
       # - API_KEY=your_api_key
