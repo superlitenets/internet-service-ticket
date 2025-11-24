@@ -107,40 +107,40 @@ export default function Landing() {
 
           <div className="hidden lg:block">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur-3xl opacity-20"></div>
-              <div className="relative bg-slate-800/50 border border-slate-700 rounded-2xl p-8 backdrop-blur-sm">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-cyan-200 rounded-2xl blur-3xl opacity-30"></div>
+              <div className="relative bg-white border border-slate-200 rounded-2xl p-8 backdrop-blur-sm shadow-lg">
                 <div className="space-y-6">
-                  <div className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg">
-                    <div className="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                      <BarChart3 size={24} className="text-blue-400" />
+                  <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
+                    <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <BarChart3 size={24} className="text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-semibold">Real-time Analytics</p>
-                      <p className="text-sm text-slate-400 mt-1">
+                      <p className="font-semibold text-slate-900">Real-time Analytics</p>
+                      <p className="text-sm text-slate-600 mt-1">
                         Track revenue and customer metrics in real-time
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg">
-                    <div className="w-12 h-12 rounded-lg bg-green-600/20 flex items-center justify-center flex-shrink-0">
-                      <Clock size={24} className="text-green-400" />
+                  <div className="flex items-start gap-4 p-4 bg-green-50 rounded-lg">
+                    <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <Clock size={24} className="text-green-600" />
                     </div>
                     <div>
-                      <p className="font-semibold">24/7 Support</p>
-                      <p className="text-sm text-slate-400 mt-1">
+                      <p className="font-semibold text-slate-900">24/7 Support</p>
+                      <p className="text-sm text-slate-600 mt-1">
                         Manage support tickets efficiently
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-slate-700/30 rounded-lg">
-                    <div className="w-12 h-12 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
-                      <Shield size={24} className="text-purple-400" />
+                  <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-lg">
+                    <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <Shield size={24} className="text-purple-600" />
                     </div>
                     <div>
-                      <p className="font-semibold">Secure & Reliable</p>
-                      <p className="text-sm text-slate-400 mt-1">
+                      <p className="font-semibold text-slate-900">Secure & Reliable</p>
+                      <p className="text-sm text-slate-600 mt-1">
                         Enterprise-grade security for your data
                       </p>
                     </div>
