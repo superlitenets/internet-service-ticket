@@ -248,6 +248,7 @@ export interface MpesaConfig {
   consumerSecret: string;
   businessShortCode: string;
   passkey: string;
+  initiatorPassword?: string;
   callbackUrl?: string;
   validationUrl?: string;
   confirmationUrl?: string;
