@@ -91,6 +91,7 @@ export default function Layout({ children }: LayoutProps) {
         { path: "/mikrotik/accounts", label: "Accounts", icon: Users },
         { path: "/mikrotik/billing", label: "Billing", icon: DollarSign },
         { path: "/mikrotik/monitoring", label: "Monitoring", icon: TrendingUp },
+        { path: "/mikrotik/routeros", label: "RouterOS Integration", icon: Wifi },
       ],
     },
     { path: "/reports", label: "Reports", icon: FileText },
