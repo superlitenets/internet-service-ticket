@@ -729,20 +729,7 @@ export default function SettingsPage() {
       }
 
       // Check provider-specific credentials
-      if (smsSettings.provider === "twilio") {
-        if (
-          !smsSettings.accountSid ||
-          !smsSettings.authToken ||
-          !smsSettings.fromNumber
-        ) {
-          toast({
-            title: "Error",
-            description: "Please configure all Twilio credentials",
-            variant: "destructive",
-          });
-          return;
-        }
-      } else if (smsSettings.provider === "advanta") {
+      if (smsSettings.provider === "advanta") {
         if (
           !smsSettings.apiKey ||
           !smsSettings.partnerId ||
