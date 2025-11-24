@@ -28,7 +28,7 @@ import {
   Filter,
   Edit,
   Trash2,
-  Convert,
+  ArrowRightLeft,
   Phone,
   MapPin,
   Package,
@@ -467,7 +467,7 @@ export default function Leads() {
                       }}
                       className="gap-2"
                     >
-                      <Convert size={16} />
+                      <ArrowRightLeft size={16} />
                       Convert
                     </Button>
                   )}
