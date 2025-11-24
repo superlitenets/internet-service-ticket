@@ -487,7 +487,7 @@ export default function PaymentsPage() {
           {/* New Payment Tab */}
           <TabsContent value="initiate" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* STK Push Card */}
+              {/* Money Request Card */}
               <Card className="p-6 border-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => {
                   setPaymentType("stk");
@@ -499,14 +499,14 @@ export default function PaymentsPage() {
                     <Phone size={24} className="text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">STK Push</h3>
+                    <h3 className="font-semibold text-foreground">Money Request</h3>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Send payment prompt to customer phone. They enter PIN to confirm.
+                      Send a payment prompt to customer's phone. They enter their M-Pesa PIN to pay.
                     </p>
                   </div>
                   <Button className="w-full gap-2">
                     <Send size={16} />
-                    Initiate STK Push
+                    Request Money
                   </Button>
                 </div>
               </Card>
