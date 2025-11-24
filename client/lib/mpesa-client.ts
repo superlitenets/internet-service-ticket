@@ -4,17 +4,30 @@ import {
   MpesaStkPushRequest,
   MpesaResponse,
 } from "@shared/api";
+import { getMpesaSettings } from "./mpesa-settings-storage";
 
 export async function initiateMpesaC2B(
   request: MpesaC2BRequest
 ): Promise<MpesaResponse> {
   try {
+    const settings = getMpesaSettings();
+    const requestData: MpesaC2BRequest = {
+      ...request,
+      credentials: {
+        consumerKey: request.credentials?.consumerKey || settings.consumerKey,
+        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        passkey: request.credentials?.passkey || settings.passkey,
+        callbackUrl: request.credentials?.callbackUrl || settings.callbackUrl,
+      },
+    };
+
     const response = await fetch("/api/mpesa/c2b", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(requestData),
     });
 
     if (!response.ok) {
@@ -36,12 +49,24 @@ export async function initiateMpesaB2B(
   request: MpesaB2BRequest
 ): Promise<MpesaResponse> {
   try {
+    const settings = getMpesaSettings();
+    const requestData: MpesaB2BRequest = {
+      ...request,
+      credentials: {
+        consumerKey: request.credentials?.consumerKey || settings.consumerKey,
+        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        passkey: request.credentials?.passkey || settings.passkey,
+        callbackUrl: request.credentials?.callbackUrl || settings.callbackUrl,
+      },
+    };
+
     const response = await fetch("/api/mpesa/b2b", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(requestData),
     });
 
     if (!response.ok) {
@@ -63,12 +88,24 @@ export async function initiateMpesaStkPush(
   request: MpesaStkPushRequest
 ): Promise<MpesaResponse> {
   try {
+    const settings = getMpesaSettings();
+    const requestData: MpesaStkPushRequest = {
+      ...request,
+      credentials: {
+        consumerKey: request.credentials?.consumerKey || settings.consumerKey,
+        consumerSecret: request.credentials?.consumerSecret || settings.consumerSecret,
+        businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
+        passkey: request.credentials?.passkey || settings.passkey,
+        callbackUrl: request.credentials?.callbackUrl || request.callbackUrl || settings.callbackUrl,
+      },
+    };
+
     const response = await fetch("/api/mpesa/stk-push", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(requestData),
     });
 
     if (!response.ok) {
