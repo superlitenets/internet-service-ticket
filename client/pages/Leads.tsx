@@ -60,6 +60,12 @@ interface ConvertForm {
   description: string;
   priority: string;
   category: string;
+  assignedTo: string;
+}
+
+interface TeamMember {
+  name: string;
+  phone: string;
 }
 
 export default function Leads() {
@@ -90,7 +96,15 @@ export default function Leads() {
     description: "",
     priority: "medium",
     category: "general",
+    assignedTo: "Unassigned",
   });
+
+  const teamMembers: TeamMember[] = [
+    { name: "Mike Johnson", phone: "+1555111111" },
+    { name: "Sarah Smith", phone: "+1555222222" },
+    { name: "Alex Chen", phone: "+1555333333" },
+    { name: "David Brown", phone: "+1555444444" },
+  ];
 
   useEffect(() => {
     loadLeads();
@@ -273,6 +287,7 @@ export default function Leads() {
         convertForm.description,
         convertForm.priority,
         convertForm.category,
+        convertForm.assignedTo,
       );
 
       toast({
@@ -285,6 +300,7 @@ export default function Leads() {
         description: "",
         priority: "medium",
         category: "general",
+        assignedTo: "Unassigned",
       });
       setSelectedLead(null);
       setShowConvertDialog(false);
@@ -391,106 +407,138 @@ export default function Leads() {
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {filteredLeads.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500">No leads found</p>
-          </Card>
-        ) : (
-          filteredLeads.map((lead) => (
-            <Card key={lead.id} className="p-6 hover:shadow-lg transition">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {lead.customerName}
-                    </h3>
-                    <Badge className={getStatusColor(lead.status)}>
-                      <span className="flex items-center gap-1">
-                        {getStatusIcon(lead.status)}
-                        {lead.status}
-                      </span>
-                    </Badge>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    <div className="flex items-center gap-2">
-                      <Phone size={16} />
-                      {lead.phone}
-                    </div>
-                    {lead.email && (
-                      <div className="flex items-center gap-2">
-                        <Mail size={16} />
-                        {lead.email}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} />
-                      {lead.location}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Package size={16} />
-                      {lead.package}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <DollarSign size={16} />
-                      KES {lead.agreedInstallAmount.toLocaleString()}
-                    </div>
-                  </div>
-
-                  {lead.notes && (
-                    <p className="text-sm text-gray-500 mb-2">
-                      <strong>Notes:</strong> {lead.notes}
+      <Card className="border-0 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Customer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Contact
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Location
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Package
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Amount (KES)
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {filteredLeads.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No leads found
                     </p>
-                  )}
-
-                  <p className="text-xs text-gray-400">
-                    Created by {lead.createdBy?.name || "Unknown"} on{" "}
-                    {new Date(lead.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  {lead.status !== "converted" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedLead(lead);
-                        setConvertForm({
-                          subject: `Service Installation - ${lead.customerName}`,
-                          description: "",
-                          priority: "medium",
-                          category: "general",
-                        });
-                        setShowConvertDialog(true);
-                      }}
-                      className="gap-2"
-                    >
-                      <ArrowRightLeft size={16} />
-                      Convert
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditLead(lead)}
+                  </td>
+                </tr>
+              ) : (
+                filteredLeads.map((lead) => (
+                  <tr
+                    key={lead.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <Edit size={16} />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteLead(lead.id)}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))
-        )}
-      </div>
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
+                      {lead.customerName}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Phone size={14} />
+                          {lead.phone}
+                        </div>
+                        {lead.email && (
+                          <div className="flex items-center gap-2">
+                            <Mail size={14} />
+                            {lead.email}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={14} />
+                        {lead.location}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <Package size={14} />
+                        {lead.package}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                      <div className="flex items-center gap-2">
+                        <DollarSign size={14} />
+                        {lead.agreedInstallAmount.toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <Badge className={getStatusColor(lead.status)}>
+                        <span className="flex items-center gap-1">
+                          {getStatusIcon(lead.status)}
+                          {lead.status}
+                        </span>
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex gap-2">
+                        {lead.status !== "converted" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setConvertForm({
+                                subject: `Service Installation - ${lead.customerName}`,
+                                description: `Customer: ${lead.customerName}\nPhone: ${lead.phone}\nLocation: ${lead.location}\nPackage: ${lead.package}`,
+                                priority: "medium",
+                                category: "general",
+                                assignedTo: "Unassigned",
+                              });
+                              setShowConvertDialog(true);
+                            }}
+                            className="gap-2"
+                          >
+                            <ArrowRightLeft size={16} />
+                            Convert
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditLead(lead)}
+                        >
+                          <Edit size={16} />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteLead(lead.id)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
@@ -623,7 +671,7 @@ export default function Leads() {
       </Dialog>
 
       <Dialog open={showConvertDialog} onOpenChange={setShowConvertDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Convert Lead to Ticket</DialogTitle>
             <DialogDescription>
@@ -631,7 +679,7 @@ export default function Leads() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-96 overflow-y-auto">
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Ticket Subject *
@@ -663,48 +711,74 @@ export default function Leads() {
               />
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Priority
-              </label>
-              <Select
-                value={convertForm.priority}
-                onValueChange={(value) =>
-                  setConvertForm({ ...convertForm, priority: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Priority
+                </label>
+                <Select
+                  value={convertForm.priority}
+                  onValueChange={(value) =>
+                    setConvertForm({ ...convertForm, priority: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category
-              </label>
-              <Select
-                value={convertForm.category}
-                onValueChange={(value) =>
-                  setConvertForm({ ...convertForm, category: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="technical">Technical</SelectItem>
-                  <SelectItem value="billing">Billing</SelectItem>
-                  <SelectItem value="complaint">Complaint</SelectItem>
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Category
+                </label>
+                <Select
+                  value={convertForm.category}
+                  onValueChange={(value) =>
+                    setConvertForm({ ...convertForm, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="technical">Technical</SelectItem>
+                    <SelectItem value="billing">Billing</SelectItem>
+                    <SelectItem value="complaint">Complaint</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Assign To
+                </label>
+                <Select
+                  value={convertForm.assignedTo}
+                  onValueChange={(value) =>
+                    setConvertForm({ ...convertForm, assignedTo: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Unassigned">Unassigned</SelectItem>
+                    {teamMembers.map((member) => (
+                      <SelectItem key={member.name} value={member.name}>
+                        {member.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
