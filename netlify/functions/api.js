@@ -907,7 +907,10 @@ exports.handler = async (event) => {
     }
 
     // Accounting - Chart of Accounts
-    if (event.path === "/api/accounting/accounts" && event.httpMethod === "GET") {
+    if (
+      event.path === "/api/accounting/accounts" &&
+      event.httpMethod === "GET"
+    ) {
       return createJsonResponse(200, [
         {
           id: "1000",
@@ -929,12 +932,18 @@ exports.handler = async (event) => {
     }
 
     // Accounting - Expenses
-    if (event.path === "/api/accounting/expenses" && event.httpMethod === "GET") {
+    if (
+      event.path === "/api/accounting/expenses" &&
+      event.httpMethod === "GET"
+    ) {
       return createJsonResponse(200, []);
     }
 
     // Accounting - Expense Categories
-    if (event.path === "/api/accounting/expense-categories" && event.httpMethod === "GET") {
+    if (
+      event.path === "/api/accounting/expense-categories" &&
+      event.httpMethod === "GET"
+    ) {
       return createJsonResponse(200, []);
     }
 
@@ -949,7 +958,10 @@ exports.handler = async (event) => {
     }
 
     // Accounting - Summary
-    if (event.path === "/api/accounting/summary" && event.httpMethod === "GET") {
+    if (
+      event.path === "/api/accounting/summary" &&
+      event.httpMethod === "GET"
+    ) {
       return createJsonResponse(200, {
         id: "summary",
         summaryDate: new Date().toISOString(),
@@ -965,7 +977,10 @@ exports.handler = async (event) => {
     }
 
     // Accounting - Trial Balance
-    if (event.path === "/api/accounting/trial-balance" && event.httpMethod === "GET") {
+    if (
+      event.path === "/api/accounting/trial-balance" &&
+      event.httpMethod === "GET"
+    ) {
       return createJsonResponse(200, {
         items: [],
         totalDebit: 0,
