@@ -619,6 +619,9 @@ export async function getRouterOSPPPoEConnections(instanceId?: string): Promise<
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+      if (response.status === 400) {
+        return { connections: [] };
+      }
       throw new Error("Failed to fetch PPPoE connections");
     }
 
@@ -645,6 +648,9 @@ export async function getRouterOSHotspotUsers(instanceId?: string): Promise<any>
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+      if (response.status === 400) {
+        return { users: [] };
+      }
       throw new Error("Failed to fetch Hotspot users");
     }
 
@@ -669,6 +675,9 @@ export async function getRouterOSQueues(instanceId?: string): Promise<any> {
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+      if (response.status === 400) {
+        return { queues: [] };
+      }
       throw new Error("Failed to fetch queues");
     }
 
