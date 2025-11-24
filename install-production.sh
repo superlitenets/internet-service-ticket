@@ -254,10 +254,15 @@ systemctl enable nginx
 # Step 16: Setup firewall (optional)
 echo -e "${YELLOW}Step 16: Configuring firewall (UFW)...${NC}"
 if command -v ufw &> /dev/null; then
+  ufw default deny incoming
+  ufw default allow outgoing
   ufw allow 22/tcp
   ufw allow 80/tcp
   ufw allow 443/tcp
-  ufw --force enable
+  echo "y" | ufw enable || true
+  ufw status
+else
+  echo -e "${YELLOW}UFW not found, skipping firewall configuration${NC}"
 fi
 
 # Step 17: Install SSL (optional - Let's Encrypt)
