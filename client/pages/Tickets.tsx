@@ -32,7 +32,7 @@ import {
   Send,
   MessageSquare,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { sendSmsToPhone } from "@/lib/sms-client";
 import {
