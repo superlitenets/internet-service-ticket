@@ -248,3 +248,173 @@ model AuditLog {
   @@index([entity])
   @@index([entityId])
 }
+
+// Chart of Accounts for General Ledger
+model ChartOfAccount {
+  id          String   @id @default(cuid())
+  accountCode String   @unique // e.g., 1000, 2000, 3000
+  accountName String
+  type        String   // Asset, Liability, Equity, Revenue, Expense
+  category    String? // e.g., Cash, Bank, Equipment, etc
+  description String?
+  balance     Float    @default(0)
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  journalEntries JournalEntry[]
+
+  @@index([accountCode])
+  @@index([type])
+}
+
+// Journal Entries for General Ledger
+model JournalEntry {
+  id            String   @id @default(cuid())
+  entryNumber   String   @unique
+  description   String
+  referenceNo   String? // Invoice #, Expense #, etc
+  debitAccount  String
+  creditAccount String
+  amount        Float
+  entryDate     DateTime @default(now())
+  status        String   @default("posted") // draft, posted, reversed
+  reversedBy    String? // JournalEntry ID if reversed
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  debit  ChartOfAccount @relation(fields: [debitAccount], references: [accountCode], onDelete: Restrict)
+  credit ChartOfAccount @relation(fields: [creditAccount], references: [accountCode], onDelete: Restrict)
+
+  @@index([entryDate])
+  @@index([status])
+  @@index([debitAccount])
+  @@index([creditAccount])
+}
+
+// Expense Categories
+model ExpenseCategory {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  code     String    @unique
+  type     String    // Fixed, Variable, Capital
+  enabled  Boolean   @default(true)
+  expenses Expense[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+}
+
+// Expenses
+model Expense {
+  id              String   @id @default(cuid())
+  expenseNumber   String   @unique
+  categoryId      String
+  description     String
+  amount          Float
+  vendor          String?
+  paymentMethod   String   @default("cash") // cash, bank-transfer, mpesa, check
+  referenceNo     String? // Receipt #, Check #, etc
+  status          String   @default("draft") // draft, submitted, approved, paid, rejected
+  attachmentUrl   String?
+  expenseDate     DateTime
+  approvedBy      String?
+  approvedAt      DateTime?
+  paidAt          DateTime?
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  category ChartOfAccount @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([expenseDate])
+}
+
+// POS Items (Inventory for POS)
+model POSItem {
+  id           String   @id @default(cuid())
+  sku          String   @unique
+  name         String
+  description  String?
+  category     String?
+  unitPrice    Float
+  quantity     Int      @default(0)
+  reorderLevel Int      @default(10)
+  enabled      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  transactionItems POSTransactionItem[]
+
+  @@index([sku])
+  @@index([category])
+}
+
+// POS Transactions
+model POSTransaction {
+  id              String   @id @default(cuid())
+  receiptNumber   String   @unique
+  customerId      String?
+  customerName    String?
+  subtotal        Float
+  taxAmount       Float    @default(0)
+  discountAmount  Float    @default(0)
+  totalAmount     Float
+  paymentMethod   String   @default("cash") // cash, card, mpesa, check
+  paymentStatus   String   @default("completed") // pending, completed, refunded
+  cashier         String?
+  notes           String?
+  transactionDate DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  items POSTransactionItem[]
+
+  @@index([receiptNumber])
+  @@index([transactionDate])
+  @@index([paymentStatus])
+}
+
+// POS Transaction Items
+model POSTransactionItem {
+  id              String   @id @default(cuid())
+  transactionId   String
+  itemId          String
+  quantity        Int
+  unitPrice       Float
+  lineTotal       Float
+  discount        Float    @default(0)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  transaction POSTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  item        POSItem       @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([transactionId])
+  @@index([itemId])
+}
+
+// Accounting Summary/Trial Balance (cached)
+model AccountingSummary {
+  id          String   @id @default(cuid())
+  summaryDate DateTime
+  totalAssets Float    @default(0)
+  totalLiabilities Float @default(0)
+  totalEquity Float    @default(0)
+  totalRevenue Float   @default(0)
+  totalExpenses Float  @default(0)
+  netProfit   Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([summaryDate])
+}
