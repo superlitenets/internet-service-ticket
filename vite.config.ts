@@ -12,8 +12,6 @@ export default defineConfig(({ mode }) => {
   //   plugins.push(expressPlugin());
   // }
 
-  const baseDir = path.resolve(__dirname);
-
   return {
     server: {
       host: "::",
@@ -31,16 +29,10 @@ export default defineConfig(({ mode }) => {
     },
     plugins,
     resolve: {
-      alias: [
-        {
-          find: /^@\/(.*)$/,
-          replacement: path.join(baseDir, "client/$1"),
-        },
-        {
-          find: /^@shared\/(.*)$/,
-          replacement: path.join(baseDir, "shared/$1"),
-        },
-      ],
+      alias: {
+        "@": path.resolve(__dirname, "client"),
+        "@shared": path.resolve(__dirname, "shared"),
+      },
     },
   };
 });
