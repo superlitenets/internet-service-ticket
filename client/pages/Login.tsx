@@ -6,7 +6,6 @@ import { LogIn, AlertCircle, Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
-import { LoginRequest } from "@shared/api";
 
 export default function Login() {
   const navigate = useNavigate();
