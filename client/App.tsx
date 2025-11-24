@@ -210,6 +210,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/accounting"
+      element={
+        <ProtectedRoute requiredRole={["admin", "manager"]}>
+          <AccountingPage />
+        </ProtectedRoute>
+      }
+    />
     {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
   </Routes>
