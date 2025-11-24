@@ -5,6 +5,7 @@
 ✅ **All systems ready for production deployment**
 
 ### Completed
+
 - ✅ Database persistence implemented (PostgreSQL)
 - ✅ Security upgraded (bcrypt + JWT)
 - ✅ Production code built
@@ -16,6 +17,7 @@
 ## Pre-Deployment (Do This First)
 
 ### Step 1: Commit & Push to Git
+
 ```bash
 # Ensure all local changes are committed
 # Then push to main branch using the UI push button (top right)
@@ -24,6 +26,7 @@ git push origin main
 ```
 
 **What was changed:**
+
 - `server/lib/db.ts` - Prisma database client
 - `server/lib/crypto.ts` - bcrypt & JWT authentication
 - `server/routes/auth.ts` - Updated to use Prisma + bcrypt
@@ -36,6 +39,7 @@ git push origin main
 ### Step 2: Verify PostgreSQL on VPS
 
 SSH into your VPS and verify PostgreSQL:
+
 ```bash
 # Check PostgreSQL status
 systemctl status postgresql
@@ -84,12 +88,14 @@ npm run build
 ### Step 4: Start Application
 
 **Option A: Direct Node (Simple)**
+
 ```bash
 npm start
 # App will run on http://your-vps-ip:9000
 ```
 
 **Option B: PM2 (Recommended)**
+
 ```bash
 # Install PM2 globally (one time)
 npm install -g pm2
@@ -108,6 +114,7 @@ pm2 logs netflow-crm
 **Option C: systemd Service (Enterprise)**
 
 Create `/etc/systemd/system/netflow-crm.service`:
+
 ```ini
 [Unit]
 Description=NetFlow CRM Application
@@ -128,6 +135,7 @@ WantedBy=multi-user.target
 ```
 
 Then:
+
 ```bash
 systemctl daemon-reload
 systemctl enable netflow-crm
@@ -154,12 +162,14 @@ curl http://localhost:9000/api/auth/users
 ### Step 6: Access Web Interface
 
 Open browser and visit:
+
 - **Local**: `http://localhost:9000`
 - **From another machine**: `http://your-vps-ip:9000`
 
 ### Step 7: Test Login & Data Persistence
 
 1. **Create New User via API**:
+
    ```bash
    curl -X POST http://localhost:9000/api/auth/register \
      -H "Content-Type: application/json" \
@@ -177,11 +187,13 @@ Open browser and visit:
    - Should see JWT token returned
 
 3. **Verify Database Storage**:
+
    ```bash
    psql -U netflow -h localhost netflow
    SELECT * FROM "User";
    \q
    ```
+
    Should see your test user in the database
 
 4. **Test Persistence**:
@@ -220,6 +232,7 @@ Before going fully live, complete these:
 ### Issue: "Can't reach database server at localhost:5432"
 
 **Solution:**
+
 ```bash
 # Verify PostgreSQL is running
 systemctl status postgresql
@@ -234,6 +247,7 @@ systemctl start postgresql
 ### Issue: "relation 'User' does not exist"
 
 **Solution:**
+
 ```bash
 # Run migrations
 npx prisma migrate deploy
@@ -245,11 +259,13 @@ psql -U netflow -h localhost netflow -c "\dt"
 ### Issue: Login shows "Invalid credentials"
 
 **Possible causes:**
+
 1. Password incorrect
 2. User doesn't exist in database
 3. Database connection failing
 
 **Debug:**
+
 ```bash
 # Check users in database
 psql -U netflow -h localhost netflow
@@ -265,6 +281,7 @@ journalctl -u netflow-crm -f
 ### Issue: Application crashes on startup
 
 **Solution:**
+
 ```bash
 # Check logs for error message
 pm2 logs netflow-crm

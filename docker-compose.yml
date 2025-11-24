@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL Database
@@ -38,18 +38,18 @@ services:
       PORT: 9000
       DATABASE_URL: postgresql://netflow:Mgathoni.2016%23@postgres:5432/netflow
       JWT_SECRET: ${JWT_SECRET:-change-this-to-a-secure-value-in-production}
-      
+
       # Optional: Mikrotik Configuration
       # MIKROTIK_API_URL: https://your-router-ip:8728
       # MIKROTIK_USERNAME: admin
       # MIKROTIK_PASSWORD: your_password
-      
+
       # Optional: M-Pesa Configuration
       # MPESA_CONSUMER_KEY: your_key
       # MPESA_CONSUMER_SECRET: your_secret
       # MPESA_BUSINESS_SHORT_CODE: your_code
       # MPESA_PASSKEY: your_passkey
-      
+
       # Optional: SMS Configuration
       # SMS_PROVIDER: advanta
       # ADVANTA_API_KEY: your_key

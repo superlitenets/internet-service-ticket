@@ -5,6 +5,7 @@ Complete guide to deploy NetFlow CRM using Docker and Docker Compose for product
 ## Overview
 
 This guide covers:
+
 - Building Docker image for production
 - Running with Docker Compose (app + PostgreSQL)
 - Production deployment steps
@@ -16,6 +17,7 @@ This guide covers:
 ## Prerequisites
 
 1. **Docker**: Version 20.10+
+
    ```bash
    docker --version
    docker-compose --version
@@ -433,7 +435,7 @@ services:
   app:
     build: .
     deploy:
-      replicas: 3  # Run 3 instances
+      replicas: 3 # Run 3 instances
     ports:
       - "9001:9000"
       - "9002:9000"
@@ -617,7 +619,7 @@ upstream app {
 server {
     listen 80;
     server_name your-domain.com www.your-domain.com;
-    
+
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -625,15 +627,15 @@ server {
 server {
     listen 443 ssl http2;
     server_name your-domain.com www.your-domain.com;
-    
+
     ssl_certificate /etc/nginx/ssl/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/privkey.pem;
-    
+
     # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;
-    
+
     location / {
         proxy_pass http://app;
         proxy_http_version 1.1;
@@ -738,6 +740,7 @@ docker-compose logs app | grep "restart"
 ## Reference: Full docker-compose.yml
 
 See included `docker-compose.yml` for complete configuration with:
+
 - PostgreSQL database
 - NetFlow CRM app
 - Nginx reverse proxy

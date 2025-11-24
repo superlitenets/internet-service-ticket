@@ -271,14 +271,14 @@ docker-compose ps
 
 ## Errors & Solutions
 
-| Error | Solution |
-|-------|----------|
-| Port 9000 in use | Change port in docker-compose.yml or `docker-compose down` |
+| Error                  | Solution                                                            |
+| ---------------------- | ------------------------------------------------------------------- |
+| Port 9000 in use       | Change port in docker-compose.yml or `docker-compose down`          |
 | Database won't connect | Wait 30s for DB startup, check logs: `docker-compose logs postgres` |
-| Migration fails | Run: `docker-compose exec app npx prisma migrate deploy` |
-| Out of disk | Run: `docker system prune -a` |
-| Container won't start | Check logs: `docker-compose logs <service>` |
-| Permission denied | Add user to docker group: `sudo usermod -aG docker $USER` |
+| Migration fails        | Run: `docker-compose exec app npx prisma migrate deploy`            |
+| Out of disk            | Run: `docker system prune -a`                                       |
+| Container won't start  | Check logs: `docker-compose logs <service>`                         |
+| Permission denied      | Add user to docker group: `sudo usermod -aG docker $USER`           |
 
 ---
 
