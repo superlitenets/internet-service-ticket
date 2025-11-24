@@ -1,39 +1,13 @@
 import { RequestHandler } from "express";
 import { db } from "../lib/db";
+import {
+  hashPassword,
+  verifyPassword,
+  generateToken,
+  verifyToken,
+  extractToken,
+} from "../lib/crypto";
 import { LoginRequest, LoginResponse, User, UserRole } from "@shared/api";
-import crypto from "crypto";
-
-// Simple password hashing (in production, use bcrypt)
-function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
-
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
-}
-
-// Generate a simple token (in production, use JWT)
-function generateToken(): string {
-  return `token_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
-}
-
-// In-memory session tokens (should be moved to database in production)
-let sessions: Map<
-  string,
-  {
-    userId: string;
-    expiresAt: number;
-  }
-> = new Map();
-
-// Validate token
-function validateToken(token: string): string | null {
-  const session = sessions.get(token);
-  if (!session || session.expiresAt < Date.now()) {
-    return null;
-  }
-  return session.userId;
-}
 
 /**
  * Login endpoint
@@ -66,7 +40,8 @@ export const handleLogin: RequestHandler = async (req, res) => {
     }
 
     // Verify password
-    if (!verifyPassword(password, user.password)) {
+    const passwordValid = await verifyPassword(password, user.password);
+    if (!passwordValid) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
@@ -74,14 +49,8 @@ export const handleLogin: RequestHandler = async (req, res) => {
       } as LoginResponse);
     }
 
-    // Create session token
-    const token = generateToken();
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-
-    sessions.set(token, {
-      userId: user.id,
-      expiresAt,
-    });
+    // Generate JWT token
+    const token = generateToken(user.id, user.email || "");
 
     const userResponse: User = {
       id: user.id,
@@ -115,11 +84,8 @@ export const handleLogin: RequestHandler = async (req, res) => {
  */
 export const handleLogout: RequestHandler = (req, res) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-
-    if (token) {
-      sessions.delete(token);
-    }
+    // JWT tokens are stateless, so logout just means client discards the token
+    // For enhanced security, you could implement token blacklisting in the future
 
     return res.json({
       success: true,
@@ -138,9 +104,10 @@ export const handleLogout: RequestHandler = (req, res) => {
 /**
  * Verify token and get user
  */
-export const verifyToken: RequestHandler = async (req, res) => {
+export const verifyTokenEndpoint: RequestHandler = async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
+    const token = extractToken(authHeader);
 
     if (!token) {
       return res.status(401).json({
@@ -150,9 +117,9 @@ export const verifyToken: RequestHandler = async (req, res) => {
       });
     }
 
-    const userId = validateToken(token);
+    const decoded = verifyToken(token);
 
-    if (!userId) {
+    if (!decoded) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired token",
@@ -161,7 +128,7 @@ export const verifyToken: RequestHandler = async (req, res) => {
     }
 
     const user = await db.user.findUnique({
-      where: { id: userId },
+      where: { id: decoded.userId },
     });
 
     if (!user) {
@@ -202,7 +169,8 @@ export const verifyToken: RequestHandler = async (req, res) => {
  */
 export const getCurrentUser: RequestHandler = async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
+    const authHeader = req.headers.authorization;
+    const token = extractToken(authHeader);
 
     if (!token) {
       return res.status(401).json({
@@ -211,9 +179,9 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
       });
     }
 
-    const userId = validateToken(token);
+    const decoded = verifyToken(token);
 
-    if (!userId) {
+    if (!decoded) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired token",
@@ -221,7 +189,7 @@ export const getCurrentUser: RequestHandler = async (req, res) => {
     }
 
     const user = await db.user.findUnique({
-      where: { id: userId },
+      where: { id: decoded.userId },
     });
 
     if (!user) {
@@ -286,8 +254,9 @@ export const handleRegister: RequestHandler = async (req, res) => {
       });
     }
 
-    // Create new user
-    const hashedPassword = hashPassword(password);
+    // Hash password
+    const hashedPassword = await hashPassword(password);
+
     const newUser = await db.user.create({
       data: {
         name,
@@ -298,6 +267,8 @@ export const handleRegister: RequestHandler = async (req, res) => {
         status: "active",
       },
     });
+
+    const token = generateToken(newUser.id, newUser.email || "");
 
     const userResponse: User = {
       id: newUser.id,
@@ -314,6 +285,7 @@ export const handleRegister: RequestHandler = async (req, res) => {
       success: true,
       message: "User registered successfully",
       user: userResponse,
+      token,
     });
   } catch (error) {
     console.error("Register error:", error);
@@ -385,7 +357,8 @@ export const createUser: RequestHandler = async (req, res) => {
       });
     }
 
-    const hashedPassword = hashPassword(password);
+    const hashedPassword = await hashPassword(password);
+
     const newUser = await db.user.create({
       data: {
         name,
@@ -446,7 +419,7 @@ export const updateUser: RequestHandler = async (req, res) => {
     if (email !== undefined) updateData.email = email || null;
     if (phone) updateData.phone = phone;
     if (role) updateData.role = role;
-    if (password) updateData.password = hashPassword(password);
+    if (password) updateData.password = await hashPassword(password);
     if (active !== undefined)
       updateData.status = active ? "active" : "inactive";
 
