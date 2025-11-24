@@ -93,6 +93,7 @@ export default function Layout({ children }: LayoutProps) {
       ],
     },
     { path: "/reports", label: "Reports", icon: FileText },
+    { path: "/users", label: "User Management", icon: Users },
     { path: "/settings", label: "Settings", icon: Settings },
   ];
 
