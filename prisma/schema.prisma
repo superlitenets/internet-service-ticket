@@ -275,8 +275,8 @@ model JournalEntry {
   entryNumber   String   @unique
   description   String
   referenceNo   String? // Invoice #, Expense #, etc
-  debitAccount  String
-  creditAccount String
+  debitAccountCode  String
+  creditAccountCode String
   amount        Float
   entryDate     DateTime @default(now())
   status        String   @default("posted") // draft, posted, reversed
@@ -286,13 +286,34 @@ model JournalEntry {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  debit  ChartOfAccount @relation(fields: [debitAccount], references: [accountCode], onDelete: Restrict)
-  credit ChartOfAccount @relation(fields: [creditAccount], references: [accountCode], onDelete: Restrict)
+  debitAccount  ChartOfAccount @relation("debit", fields: [debitAccountCode], references: [accountCode], onDelete: Restrict)
+  creditAccount ChartOfAccount @relation("credit", fields: [creditAccountCode], references: [accountCode], onDelete: Restrict)
 
   @@index([entryDate])
   @@index([status])
-  @@index([debitAccount])
-  @@index([creditAccount])
+  @@index([debitAccountCode])
+  @@index([creditAccountCode])
+}
+
+// Update ChartOfAccount relation names
+model ChartOfAccount {
+  id          String   @id @default(cuid())
+  accountCode String   @unique // e.g., 1000, 2000, 3000
+  accountName String
+  type        String   // Asset, Liability, Equity, Revenue, Expense
+  category    String? // e.g., Cash, Bank, Equipment, etc
+  description String?
+  balance     Float    @default(0)
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  debitEntries  JournalEntry[] @relation("debit")
+  creditEntries JournalEntry[] @relation("credit")
+
+  @@index([accountCode])
+  @@index([type])
 }
 
 // Expense Categories
