@@ -44,9 +44,6 @@ function getDefaultMpesaConfig(): MpesaConfig {
     businessShortCode: "",
     passkey: "",
     initiatorPassword: "",
-    callbackUrl: "",
-    validationUrl: "",
-    confirmationUrl: "",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
