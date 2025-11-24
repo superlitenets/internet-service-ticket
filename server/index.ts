@@ -291,5 +291,11 @@ export function createServer() {
     generateMonthlyBillingReport,
   );
 
+  // SPA catch-all route - serve index.html for all non-API routes
+  // This must be after all API routes
+  app.get("*", (req, res) => {
+    res.sendFile("dist/spa/index.html", { root: process.cwd() });
+  });
+
   return app;
 }
