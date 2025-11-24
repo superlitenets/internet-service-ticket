@@ -762,7 +762,16 @@ export default function SettingsPage() {
 
       const testMessage = `SMS Test - This is a test message from your ISP CRM system. Provider: ${smsSettings.provider}. If you received this, SMS is working correctly! [${new Date().toLocaleTimeString()}]`;
 
-      await sendSmsToPhone(testPhoneNumber, testMessage);
+      await sendSmsToPhone(testPhoneNumber, testMessage, {
+        provider: smsSettings.provider,
+        accountSid: smsSettings.accountSid,
+        authToken: smsSettings.authToken,
+        fromNumber: smsSettings.fromNumber,
+        apiKey: smsSettings.apiKey,
+        partnerId: smsSettings.partnerId,
+        shortcode: smsSettings.shortcode,
+        customApiUrl: smsSettings.customApiUrl,
+      });
 
       toast({
         title: "Success",
