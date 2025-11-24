@@ -303,7 +303,7 @@ export const deleteLead: RequestHandler = async (req, res) => {
 export const convertLeadToTicket: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { subject, description, priority = "medium", category } = req.body;
+    const { subject, description, priority = "medium", category, assignedTo = "Unassigned" } = req.body;
     const userId = (req as any).user?.id || "user-1";
 
     if (!subject || !description) {
@@ -324,21 +324,24 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
       });
     }
 
-    const ticketId = `TKT-${Date.now()}`;
+    const ticketId = `TK-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
 
     const ticketData = {
-      ticketId,
-      customerId: `CUST-${lead.phone.replace(/\D/g, "").slice(-6)}`,
-      customerName: lead.customerName,
-      phone: lead.phone,
-      email: lead.email || "",
-      userId,
-      subject,
-      description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: ${lead.agreedInstallAmount}\nLocation: ${lead.location}`,
-      category: category || "installation",
-      priority,
+      id: ticketId,
+      customer: lead.customerName,
+      customerEmail: lead.email || "",
+      customerPhone: lead.phone,
+      customerLocation: lead.location,
+      title: subject,
+      description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: KES ${lead.agreedInstallAmount}`,
       status: "open",
-      createdAt: new Date().toISOString(),
+      priority,
+      category: category || "installation",
+      assignedTo,
+      createdAt: new Date().toLocaleString(),
+      updatedAt: new Date().toLocaleString(),
+      smsNotificationsSent: 0,
+      replies: [],
     };
 
     const updatedLead: Lead = {
