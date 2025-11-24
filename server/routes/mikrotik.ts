@@ -18,17 +18,24 @@ import { getBillingAutomation } from "../lib/mikrotik-billing-automation";
 import { getExpirationAutomation } from "../lib/mikrotik-expiration-automation";
 import { getNotificationService } from "../lib/mikrotik-notifications";
 import { getAnalyticsService } from "../lib/mikrotik-analytics";
-import { getRADIUSClient, RADIUSUser, RADIUSResponse } from "../lib/radius-client";
+import {
+  getRADIUSClient,
+  RADIUSUser,
+  RADIUSResponse,
+} from "../lib/radius-client";
 
 // In-memory storage per instance (for demo purposes)
-const instanceData: Record<string, {
-  accounts: MikrotikAccount[];
-  plans: MikrotikPlan[];
-  invoices: MikrotikInvoice[];
-  payments: MikrotikPayment[];
-  usageRecords: MikrotikUsage[];
-  radiusConfig?: RADIUSConfig;
-}> = {};
+const instanceData: Record<
+  string,
+  {
+    accounts: MikrotikAccount[];
+    plans: MikrotikPlan[];
+    invoices: MikrotikInvoice[];
+    payments: MikrotikPayment[];
+    usageRecords: MikrotikUsage[];
+    radiusConfig?: RADIUSConfig;
+  }
+> = {};
 
 // Default instance ID for backwards compatibility
 const DEFAULT_INSTANCE_ID = "default";
@@ -57,7 +64,8 @@ function generatePPPoECredentials(accountNumber: string) {
   // Generate random password (alphanumeric, at least 8 characters)
   const generatePassword = (): string => {
     const length = 12;
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let password = "";
     for (let i = 0; i < length; i++) {
       password += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -141,8 +149,7 @@ export const getMikrotikAccounts: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch accounts",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -243,8 +250,7 @@ export const createMikrotikAccount: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to create account",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -273,8 +279,7 @@ export const getMikrotikAccount: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch account",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -312,18 +317,28 @@ export const updateMikrotikAccount: RequestHandler = async (req, res) => {
 
     // Sync status changes to RADIUS if enabled
     let radiusSync: any = { skipped: true };
-    if (data.radiusConfig?.enabled && updates.status && oldAccount.status !== updates.status) {
+    if (
+      data.radiusConfig?.enabled &&
+      updates.status &&
+      oldAccount.status !== updates.status
+    ) {
       const radiusClient = getRADIUSClient(data.radiusConfig);
       if (updates.status === "suspended" || updates.status === "closed") {
-        const result1 = await radiusClient.disableUser(oldAccount.pppoeUsername);
-        const result2 = await radiusClient.disableUser(oldAccount.hotspotUsername);
+        const result1 = await radiusClient.disableUser(
+          oldAccount.pppoeUsername,
+        );
+        const result2 = await radiusClient.disableUser(
+          oldAccount.hotspotUsername,
+        );
         radiusSync = {
           success: result1.success && result2.success,
           message: `Suspended PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
         };
       } else if (updates.status === "active") {
         const result1 = await radiusClient.enableUser(oldAccount.pppoeUsername);
-        const result2 = await radiusClient.enableUser(oldAccount.hotspotUsername);
+        const result2 = await radiusClient.enableUser(
+          oldAccount.hotspotUsername,
+        );
         radiusSync = {
           success: result1.success && result2.success,
           message: `Resumed PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
@@ -341,8 +356,7 @@ export const updateMikrotikAccount: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to update account",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -372,8 +386,14 @@ export const deleteMikrotikAccount: RequestHandler = async (req, res) => {
     let radiusSync: any = { skipped: true };
     if (data.radiusConfig?.enabled && data.radiusConfig.syncOnDelete) {
       const radiusClient = getRADIUSClient(data.radiusConfig);
-      const result1 = await radiusClient.deleteUser(deleted.pppoeUsername, "pppoe");
-      const result2 = await radiusClient.deleteUser(deleted.hotspotUsername, "hotspot");
+      const result1 = await radiusClient.deleteUser(
+        deleted.pppoeUsername,
+        "pppoe",
+      );
+      const result2 = await radiusClient.deleteUser(
+        deleted.hotspotUsername,
+        "hotspot",
+      );
       radiusSync = {
         success: result1.success && result2.success,
         message: `Deleted PPPoE user: ${result1.message}, Hotspot user: ${result2.message}`,
@@ -390,8 +410,7 @@ export const deleteMikrotikAccount: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to delete account",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -433,8 +452,7 @@ export const regenerateAccountCredentials: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to regenerate credentials",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -452,8 +470,7 @@ export const getMikrotikPlans: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch plans",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -463,7 +480,8 @@ export const getMikrotikPlans: RequestHandler = (req, res) => {
  */
 export const createMikrotikPlan: RequestHandler = (req, res) => {
   try {
-    const { planName, planType, monthlyFee, description, instanceId } = req.body;
+    const { planName, planType, monthlyFee, description, instanceId } =
+      req.body;
 
     if (!planName || !planType || monthlyFee === undefined) {
       return res.status(400).json({
@@ -509,8 +527,7 @@ export const createMikrotikPlan: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to create plan",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -566,7 +583,7 @@ export const generateInvoice: RequestHandler = (req, res) => {
       data.accounts[accountIndex].outstandingBalance += total;
       data.accounts[accountIndex].lastBillingDate = new Date().toISOString();
       data.accounts[accountIndex].nextBillingDate = new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
+        Date.now() + 30 * 24 * 60 * 60 * 1000,
       ).toISOString();
     }
 
@@ -579,8 +596,7 @@ export const generateInvoice: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to generate invoice",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -594,15 +610,16 @@ export const getAccountInvoices: RequestHandler = (req, res) => {
     const instanceId = req.query.instanceId as string | undefined;
     const data = getInstanceData(instanceId);
 
-    const accountInvoices = data.invoices.filter((i) => i.accountId === accountId);
+    const accountInvoices = data.invoices.filter(
+      (i) => i.accountId === accountId,
+    );
 
     return res.json(accountInvoices);
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch invoices",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -612,8 +629,14 @@ export const getAccountInvoices: RequestHandler = (req, res) => {
  */
 export const recordPayment: RequestHandler = (req, res) => {
   try {
-    const { accountId, invoiceId, amount, paymentMethod, mpesaReceiptNumber, instanceId } =
-      req.body;
+    const {
+      accountId,
+      invoiceId,
+      amount,
+      paymentMethod,
+      mpesaReceiptNumber,
+      instanceId,
+    } = req.body;
 
     if (!accountId || !amount || !paymentMethod) {
       return res.status(400).json({
@@ -658,7 +681,7 @@ export const recordPayment: RequestHandler = (req, res) => {
       data.accounts[accountIndex].totalPaid += amount;
       data.accounts[accountIndex].outstandingBalance = Math.max(
         0,
-        data.accounts[accountIndex].outstandingBalance - amount
+        data.accounts[accountIndex].outstandingBalance - amount,
       );
       data.accounts[accountIndex].updatedAt = new Date().toISOString();
     }
@@ -684,8 +707,7 @@ export const recordPayment: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to record payment",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -699,15 +721,16 @@ export const getAccountPayments: RequestHandler = (req, res) => {
     const instanceId = req.query.instanceId as string | undefined;
     const data = getInstanceData(instanceId);
 
-    const accountPayments = data.payments.filter((p) => p.accountId === accountId);
+    const accountPayments = data.payments.filter(
+      (p) => p.accountId === accountId,
+    );
 
     return res.json(accountPayments);
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch payments",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -721,15 +744,16 @@ export const getAccountUsage: RequestHandler = (req, res) => {
     const instanceId = req.query.instanceId as string | undefined;
     const data = getInstanceData(instanceId);
 
-    const accountUsage = data.usageRecords.filter((u) => u.accountId === accountId);
+    const accountUsage = data.usageRecords.filter(
+      (u) => u.accountId === accountId,
+    );
 
     return res.json(accountUsage);
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch usage records",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -739,7 +763,8 @@ export const getAccountUsage: RequestHandler = (req, res) => {
  */
 export const recordUsage: RequestHandler = (req, res) => {
   try {
-    const { accountId, uploadMB, downloadMB, sessionCount, instanceId } = req.body;
+    const { accountId, uploadMB, downloadMB, sessionCount, instanceId } =
+      req.body;
 
     if (!accountId || uploadMB === undefined || downloadMB === undefined) {
       return res.status(400).json({
@@ -786,8 +811,7 @@ export const recordUsage: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to record usage",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -804,8 +828,7 @@ export const getAllInvoices: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch invoices",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -819,11 +842,17 @@ export const getMikrotikStats: RequestHandler = (req, res) => {
     const data = getInstanceData(instanceId);
 
     const totalAccounts = data.accounts.length;
-    const activeAccounts = data.accounts.filter((a) => a.status === "active").length;
+    const activeAccounts = data.accounts.filter(
+      (a) => a.status === "active",
+    ).length;
     const totalRevenue = data.invoices.reduce((sum, inv) => sum + inv.total, 0);
     const paidRevenue = data.payments.reduce((sum, pay) => sum + pay.amount, 0);
-    const pendingPayments = data.invoices.filter((i) => i.status === "issued").length;
-    const overdueBills = data.invoices.filter((i) => i.status === "overdue").length;
+    const pendingPayments = data.invoices.filter(
+      (i) => i.status === "issued",
+    ).length;
+    const overdueBills = data.invoices.filter(
+      (i) => i.status === "overdue",
+    ).length;
 
     return res.json({
       totalAccounts,
@@ -837,8 +866,7 @@ export const getMikrotikStats: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch statistics",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -876,8 +904,7 @@ export const getRouterOSConfig: RequestHandler = (_req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch configuration",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -916,8 +943,7 @@ export const updateRouterOSConfig: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to update configuration",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -945,8 +971,7 @@ export const testRouterOSConnection: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to test connection",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -981,8 +1006,7 @@ export const getRouterOSDeviceInfo: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch device information",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1019,8 +1043,7 @@ export const getRouterOSInterfaceStats: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch interface statistics",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1033,7 +1056,8 @@ export const getRouterOSPPPoEConnections: RequestHandler = async (req, res) => {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
       return res.json({
         connections: [],
-        message: "RouterOS not configured. Configure it in Settings to see active connections.",
+        message:
+          "RouterOS not configured. Configure it in Settings to see active connections.",
       });
     }
 
@@ -1055,8 +1079,7 @@ export const getRouterOSPPPoEConnections: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch PPPoE connections",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1069,7 +1092,8 @@ export const getRouterOSHotspotUsers: RequestHandler = async (req, res) => {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
       return res.json({
         users: [],
-        message: "RouterOS not configured. Configure it in Settings to see active hotspot users.",
+        message:
+          "RouterOS not configured. Configure it in Settings to see active hotspot users.",
       });
     }
 
@@ -1091,8 +1115,7 @@ export const getRouterOSHotspotUsers: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch Hotspot users",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1127,8 +1150,7 @@ export const getRouterOSQueues: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch queue information",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1169,8 +1191,7 @@ export const startBandwidthMonitoring: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to start bandwidth monitoring",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1201,8 +1222,7 @@ export const stopBandwidthMonitoring: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to stop bandwidth monitoring",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1224,7 +1244,10 @@ export const getBandwidthHistory: RequestHandler = (req, res) => {
     }
 
     const monitor = getBandwidthMonitor();
-    const history = monitor.getUsageHistory(accountId, parseInt(hours as string));
+    const history = monitor.getUsageHistory(
+      accountId,
+      parseInt(hours as string),
+    );
 
     return res.json({
       success: true,
@@ -1234,8 +1257,7 @@ export const getBandwidthHistory: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch bandwidth history",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1257,7 +1279,10 @@ export const getPeakUsageTime: RequestHandler = (req, res) => {
     }
 
     const monitor = getBandwidthMonitor();
-    const peakUsage = monitor.getPeakUsageTime(accountId, parseInt(hours as string));
+    const peakUsage = monitor.getPeakUsageTime(
+      accountId,
+      parseInt(hours as string),
+    );
 
     return res.json({
       success: true,
@@ -1267,8 +1292,7 @@ export const getPeakUsageTime: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch peak usage time",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1290,7 +1314,10 @@ export const getAverageUsage: RequestHandler = (req, res) => {
     }
 
     const monitor = getBandwidthMonitor();
-    const average = monitor.getAverageUsage(accountId, parseInt(hours as string));
+    const average = monitor.getAverageUsage(
+      accountId,
+      parseInt(hours as string),
+    );
 
     return res.json({
       success: true,
@@ -1300,8 +1327,7 @@ export const getAverageUsage: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch average usage",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1322,8 +1348,7 @@ export const getQuotaAlerts: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch quota alerts",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1354,8 +1379,7 @@ export const getAccountQuotaAlerts: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch account alerts",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1376,8 +1400,7 @@ export const getMonitoringStatus: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch monitoring status",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1417,8 +1440,7 @@ export const scheduleBilling: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to schedule billing",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1449,8 +1471,7 @@ export const cancelBilling: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to cancel billing",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1471,8 +1492,7 @@ export const getBillingStatus: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch billing status",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1487,7 +1507,7 @@ export const getAutomationLogs: RequestHandler = (req, res) => {
     const billing = getBillingAutomation();
     const logs = billing.getAutomationLogs(
       accountId as string | undefined,
-      parseInt(limit as string)
+      parseInt(limit as string),
     );
 
     return res.json({
@@ -1498,8 +1518,7 @@ export const getAutomationLogs: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch automation logs",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1536,8 +1555,7 @@ export const testBillingAutomation: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to test billing automation",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1560,8 +1578,7 @@ export const processOverdueInvoices: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to process overdue invoices",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1601,8 +1618,7 @@ export const autoApplyCredits: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to apply credits",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1643,7 +1659,7 @@ export const sendInvoiceNotification: RequestHandler = async (req, res) => {
         amount: invoice.total,
         dueDate: new Date(invoice.dueDate).toLocaleDateString(),
         paybillNumber: "400123",
-      }
+      },
     );
 
     return res.json({
@@ -1656,8 +1672,7 @@ export const sendInvoiceNotification: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to send invoice notification",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1665,7 +1680,10 @@ export const sendInvoiceNotification: RequestHandler = async (req, res) => {
 /**
  * Send payment reminder notification
  */
-export const sendPaymentReminderNotification: RequestHandler = async (req, res) => {
+export const sendPaymentReminderNotification: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const { accountId, invoiceId } = req.body;
 
@@ -1698,21 +1716,18 @@ export const sendPaymentReminderNotification: RequestHandler = async (req, res) 
         amount: invoice.total,
         dueDate: new Date(invoice.dueDate).toLocaleDateString(),
         paybillNumber: "400123",
-      }
+      },
     );
 
     return res.json({
       success,
-      message: success
-        ? "Payment reminder sent"
-        : "Failed to send reminder",
+      message: success ? "Payment reminder sent" : "Failed to send reminder",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to send payment reminder",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1744,7 +1759,8 @@ export const sendOverdueNotification: RequestHandler = async (req, res) => {
     }
 
     const daysOverdue = Math.floor(
-      (Date.now() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(invoice.dueDate).getTime()) /
+        (1000 * 60 * 60 * 24),
     );
 
     const notificationService = getNotificationService();
@@ -1756,7 +1772,7 @@ export const sendOverdueNotification: RequestHandler = async (req, res) => {
         invoiceNumber: invoice.invoiceNumber,
         amount: invoice.total,
         overdueDays: Math.max(0, daysOverdue),
-      }
+      },
     );
 
     return res.json({
@@ -1769,8 +1785,7 @@ export const sendOverdueNotification: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to send overdue notification",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1778,7 +1793,10 @@ export const sendOverdueNotification: RequestHandler = async (req, res) => {
 /**
  * Send payment received notification
  */
-export const sendPaymentReceivedNotification: RequestHandler = async (req, res) => {
+export const sendPaymentReceivedNotification: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const { accountId, paymentId } = req.body;
 
@@ -1810,8 +1828,9 @@ export const sendPaymentReceivedNotification: RequestHandler = async (req, res) 
         amount: payment.amount,
         paymentDate: new Date(payment.paymentDate).toLocaleDateString(),
         invoiceNumber: payment.invoiceId || "Multiple invoices",
-        transactionRef: payment.mpesaReceiptNumber || payment.bankReference || payment.id,
-      }
+        transactionRef:
+          payment.mpesaReceiptNumber || payment.bankReference || payment.id,
+      },
     );
 
     return res.json({
@@ -1824,8 +1843,7 @@ export const sendPaymentReceivedNotification: RequestHandler = async (req, res) 
     return res.status(500).json({
       success: false,
       message: "Failed to send payment received notification",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1863,21 +1881,18 @@ export const sendQuotaAlertNotification: RequestHandler = async (req, res) => {
         percentageUsed: Math.round(percentageUsed),
         usedData: usedData || 0,
         totalQuota: totalQuota || account.dataQuota || 0,
-      }
+      },
     );
 
     return res.json({
       success,
-      message: success
-        ? "Quota alert sent"
-        : "Failed to send alert",
+      message: success ? "Quota alert sent" : "Failed to send alert",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to send quota alert",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1892,7 +1907,7 @@ export const getNotificationLogs: RequestHandler = (req, res) => {
     const notificationService = getNotificationService();
     const logs = notificationService.getNotificationLogs(
       accountId as string | undefined,
-      parseInt(limit as string)
+      parseInt(limit as string),
     );
 
     return res.json({
@@ -1903,8 +1918,7 @@ export const getNotificationLogs: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch notification logs",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1925,8 +1939,7 @@ export const getNotificationTemplates: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch notification templates",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1947,8 +1960,7 @@ export const getNotificationStats: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch notification statistics",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1962,7 +1974,7 @@ export const getDashboardAnalytics: RequestHandler = (req, res) => {
     const summary = analytics.getDashboardSummary(
       accounts.length,
       invoices.length,
-      payments.length
+      payments.length,
     );
 
     return res.json({
@@ -1973,8 +1985,7 @@ export const getDashboardAnalytics: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch dashboard analytics",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -1984,13 +1995,15 @@ export const getDashboardAnalytics: RequestHandler = (req, res) => {
  */
 export const getRevenueAnalytics: RequestHandler = (req, res) => {
   try {
-    const { startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), endDate = new Date() } =
-      req.query;
+    const {
+      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      endDate = new Date(),
+    } = req.query;
 
     const analytics = getAnalyticsService();
     const revenue = analytics.getRevenueAnalytics(
       new Date(startDate as string),
-      new Date(endDate as string)
+      new Date(endDate as string),
     );
 
     return res.json({
@@ -2001,8 +2014,7 @@ export const getRevenueAnalytics: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch revenue analytics",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2025,8 +2037,7 @@ export const getMonthlyRevenueTrend: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch monthly revenue trend",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2049,8 +2060,7 @@ export const getAccountGrowthTrend: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch account growth trend",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2071,8 +2081,7 @@ export const getPaymentMethodDistribution: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch payment method distribution",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2093,8 +2102,7 @@ export const getServicePlanDistribution: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch service plan distribution",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2107,7 +2115,9 @@ export const getTopCustomers: RequestHandler = (req, res) => {
     const { limit = 10 } = req.query;
 
     const analytics = getAnalyticsService();
-    const topCustomers = analytics.getTopCustomersByRevenue(parseInt(limit as string));
+    const topCustomers = analytics.getTopCustomersByRevenue(
+      parseInt(limit as string),
+    );
 
     return res.json({
       success: true,
@@ -2117,8 +2127,7 @@ export const getTopCustomers: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch top customers",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2149,8 +2158,7 @@ export const generateMonthlyBillingReport: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to generate monthly billing report",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2184,8 +2192,7 @@ export const getRADIUSConfig: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch RADIUS configuration",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2195,7 +2202,15 @@ export const getRADIUSConfig: RequestHandler = (req, res) => {
  */
 export const updateRADIUSConfig: RequestHandler = (req, res) => {
   try {
-    const { instanceId, host, port, sharedSecret, syncOnCreate, syncOnUpdate, syncOnDelete } = req.body;
+    const {
+      instanceId,
+      host,
+      port,
+      sharedSecret,
+      syncOnCreate,
+      syncOnUpdate,
+      syncOnDelete,
+    } = req.body;
     const data = getInstanceData(instanceId);
 
     if (!host || !port || !sharedSecret) {
@@ -2230,8 +2245,7 @@ export const updateRADIUSConfig: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to update RADIUS configuration",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2265,8 +2279,7 @@ export const testRADIUSConnection: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to test RADIUS connection",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2322,8 +2335,7 @@ export const syncAccountToRADIUS: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to sync account to RADIUS",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2355,8 +2367,14 @@ export const removeAccountFromRADIUS: RequestHandler = async (req, res) => {
 
     const radiusClient = getRADIUSClient(data.radiusConfig);
 
-    const result1 = await radiusClient.deleteUser(account.pppoeUsername, "pppoe");
-    const result2 = await radiusClient.deleteUser(account.hotspotUsername, "hotspot");
+    const result1 = await radiusClient.deleteUser(
+      account.pppoeUsername,
+      "pppoe",
+    );
+    const result2 = await radiusClient.deleteUser(
+      account.hotspotUsername,
+      "hotspot",
+    );
 
     return res.json({
       success: result1.success && result2.success,
@@ -2366,8 +2384,7 @@ export const removeAccountFromRADIUS: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to remove account from RADIUS",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2410,8 +2427,7 @@ export const suspendAccountInRADIUS: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to suspend account in RADIUS",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2454,8 +2470,7 @@ export const resumeAccountInRADIUS: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to resume account in RADIUS",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2472,7 +2487,7 @@ export const checkAccountExpirationStatus: RequestHandler = (req, res) => {
 
     const checks = expirationAutomation.checkAccountExpirations(
       data.accounts,
-      gracePeriodDays
+      gracePeriodDays,
     );
 
     return res.json({
@@ -2489,8 +2504,7 @@ export const checkAccountExpirationStatus: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to check expiration status",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2505,17 +2519,23 @@ export const processAccountExpirations: RequestHandler = async (req, res) => {
     const data = getInstanceData(instanceId);
     const expirationAutomation = getExpirationAutomation(instanceId);
 
-    let suspendCallback: ((accountId: string, account: MikrotikAccount) => Promise<boolean>) | undefined;
+    let suspendCallback:
+      | ((accountId: string, account: MikrotikAccount) => Promise<boolean>)
+      | undefined;
 
     if (autoSuspend && data.radiusConfig?.enabled) {
       suspendCallback = async (accountId: string, account: MikrotikAccount) => {
         try {
           const radiusClient = getRADIUSClient(data.radiusConfig!);
           const result1 = await radiusClient.disableUser(account.pppoeUsername);
-          const result2 = await radiusClient.disableUser(account.hotspotUsername);
+          const result2 = await radiusClient.disableUser(
+            account.hotspotUsername,
+          );
 
           // Also update account status
-          const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
+          const accountIndex = data.accounts.findIndex(
+            (a) => a.id === accountId,
+          );
           if (accountIndex !== -1) {
             data.accounts[accountIndex] = {
               ...data.accounts[accountIndex],
@@ -2535,7 +2555,7 @@ export const processAccountExpirations: RequestHandler = async (req, res) => {
     const result = await expirationAutomation.processExpirations(
       data.accounts,
       gracePeriodDays,
-      suspendCallback
+      suspendCallback,
     );
 
     return res.json({
@@ -2547,8 +2567,7 @@ export const processAccountExpirations: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to process expirations",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2572,17 +2591,23 @@ export const processAccountRenewal: RequestHandler = async (req, res) => {
     }
 
     // Determine resume callback if RADIUS is enabled
-    let resumeCallback: ((accountId: string, account: MikrotikAccount) => Promise<boolean>) | undefined;
+    let resumeCallback:
+      | ((accountId: string, account: MikrotikAccount) => Promise<boolean>)
+      | undefined;
 
     if (data.radiusConfig?.enabled) {
       resumeCallback = async (accountId: string, account: MikrotikAccount) => {
         try {
           const radiusClient = getRADIUSClient(data.radiusConfig!);
           const result1 = await radiusClient.enableUser(account.pppoeUsername);
-          const result2 = await radiusClient.enableUser(account.hotspotUsername);
+          const result2 = await radiusClient.enableUser(
+            account.hotspotUsername,
+          );
 
           // Also update account status
-          const accountIndex = data.accounts.findIndex((a) => a.id === accountId);
+          const accountIndex = data.accounts.findIndex(
+            (a) => a.id === accountId,
+          );
           if (accountIndex !== -1) {
             data.accounts[accountIndex] = {
               ...data.accounts[accountIndex],
@@ -2615,7 +2640,7 @@ export const processAccountRenewal: RequestHandler = async (req, res) => {
       accountId,
       account,
       newNextBillingDate,
-      resumeCallback
+      resumeCallback,
     );
 
     const updatedAccount = data.accounts.find((a) => a.id === accountId);
@@ -2630,8 +2655,7 @@ export const processAccountRenewal: RequestHandler = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to process renewal",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2658,8 +2682,7 @@ export const getExpirationAutomationLogs: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch expiration logs",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
@@ -2683,8 +2706,7 @@ export const getExpirationAutomationStatus: RequestHandler = (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch expiration automation status",
-      error:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     });
   }
 };
