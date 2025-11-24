@@ -19,7 +19,9 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useState } from "react";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 interface LayoutProps {
   children: React.ReactNode;
