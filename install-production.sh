@@ -99,14 +99,13 @@ mkdir -p "$APP_DIR"
 cd "$APP_DIR"
 
 # Step 8: Clone or use existing repo
-if [ ! -d ".git" ]; then
-  echo -e "${YELLOW}Step 8: Cloning repository...${NC}"
-  # If you have a git repo, replace this with your repo URL
-  # git clone https://github.com/yourusername/internet-service-ticket.git .
-  echo -e "${YELLOW}Waiting for repository files...${NC}"
-else
-  echo -e "${YELLOW}Step 8: Using existing repository...${NC}"
+echo -e "${YELLOW}Step 8: Checking for application files...${NC}"
+if [ ! -f "package.json" ]; then
+  echo -e "${RED}Error: package.json not found in $APP_DIR${NC}"
+  echo "Please copy your application files to $APP_DIR first"
+  exit 1
 fi
+echo -e "${GREEN}Application files found${NC}"
 
 # Step 9: Create .env file
 echo -e "${YELLOW}Step 9: Creating .env configuration...${NC}"
