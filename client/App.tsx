@@ -174,6 +174,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/users"
+      element={
+        <ProtectedRoute requiredRole={["admin"]}>
+          <UserManagement />
+        </ProtectedRoute>
+      }
+    />
     {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
   </Routes>
