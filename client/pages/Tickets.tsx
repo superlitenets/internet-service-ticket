@@ -706,8 +706,13 @@ export default function TicketsPage() {
                       key={ticket.id}
                       className="hover:bg-muted/30 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-semibold text-primary whitespace-nowrap">
-                        {ticket.id}
+                      <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+                        <button
+                          onClick={() => navigate(`/tickets/${ticket.id}`)}
+                          className="text-primary hover:underline cursor-pointer"
+                        >
+                          {ticket.id}
+                        </button>
                       </td>
                       <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
                         {ticket.customer}
