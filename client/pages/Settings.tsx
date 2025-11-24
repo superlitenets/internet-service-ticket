@@ -1066,6 +1066,24 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Test Phone Number
+                    </label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Enter a phone number to receive the test SMS
+                    </p>
+                    <Input
+                      type="tel"
+                      value={testPhoneNumber}
+                      onChange={(e) => setTestPhoneNumber(e.target.value)}
+                      placeholder="e.g., +254712345678 or 0712345678"
+                      disabled={testingSms || !smsSettings.enabled}
+                    />
+                  </div>
+                </div>
+
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleSaveSettings("SMS")}
@@ -1078,7 +1096,7 @@ export default function SettingsPage() {
                     onClick={handleTestSms}
                     variant="outline"
                     className="gap-2"
-                    disabled={testingSms || !smsSettings.enabled}
+                    disabled={testingSms || !smsSettings.enabled || !testPhoneNumber.trim()}
                   >
                     <MessageSquare size={16} />
                     {testingSms ? "Testing..." : "Test SMS"}
