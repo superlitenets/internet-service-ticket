@@ -1029,7 +1029,10 @@ export default function SettingsPage() {
                           type="url"
                           value={smsSettings.customApiUrl || ""}
                           onChange={(e) =>
-                            handleSmsSettingChange("customApiUrl", e.target.value)
+                            handleSmsSettingChange(
+                              "customApiUrl",
+                              e.target.value,
+                            )
                           }
                           placeholder="https://api.advantasms.com/send"
                         />

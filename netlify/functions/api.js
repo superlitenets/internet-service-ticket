@@ -335,17 +335,14 @@ exports.handler = async (event) => {
       );
 
       // Log the SMS request
-      console.log(
-        `[SMS] Sending via ${provider}`,
-        {
-          provider,
-          recipients: validPhoneNumbers,
-          messageLength: message.length,
-          fromNumber,
-          customApiUrl,
-          timestamp: new Date().toISOString(),
-        },
-      );
+      console.log(`[SMS] Sending via ${provider}`, {
+        provider,
+        recipients: validPhoneNumbers,
+        messageLength: message.length,
+        fromNumber,
+        customApiUrl,
+        timestamp: new Date().toISOString(),
+      });
 
       // If Advanta with custom URL, make the actual API call
       if (provider === "advanta" && customApiUrl) {
