@@ -342,11 +342,57 @@ exports.handler = async (event) => {
           recipients: validPhoneNumbers,
           messageLength: message.length,
           fromNumber,
+          customApiUrl,
           timestamp: new Date().toISOString(),
         },
       );
 
-      // In a production environment, you would call the actual SMS provider API here
+      // If Advanta with custom URL, make the actual API call
+      if (provider === "advanta" && customApiUrl) {
+        try {
+          const response = await fetch(customApiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: partnerId,
+              password: apiKey,
+              message,
+              recipients: validPhoneNumbers,
+              sender: shortcode,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("[SMS] Advanta API error:", errorText);
+            return {
+              statusCode: 400,
+              headers,
+              body: JSON.stringify({
+                success: false,
+                message: "Failed to send SMS via Advanta API",
+                timestamp: new Date().toISOString(),
+                error: "API request failed",
+              }),
+            };
+          }
+
+          const result = await response.json();
+          console.log("[SMS] Advanta API response:", result);
+        } catch (error) {
+          console.error("[SMS] Error calling Advanta API:", error.message);
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+              success: false,
+              message: "Failed to call SMS provider API",
+              timestamp: new Date().toISOString(),
+              error: error.message,
+            }),
+          };
+        }
+      }
 
       return {
         statusCode: 200,
