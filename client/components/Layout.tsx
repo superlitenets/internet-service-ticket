@@ -61,7 +61,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   const navItems: NavItem[] = [
-    { path: "/", label: "Dashboard", icon: Home },
+    { path: "/dashboard", label: "Dashboard", icon: Home },
     {
       label: "Tasks",
       icon: CheckSquare,
