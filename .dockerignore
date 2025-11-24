@@ -21,10 +21,3 @@ pnpm-lock.yaml.bak
 .gitattributes
 .prettierrc
 .prettierignore
-tsconfig.json
-vite.config.ts
-vite.config.server.ts
-vitest.config.ts
-tailwind.config.ts
-components.json
-postcss.config.js
