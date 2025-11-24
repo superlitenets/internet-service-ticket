@@ -1020,6 +1020,23 @@ export default function SettingsPage() {
                           placeholder="Your sender ID / shortcode"
                         />
                       </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Custom API URL (Optional)
+                        </label>
+                        <Input
+                          type="url"
+                          value={smsSettings.customApiUrl || ""}
+                          onChange={(e) =>
+                            handleSmsSettingChange("customApiUrl", e.target.value)
+                          }
+                          placeholder="https://api.advantasms.com/send"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Leave empty to use default endpoint
+                        </p>
+                      </div>
                     </>
                   )}
 
