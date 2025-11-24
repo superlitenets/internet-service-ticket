@@ -2633,6 +2633,44 @@ export default function SettingsPage() {
                           12-character passkey from test credentials
                         </p>
                       </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          Initiator Password (Optional)
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type={
+                              visibleKey === "initiatorPassword" ? "text" : "password"
+                            }
+                            value={mpesaSettings.initiatorPassword || ""}
+                            onChange={(e) =>
+                              setMpesaSettings({
+                                ...mpesaSettings,
+                                initiatorPassword: e.target.value,
+                              })
+                            }
+                            placeholder="Your M-Pesa Initiator Password"
+                          />
+                          <button
+                            onClick={() =>
+                              setVisibleKey(
+                                visibleKey === "initiatorPassword" ? null : "initiatorPassword",
+                              )
+                            }
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {visibleKey === "initiatorPassword" ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Required for B2B payments; optional for STK push
+                        </p>
+                      </div>
                     </div>
 
                     <div className="space-y-3">
