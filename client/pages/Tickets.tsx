@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import TicketDetail from "@/components/TicketDetail";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ import {
   Edit,
   Trash2,
   Send,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +47,14 @@ import {
 } from "@/lib/whatsapp-unified-client";
 import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
 
+interface Reply {
+  id: string;
+  author: string;
+  authorRole: "customer" | "support" | "admin";
+  message: string;
+  timestamp: string;
+}
+
 interface Ticket {
   id: string;
   customer: string;
@@ -59,6 +69,7 @@ interface Ticket {
   updatedAt: string;
   assignedTo: string;
   smsNotificationsSent: number;
+  replies?: Reply[];
 }
 
 interface TeamMember {
