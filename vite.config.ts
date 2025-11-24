@@ -7,9 +7,10 @@ export default defineConfig(({ mode }) => {
   const plugins = [react()];
 
   // Only add express plugin in serve/dev mode to avoid importing server during build
-  if (mode === "development") {
-    plugins.push(expressPlugin());
-  }
+  // Note: Commenting out due to Vite ESM/CommonJS compatibility issues with Prisma
+  // if (mode === "development") {
+  //   plugins.push(expressPlugin());
+  // }
 
   return {
     server: {
