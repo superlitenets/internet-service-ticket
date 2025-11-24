@@ -1,22 +1,5 @@
 import { RequestHandler } from "express";
-
-interface Lead {
-  id: string;
-  customerName: string;
-  phone: string;
-  email?: string;
-  location: string;
-  package: string;
-  agreedInstallAmount: number;
-  status: "new" | "converted" | "closed";
-  notes?: string;
-  createdById: string;
-  createdByName?: string;
-  createdAt: string;
-  updatedAt: string;
-  convertedToTicketId?: string;
-  convertedAt?: string;
-}
+import { db } from "../lib/db";
 
 interface CreateLeadRequest {
   customerName: string;
@@ -39,48 +22,9 @@ interface UpdateLeadRequest {
   notes?: string;
 }
 
-let leads: Map<string, Lead> = new Map([
-  [
-    "LEAD-001",
-    {
-      id: "LEAD-001",
-      customerName: "John Doe",
-      phone: "0722111111",
-      email: "john@example.com",
-      location: "Nairobi",
-      package: "Premium 10Mbps",
-      agreedInstallAmount: 2500,
-      status: "new",
-      notes: "Interested in upgrades",
-      createdById: "user-1",
-      createdByName: "Admin User",
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      updatedAt: new Date(Date.now() - 3600000).toISOString(),
-    },
-  ],
-  [
-    "LEAD-002",
-    {
-      id: "LEAD-002",
-      customerName: "Jane Smith",
-      phone: "0733222222",
-      email: "jane@example.com",
-      location: "Kampala",
-      package: "Standard 5Mbps",
-      agreedInstallAmount: 1500,
-      status: "new",
-      createdById: "user-1",
-      createdByName: "Admin User",
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-      updatedAt: new Date(Date.now() - 7200000).toISOString(),
-    },
-  ],
-]);
-
 export const createLead: RequestHandler = async (req, res) => {
   try {
     const userId = (req as any).user?.id || "user-1";
-    const userName = (req as any).user?.name || "Admin User";
 
     const {
       customerName,
@@ -107,29 +51,37 @@ export const createLead: RequestHandler = async (req, res) => {
       });
     }
 
-    const leadId = `LEAD-${String(leads.size + 1).padStart(3, "0")}`;
-    const lead: Lead = {
-      id: leadId,
-      customerName,
-      phone,
-      email,
-      location,
-      package: packageName,
-      agreedInstallAmount,
-      notes,
-      status: "new",
-      createdById: userId,
-      createdByName: userName,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    leads.set(leadId, lead);
+    const lead = await db.lead.create({
+      data: {
+        customerName,
+        phone,
+        email: email || undefined,
+        location,
+        package: packageName,
+        agreedInstallAmount,
+        notes: notes || undefined,
+        status: "new",
+        createdById: userId,
+      },
+    });
 
     return res.status(201).json({
       success: true,
       message: "Lead created successfully",
-      data: lead,
+      data: {
+        id: lead.id,
+        customerName: lead.customerName,
+        phone: lead.phone,
+        email: lead.email,
+        location: lead.location,
+        package: lead.package,
+        agreedInstallAmount: lead.agreedInstallAmount,
+        notes: lead.notes,
+        status: lead.status,
+        createdById: lead.createdById,
+        createdAt: lead.createdAt.toISOString(),
+        updatedAt: lead.updatedAt.toISOString(),
+      },
     });
   } catch (error) {
     console.error("Error creating lead:", error);
@@ -148,34 +100,60 @@ export const getLeads: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string, 10) || 20;
     const skip = (pageNum - 1) * limitNum;
 
-    let filteredLeads = Array.from(leads.values());
+    const where: any = {};
 
     if (status) {
-      filteredLeads = filteredLeads.filter((lead) => lead.status === status);
+      where.status = status;
     }
 
     if (search) {
-      const searchLower = (search as string).toLowerCase();
-      filteredLeads = filteredLeads.filter(
-        (lead) =>
-          lead.customerName.toLowerCase().includes(searchLower) ||
-          lead.phone.includes(searchLower as string) ||
-          lead.email?.toLowerCase().includes(searchLower) ||
-          lead.location.toLowerCase().includes(searchLower),
-      );
+      where.OR = [
+        { customerName: { contains: search as string, mode: "insensitive" } },
+        { phone: { contains: search as string, mode: "insensitive" } },
+        { email: { contains: search as string, mode: "insensitive" } },
+        { location: { contains: search as string, mode: "insensitive" } },
+      ];
     }
 
-    const total = filteredLeads.length;
-    const paginatedLeads = filteredLeads
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .slice(skip, skip + limitNum);
+    const [leads, total] = await Promise.all([
+      db.lead.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limitNum,
+        include: {
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      }),
+      db.lead.count({ where }),
+    ]);
+
+    const formattedLeads = leads.map((lead) => ({
+      id: lead.id,
+      customerName: lead.customerName,
+      phone: lead.phone,
+      email: lead.email,
+      location: lead.location,
+      package: lead.package,
+      agreedInstallAmount: lead.agreedInstallAmount,
+      status: lead.status,
+      notes: lead.notes,
+      createdById: lead.createdById,
+      createdByName: lead.createdBy?.name,
+      convertedToTicketId: lead.convertedToTicketId,
+      convertedAt: lead.convertedAt?.toISOString(),
+      createdAt: lead.createdAt.toISOString(),
+      updatedAt: lead.updatedAt.toISOString(),
+    }));
 
     return res.json({
       success: true,
-      data: paginatedLeads,
+      data: formattedLeads,
       pagination: {
         total,
         page: pageNum,
@@ -197,7 +175,17 @@ export const getLeadById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const lead = leads.get(id);
+    const lead = await db.lead.findUnique({
+      where: { id },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
     if (!lead) {
       return res.status(404).json({
@@ -209,7 +197,23 @@ export const getLeadById: RequestHandler = async (req, res) => {
 
     return res.json({
       success: true,
-      data: lead,
+      data: {
+        id: lead.id,
+        customerName: lead.customerName,
+        phone: lead.phone,
+        email: lead.email,
+        location: lead.location,
+        package: lead.package,
+        agreedInstallAmount: lead.agreedInstallAmount,
+        status: lead.status,
+        notes: lead.notes,
+        createdById: lead.createdById,
+        createdByName: lead.createdBy?.name,
+        convertedToTicketId: lead.convertedToTicketId,
+        convertedAt: lead.convertedAt?.toISOString(),
+        createdAt: lead.createdAt.toISOString(),
+        updatedAt: lead.updatedAt.toISOString(),
+      },
     });
   } catch (error) {
     console.error("Error fetching lead:", error);
@@ -226,7 +230,9 @@ export const updateLead: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const updateData: UpdateLeadRequest = req.body;
 
-    const lead = leads.get(id);
+    const lead = await db.lead.findUnique({
+      where: { id },
+    });
 
     if (!lead) {
       return res.status(404).json({
@@ -236,29 +242,49 @@ export const updateLead: RequestHandler = async (req, res) => {
       });
     }
 
-    const updated: Lead = {
-      ...lead,
-      ...(updateData.customerName && {
-        customerName: updateData.customerName,
-      }),
-      ...(updateData.phone && { phone: updateData.phone }),
-      ...(updateData.email && { email: updateData.email }),
-      ...(updateData.location && { location: updateData.location }),
-      ...(updateData.package && { package: updateData.package }),
-      ...(updateData.agreedInstallAmount !== undefined && {
-        agreedInstallAmount: updateData.agreedInstallAmount,
-      }),
-      ...(updateData.status && { status: updateData.status as any }),
-      ...(updateData.notes !== undefined && { notes: updateData.notes }),
-      updatedAt: new Date().toISOString(),
-    };
-
-    leads.set(id, updated);
+    const updatedLead = await db.lead.update({
+      where: { id },
+      data: {
+        customerName: updateData.customerName ?? undefined,
+        phone: updateData.phone ?? undefined,
+        email: updateData.email ?? undefined,
+        location: updateData.location ?? undefined,
+        package: updateData.package ?? undefined,
+        agreedInstallAmount:
+          updateData.agreedInstallAmount ?? undefined,
+        status: updateData.status ?? undefined,
+        notes: updateData.notes ?? undefined,
+      },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
     return res.json({
       success: true,
       message: "Lead updated successfully",
-      data: updated,
+      data: {
+        id: updatedLead.id,
+        customerName: updatedLead.customerName,
+        phone: updatedLead.phone,
+        email: updatedLead.email,
+        location: updatedLead.location,
+        package: updatedLead.package,
+        agreedInstallAmount: updatedLead.agreedInstallAmount,
+        status: updatedLead.status,
+        notes: updatedLead.notes,
+        createdById: updatedLead.createdById,
+        createdByName: updatedLead.createdBy?.name,
+        convertedToTicketId: updatedLead.convertedToTicketId,
+        convertedAt: updatedLead.convertedAt?.toISOString(),
+        createdAt: updatedLead.createdAt.toISOString(),
+        updatedAt: updatedLead.updatedAt.toISOString(),
+      },
     });
   } catch (error) {
     console.error("Error updating lead:", error);
@@ -274,7 +300,9 @@ export const deleteLead: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const lead = leads.get(id);
+    const lead = await db.lead.findUnique({
+      where: { id },
+    });
 
     if (!lead) {
       return res.status(404).json({
@@ -284,7 +312,9 @@ export const deleteLead: RequestHandler = async (req, res) => {
       });
     }
 
-    leads.delete(id);
+    await db.lead.delete({
+      where: { id },
+    });
 
     return res.json({
       success: true,
@@ -310,7 +340,6 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
       category,
       assignedTo = "Unassigned",
     } = req.body;
-    const userId = (req as any).user?.id || "user-1";
 
     if (!subject || !description) {
       return res.status(400).json({
@@ -320,7 +349,9 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
       });
     }
 
-    const lead = leads.get(id);
+    const lead = await db.lead.findUnique({
+      where: { id },
+    });
 
     if (!lead) {
       return res.status(404).json({
@@ -330,42 +361,57 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
       });
     }
 
-    const ticketId = `TK-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
+    const ticketId = `TK-${String(Math.floor(Math.random() * 10000)).padStart(5, "0")}`;
 
-    const ticketData = {
-      id: ticketId,
-      customer: lead.customerName,
-      customerEmail: lead.email || "",
-      customerPhone: lead.phone,
-      customerLocation: lead.location,
-      title: subject,
-      description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: KES ${lead.agreedInstallAmount}`,
-      status: "open",
-      priority,
-      category: category || "installation",
-      assignedTo,
-      createdAt: new Date().toLocaleString(),
-      updatedAt: new Date().toLocaleString(),
-      smsNotificationsSent: 0,
-      replies: [],
-    };
+    const ticket = await db.ticket.create({
+      data: {
+        ticketId,
+        customerId: "temp-customer-id",
+        subject,
+        description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: KES ${lead.agreedInstallAmount}`,
+        category: category || "installation",
+        priority,
+      },
+    });
 
-    const updatedLead: Lead = {
-      ...lead,
-      status: "converted",
-      convertedToTicketId: ticketId,
-      convertedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    leads.set(id, updatedLead);
+    const updatedLead = await db.lead.update({
+      where: { id },
+      data: {
+        status: "converted",
+        convertedToTicketId: ticketId,
+        convertedAt: new Date(),
+      },
+    });
 
     return res.status(201).json({
       success: true,
       message: "Lead converted to ticket successfully",
       data: {
-        ticket: ticketData,
-        lead: updatedLead,
+        ticket: {
+          id: ticket.id,
+          ticketId: ticket.ticketId,
+          subject: ticket.subject,
+          description: ticket.description,
+          status: ticket.status,
+          priority: ticket.priority,
+          category: ticket.category,
+          createdAt: ticket.createdAt.toISOString(),
+          updatedAt: ticket.updatedAt.toISOString(),
+        },
+        lead: {
+          id: updatedLead.id,
+          customerName: updatedLead.customerName,
+          phone: updatedLead.phone,
+          email: updatedLead.email,
+          location: updatedLead.location,
+          package: updatedLead.package,
+          agreedInstallAmount: updatedLead.agreedInstallAmount,
+          status: updatedLead.status,
+          convertedToTicketId: updatedLead.convertedToTicketId,
+          convertedAt: updatedLead.convertedAt?.toISOString(),
+          createdAt: updatedLead.createdAt.toISOString(),
+          updatedAt: updatedLead.updatedAt.toISOString(),
+        },
       },
     });
   } catch (error) {
