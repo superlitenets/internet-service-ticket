@@ -109,10 +109,13 @@ echo -e "${GREEN}✓ Repository cloned${NC}"
 echo -e "${YELLOW}[8/13] Creating .env configuration...${NC}"
 JWT_SECRET=$(openssl rand -base64 32)
 
+# URL-encode the database password
+DB_PASSWORD_ENCODED=$(printf '%s' "$DB_PASSWORD" | jq -sRr @uri)
+
 cat > "$APP_DIR/.env" << ENVFILE
 NODE_ENV=production
 PORT=$APP_PORT
-DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@localhost:5432/$DB_NAME
+DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD_ENCODED@localhost:5432/$DB_NAME
 JWT_SECRET=$JWT_SECRET
 ENVFILE
 
