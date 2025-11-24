@@ -894,10 +894,6 @@ export default function SettingsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="twilio">Twilio</SelectItem>
-                        <SelectItem value="vonage">Vonage</SelectItem>
-                        <SelectItem value="aws">AWS SNS</SelectItem>
-                        <SelectItem value="nexmo">Nexmo</SelectItem>
                         <SelectItem value="advanta">Advanta SMS</SelectItem>
                       </SelectContent>
                     </Select>
