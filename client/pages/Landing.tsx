@@ -333,24 +333,24 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="border-t border-slate-700/50 py-20 bg-slate-800/50">
+      <section className="border-t border-slate-200 py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Transform Your ISP Business?</h2>
-          <p className="text-xl text-slate-400 mb-8">
+          <h2 className="text-4xl font-bold mb-4 text-slate-900">Ready to Transform Your ISP Business?</h2>
+          <p className="text-xl text-slate-600 mb-8">
             Join hundreds of ISP providers who trust NetFlow to manage their operations
           </p>
           <div className="flex gap-4 justify-center">
             <Button
               onClick={() => navigate("/login")}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Start Free Trial
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-slate-600 text-white hover:bg-slate-800"
+              className="border-slate-300 text-slate-900 hover:bg-white"
             >
               Contact Sales
             </Button>
@@ -359,7 +359,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-700/50 py-12 text-center text-slate-400">
+      <footer className="border-t border-slate-200 py-12 text-center text-slate-600 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p>© 2024 NetFlow CRM. All rights reserved.</p>
         </div>
