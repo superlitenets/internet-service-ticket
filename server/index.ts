@@ -7,7 +7,7 @@ import {
   handleLogin,
   handleLogout,
   getCurrentUser,
-  verifyToken,
+  verifyTokenEndpoint,
   handleRegister,
   getAllUsers,
   createUser,
