@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import { useNavigate } from "react-router-dom";
 import TicketDetail from "@/components/TicketDetail";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
