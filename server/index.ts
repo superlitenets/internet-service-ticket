@@ -44,6 +44,25 @@ import {
   handleMpesaValidation,
 } from "./routes/mpesa";
 import {
+  getChartOfAccounts,
+  createChartOfAccount,
+  updateChartOfAccount,
+  getJournalEntries,
+  createJournalEntry,
+  reverseJournalEntry,
+  getExpenseCategories,
+  createExpenseCategory,
+  getExpenses,
+  createExpense,
+  updateExpense,
+  getPOSItems,
+  createPOSItem,
+  createPOSTransaction,
+  getPOSTransactions,
+  getAccountingSummary,
+  getTrialBalance,
+} from "./routes/accounting";
+import {
   getMikrotikAccounts,
   createMikrotikAccount,
   getMikrotikAccount,
