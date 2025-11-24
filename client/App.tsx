@@ -31,6 +31,7 @@ import Reports from "./pages/Reports";
 import AccountDetail from "./pages/AccountDetail";
 import LandingContentEditor from "./pages/LandingContentEditor";
 import MikrotikRouterOSIntegration from "./pages/MikrotikRouterOSIntegration";
+import { AccountingPage } from "./pages/Accounting";
 
 const queryClient = new QueryClient();
 
