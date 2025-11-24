@@ -28,6 +28,7 @@ model User {
   payments  Payment[]
   employees Employee?
   accounts  Account[]
+  leads     Lead[] @relation("leads")
 
   @@index([email])
   @@index([phone])
