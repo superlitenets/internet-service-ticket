@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -e
+# Enable strict error handling
+set -euo pipefail
+
+# Trap errors
+trap 'echo -e "\n${RED}Error: Installation failed at line $LINENO${NC}"; exit 1' ERR
 
 # Colors for output
 RED='\033[0;31m'
@@ -12,10 +16,17 @@ echo -e "${GREEN}NetFlow CRM - Production Installation Script${NC}"
 echo "=============================================="
 
 # Check if running as root
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
   echo -e "${RED}Please run this script as root (sudo)${NC}"
   exit 1
 fi
+
+# Check for required commands
+for cmd in curl git psql; do
+  if ! command -v $cmd &> /dev/null && [ "$cmd" != "psql" ]; then
+    echo -e "${YELLOW}Warning: $cmd not found, will install${NC}"
+  fi
+done
 
 # Variables
 APP_DIR="/opt/netflow"
