@@ -88,7 +88,7 @@ export default function LandingContentEditor() {
         </div>
 
         {/* Save Actions */}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button
             onClick={handleSave}
             disabled={loading}
@@ -97,6 +97,15 @@ export default function LandingContentEditor() {
           >
             <Save size={18} />
             Save Changes
+          </Button>
+          <Button
+            onClick={() => navigate("/")}
+            variant="outline"
+            className="gap-2"
+            size="lg"
+          >
+            <Eye size={18} />
+            View Landing Page
           </Button>
           <Button
             onClick={handleReset}
