@@ -218,6 +218,14 @@ export function createServer() {
   app.post("/api/mpesa/callback", handleMpesaCallback);
   app.post("/api/mpesa/validation", handleMpesaValidation);
 
+  // Sales Leads endpoints
+  app.post("/api/leads", createLead);
+  app.get("/api/leads", getLeads);
+  app.get("/api/leads/:id", getLeadById);
+  app.put("/api/leads/:id", updateLead);
+  app.delete("/api/leads/:id", deleteLead);
+  app.post("/api/leads/:id/convert-to-ticket", convertLeadToTicket);
+
   // Mikrotik ISP Billing endpoints
   // Accounts
   app.get("/api/mikrotik/accounts", getMikrotikAccounts);
