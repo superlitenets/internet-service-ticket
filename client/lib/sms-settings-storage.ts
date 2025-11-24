@@ -11,6 +11,7 @@ export interface SmsSettings {
   apiKey?: string;
   partnerId?: string;
   shortcode?: string;
+  customApiUrl?: string;
   enabled: boolean;
 }
 
