@@ -884,8 +884,41 @@ export default function TicketsPage() {
                       customerLocation: e.target.value,
                     })
                   }
-                  placeholder="e.g., 123 Main St, Suite 200, New York, NY 10001"
+                  placeholder="e.g., Zone A, Downtown"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Apartment / Building
+                  </label>
+                  <Input
+                    value={formData.apartment}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        apartment: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., Building A, Tower 1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Room Number
+                  </label>
+                  <Input
+                    value={formData.roomNumber}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        roomNumber: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 301, Apt 5B"
+                  />
+                </div>
               </div>
 
               <div>
