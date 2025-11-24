@@ -426,11 +426,12 @@ export default function Landing() {
       <section className="border-t border-slate-200 py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-4 text-slate-900">
-            Ready to Transform Your ISP Business?
+            {landingContent?.ctaSectionTitle ||
+              "Ready to Transform Your ISP Business?"}
           </h2>
           <p className="text-xl text-slate-600 mb-8">
-            Join hundreds of ISP providers who trust NetFlow to manage their
-            operations
+            {landingContent?.ctaSectionDescription ||
+              "Join hundreds of ISP providers who trust NetFlow to manage their operations"}
           </p>
           <div className="flex gap-4 justify-center">
             <Button
@@ -438,14 +439,14 @@ export default function Landing() {
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Start Free Trial
+              {landingContent?.ctaPrimary || "Start Free Trial"}
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="border-slate-300 text-slate-900 hover:bg-white"
             >
-              Contact Sales
+              {landingContent?.ctaSecondary || "Contact Sales"}
             </Button>
           </div>
         </div>
