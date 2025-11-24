@@ -58,6 +58,7 @@ export async function initiateMpesaB2B(
         businessShortCode: request.credentials?.businessShortCode || settings.businessShortCode,
         passkey: request.credentials?.passkey || settings.passkey,
         callbackUrl: request.credentials?.callbackUrl || settings.callbackUrl,
+        initiatorPassword: request.credentials?.initiatorPassword || settings.initiatorPassword,
       },
     };
 
