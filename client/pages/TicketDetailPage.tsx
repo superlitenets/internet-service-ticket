@@ -112,8 +112,12 @@ export default function TicketDetailPage() {
         const tickets: Ticket[] = JSON.parse(ticketsData);
         const updatedTickets = tickets.map((t) =>
           t.id === ticket.id
-            ? { ...t, replies: updatedReplies, updatedAt: new Date().toLocaleString() }
-            : t
+            ? {
+                ...t,
+                replies: updatedReplies,
+                updatedAt: new Date().toLocaleString(),
+              }
+            : t,
         );
         localStorage.setItem("tickets_data", JSON.stringify(updatedTickets));
       }
@@ -269,7 +273,8 @@ export default function TicketDetailPage() {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              Assigned to: <span className="font-semibold">{ticket.assignedTo}</span>
+              Assigned to:{" "}
+              <span className="font-semibold">{ticket.assignedTo}</span>
             </p>
           </Card>
         </div>

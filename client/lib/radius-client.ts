@@ -35,7 +35,9 @@ export async function getRADIUSConfig(instanceId?: string): Promise<any> {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch RADIUS configuration"
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch RADIUS configuration",
     );
   }
 }
@@ -83,7 +85,9 @@ export async function updateRADIUSConfig(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to update RADIUS configuration"
+      error instanceof Error
+        ? error.message
+        : "Failed to update RADIUS configuration",
     );
   }
 }
@@ -128,7 +132,9 @@ export async function testRADIUSConnection(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to test RADIUS connection"
+      error instanceof Error
+        ? error.message
+        : "Failed to test RADIUS connection",
     );
   }
 }
@@ -155,7 +161,9 @@ export async function syncAccountToRADIUS(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to sync account to RADIUS"
+      error instanceof Error
+        ? error.message
+        : "Failed to sync account to RADIUS",
     );
   }
 }
@@ -182,7 +190,9 @@ export async function removeAccountFromRADIUS(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to remove account from RADIUS"
+      error instanceof Error
+        ? error.message
+        : "Failed to remove account from RADIUS",
     );
   }
 }
@@ -209,7 +219,9 @@ export async function suspendAccountInRADIUS(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to suspend account in RADIUS"
+      error instanceof Error
+        ? error.message
+        : "Failed to suspend account in RADIUS",
     );
   }
 }
@@ -236,7 +248,9 @@ export async function resumeAccountInRADIUS(data: {
     return await response.json();
   } catch (error) {
     throw new Error(
-      error instanceof Error ? error.message : "Failed to resume account in RADIUS"
+      error instanceof Error
+        ? error.message
+        : "Failed to resume account in RADIUS",
     );
   }
 }
