@@ -18,6 +18,7 @@ import {
   CheckSquare,
   Edit,
   BookOpen,
+  Target,
 } from "lucide-react";
 import { useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
