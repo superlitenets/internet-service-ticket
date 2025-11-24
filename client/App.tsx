@@ -32,24 +32,148 @@ const queryClient = new QueryClient();
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Index />} />
-    <Route path="/tickets" element={<Tickets />} />
-    <Route path="/customers" element={<Customers />} />
-    <Route path="/team" element={<Team />} />
-    <Route path="/inventory" element={<Inventory />} />
-    <Route path="/employees" element={<Employees />} />
-    <Route path="/attendance" element={<Attendance />} />
-    <Route path="/leave" element={<Leave />} />
-    <Route path="/payroll" element={<Payroll />} />
-    <Route path="/performance" element={<Performance />} />
-    <Route path="/payments" element={<Payments />} />
-    <Route path="/mikrotik/accounts/:accountId" element={<AccountDetail />} />
-    <Route path="/mikrotik/accounts" element={<MikrotikAccounts />} />
-    <Route path="/mikrotik/billing" element={<MikrotikBilling />} />
-    <Route path="/mikrotik/monitoring" element={<MikrotikMonitoring />} />
-    <Route path="/reports" element={<Reports />} />
-    <Route path="/settings" element={<Settings />} />
-    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+    {/* Public routes */}
+    <Route path="/login" element={<Login />} />
+    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+    {/* Protected routes */}
+    <Route
+      path="/dashboard"
+      element={
+        <ProtectedRoute>
+          <Index />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/tickets"
+      element={
+        <ProtectedRoute>
+          <Tickets />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/customers"
+      element={
+        <ProtectedRoute>
+          <Customers />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/team"
+      element={
+        <ProtectedRoute requiredRole={["admin", "manager"]}>
+          <Team />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/inventory"
+      element={
+        <ProtectedRoute>
+          <Inventory />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/employees"
+      element={
+        <ProtectedRoute>
+          <Employees />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/attendance"
+      element={
+        <ProtectedRoute>
+          <Attendance />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/leave"
+      element={
+        <ProtectedRoute>
+          <Leave />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/payroll"
+      element={
+        <ProtectedRoute requiredRole={["admin", "manager"]}>
+          <Payroll />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/performance"
+      element={
+        <ProtectedRoute>
+          <Performance />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/payments"
+      element={
+        <ProtectedRoute requiredRole={["admin", "support", "manager"]}>
+          <Payments />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/mikrotik/accounts/:accountId"
+      element={
+        <ProtectedRoute>
+          <AccountDetail />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/mikrotik/accounts"
+      element={
+        <ProtectedRoute>
+          <MikrotikAccounts />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/mikrotik/billing"
+      element={
+        <ProtectedRoute>
+          <MikrotikBilling />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/mikrotik/monitoring"
+      element={
+        <ProtectedRoute>
+          <MikrotikMonitoring />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/reports"
+      element={
+        <ProtectedRoute requiredRole={["admin", "manager"]}>
+          <Reports />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/settings"
+      element={
+        <ProtectedRoute requiredRole={["admin"]}>
+          <Settings />
+        </ProtectedRoute>
+      }
+    />
+    {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
