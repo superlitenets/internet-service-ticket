@@ -380,6 +380,40 @@ export default function MikrotikAccountsPage() {
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Location</label>
+                <Input
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                  placeholder="e.g., Zone A, Downtown"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Apartment</label>
+                <Input
+                  value={formData.apartment}
+                  onChange={(e) =>
+                    setFormData({ ...formData, apartment: e.target.value })
+                  }
+                  placeholder="e.g., Building A, Tower 1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Room Number</label>
+              <Input
+                value={formData.roomNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, roomNumber: e.target.value })
+                }
+                placeholder="e.g., 301, Apt 5B"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-1">
                 Account Type
