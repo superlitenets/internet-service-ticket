@@ -1,53 +1,23 @@
 import { RequestHandler } from "express";
+import { db } from "../lib/db";
 import { LoginRequest, LoginResponse, User, UserRole } from "@shared/api";
+import crypto from "crypto";
 
-// In-memory user database (for demo purposes)
-let users: Map<string, User & { password: string }> = new Map([
-  [
-    "admin@example.com",
-    {
-      id: "user-1",
-      name: "Admin User",
-      email: "admin@example.com",
-      phone: "0700000001",
-      role: "admin" as UserRole,
-      password: "password123",
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ],
-  [
-    "support@example.com",
-    {
-      id: "user-2",
-      name: "Support Team",
-      email: "support@example.com",
-      phone: "0700000002",
-      role: "support" as UserRole,
-      password: "password123",
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ],
-  [
-    "0722000000",
-    {
-      id: "user-3",
-      name: "Customer User",
-      email: "customer@example.com",
-      phone: "0722000000",
-      role: "customer" as UserRole,
-      password: "password123",
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ],
-]);
+// Simple password hashing (in production, use bcrypt)
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
 
-// In-memory session tokens (normally use JWT or database)
+function verifyPassword(password: string, hash: string): boolean {
+  return hashPassword(password) === hash;
+}
+
+// Generate a simple token (in production, use JWT)
+function generateToken(): string {
+  return `token_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
+}
+
+// In-memory session tokens (should be moved to database in production)
 let sessions: Map<
   string,
   {
@@ -55,11 +25,6 @@ let sessions: Map<
     expiresAt: number;
   }
 > = new Map();
-
-// Generate a simple token (in production, use JWT)
-function generateToken(): string {
-  return `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
 
 // Validate token
 function validateToken(token: string): string | null {
@@ -73,7 +38,7 @@ function validateToken(token: string): string | null {
 /**
  * Login endpoint
  */
-export const handleLogin: RequestHandler = (req, res) => {
+export const handleLogin: RequestHandler = async (req, res) => {
   try {
     const { identifier, password } = req.body as LoginRequest;
 
@@ -86,19 +51,13 @@ export const handleLogin: RequestHandler = (req, res) => {
     }
 
     // Find user by email or phone
-    let user = users.get(identifier);
+    const user = await db.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { phone: identifier }],
+      },
+    });
 
-    if (!user) {
-      // Try to find by phone if identifier looks like a phone
-      for (const u of users.values()) {
-        if (u.phone === identifier || u.email === identifier) {
-          user = u;
-          break;
-        }
-      }
-    }
-
-    if (!user || !user.active) {
+    if (!user || user.status === "inactive" || user.status === "suspended") {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
@@ -106,8 +65,8 @@ export const handleLogin: RequestHandler = (req, res) => {
       } as LoginResponse);
     }
 
-    // Verify password (in production, use bcrypt)
-    if (user.password !== password) {
+    // Verify password
+    if (!verifyPassword(password, user.password)) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
@@ -124,16 +83,25 @@ export const handleLogin: RequestHandler = (req, res) => {
       expiresAt,
     });
 
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
+    const userResponse: User = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role as UserRole,
+      active: user.status === "active",
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
 
     return res.json({
       success: true,
       message: `Login successful. Welcome ${user.name}!`,
-      user: userWithoutPassword,
+      user: userResponse,
       token,
     } as LoginResponse);
   } catch (error) {
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
       message: "Login failed",
@@ -158,6 +126,7 @@ export const handleLogout: RequestHandler = (req, res) => {
       message: "Logged out successfully",
     });
   } catch (error) {
+    console.error("Logout error:", error);
     return res.status(500).json({
       success: false,
       message: "Logout failed",
@@ -169,7 +138,7 @@ export const handleLogout: RequestHandler = (req, res) => {
 /**
  * Verify token and get user
  */
-export const verifyToken: RequestHandler = (req, res) => {
+export const verifyToken: RequestHandler = async (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -191,14 +160,9 @@ export const verifyToken: RequestHandler = (req, res) => {
       });
     }
 
-    // Find user by ID
-    let user: (User & { password: string }) | null = null;
-    for (const u of users.values()) {
-      if (u.id === userId) {
-        user = u;
-        break;
-      }
-    }
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -207,14 +171,24 @@ export const verifyToken: RequestHandler = (req, res) => {
       });
     }
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userResponse: User = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role as UserRole,
+      active: user.status === "active",
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
 
     return res.json({
       success: true,
-      user: userWithoutPassword,
+      user: userResponse,
       message: "Token is valid",
     });
   } catch (error) {
+    console.error("Token verification error:", error);
     return res.status(500).json({
       success: false,
       message: "Token verification failed",
@@ -226,7 +200,7 @@ export const verifyToken: RequestHandler = (req, res) => {
 /**
  * Get current user
  */
-export const getCurrentUser: RequestHandler = (req, res) => {
+export const getCurrentUser: RequestHandler = async (req, res) => {
   try {
     const token = req.headers.authorization?.replace("Bearer ", "");
 
@@ -246,14 +220,9 @@ export const getCurrentUser: RequestHandler = (req, res) => {
       });
     }
 
-    // Find user by ID
-    let user: (User & { password: string }) | null = null;
-    for (const u of users.values()) {
-      if (u.id === userId) {
-        user = u;
-        break;
-      }
-    }
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -262,13 +231,23 @@ export const getCurrentUser: RequestHandler = (req, res) => {
       });
     }
 
-    const { password: _, ...userWithoutPassword } = user;
+    const userResponse: User = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role as UserRole,
+      active: user.status === "active",
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
 
     return res.json({
       success: true,
-      user: userWithoutPassword,
+      user: userResponse,
     });
   } catch (error) {
+    console.error("Get current user error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to get current user",
@@ -278,9 +257,9 @@ export const getCurrentUser: RequestHandler = (req, res) => {
 };
 
 /**
- * Register a new user (admin only in production)
+ * Register a new user
  */
-export const handleRegister: RequestHandler = (req, res) => {
+export const handleRegister: RequestHandler = async (req, res) => {
   try {
     const { name, email, phone, password, role } = req.body;
 
@@ -293,7 +272,13 @@ export const handleRegister: RequestHandler = (req, res) => {
     }
 
     // Check if user already exists
-    if (users.has(email || phone)) {
+    const existingUser = await db.user.findFirst({
+      where: {
+        OR: [{ email: email || undefined }, { phone }],
+      },
+    });
+
+    if (existingUser) {
       return res.status(409).json({
         success: false,
         message: "User already exists",
@@ -302,31 +287,36 @@ export const handleRegister: RequestHandler = (req, res) => {
     }
 
     // Create new user
-    const userId = `user-${Date.now()}`;
-    const newUser: User & { password: string } = {
-      id: userId,
-      name,
-      email: email || undefined,
-      phone,
-      role: role || "customer",
-      password,
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    const hashedPassword = hashPassword(password);
+    const newUser = await db.user.create({
+      data: {
+        name,
+        email: email || undefined,
+        phone,
+        password: hashedPassword,
+        role: role || "user",
+        status: "active",
+      },
+    });
+
+    const userResponse: User = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      role: newUser.role as UserRole,
+      active: newUser.status === "active",
+      createdAt: newUser.createdAt.toISOString(),
+      updatedAt: newUser.updatedAt.toISOString(),
     };
-
-    // Store user (use email as primary key if available, otherwise phone)
-    const key = email || phone;
-    users.set(key, newUser);
-
-    const { password: _, ...userWithoutPassword } = newUser;
 
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: userWithoutPassword,
+      user: userResponse,
     });
   } catch (error) {
+    console.error("Register error:", error);
     return res.status(500).json({
       success: false,
       message: "Registration failed",
@@ -338,19 +328,27 @@ export const handleRegister: RequestHandler = (req, res) => {
 /**
  * Get all users
  */
-export const getAllUsers: RequestHandler = (_req, res) => {
+export const getAllUsers: RequestHandler = async (_req, res) => {
   try {
-    const allUsers: User[] = [];
-    for (const user of users.values()) {
-      const { password: _, ...userWithoutPassword } = user;
-      allUsers.push(userWithoutPassword);
-    }
+    const users = await db.user.findMany();
+
+    const usersResponse: User[] = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role as UserRole,
+      active: user.status === "active",
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    }));
 
     return res.json({
       success: true,
-      users: allUsers,
+      users: usersResponse,
     });
   } catch (error) {
+    console.error("Get all users error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch users",
@@ -362,7 +360,7 @@ export const getAllUsers: RequestHandler = (_req, res) => {
 /**
  * Create a new user
  */
-export const createUser: RequestHandler = (req, res) => {
+export const createUser: RequestHandler = async (req, res) => {
   try {
     const { name, email, phone, password, role, active } = req.body;
 
@@ -374,36 +372,48 @@ export const createUser: RequestHandler = (req, res) => {
     }
 
     // Check if user already exists
-    if (users.has(email || phone)) {
+    const existingUser = await db.user.findFirst({
+      where: {
+        OR: [{ email: email || undefined }, { phone }],
+      },
+    });
+
+    if (existingUser) {
       return res.status(409).json({
         success: false,
         message: "User already exists",
       });
     }
 
-    const userId = `user-${Date.now()}`;
-    const newUser: User & { password: string } = {
-      id: userId,
-      name,
-      email: email || undefined,
-      phone,
-      role: role || "customer",
-      password,
-      active: active !== undefined ? active : true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    const hashedPassword = hashPassword(password);
+    const newUser = await db.user.create({
+      data: {
+        name,
+        email: email || undefined,
+        phone,
+        password: hashedPassword,
+        role: role || "user",
+        status: active !== undefined ? (active ? "active" : "inactive") : "active",
+      },
+    });
+
+    const userResponse: User = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      role: newUser.role as UserRole,
+      active: newUser.status === "active",
+      createdAt: newUser.createdAt.toISOString(),
+      updatedAt: newUser.updatedAt.toISOString(),
     };
-
-    const key = email || phone;
-    users.set(key, newUser);
-
-    const { password: _, ...userWithoutPassword } = newUser;
 
     return res.status(201).json({
       success: true,
-      user: userWithoutPassword,
+      user: userResponse,
     });
   } catch (error) {
+    console.error("Create user error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create user",
@@ -415,54 +425,53 @@ export const createUser: RequestHandler = (req, res) => {
 /**
  * Update a user
  */
-export const updateUser: RequestHandler = (req, res) => {
+export const updateUser: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, phone, password, role, active } = req.body;
 
-    // Find user by ID
-    let userToUpdate: (User & { password: string }) | null = null;
-    let userKey: string | null = null;
+    const user = await db.user.findUnique({
+      where: { id },
+    });
 
-    for (const [key, user] of users.entries()) {
-      if (user.id === id) {
-        userToUpdate = user;
-        userKey = key;
-        break;
-      }
-    }
-
-    if (!userToUpdate || !userKey) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
-    // Update user
-    const updatedUser: User & { password: string } = {
-      ...userToUpdate,
-      name: name || userToUpdate.name,
-      email: email !== undefined ? email : userToUpdate.email,
-      phone: phone || userToUpdate.phone,
-      role: role || userToUpdate.role,
-      active: active !== undefined ? active : userToUpdate.active,
-      password: password || userToUpdate.password,
-      updatedAt: new Date().toISOString(),
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (email !== undefined) updateData.email = email || null;
+    if (phone) updateData.phone = phone;
+    if (role) updateData.role = role;
+    if (password) updateData.password = hashPassword(password);
+    if (active !== undefined)
+      updateData.status = active ? "active" : "inactive";
+
+    const updatedUser = await db.user.update({
+      where: { id },
+      data: updateData,
+    });
+
+    const userResponse: User = {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      role: updatedUser.role as UserRole,
+      active: updatedUser.status === "active",
+      createdAt: updatedUser.createdAt.toISOString(),
+      updatedAt: updatedUser.updatedAt.toISOString(),
     };
-
-    // Update in storage
-    users.delete(userKey);
-    const newKey = email || phone || userKey;
-    users.set(newKey, updatedUser);
-
-    const { password: _, ...userWithoutPassword } = updatedUser;
 
     return res.json({
       success: true,
-      user: userWithoutPassword,
+      user: userResponse,
     });
   } catch (error) {
+    console.error("Update user error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to update user",
@@ -474,26 +483,31 @@ export const updateUser: RequestHandler = (req, res) => {
 /**
  * Delete a user
  */
-export const deleteUser: RequestHandler = (req, res) => {
+export const deleteUser: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find and delete user
-    for (const [key, user] of users.entries()) {
-      if (user.id === id) {
-        users.delete(key);
-        return res.json({
-          success: true,
-          message: "User deleted successfully",
-        });
-      }
+    const user = await db.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    return res.status(404).json({
-      success: false,
-      message: "User not found",
+    await db.user.delete({
+      where: { id },
+    });
+
+    return res.json({
+      success: true,
+      message: "User deleted successfully",
     });
   } catch (error) {
+    console.error("Delete user error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to delete user",
