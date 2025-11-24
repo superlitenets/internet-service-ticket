@@ -1027,6 +1027,20 @@ export default function TicketsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Ticket Detail Dialog */}
+        <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh]">
+            {selectedTicket && (
+              <TicketDetail
+                ticket={selectedTicket}
+                replies={selectedTicket.replies || []}
+                onAddReply={handleAddReply}
+                onClose={() => setDetailDialogOpen(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
