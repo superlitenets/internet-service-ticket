@@ -15,6 +15,7 @@ import {
 
 export default function LandingContentEditor() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState<LandingContent | null>(null);
 
