@@ -107,8 +107,14 @@ import {
   getExpirationAutomationStatus,
 } from "./routes/mikrotik";
 
+import path from "path";
+
 export function createServer() {
   const app = express();
+
+  // Serve static files from dist/spa in production
+  const distPath = path.join(process.cwd(), "dist/spa");
+  app.use(express.static(distPath));
 
   // Middleware
   app.use(cors());
