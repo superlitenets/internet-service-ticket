@@ -330,7 +330,7 @@ model Expense {
   updatedAt       DateTime @updatedAt
 
   // Relations
-  category ChartOfAccount @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   @@index([categoryId])
   @@index([status])
