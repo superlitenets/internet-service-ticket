@@ -169,6 +169,12 @@ export function createServer() {
   app.get("/api/auth/verify", verifyToken);
   app.get("/api/auth/me", getCurrentUser);
 
+  // User management endpoints
+  app.get("/api/auth/users", getAllUsers);
+  app.post("/api/auth/users", createUser);
+  app.put("/api/auth/users/:id", updateUser);
+  app.delete("/api/auth/users/:id", deleteUser);
+
   // MPESA Payment endpoints
   app.post("/api/mpesa/c2b", handleMpesaC2B);
   app.post("/api/mpesa/b2b", handleMpesaB2B);
