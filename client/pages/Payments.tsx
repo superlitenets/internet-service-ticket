@@ -569,46 +569,56 @@ export default function PaymentsPage() {
           {paymentType === "stk" && (
             <>
               <DialogHeader>
-                <DialogTitle>STK Push Payment</DialogTitle>
+                <DialogTitle>Request Money via M-Pesa</DialogTitle>
                 <DialogDescription>
-                  Send a payment prompt to customer phone
+                  Send a payment prompt to customer's phone. They'll enter their M-Pesa PIN to pay.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone Number
+                    Customer Phone Number <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    placeholder="0722000000 or +254722000000"
+                    placeholder="e.g., 0722123456"
                     value={stkForm.phoneNumber}
                     onChange={(e) =>
                       setStkForm({ ...stkForm, phoneNumber: e.target.value })
                     }
+                    disabled={loading}
                   />
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Enter a valid Safaricom phone number (254 prefix also accepted)
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Amount (KES)
+                    Amount to Request (KES) <span className="text-red-500">*</span>
                   </label>
                   <Input
                     type="number"
-                    placeholder="0"
+                    placeholder="e.g., 5000"
+                    min="1"
+                    step="1"
                     value={stkForm.amount}
                     onChange={(e) =>
                       setStkForm({ ...stkForm, amount: e.target.value })
                     }
+                    disabled={loading}
                   />
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Minimum: KES 1, Maximum: KES 70,000
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Account Reference
+                    Reference / Invoice Number <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    placeholder="Invoice, Ticket ID, etc."
+                    placeholder="e.g., INV-001 or ORDER-12345"
                     value={stkForm.accountReference}
                     onChange={(e) =>
                       setStkForm({
@@ -616,15 +626,19 @@ export default function PaymentsPage() {
                         accountReference: e.target.value,
                       })
                     }
+                    disabled={loading}
                   />
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Used to identify and track this payment request
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Description
+                    Payment Description <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    placeholder="Payment for..."
+                    placeholder="e.g., Internet bill payment"
                     value={stkForm.transactionDescription}
                     onChange={(e) =>
                       setStkForm({
@@ -632,11 +646,15 @@ export default function PaymentsPage() {
                         transactionDescription: e.target.value,
                       })
                     }
+                    disabled={loading}
                   />
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Brief description of what the payment is for
+                  </p>
                 </div>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="mt-6">
                 <Button
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
@@ -646,11 +664,17 @@ export default function PaymentsPage() {
                 </Button>
                 <Button
                   onClick={handleInitiateSTKPush}
-                  disabled={loading}
+                  disabled={
+                    loading ||
+                    !stkForm.phoneNumber ||
+                    !stkForm.amount ||
+                    !stkForm.accountReference ||
+                    !stkForm.transactionDescription
+                  }
                   className="gap-2"
                 >
                   {loading && <Clock size={16} className="animate-spin" />}
-                  {loading ? "Processing..." : "Send STK Push"}
+                  {loading ? "Sending..." : "Send Money Request"}
                 </Button>
               </DialogFooter>
             </>
