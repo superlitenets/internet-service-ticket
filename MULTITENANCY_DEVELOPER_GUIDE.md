@@ -55,7 +55,7 @@ Database::insert('customers', [
 
 ```php
 // Automatically filters by tenant_id
-Database::update('customers', 
+Database::update('customers',
     ['status' => 'inactive'],
     ['id' => 5]
 );
@@ -137,7 +137,7 @@ $app->group('/api/customers', function (RouteCollectorProxy $group) {
             }
 
             $data = json_decode($request->getBody(), true);
-            
+
             // Validate required fields
             if (!isset($data['name']) || !isset($data['email'])) {
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json')
@@ -262,9 +262,9 @@ if (!$resource) {
 ```php
 // Use table alias to properly filter by tenant_id
 $results = Database::fetchAllWithTenant(
-    'SELECT c.*, p.name as package_name 
-     FROM customers c 
-     LEFT JOIN packages p ON c.id = p.customer_id 
+    'SELECT c.*, p.name as package_name
+     FROM customers c
+     LEFT JOIN packages p ON c.id = p.customer_id
      WHERE c.status = ?',
     ['active']
 );
@@ -277,9 +277,9 @@ $results = Database::fetchAllWithTenant(
 ```php
 // Count per tenant
 $stats = Database::fetchWithTenant(
-    'SELECT COUNT(*) as total, 
-            SUM(balance) as total_balance 
-     FROM customers 
+    'SELECT COUNT(*) as total,
+            SUM(balance) as total_balance
+     FROM customers
      WHERE status = ?',
     ['active']
 );
@@ -311,7 +311,7 @@ try {
     $invoice_id = Database::lastInsertId();
 
     Database::insert('payments', [...]);
-    
+
     Database::update('customers', [...], ['id' => $customer_id]);
 
     Database::commit();
@@ -350,10 +350,10 @@ $tenants = Database::fetchAll('SELECT * FROM tenants');
 
 foreach ($tenants as $tenant) {
     TenantContext::setTenant($tenant['id']);
-    
+
     // Do per-tenant operations
     $customers = Database::fetchAllWithTenant('SELECT * FROM customers');
-    
+
     // Process...
 }
 
@@ -379,7 +379,7 @@ public function handleRequest() {
     if (!$tenant) {
         throw new \Exception('No tenant context');
     }
-    
+
     // Safe to proceed
 }
 ```
@@ -455,7 +455,7 @@ class MultitenancyTest extends TestCase {
 CREATE INDEX idx_customers_tenant_id ON customers(tenant_id);
 
 -- For frequently filtered columns, use composite
-CREATE INDEX idx_customers_tenant_status 
+CREATE INDEX idx_customers_tenant_status
 ON customers(tenant_id, status);
 ```
 

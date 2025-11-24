@@ -38,6 +38,7 @@ This will show all routes using non-tenant-aware methods.
 For each route found, replace:
 
 **SELECT Queries:**
+
 ```php
 // ❌ Before (no tenant filtering)
 $data = Database::fetch('SELECT * FROM customers WHERE id = ?', [$id]);
@@ -49,6 +50,7 @@ $data = Database::fetchAllWithTenant('SELECT * FROM invoices ORDER BY created_at
 ```
 
 **INSERT Statements:**
+
 ```php
 // ❌ Before (no tenant_id)
 Database::execute(
@@ -64,6 +66,7 @@ Database::insert('customers', [
 ```
 
 **UPDATE Statements:**
+
 ```php
 // ❌ Before (no tenant filtering)
 Database::execute(
@@ -79,6 +82,7 @@ Database::update('customers',
 ```
 
 **DELETE Statements:**
+
 ```php
 // ❌ Before (no tenant filtering)
 Database::execute('DELETE FROM customers WHERE id = ?', [$id]);
@@ -92,6 +96,7 @@ Database::delete('customers', ['id' => $id]);
 ### Example 1: Simple GET with Filter
 
 **Before:**
+
 ```php
 $group->get('/{id}', function (Request $request, Response $response, array $args) {
     try {
@@ -113,6 +118,7 @@ $group->get('/{id}', function (Request $request, Response $response, array $args
 ```
 
 **After:**
+
 ```php
 $group->get('/{id}', function (Request $request, Response $response, array $args) {
     try {
@@ -136,10 +142,11 @@ $group->get('/{id}', function (Request $request, Response $response, array $args
 ### Example 2: List with Joins
 
 **Before:**
+
 ```php
 $tickets = Database::fetchAll(
-    'SELECT t.*, c.name as customer_name FROM tickets t 
-     LEFT JOIN customers c ON t.customer_id = c.id 
+    'SELECT t.*, c.name as customer_name FROM tickets t
+     LEFT JOIN customers c ON t.customer_id = c.id
      WHERE t.status = ?
      ORDER BY t.created_at DESC',
     ['open']
@@ -147,10 +154,11 @@ $tickets = Database::fetchAll(
 ```
 
 **After:**
+
 ```php
 $tickets = Database::fetchAllWithTenant(
-    'SELECT t.*, c.name as customer_name FROM tickets t 
-     LEFT JOIN customers c ON t.customer_id = c.id 
+    'SELECT t.*, c.name as customer_name FROM tickets t
+     LEFT JOIN customers c ON t.customer_id = c.id
      WHERE t.status = ?
      ORDER BY t.created_at DESC',
     ['open']
@@ -161,6 +169,7 @@ $tickets = Database::fetchAllWithTenant(
 ### Example 3: Create with Related Data
 
 **Before:**
+
 ```php
 Database::execute(
     'INSERT INTO orders (customer_id, total, status) VALUES (?, ?, ?)',
@@ -172,6 +181,7 @@ $order = Database::fetch('SELECT * FROM orders WHERE id = ?', [$orderId]);
 ```
 
 **After:**
+
 ```php
 Database::insert('orders', [
     'customer_id' => $customer_id,
@@ -186,6 +196,7 @@ $order = Database::fetchWithTenant('SELECT * FROM orders WHERE id = ?', [$orderI
 ### Example 4: Update with Validation
 
 **Before:**
+
 ```php
 // Verify exists before updating
 $ticket = Database::fetch('SELECT * FROM tickets WHERE id = ?', [$id]);
@@ -204,6 +215,7 @@ $updated = Database::fetch('SELECT * FROM tickets WHERE id = ?', [$id]);
 ```
 
 **After:**
+
 ```php
 // Verify exists before updating (automatic tenant filtering)
 $ticket = Database::fetchWithTenant('SELECT * FROM tickets WHERE id = ?', [$id]);
@@ -227,25 +239,18 @@ Based on the current structure, update these route files:
 
 1. **app/routes.php** - ✅ Partially done (auth, leads, customers)
    - [ ] Update remaining routes (packages, etc.)
-   
 2. **app/routes-extended.php** - ⚠️ Partially done (invoices)
    - [ ] Update employees, attendance, inventory, tickets, ticket_replies
-   
 3. **app/isp-mikrotik.php**
    - [ ] Update all ISP MikroTik routes
-   
 4. **app/isp-billing.php**
    - [ ] Update all ISP billing routes
-   
 5. **app/isp-monitoring.php**
    - [ ] Update all ISP monitoring routes
-   
 6. **app/isp-reports.php**
    - [ ] Update all ISP reports routes
-   
 7. **app/isp-customer-portal.php**
    - [ ] Update all customer portal routes
-   
 8. **app/integrations.php**
    - [ ] Update integration routes
 
@@ -311,25 +316,25 @@ curl -X GET http://global.localhost:3000/api/customers \
 
 ```php
 class TenantRoutesTest extends TestCase {
-    
+
     public function testLeadsListFilters ByTenant() {
         // Create two tenants
         $tenant1 = createTestTenant('Tenant 1');
         $tenant2 = createTestTenant('Tenant 2');
-        
+
         // Create leads in each tenant
         switchTenant($tenant1);
         createLead('Lead 1');
-        
+
         switchTenant($tenant2);
         createLead('Lead 2');
-        
+
         // Verify filtering
         switchTenant($tenant1);
         $leads = listLeads();
         $this->assertEquals(1, count($leads));
         $this->assertEquals('Lead 1', $leads[0]['name']);
-        
+
         switchTenant($tenant2);
         $leads = listLeads();
         $this->assertEquals(1, count($leads));
@@ -340,13 +345,13 @@ class TenantRoutesTest extends TestCase {
 
 ## Quick Reference
 
-| Operation | Non-Tenant-Aware | Tenant-Aware | Auto Filters |
-|-----------|------------------|--------------|--------------|
-| Fetch one | `fetch()` | `fetchWithTenant()` | ✅ YES |
-| Fetch all | `fetchAll()` | `fetchAllWithTenant()` | ✅ YES |
-| Insert | `execute('INSERT')` | `insert()` | ✅ YES |
-| Update | `execute('UPDATE')` | `update()` | ✅ YES |
-| Delete | `execute('DELETE')` | `delete()` | ✅ YES |
+| Operation | Non-Tenant-Aware    | Tenant-Aware           | Auto Filters |
+| --------- | ------------------- | ---------------------- | ------------ |
+| Fetch one | `fetch()`           | `fetchWithTenant()`    | ✅ YES       |
+| Fetch all | `fetchAll()`        | `fetchAllWithTenant()` | ✅ YES       |
+| Insert    | `execute('INSERT')` | `insert()`             | ✅ YES       |
+| Update    | `execute('UPDATE')` | `update()`             | ✅ YES       |
+| Delete    | `execute('DELETE')` | `delete()`             | ✅ YES       |
 
 ## Common Mistakes to Avoid
 

@@ -9,6 +9,7 @@ NetFlow now supports **multitenancy with a single database**, allowing multiple 
 ### Single Database, Multiple Tenants
 
 The multitenancy model uses:
+
 - **One database** shared by all tenants
 - **Tenant isolation** via `tenant_id` column on all data tables
 - **Automatic filtering** of queries by tenant context
@@ -36,7 +37,9 @@ The multitenancy model uses:
 The system identifies tenants from multiple sources in this order:
 
 ### 1. JWT Token
+
 The JWT token includes a `tenant_id` claim:
+
 ```json
 {
   "user_id": 123,
@@ -50,20 +53,24 @@ The JWT token includes a `tenant_id` claim:
 **Header:** `Authorization: Bearer <token>`
 
 ### 2. API Key
+
 Use API keys for programmatic access:
 
 **Header:** `X-API-Key: <api_key>`
 
 ### 3. Subdomain
+
 Automatic tenant detection from subdomain:
 
 **Examples:**
+
 - `tenant1.myapp.com` → tenant1
 - `acme.myapp.com` → acme
 
 Common subdomains are skipped: `www`, `api`, `admin`, `mail`, `ftp`
 
 ### 4. Direct Header
+
 Explicitly specify tenant ID:
 
 **Header:** `X-Tenant-ID: 1`
@@ -71,6 +78,7 @@ Explicitly specify tenant ID:
 ## Database Schema
 
 ### Tenants Table
+
 ```sql
 CREATE TABLE tenants (
     id SERIAL PRIMARY KEY,
@@ -91,6 +99,7 @@ CREATE TABLE tenants (
 ### Tenant-Aware Tables
 
 All major tables include a `tenant_id` column:
+
 - users
 - leads
 - customers
@@ -119,6 +128,7 @@ All major tables include a `tenant_id` column:
 - isp_performance_metrics
 
 ### Tenant API Keys Table
+
 ```sql
 CREATE TABLE tenant_api_keys (
     id SERIAL PRIMARY KEY,
@@ -150,6 +160,7 @@ php database/migrate.php
 ### Tenant Management
 
 #### Get Current Tenant Info
+
 ```
 GET /api/tenants/info
 Authorization: Bearer <token>
@@ -174,6 +185,7 @@ Response:
 ```
 
 #### Create New Tenant
+
 ```
 POST /api/tenants/create
 Authorization: Bearer <admin_token>
@@ -199,6 +211,7 @@ Response:
 ```
 
 #### Get Tenant by Slug
+
 ```
 GET /api/tenants/{slug}
 
@@ -210,6 +223,7 @@ Response:
 ```
 
 #### Update Tenant Settings
+
 ```
 PUT /api/tenants/settings
 Authorization: Bearer <token>
@@ -232,6 +246,7 @@ Response:
 ### API Key Management
 
 #### List API Keys
+
 ```
 GET /api/tenant-api-keys
 Authorization: Bearer <token>
@@ -254,6 +269,7 @@ Response:
 ```
 
 #### Create API Key
+
 ```
 POST /api/tenant-api-keys/create
 Authorization: Bearer <token>
@@ -277,6 +293,7 @@ Response:
 ```
 
 #### Revoke API Key
+
 ```
 DELETE /api/tenant-api-keys/{id}
 Authorization: Bearer <token>
@@ -303,6 +320,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 ```
 
 Response includes JWT with `tenant_id`:
+
 ```json
 {
   "success": true,
@@ -411,6 +429,7 @@ curl -X POST http://acme.myapp.com/api/auth/register \
 ```
 
 The user is automatically assigned to the tenant context identified from:
+
 1. JWT token (if provided)
 2. Subdomain (if accessing via subdomain)
 3. X-Tenant-ID header
@@ -419,10 +438,13 @@ The user is automatically assigned to the tenant context identified from:
 ## Best Practices
 
 ### 1. Always Identify Tenant
+
 Ensure tenant context is identified before processing requests. The middleware in `public/index.php` handles this automatically.
 
 ### 2. Use Tenant-Aware Methods
+
 Use the tenant-aware database methods:
+
 ```php
 // Good
 $customers = Database::fetchAllWithTenant(
@@ -435,20 +457,25 @@ $data = Database::fetchAll('SELECT * FROM customers');
 ```
 
 ### 3. Secure API Keys
+
 - Store API keys securely
 - Rotate keys regularly
 - Revoke unused keys
 - Monitor `last_used` timestamp
 
 ### 4. Prevent Tenant Leakage
+
 Never disable tenant isolation in production code:
+
 ```php
 // DON'T DO THIS IN PRODUCTION
 Database::setTenantIsolation(false);
 ```
 
 ### 5. Test Tenant Isolation
+
 Write tests to verify data isolation:
+
 ```php
 // Test that tenant1 user can't see tenant2 data
 $user1 = Auth::login('user1@tenant1.com', 'password');
@@ -461,19 +488,23 @@ $customers = fetchCustomers(); // Should only show tenant2 customers
 ## Troubleshooting
 
 ### No Tenant Context Found
+
 If requests return "No tenant context":
+
 1. Ensure JWT token includes `tenant_id` claim
 2. Check subdomain configuration
 3. Verify X-Tenant-ID header is present
 4. Check tenant exists and is active
 
 ### Data Isolation Not Working
+
 1. Verify `tenant_id` columns exist in database
 2. Check that `Database::setTenantIsolation(true)` is set
 3. Ensure migration was applied: `database/multitenancy-migration.sql`
 4. Verify tenant context is identified before queries
 
 ### API Key Not Working
+
 1. Verify API key exists and is active
 2. Check `X-API-Key` header spelling
 3. Ensure API key hasn't expired
@@ -482,20 +513,26 @@ If requests return "No tenant context":
 ## Performance Considerations
 
 ### Indexes
+
 The migration creates indexes on `tenant_id` for optimal query performance:
+
 ```sql
 CREATE INDEX idx_<table>_tenant_id ON <table>(tenant_id);
 ```
 
 ### Composite Indexes
+
 For frequently filtered columns, consider composite indexes:
+
 ```sql
-CREATE INDEX idx_customers_tenant_status 
+CREATE INDEX idx_customers_tenant_status
 ON customers(tenant_id, status);
 ```
 
 ### Query Optimization
+
 Tenant filtering happens at the database level:
+
 ```sql
 -- Automatically generated
 SELECT * FROM customers WHERE tenant_id = 1 AND status = 'active'
@@ -504,11 +541,13 @@ SELECT * FROM customers WHERE tenant_id = 1 AND status = 'active'
 ## Migration from Single to Multi-Tenant
 
 1. Create default tenant:
+
    ```php
    TenantContext::createTenant(['name' => 'Default', 'slug' => 'default', 'is_default' => true]);
    ```
 
 2. Assign all existing data to default tenant:
+
    ```sql
    UPDATE users SET tenant_id = 1 WHERE tenant_id IS NULL;
    UPDATE customers SET tenant_id = 1 WHERE tenant_id IS NULL;

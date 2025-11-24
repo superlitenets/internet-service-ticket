@@ -159,10 +159,11 @@ global.myapp.com        A  192.168.1.100
 Configure web server to handle all subdomains:
 
 **Nginx:**
+
 ```nginx
 server {
     server_name ~^(?<tenant>.+)\.myapp\.com$ myapp.com;
-    
+
     location / {
         # Pass to PHP
         fastcgi_pass php-fpm;
@@ -171,11 +172,12 @@ server {
 ```
 
 **Apache:**
+
 ```apache
 <VirtualHost *:80>
     ServerName myapp.com
     ServerAlias *.myapp.com
-    
+
     DocumentRoot /var/www/netflow/public
 </VirtualHost>
 ```
@@ -318,6 +320,7 @@ pg_dump -U netflow_user -t tenants -t users netflow_db > tenants_backup.sql
 ### Monitoring
 
 Set up alerts for:
+
 - Unusual access patterns
 - Cross-tenant query attempts
 - API key usage spikes
@@ -346,14 +349,16 @@ curl -X GET http://localhost:3000/api/customers \
 ### Issue: Data isolation not working
 
 **Verify migration:**
+
 ```bash
 psql -U netflow_user -d netflow_db -c "
-  SELECT column_name FROM information_schema.columns 
+  SELECT column_name FROM information_schema.columns
   WHERE table_name = 'customers' AND column_name = 'tenant_id'
 "
 ```
 
 **Check tenant isolation is enabled:**
+
 ```php
 // In your code
 echo \Core\Database::$enforce_tenant_isolation ? 'Enabled' : 'Disabled';
@@ -362,6 +367,7 @@ echo \Core\Database::$enforce_tenant_isolation ? 'Enabled' : 'Disabled';
 ### Issue: Users can't access tenant data
 
 **Verify user has tenant_id:**
+
 ```bash
 psql -U netflow_user -d netflow_db -c "
   SELECT id, email, tenant_id FROM users WHERE email = 'user@example.com'
@@ -369,6 +375,7 @@ psql -U netflow_user -d netflow_db -c "
 ```
 
 **Verify JWT includes tenant_id:**
+
 ```php
 $token = Auth::generateToken($user);
 $decoded = Auth::verifyToken($token);
@@ -387,6 +394,7 @@ echo json_encode($decoded);
 ## Support
 
 For issues or questions:
+
 1. Check logs: `tail -f /var/log/netflow.log`
 2. Enable debug mode: `APP_DEBUG=true` in `.env`
 3. Review database queries: Enable query logging in PostgreSQL

@@ -5,6 +5,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 ## 🎯 Features
 
 ### 1. Service Management
+
 - ✅ Automatic PPPoE/PPTP user creation in MikroTik
 - ✅ Real-time service activation/deactivation
 - ✅ Queue management and bandwidth throttling
@@ -13,6 +14,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - ✅ MikroTik integration (connect, test, manage)
 
 ### 2. Billing Models
+
 - ✅ Recurring monthly billing
 - ✅ Bandwidth-based overage charges
 - ✅ Tiered packages (Basic/Standard/Premium/Enterprise)
@@ -23,6 +25,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - ✅ Promotional codes and discounts
 
 ### 3. Bandwidth Monitoring
+
 - ✅ Real-time bandwidth monitoring per customer
 - ✅ Daily usage tracking (download/upload)
 - ✅ Monthly data limit enforcement
@@ -32,6 +35,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - ✅ Network health dashboard
 
 ### 4. Automation
+
 - ✅ Auto-generate invoices on billing date
 - ✅ Auto-suspend after 30+ days unpaid (configurable)
 - ✅ Auto-reactivate on payment received
@@ -41,6 +45,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - ✅ Scheduled cron jobs
 
 ### 5. Customer Features
+
 - ✅ Customer self-service portal
 - ✅ View active services and status
 - ✅ Real-time usage dashboard
@@ -50,6 +55,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - ✅ Usage alerts and notifications
 
 ### 6. Reporting & Analytics
+
 - ✅ Revenue reports (daily/monthly/yearly)
 - ✅ Customer churn analysis
 - ✅ Payment method breakdown
@@ -61,6 +67,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 ## 📊 Database Schema
 
 ### Core ISP Tables
+
 - `isp_packages` - Service packages with speed tiers
 - `isp_services` - Active customer services/subscriptions
 - `isp_billing_cycles` - Monthly billing records
@@ -78,6 +85,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 ## 🔌 API Endpoints
 
 ### Service Management (`/api/isp/mikrotik`)
+
 - `POST /mikrotik/test-connection` - Test MikroTik connection
 - `POST /services/create` - Create new PPP service
 - `POST /services/{id}/suspend` - Suspend service
@@ -86,6 +94,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - `GET /services/{id}/status` - Check service status
 
 ### Billing (`/api/isp/billing`)
+
 - `GET /cycles/{service_id}` - Get billing history
 - `POST /generate-invoice` - Create invoice manually
 - `POST /suspend-unpaid` - Suspend unpaid services
@@ -94,6 +103,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - `GET /dashboard` - Billing dashboard stats
 
 ### Monitoring (`/api/isp/monitoring`)
+
 - `POST /usage` - Log bandwidth usage
 - `GET /usage/{service_id}` - Get usage stats
 - `GET /bandwidth/{service_id}` - Real-time bandwidth
@@ -102,6 +112,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - `GET /health` - Network health status
 
 ### Reporting (`/api/isp/reports`)
+
 - `GET /revenue` - Revenue reports
 - `GET /churn` - Customer churn analysis
 - `GET /payments` - Payment analysis
@@ -110,6 +121,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 - `GET /executive-summary` - KPI dashboard
 
 ### Customer Portal (`/api/customer/portal`)
+
 - `GET /services` - List my services
 - `GET /services/{id}` - Service details
 - `GET /invoices` - My invoices
@@ -122,6 +134,7 @@ Complete modern ISP billing system integrated as a module within NetFlow. Handle
 ## 🛠️ Setup & Configuration
 
 ### 1. Initialize ISP Module
+
 ```bash
 # Add ISP schema to migrations
 php database/migrate.php
@@ -130,6 +143,7 @@ php database/migrate.php
 ```
 
 ### 2. Configure MikroTik Connection
+
 ```env
 # .env file
 MIKROTIK_API_HOST=192.168.1.1
@@ -139,6 +153,7 @@ MIKROTIK_API_PASSWORD=your_password
 ```
 
 ### 3. Set Up Cron Jobs
+
 ```bash
 # Generate invoices daily at midnight
 0 0 * * * /usr/bin/php /var/www/netflow/cron/isp-billing-automation.php --task=generate-invoices
@@ -160,7 +175,9 @@ MIKROTIK_API_PASSWORD=your_password
 ```
 
 ### 4. Configure ISP Settings
+
 Via API or database, set these configurations:
+
 ```
 isp_suspension_days: 30 (days before suspension)
 isp_late_fee_percent: 5 (% of invoice total)
@@ -172,6 +189,7 @@ isp_dunning_levels: 3 (number of reminder levels)
 ## 📱 Usage Examples
 
 ### Create ISP Service
+
 ```bash
 curl -X POST https://yourdomain.com/api/isp/mikrotik/services/create \
   -H "Authorization: Bearer TOKEN" \
@@ -186,6 +204,7 @@ curl -X POST https://yourdomain.com/api/isp/mikrotik/services/create \
 ```
 
 ### Generate Invoice
+
 ```bash
 curl -X POST https://yourdomain.com/api/isp/billing/generate-invoice \
   -H "Authorization: Bearer TOKEN" \
@@ -196,12 +215,14 @@ curl -X POST https://yourdomain.com/api/isp/billing/generate-invoice \
 ```
 
 ### Get Customer Usage
+
 ```bash
 curl https://yourdomain.com/api/customer/portal/usage-dashboard/1 \
   -H "Authorization: Bearer TOKEN"
 ```
 
 ### Check Network Health
+
 ```bash
 curl https://yourdomain.com/api/isp/monitoring/health \
   -H "Authorization: Bearer TOKEN"
@@ -210,6 +231,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 ## 📊 Admin Dashboard Sections
 
 ### ISP Operations Dashboard
+
 - Active services overview
 - Suspended services list
 - Real-time bandwidth usage
@@ -217,6 +239,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Recent service changes
 
 ### Billing Dashboard
+
 - Monthly revenue
 - Unpaid invoices
 - Overdue invoices
@@ -224,6 +247,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Late fee tracking
 
 ### Analytics Dashboard
+
 - Revenue trends (charts)
 - Customer churn rate
 - Usage analytics
@@ -231,6 +255,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Payment method breakdown
 
 ### Customer Management
+
 - Service list (searchable)
 - Customer profiles
 - Service history
@@ -240,6 +265,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 ## 👥 Customer Portal Pages
 
 ### Dashboard
+
 - Service status
 - Current usage (GB/limit)
 - Next billing date
@@ -247,6 +273,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Quick actions
 
 ### Services
+
 - List of active services
 - Service details
 - Usage progress
@@ -254,6 +281,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Upgrade/downgrade options
 
 ### Invoices
+
 - Invoice list (paginated)
 - Invoice PDF download
 - Payment status
@@ -261,6 +289,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Payment options
 
 ### Usage
+
 - Daily usage graph
 - Monthly usage breakdown
 - Peak hour analysis
@@ -268,6 +297,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 - Alert history
 
 ### Account
+
 - Profile information
 - Contact details
 - Notification preferences
@@ -308,6 +338,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 ## 🔄 Workflows
 
 ### Invoice Generation Workflow
+
 1. Service's billing date arrives
 2. Cron job triggers invoice generation
 3. Calculate base charge + overage
@@ -317,6 +348,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 7. Send notification to customer
 
 ### Service Suspension Workflow
+
 1. Invoice becomes unpaid
 2. Due date passes (configurable days)
 3. Cron job checks for unpaid
@@ -326,6 +358,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 7. Service log created
 
 ### Service Reactivation Workflow
+
 1. Customer pays outstanding balance
 2. Payment recorded
 3. Cron job checks for fully paid services
@@ -337,24 +370,28 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 ## 🆘 Troubleshooting
 
 ### MikroTik Connection Issues
+
 - Verify API credentials in `.env`
 - Check firewall allows port 8728
 - Test connection via endpoint
 - Check MikroTik user permissions
 
 ### Invoices Not Generating
+
 - Verify cron job is running
 - Check database connectivity
 - Verify ISP schema is installed
 - Check error logs
 
 ### Services Not Suspending
+
 - Verify MikroTik API credentials
 - Check suspension days configuration
 - Verify cron job running
 - Check service status in database
 
 ### Usage Not Tracking
+
 - Verify usage data POST to API
 - Check database permissions
 - Verify service_id is valid
@@ -363,6 +400,7 @@ curl https://yourdomain.com/api/isp/monitoring/health \
 ## 📝 Customization
 
 All business logic is customizable:
+
 - Late fee percentage
 - Suspension delay days
 - VAT/tax rates

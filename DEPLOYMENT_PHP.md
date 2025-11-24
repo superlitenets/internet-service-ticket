@@ -7,6 +7,7 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 ### **Pages Created**
 
 #### 1. **Landing Page** (`views/index.php`)
+
 - Modern hero section with gradient background
 - Feature showcase with 6 key features
 - Pricing table (Starter, Professional, Enterprise)
@@ -16,6 +17,7 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 - Responsive design for all devices
 
 #### 2. **Admin Dashboard** (`views/admin/dashboard.php`)
+
 - KPI cards showing:
   - Active Services (1,250)
   - Monthly Revenue ($45,320)
@@ -29,6 +31,7 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 - Professional color scheme
 
 #### 3. **Customer Portal** (`views/customer/portal.php`)
+
 - Tabbed interface with sections:
   - **My Services**: View active services with speed, data limits, pricing
   - **Invoices**: Download invoices, check payment status
@@ -40,6 +43,7 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 - Data usage visualization
 
 #### 4. **Modern Auth Pages** (Updated)
+
 - Redesigned login page with gradient background
 - Registration page with password strength indicator
 - Professional form styling
@@ -49,6 +53,7 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 ### **Design System**
 
 **Color Palette**:
+
 - Primary: `#667eea` (Purple-blue)
 - Secondary: `#764ba2` (Deep purple)
 - Accent: `#f093fb` (Pink)
@@ -56,10 +61,12 @@ The PHP version has been completely redesigned with modern, professional UI/UX:
 - Light: `#f7fafc` (Off-white)
 
 **Typography**:
+
 - Primary font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 - Font weights: 400, 500, 600, 700, 800
 
 **Components**:
+
 - Gradient buttons with hover effects
 - Card-based layouts with subtle shadows
 - Responsive grid systems
@@ -121,6 +128,7 @@ netflow-php/
 ## 🚀 Deployment Steps
 
 ### **Step 1: Prepare Files**
+
 ```bash
 # All files are ready in the repository
 # No additional downloads needed
@@ -129,17 +137,20 @@ netflow-php/
 ### **Step 2: Upload to cPanel**
 
 **Option A: Via FTP/SFTP**
+
 1. Connect to your hosting via FTP
 2. Navigate to `public_html`
 3. Upload all files (preserve directory structure)
 
 **Option B: Via cPanel File Manager**
+
 1. Log in to cPanel
 2. Open File Manager
 3. Navigate to `public_html`
 4. Upload files in batches
 
 **Option C: Via Git (if available)**
+
 ```bash
 cd ~/public_html
 git clone https://github.com/yourusername/netflow-php.git .
@@ -148,6 +159,7 @@ git clone https://github.com/yourusername/netflow-php.git .
 ### **Step 3: Run Installation Wizard**
 
 #### **Method 1: Web Browser (Recommended)**
+
 1. Visit: `https://yourdomain.com/install-cpanel.php`
 2. Follow the interactive steps
 3. Enter database credentials
@@ -155,6 +167,7 @@ git clone https://github.com/yourusername/netflow-php.git .
 5. Complete installation
 
 #### **Method 2: Command Line (SSH)**
+
 ```bash
 ssh user@yourdomain.com
 cd public_html
@@ -162,6 +175,7 @@ php install-cpanel.php
 ```
 
 #### **Method 3: Automated Script**
+
 ```bash
 # Via SSH with sudo access
 sudo bash setup-cpanel.sh yourusername
@@ -170,6 +184,7 @@ sudo bash setup-cpanel.sh yourusername
 ### **Step 4: Configure Settings**
 
 Once installed, log in to admin dashboard and configure:
+
 - Company information
 - M-Pesa credentials (if using payments)
 - SMS API settings
@@ -179,6 +194,7 @@ Once installed, log in to admin dashboard and configure:
 ### **Step 5: Set Up Cron Jobs**
 
 In cPanel > Cron Jobs, add:
+
 ```bash
 # Generate invoices daily at midnight
 0 0 * * * /usr/bin/php /home/user/public_html/cron/isp-billing-automation.php --task=generate-invoices
@@ -197,17 +213,18 @@ In cPanel > Cron Jobs, add:
 
 After deployment:
 
-| URL | Purpose | User Type |
-|-----|---------|-----------|
-| `https://yourdomain.com/` | Landing page | Public |
-| `https://yourdomain.com/views/auth/login.php` | Login page | All users |
-| `https://yourdomain.com/views/auth/register.php` | Registration | New users |
-| `https://yourdomain.com/views/admin/dashboard.php` | Admin dashboard | Admins |
+| URL                                                | Purpose         | User Type |
+| -------------------------------------------------- | --------------- | --------- |
+| `https://yourdomain.com/`                          | Landing page    | Public    |
+| `https://yourdomain.com/views/auth/login.php`      | Login page      | All users |
+| `https://yourdomain.com/views/auth/register.php`   | Registration    | New users |
+| `https://yourdomain.com/views/admin/dashboard.php` | Admin dashboard | Admins    |
 | `https://yourdomain.com/views/customer/portal.php` | Customer portal | Customers |
 
 ## 🎯 Key Features Deployed
 
 ### **Frontend**
+
 - ✅ Modern, responsive design
 - ✅ Professional UI with gradients
 - ✅ Interactive dashboards with charts
@@ -216,6 +233,7 @@ After deployment:
 - ✅ Mobile-friendly layout
 
 ### **Backend API** (65+ endpoints)
+
 - ✅ Authentication (JWT)
 - ✅ Customer management
 - ✅ Service management (MikroTik integration)
@@ -227,6 +245,7 @@ After deployment:
 - ✅ Customer portal APIs
 
 ### **Database**
+
 - ✅ Complete schema with ISP module
 - ✅ 12+ core tables
 - ✅ 12+ ISP-specific tables
@@ -234,6 +253,7 @@ After deployment:
 - ✅ Automatic relationships
 
 ### **Automation**
+
 - ✅ Scheduled invoice generation
 - ✅ Automatic suspensions/reactivations
 - ✅ Payment reminders
@@ -243,6 +263,7 @@ After deployment:
 ## 🔒 Security
 
 All pages implement:
+
 - JWT authentication
 - CSRF protection via SameSite cookies
 - Input validation & sanitization
@@ -262,21 +283,25 @@ All pages implement:
 ## 🆘 Troubleshooting
 
 ### **Installation Wizard Stuck**
+
 1. Check PHP version: `php -v` (must be 8.1+)
 2. Verify database access
 3. Check file permissions: `chmod 755 storage`
 
 ### **Charts Not Displaying**
+
 1. Ensure Chart.js CDN is accessible
 2. Check browser console for JS errors
 3. Verify JavaScript is enabled
 
 ### **API Errors (JSON parsing)**
+
 1. Check database connection
 2. Verify API endpoint URLs
 3. Review error logs in `storage/logs/app.log`
 
 ### **Missing Pages**
+
 1. Verify all files were uploaded
 2. Check URL paths are correct
 3. Test with `https://yourdomain.com/install-cpanel.php`
