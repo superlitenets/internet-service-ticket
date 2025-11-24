@@ -86,6 +86,13 @@ export default function Layout({ children }: LayoutProps) {
     },
     { path: "/payments", label: "Payments", icon: DollarSign },
     {
+      label: "Accounting",
+      icon: Ledger,
+      subItems: [
+        { path: "/accounting", label: "General Accounting", icon: BarChart3 },
+      ],
+    },
+    {
       label: "Mikrotik ISP",
       icon: Wifi,
       subItems: [
