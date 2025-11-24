@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import { db } from "../lib/db";
 import type {
   Employee,
   AttendanceRecord,
@@ -14,12 +15,37 @@ import type {
 export const getEmployees: RequestHandler<
   unknown,
   { employees: Employee[] }
-> = (_req, res) => {
+> = async (_req, res) => {
   try {
-    // In production, this would fetch from a database
-    const employees: Employee[] = [];
-    res.json({ employees });
+    const employees = await db.employee.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
+    });
+
+    const formattedEmployees: Employee[] = employees.map((emp) => ({
+      id: emp.id,
+      userId: emp.userId,
+      name: emp.user?.name || emp.firstName + " " + emp.lastName,
+      email: emp.email,
+      phone: emp.phone,
+      position: emp.position || undefined,
+      department: emp.department || undefined,
+      hireDate: emp.hireDate.toISOString(),
+      status: emp.status,
+      employeeId: emp.id,
+    }));
+
+    res.json({ employees: formattedEmployees });
   } catch (error) {
+    console.error("Error fetching employees:", error);
     res.status(500).json({
       error:
         error instanceof Error ? error.message : "Failed to fetch employees",
@@ -30,28 +56,83 @@ export const getEmployees: RequestHandler<
 /**
  * Create employee
  */
-export const createEmployee: RequestHandler<unknown, unknown, Employee> = (
+export const createEmployee: RequestHandler<unknown, unknown, Employee> = async (
   req,
   res,
 ) => {
   try {
-    const employee = req.body;
+    const {
+      name,
+      email,
+      phone,
+      position,
+      department,
+      hireDate,
+      userId,
+    } = req.body;
 
-    if (!employee.name || !employee.email || !employee.employeeId) {
+    if (!name || !email || !phone) {
       return res.status(400).json({
-        error: "Missing required fields",
+        error: "Missing required fields: name, email, phone",
       });
     }
 
-    // In production, this would save to a database
-    console.log("[HRM] Employee created:", employee);
+    // Check if email or phone already exists
+    const existingEmployee = await db.employee.findFirst({
+      where: {
+        OR: [{ email }, { phone }],
+      },
+    });
 
-    res.json({
+    if (existingEmployee) {
+      return res.status(409).json({
+        error: "Employee with this email or phone already exists",
+      });
+    }
+
+    const employee = await db.employee.create({
+      data: {
+        firstName: name.split(" ")[0],
+        lastName: name.split(" ").slice(1).join(" ") || name,
+        email,
+        phone,
+        position: position || undefined,
+        department: department || undefined,
+        hireDate: hireDate ? new Date(hireDate) : new Date(),
+        userId: userId || undefined,
+        status: "active",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const formattedEmployee: Employee = {
+      id: employee.id,
+      userId: employee.userId || undefined,
+      name: employee.user?.name || name,
+      email: employee.email,
+      phone: employee.phone,
+      position: employee.position || undefined,
+      department: employee.department || undefined,
+      hireDate: employee.hireDate.toISOString(),
+      status: employee.status,
+      employeeId: employee.id,
+    };
+
+    res.status(201).json({
       success: true,
       message: "Employee created successfully",
-      employee,
+      employee: formattedEmployee,
     });
   } catch (error) {
+    console.error("Error creating employee:", error);
     res.status(500).json({
       error:
         error instanceof Error ? error.message : "Failed to create employee",
@@ -67,6 +148,7 @@ export const getAttendance: RequestHandler<
   { attendance: AttendanceRecord[] }
 > = (_req, res) => {
   try {
+    // TODO: Implement attendance records fetching from database
     const attendance: AttendanceRecord[] = [];
     res.json({ attendance });
   } catch (error) {
@@ -85,6 +167,7 @@ export const getLeaveRequests: RequestHandler<
   { requests: LeaveRequest[] }
 > = (_req, res) => {
   try {
+    // TODO: Implement leave requests fetching from database
     const requests: LeaveRequest[] = [];
     res.json({ requests });
   } catch (error) {
@@ -105,6 +188,7 @@ export const getPayroll: RequestHandler<
   { records: PayrollRecord[] }
 > = (_req, res) => {
   try {
+    // TODO: Implement payroll records fetching from database
     const records: PayrollRecord[] = [];
     res.json({ records });
   } catch (error) {
@@ -122,6 +206,7 @@ export const getPerformance: RequestHandler<
   { reviews: PerformanceReview[] }
 > = (_req, res) => {
   try {
+    // TODO: Implement performance reviews fetching from database
     const reviews: PerformanceReview[] = [];
     res.json({ reviews });
   } catch (error) {
