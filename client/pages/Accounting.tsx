@@ -1,19 +1,4 @@
-import React, { useState, useEffect } from "react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -22,516 +7,256 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Plus,
+  Receipt,
+  DollarSign,
   FileText,
   TrendingUp,
-  DollarSign,
   ShoppingCart,
-  Receipt,
+  CreditCard,
+  ArrowRight,
 } from "lucide-react";
-import {
-  ChartOfAccount,
-  JournalEntry,
-  Expense,
-  POSTransaction,
-  AccountingSummary,
-} from "@shared/api";
+
+interface AccountingModule {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  count?: number;
+}
 
 export function AccountingPage() {
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("overview");
-  const [summary, setSummary] = useState<AccountingSummary | null>(null);
-  const [chartOfAccounts, setChartOfAccounts] = useState<ChartOfAccount[]>([]);
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [posTransactions, setPosTransactions] = useState<POSTransaction[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const modules: AccountingModule[] = [
+    {
+      id: "invoices",
+      title: "Invoices",
+      description: "Create, manage, and track customer invoices",
+      icon: FileText,
+      color: "bg-blue-50 hover:bg-blue-100",
+      count: 12,
+    },
+    {
+      id: "quotes",
+      title: "Quotes",
+      description: "Generate and send quotes to customers",
+      icon: Receipt,
+      color: "bg-purple-50 hover:bg-purple-100",
+      count: 5,
+    },
+    {
+      id: "sales",
+      title: "Sales",
+      description: "Track sales transactions and revenue",
+      icon: TrendingUp,
+      color: "bg-green-50 hover:bg-green-100",
+      count: 24,
+    },
+    {
+      id: "expenses",
+      title: "Expenses",
+      description: "Record and categorize business expenses",
+      icon: DollarSign,
+      color: "bg-red-50 hover:bg-red-100",
+      count: 8,
+    },
+    {
+      id: "payments",
+      title: "Payments",
+      description: "Manage incoming and outgoing payments",
+      icon: CreditCard,
+      color: "bg-orange-50 hover:bg-orange-100",
+      count: 31,
+    },
+    {
+      id: "pos",
+      title: "POS System",
+      description: "Point of sale transactions and inventory",
+      icon: ShoppingCart,
+      color: "bg-amber-50 hover:bg-amber-100",
+      count: 3,
+    },
+  ];
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-
-      const [summaryRes, accountsRes, ledgerRes, expensesRes, posRes] =
-        await Promise.all([
-          fetch("/api/accounting/summary"),
-          fetch("/api/accounting/accounts"),
-          fetch("/api/accounting/ledger"),
-          fetch("/api/accounting/expenses"),
-          fetch("/api/pos/transactions"),
-        ]);
-
-      if (summaryRes.ok) setSummary(await summaryRes.json());
-      if (accountsRes.ok) setChartOfAccounts(await accountsRes.json());
-      if (ledgerRes.ok) setJournalEntries(await ledgerRes.json());
-      if (expensesRes.ok) setExpenses(await expensesRes.json());
-      if (posRes.ok) setPosTransactions(await posRes.json());
-    } catch (err) {
-      console.error("Failed to load accounting data:", err);
-      toast({
-        title: "Error",
-        description: "Failed to load accounting data",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleModuleClick = (moduleId: string) => {
+    setExpandedModule(expandedModule === moduleId ? null : moduleId);
   };
-
-  const prepareChartData = () => {
-    if (!summary) return [];
-
-    return [
-      { name: "Assets", value: summary.totalAssets || 0 },
-      { name: "Liabilities", value: summary.totalLiabilities || 0 },
-      { name: "Equity", value: summary.totalEquity || 0 },
-    ];
-  };
-
-  const prepareRevenueData = () => {
-    if (!summary) return [];
-
-    return [
-      { name: "Revenue", value: summary.totalRevenue || 0 },
-      { name: "Expenses", value: summary.totalExpenses || 0 },
-      { name: "Net Profit", value: summary.netProfit || 0 },
-    ];
-  };
-
-  const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b"];
 
   return (
     <div className="space-y-8 p-8">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Accounting</h1>
         <p className="text-muted-foreground mt-2">
-          Manage invoices, expenses, general ledger, and POS transactions
+          Manage your business finances with integrated accounting modules
         </p>
       </div>
 
-      {/* Financial Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Assets
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                KES {summary.totalAssets.toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {modules.map((module) => {
+          const IconComponent = module.icon;
+          const isExpanded = expandedModule === module.id;
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Revenue
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                KES {summary.totalRevenue.toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
+          return (
+            <Card
+              key={module.id}
+              className={`cursor-pointer transition-all duration-300 ${module.color}`}
+              onClick={() => handleModuleClick(module.id)}
+            >
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-white rounded-lg">
+                      <IconComponent size={24} className="text-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">
+                        {module.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm mt-1">
+                        {module.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                  {module.count !== undefined && (
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-foreground">
+                        {module.count}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {module.count === 1 ? "item" : "items"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardHeader>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                KES {summary.totalExpenses.toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Net Profit
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                className={`text-2xl font-bold ${summary.netProfit >= 0 ? "text-green-600" : "text-red-600"}`}
-              >
-                KES {summary.netProfit.toFixed(2)}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview" className="gap-2">
-            <TrendingUp size={16} />
-            <span className="hidden sm:inline">Overview</span>
-          </TabsTrigger>
-          <TabsTrigger value="accounts" className="gap-2">
-            <FileText size={16} />
-            <span className="hidden sm:inline">Accounts</span>
-          </TabsTrigger>
-          <TabsTrigger value="ledger" className="gap-2">
-            <Receipt size={16} />
-            <span className="hidden sm:inline">Ledger</span>
-          </TabsTrigger>
-          <TabsTrigger value="expenses" className="gap-2">
-            <DollarSign size={16} />
-            <span className="hidden sm:inline">Expenses</span>
-          </TabsTrigger>
-          <TabsTrigger value="pos" className="gap-2">
-            <ShoppingCart size={16} />
-            <span className="hidden sm:inline">POS</span>
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          {summary && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Balance Sheet Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={prepareChartData()}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) =>
-                          `${name}: ${value.toFixed(0)}`
-                        }
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {COLORS.map((color, index) => (
-                          <Cell key={`cell-${index}`} fill={color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+              {isExpanded && (
+                <CardContent className="pt-0 space-y-3">
+                  <div className="border-t pt-4">
+                    <div className="space-y-2">
+                      <Button className="w-full justify-between" variant="outline">
+                        <span>View {module.title}</span>
+                        <ArrowRight size={16} />
+                      </Button>
+                      <Button className="w-full" variant="default">
+                        <span>New {module.title.slice(0, -1)}</span>
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
-              </Card>
+              )}
+            </Card>
+          );
+        })}
+      </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Income Statement</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={prepareRevenueData()}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#3b82f6" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+      {/* Quick Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Revenue
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">KES 45,280</div>
+            <p className="text-xs text-green-600 mt-1">+12% from last month</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Expenses
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">KES 8,940</div>
+            <p className="text-xs text-red-600 mt-1">+5% from last month</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Net Profit
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">KES 36,340</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              This month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pending Invoices
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">5</div>
+            <p className="text-xs text-orange-600 mt-1">KES 2,450 awaiting</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activities */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Transactions</CardTitle>
+          <CardDescription>
+            Latest accounting activities across all modules
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div>
+                <p className="font-medium">Invoice #2024-001 Created</p>
+                <p className="text-sm text-muted-foreground">
+                  Customer: ABC Corp
+                </p>
+              </div>
+              <p className="text-sm font-medium">KES 5,000</p>
             </div>
-          )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>
-                Latest journal entries and transactions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Entry</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {journalEntries.slice(0, 5).map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="font-medium">
-                        {entry.entryNumber}
-                      </TableCell>
-                      <TableCell>{entry.description}</TableCell>
-                      <TableCell>KES {entry.amount.toFixed(2)}</TableCell>
-                      <TableCell>
-                        {new Date(entry.entryDate).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            entry.status === "posted" ? "default" : "secondary"
-                          }
-                        >
-                          {entry.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div>
+                <p className="font-medium">Expense Recorded</p>
+                <p className="text-sm text-muted-foreground">
+                  Office Supplies
+                </p>
+              </div>
+              <p className="text-sm font-medium">-KES 850</p>
+            </div>
 
-        {/* Chart of Accounts Tab */}
-        <TabsContent value="accounts" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Chart of Accounts</h2>
-            <Button className="gap-2">
-              <Plus size={16} />
-              New Account
-            </Button>
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div>
+                <p className="font-medium">Payment Received</p>
+                <p className="text-sm text-muted-foreground">
+                  Invoice #2024-001
+                </p>
+              </div>
+              <p className="text-sm font-medium text-green-600">+KES 5,000</p>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div>
+                <p className="font-medium">Quote #2024-Q001 Sent</p>
+                <p className="text-sm text-muted-foreground">
+                  Potential Customer: XYZ Ltd
+                </p>
+              </div>
+              <p className="text-sm font-medium">KES 8,500</p>
+            </div>
           </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Account Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {chartOfAccounts.map((account) => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-medium">
-                        {account.accountCode}
-                      </TableCell>
-                      <TableCell>{account.accountName}</TableCell>
-                      <TableCell>{account.type}</TableCell>
-                      <TableCell>{account.category}</TableCell>
-                      <TableCell className="font-medium">
-                        KES {account.balance.toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={account.enabled ? "default" : "secondary"}
-                        >
-                          {account.enabled ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* General Ledger Tab */}
-        <TabsContent value="ledger" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">General Ledger</h2>
-            <Button className="gap-2">
-              <Plus size={16} />
-              New Entry
-            </Button>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Entry #</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Debit Account</TableHead>
-                    <TableHead>Credit Account</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {journalEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell className="font-medium">
-                        {entry.entryNumber}
-                      </TableCell>
-                      <TableCell>{entry.description}</TableCell>
-                      <TableCell>{entry.debitAccountCode}</TableCell>
-                      <TableCell>{entry.creditAccountCode}</TableCell>
-                      <TableCell className="font-medium">
-                        KES {entry.amount.toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(entry.entryDate).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            entry.status === "posted"
-                              ? "default"
-                              : entry.status === "reversed"
-                                ? "destructive"
-                                : "secondary"
-                          }
-                        >
-                          {entry.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Expenses Tab */}
-        <TabsContent value="expenses" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Expenses</h2>
-            <Button className="gap-2">
-              <Plus size={16} />
-              New Expense
-            </Button>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Expense #</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Vendor</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {expenses.map((expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell className="font-medium">
-                        {expense.expenseNumber}
-                      </TableCell>
-                      <TableCell>{expense.description}</TableCell>
-                      <TableCell className="font-medium">
-                        KES {expense.amount.toFixed(2)}
-                      </TableCell>
-                      <TableCell>{expense.vendor || "-"}</TableCell>
-                      <TableCell>
-                        {new Date(expense.expenseDate).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            expense.status === "approved"
-                              ? "default"
-                              : expense.status === "rejected"
-                                ? "destructive"
-                                : "secondary"
-                          }
-                        >
-                          {expense.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* POS Tab */}
-        <TabsContent value="pos" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">POS Transactions</h2>
-            <Button className="gap-2">
-              <Plus size={16} />
-              New Transaction
-            </Button>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Receipt #</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Subtotal</TableHead>
-                    <TableHead>Tax</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Payment Method</TableHead>
-                    <TableHead>Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {posTransactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">
-                        {transaction.receiptNumber}
-                      </TableCell>
-                      <TableCell>{transaction.customerName || "-"}</TableCell>
-                      <TableCell>
-                        KES {transaction.subtotal.toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        KES {transaction.taxAmount.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="font-bold">
-                        KES {transaction.totalAmount.toFixed(2)}
-                      </TableCell>
-                      <TableCell>{transaction.paymentMethod}</TableCell>
-                      <TableCell>
-                        {new Date(
-                          transaction.transactionDate,
-                        ).toLocaleDateString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
