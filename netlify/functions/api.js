@@ -116,6 +116,13 @@ function createJsonResponse(statusCode, data) {
 }
 
 exports.handler = async (event) => {
+  console.log("Netlify Function Debug:", {
+    path: event.path,
+    rawPath: event.rawPath,
+    requestContext: event.requestContext,
+    httpMethod: event.httpMethod,
+  });
+
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
