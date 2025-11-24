@@ -462,6 +462,49 @@ export default function TicketsPage() {
     });
   };
 
+  const handleOpenDetail = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setDetailDialogOpen(true);
+  };
+
+  const handleAddReply = (ticketId: string, message: string) => {
+    setAllTickets((prev) =>
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          const newReply: Reply = {
+            id: `reply-${Date.now()}`,
+            author: "Support Team",
+            authorRole: "support",
+            message,
+            timestamp: new Date().toLocaleString(),
+          };
+          return {
+            ...t,
+            replies: [...(t.replies || []), newReply],
+            updatedAt: new Date().toLocaleString(),
+          };
+        }
+        return t;
+      }),
+    );
+
+    if (selectedTicket) {
+      setSelectedTicket({
+        ...selectedTicket,
+        replies: [
+          ...(selectedTicket.replies || []),
+          {
+            id: `reply-${Date.now()}`,
+            author: "Support Team",
+            authorRole: "support",
+            message,
+            timestamp: new Date().toLocaleString(),
+          },
+        ],
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "resolved":
