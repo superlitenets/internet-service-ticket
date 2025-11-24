@@ -54,19 +54,36 @@ echo -e "${YELLOW}Step 4: Starting PostgreSQL service...${NC}"
 systemctl start postgresql
 systemctl enable postgresql
 
+# Wait for PostgreSQL to be ready
+sleep 3
+
 # Step 5: Create database and user
 echo -e "${YELLOW}Step 5: Creating database and user...${NC}"
-sudo -u postgres psql << EOF
-SELECT 1 FROM pg_database WHERE datname = '$DB_NAME' \gexec DROP DATABASE IF EXISTS "$DB_NAME";
-CREATE DATABASE "$DB_NAME";
+sudo -u postgres psql -v ON_ERROR_STOP=1 << EOF
+-- Drop existing database if it exists
+DROP DATABASE IF EXISTS "$DB_NAME";
+
+-- Drop existing user if it exists
 DROP USER IF EXISTS "$DB_USER";
+
+-- Create new user
 CREATE USER "$DB_USER" WITH PASSWORD '$DB_PASSWORD';
+
+-- Create database
+CREATE DATABASE "$DB_NAME" OWNER "$DB_USER";
+
+-- Set connection defaults
 ALTER ROLE "$DB_USER" SET client_encoding TO 'utf8';
 ALTER ROLE "$DB_USER" SET default_transaction_isolation TO 'read committed';
 ALTER ROLE "$DB_USER" SET default_transaction_deferrable TO 'off';
 ALTER ROLE "$DB_USER" SET default_transaction_read_only TO 'off';
+
+-- Grant privileges
 GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO "$DB_USER";
-\c "$DB_NAME"
+EOF
+
+# Grant schema privileges
+sudo -u postgres psql -d "$DB_NAME" -v ON_ERROR_STOP=1 << EOF
 GRANT ALL ON SCHEMA public TO "$DB_USER";
 EOF
 
