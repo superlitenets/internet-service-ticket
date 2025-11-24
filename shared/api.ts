@@ -264,6 +264,7 @@ export interface MpesaCredentials {
   businessShortCode: string;
   passkey?: string;
   callbackUrl?: string;
+  initiatorPassword?: string;
 }
 
 /**
