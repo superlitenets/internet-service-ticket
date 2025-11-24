@@ -75,7 +75,7 @@ export default function Landing() {
               <Button
                 onClick={() => navigate("/login")}
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 gap-2"
+                className="bg-blue-600 hover:bg-blue-700 gap-2 text-white"
               >
                 Get Started
                 <ArrowRight size={18} />
@@ -83,7 +83,7 @@ export default function Landing() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-slate-600 text-white hover:bg-slate-800"
+                className="border-slate-300 text-slate-900 hover:bg-slate-100"
               >
                 Learn More
               </Button>
@@ -91,16 +91,16 @@ export default function Landing() {
 
             <div className="flex items-center gap-8 pt-8">
               <div>
-                <div className="text-3xl font-bold text-blue-400">500+</div>
-                <p className="text-slate-400">ISP Providers</p>
+                <div className="text-3xl font-bold text-blue-600">500+</div>
+                <p className="text-slate-600">ISP Providers</p>
               </div>
               <div>
-                <div className="text-3xl font-bold text-blue-400">50K+</div>
-                <p className="text-slate-400">Customers Managed</p>
+                <div className="text-3xl font-bold text-blue-600">50K+</div>
+                <p className="text-slate-600">Customers Managed</p>
               </div>
               <div>
-                <div className="text-3xl font-bold text-blue-400">99.9%</div>
-                <p className="text-slate-400">Uptime</p>
+                <div className="text-3xl font-bold text-blue-600">99.9%</div>
+                <p className="text-slate-600">Uptime</p>
               </div>
             </div>
           </div>
