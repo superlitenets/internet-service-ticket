@@ -111,31 +111,43 @@ export const handleSendSms: RequestHandler<
     // If Advanta with custom URL, make the actual API call
     if (provider === "advanta" && customApiUrl) {
       try {
+        // Format Advanta SMS request payload
+        const advantaPayload = {
+          apikey: apiKey,
+          partnerID: partnerId,
+          shortcode: shortcode,
+          recipients: validPhoneNumbers.join(","), // Advanta expects comma-separated recipients
+          message: message,
+        };
+
+        console.log("[SMS] Advanta request payload:", advantaPayload);
+
         const response = await fetch(customApiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: partnerId,
-            password: apiKey,
-            message,
-            recipients: validPhoneNumbers,
-            sender: shortcode,
-          }),
+          body: JSON.stringify(advantaPayload),
         });
 
+        const responseText = await response.text();
+        console.log("[SMS] Advanta API response status:", response.status);
+        console.log("[SMS] Advanta API response body:", responseText);
+
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("[SMS] Advanta API error:", errorText);
+          console.error("[SMS] Advanta API error:", responseText);
           return res.status(400).json({
             success: false,
             message: "Failed to send SMS via Advanta API",
             timestamp: new Date().toISOString(),
-            error: "API request failed",
+            error: `Advanta API error: ${responseText}`,
           });
         }
 
-        const result = await response.json();
-        console.log("[SMS] Advanta API response:", result);
+        try {
+          const result = JSON.parse(responseText);
+          console.log("[SMS] Advanta API response:", result);
+        } catch (parseError) {
+          console.log("[SMS] Response is not JSON:", responseText);
+        }
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
