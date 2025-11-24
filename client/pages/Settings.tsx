@@ -113,6 +113,7 @@ export default function SettingsPage() {
       apiKey?: string;
       partnerId?: string;
       shortcode?: string;
+      customApiUrl?: string;
     }
   >({
     provider: "twilio",
@@ -122,6 +123,7 @@ export default function SettingsPage() {
     apiKey: "",
     partnerId: "",
     shortcode: "",
+    customApiUrl: "",
     enabled: true,
   });
 
