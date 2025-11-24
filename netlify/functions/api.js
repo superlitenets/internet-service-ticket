@@ -233,6 +233,7 @@ exports.handler = async (event) => {
         apiKey,
         partnerId,
         shortcode,
+        customApiUrl,
       } = body;
 
       // Validation
