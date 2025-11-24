@@ -278,6 +278,15 @@ export default function TicketsPage() {
     }
   };
 
+  // Save tickets to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem("tickets_data", JSON.stringify(allTickets));
+    } catch (error) {
+      console.error("Failed to save tickets to localStorage:", error);
+    }
+  }, [allTickets]);
+
   const filteredTickets = allTickets.filter((ticket) => {
     const matchesSearch =
       ticket.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
