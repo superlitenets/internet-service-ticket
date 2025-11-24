@@ -154,25 +154,6 @@ export default function Login() {
               {loading && <Loader size={16} className="animate-spin" />}
               {loading ? "Logging in..." : "Login"}
             </Button>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 pt-6 border-t border-slate-700">
-              <p className="text-sm text-slate-400 mb-3">Demo Credentials:</p>
-              <div className="space-y-2 text-xs text-slate-500 bg-slate-700 p-3 rounded">
-                <p>
-                  <span className="text-slate-400 font-medium">Admin:</span>{" "}
-                  admin@example.com / password123
-                </p>
-                <p>
-                  <span className="text-slate-400 font-medium">Support:</span>{" "}
-                  support@example.com / password123
-                </p>
-                <p>
-                  <span className="text-slate-400 font-medium">Customer:</span>{" "}
-                  0722000000 / password123
-                </p>
-              </div>
-            </div>
           </form>
         </Card>
 
