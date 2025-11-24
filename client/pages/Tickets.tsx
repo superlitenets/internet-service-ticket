@@ -365,6 +365,19 @@ export default function TicketsPage() {
     }
 
     setDialogOpen(false);
+    setFormData({
+      customer: "",
+      customerEmail: "",
+      customerPhone: "",
+      customerLocation: "",
+      apartment: "",
+      roomNumber: "",
+      title: "",
+      description: "",
+      status: "open",
+      priority: "medium",
+      assignedTo: "Unassigned",
+    });
   };
 
   const handleAssignTicket = async (ticketId: string, assignee: string) => {
