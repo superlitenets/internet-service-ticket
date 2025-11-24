@@ -957,10 +957,9 @@ export const testRouterOSConnection: RequestHandler = async (req, res) => {
 export const getRouterOSDeviceInfo: RequestHandler = async (req, res) => {
   try {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
-      return res.status(400).json({
-        success: false,
-        message: "RouterOS connection not configured",
-        error: "Please configure RouterOS connection first",
+      return res.json({
+        device: null,
+        message: "RouterOS not configured. Configure it in Settings.",
       });
     }
 
@@ -994,10 +993,9 @@ export const getRouterOSDeviceInfo: RequestHandler = async (req, res) => {
 export const getRouterOSInterfaceStats: RequestHandler = async (req, res) => {
   try {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
-      return res.status(400).json({
-        success: false,
-        message: "RouterOS connection not configured",
-        error: "Please configure RouterOS connection first",
+      return res.json({
+        interfaces: [],
+        message: "RouterOS not configured. Configure it in Settings.",
       });
     }
 
@@ -1069,10 +1067,9 @@ export const getRouterOSPPPoEConnections: RequestHandler = async (req, res) => {
 export const getRouterOSHotspotUsers: RequestHandler = async (req, res) => {
   try {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
-      return res.status(400).json({
-        success: false,
-        message: "RouterOS connection not configured",
-        error: "Please configure RouterOS connection first",
+      return res.json({
+        users: [],
+        message: "RouterOS not configured. Configure it in Settings to see active hotspot users.",
       });
     }
 
@@ -1106,10 +1103,9 @@ export const getRouterOSHotspotUsers: RequestHandler = async (req, res) => {
 export const getRouterOSQueues: RequestHandler = async (req, res) => {
   try {
     if (!routerOSConfig.enabled || !routerOSConfig.apiUrl) {
-      return res.status(400).json({
-        success: false,
-        message: "RouterOS connection not configured",
-        error: "Please configure RouterOS connection first",
+      return res.json({
+        queues: [],
+        message: "RouterOS not configured. Configure it in Settings.",
       });
     }
 
