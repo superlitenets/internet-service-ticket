@@ -12,6 +12,8 @@ export default defineConfig(({ mode }) => {
   //   plugins.push(expressPlugin());
   // }
 
+  const baseDir = path.resolve(__dirname);
+
   return {
     server: {
       host: "::",
@@ -23,17 +25,22 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist/spa",
+      rollupOptions: {
+        external: ["@prisma/client"],
+      },
     },
     plugins,
     resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./client"),
-        "@shared": path.resolve(__dirname, "./shared"),
-        "~": path.resolve(__dirname, "./"),
-      },
-    },
-    ssr: {
-      external: ["@tanstack/react-query", "react-router-dom", "react"],
+      alias: [
+        {
+          find: /^@\/(.*)$/,
+          replacement: path.join(baseDir, "client/$1"),
+        },
+        {
+          find: /^@shared\/(.*)$/,
+          replacement: path.join(baseDir, "shared/$1"),
+        },
+      ],
     },
   };
 });
