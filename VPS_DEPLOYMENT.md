@@ -67,7 +67,7 @@ Add the following (customize as needed):
 ```env
 # Application
 NODE_ENV=production
-PORT=3000
+PORT=9000
 
 # Optional: Database (if using PostgreSQL)
 # DATABASE_URL=postgresql://admin:password@db:5432/netflow
