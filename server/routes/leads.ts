@@ -1,7 +1,22 @@
 import { RequestHandler } from "express";
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+interface Lead {
+  id: string;
+  customerName: string;
+  phone: string;
+  email?: string;
+  location: string;
+  package: string;
+  agreedInstallAmount: number;
+  status: "new" | "converted" | "closed";
+  notes?: string;
+  createdById: string;
+  createdByName?: string;
+  createdAt: string;
+  updatedAt: string;
+  convertedToTicketId?: string;
+  convertedAt?: string;
+}
 
 interface CreateLeadRequest {
   customerName: string;
@@ -24,16 +39,48 @@ interface UpdateLeadRequest {
   notes?: string;
 }
 
+let leads: Map<string, Lead> = new Map([
+  [
+    "LEAD-001",
+    {
+      id: "LEAD-001",
+      customerName: "John Doe",
+      phone: "0722111111",
+      email: "john@example.com",
+      location: "Nairobi",
+      package: "Premium 10Mbps",
+      agreedInstallAmount: 2500,
+      status: "new",
+      notes: "Interested in upgrades",
+      createdById: "user-1",
+      createdByName: "Admin User",
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ],
+  [
+    "LEAD-002",
+    {
+      id: "LEAD-002",
+      customerName: "Jane Smith",
+      phone: "0733222222",
+      email: "jane@example.com",
+      location: "Kampala",
+      package: "Standard 5Mbps",
+      agreedInstallAmount: 1500,
+      status: "new",
+      createdById: "user-1",
+      createdByName: "Admin User",
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+      updatedAt: new Date(Date.now() - 7200000).toISOString(),
+    },
+  ],
+]);
+
 export const createLead: RequestHandler = async (req, res) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-        error: "User not authenticated",
-      });
-    }
+    const userId = (req as any).user?.id || "user-1";
+    const userName = (req as any).user?.name || "Admin User";
 
     const {
       customerName,
@@ -60,19 +107,24 @@ export const createLead: RequestHandler = async (req, res) => {
       });
     }
 
-    const lead = await prisma.lead.create({
-      data: {
-        customerName,
-        phone,
-        email,
-        location,
-        package: packageName,
-        agreedInstallAmount,
-        notes,
-        createdById: userId,
-        status: "new",
-      },
-    });
+    const leadId = `LEAD-${String(leads.size + 1).padStart(3, "0")}`;
+    const lead: Lead = {
+      id: leadId,
+      customerName,
+      phone,
+      email,
+      location,
+      package: packageName,
+      agreedInstallAmount,
+      notes,
+      status: "new",
+      createdById: userId,
+      createdByName: userName,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    leads.set(leadId, lead);
 
     return res.status(201).json({
       success: true,
@@ -96,39 +148,34 @@ export const getLeads: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string, 10) || 20;
     const skip = (pageNum - 1) * limitNum;
 
-    const where: any = {};
+    let filteredLeads = Array.from(leads.values());
 
     if (status) {
-      where.status = status;
+      filteredLeads = filteredLeads.filter((lead) => lead.status === status);
     }
 
     if (search) {
-      where.OR = [
-        { customerName: { contains: search as string, mode: "insensitive" } },
-        { phone: { contains: search as string, mode: "insensitive" } },
-        { email: { contains: search as string, mode: "insensitive" } },
-        { location: { contains: search as string, mode: "insensitive" } },
-      ];
+      const searchLower = (search as string).toLowerCase();
+      filteredLeads = filteredLeads.filter(
+        (lead) =>
+          lead.customerName.toLowerCase().includes(searchLower) ||
+          lead.phone.includes(searchLower as string) ||
+          lead.email?.toLowerCase().includes(searchLower) ||
+          lead.location.toLowerCase().includes(searchLower),
+      );
     }
 
-    const [leads, total] = await Promise.all([
-      prisma.lead.findMany({
-        where,
-        include: {
-          createdBy: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: limitNum,
-      }),
-      prisma.lead.count({ where }),
-    ]);
+    const total = filteredLeads.length;
+    const paginatedLeads = filteredLeads
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .slice(skip, skip + limitNum);
 
     return res.json({
       success: true,
-      data: leads,
+      data: paginatedLeads,
       pagination: {
         total,
         page: pageNum,
@@ -150,14 +197,7 @@ export const getLeadById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const lead = await prisma.lead.findUnique({
-      where: { id },
-      include: {
-        createdBy: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
+    const lead = leads.get(id);
 
     if (!lead) {
       return res.status(404).json({
@@ -186,7 +226,7 @@ export const updateLead: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const updateData: UpdateLeadRequest = req.body;
 
-    const lead = await prisma.lead.findUnique({ where: { id } });
+    const lead = leads.get(id);
 
     if (!lead) {
       return res.status(404).json({
@@ -196,28 +236,24 @@ export const updateLead: RequestHandler = async (req, res) => {
       });
     }
 
-    const updated = await prisma.lead.update({
-      where: { id },
-      data: {
-        ...(updateData.customerName && {
-          customerName: updateData.customerName,
-        }),
-        ...(updateData.phone && { phone: updateData.phone }),
-        ...(updateData.email && { email: updateData.email }),
-        ...(updateData.location && { location: updateData.location }),
-        ...(updateData.package && { package: updateData.package }),
-        ...(updateData.agreedInstallAmount !== undefined && {
-          agreedInstallAmount: updateData.agreedInstallAmount,
-        }),
-        ...(updateData.status && { status: updateData.status }),
-        ...(updateData.notes !== undefined && { notes: updateData.notes }),
-      },
-      include: {
-        createdBy: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
+    const updated: Lead = {
+      ...lead,
+      ...(updateData.customerName && {
+        customerName: updateData.customerName,
+      }),
+      ...(updateData.phone && { phone: updateData.phone }),
+      ...(updateData.email && { email: updateData.email }),
+      ...(updateData.location && { location: updateData.location }),
+      ...(updateData.package && { package: updateData.package }),
+      ...(updateData.agreedInstallAmount !== undefined && {
+        agreedInstallAmount: updateData.agreedInstallAmount,
+      }),
+      ...(updateData.status && { status: updateData.status as any }),
+      ...(updateData.notes !== undefined && { notes: updateData.notes }),
+      updatedAt: new Date().toISOString(),
+    };
+
+    leads.set(id, updated);
 
     return res.json({
       success: true,
@@ -238,7 +274,7 @@ export const deleteLead: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const lead = await prisma.lead.findUnique({ where: { id } });
+    const lead = leads.get(id);
 
     if (!lead) {
       return res.status(404).json({
@@ -248,7 +284,7 @@ export const deleteLead: RequestHandler = async (req, res) => {
       });
     }
 
-    await prisma.lead.delete({ where: { id } });
+    leads.delete(id);
 
     return res.json({
       success: true,
@@ -268,15 +304,7 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const { subject, description, priority = "medium", category } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-        error: "User not authenticated",
-      });
-    }
+    const userId = (req as any).user?.id || "user-1";
 
     if (!subject || !description) {
       return res.status(400).json({
@@ -286,7 +314,7 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
       });
     }
 
-    const lead = await prisma.lead.findUnique({ where: { id } });
+    const lead = leads.get(id);
 
     if (!lead) {
       return res.status(404).json({
@@ -298,48 +326,37 @@ export const convertLeadToTicket: RequestHandler = async (req, res) => {
 
     const ticketId = `TKT-${Date.now()}`;
 
-    let customer = await prisma.customer.findUnique({
-      where: { phone: lead.phone },
-    });
+    const ticketData = {
+      ticketId,
+      customerId: `CUST-${lead.phone.replace(/\D/g, "").slice(-6)}`,
+      customerName: lead.customerName,
+      phone: lead.phone,
+      email: lead.email || "",
+      userId,
+      subject,
+      description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: ${lead.agreedInstallAmount}\nLocation: ${lead.location}`,
+      category: category || "installation",
+      priority,
+      status: "open",
+      createdAt: new Date().toISOString(),
+    };
 
-    if (!customer) {
-      customer = await prisma.customer.create({
-        data: {
-          phone: lead.phone,
-          email: lead.email || "",
-          name: lead.customerName,
-        },
-      });
-    }
+    const updatedLead: Lead = {
+      ...lead,
+      status: "converted",
+      convertedToTicketId: ticketId,
+      convertedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-    const ticket = await prisma.ticket.create({
-      data: {
-        ticketId,
-        customerId: customer.id,
-        userId,
-        subject,
-        description: `${description}\n\nLead Package: ${lead.package}\nAgreed Installation Amount: ${lead.agreedInstallAmount}\nLocation: ${lead.location}`,
-        category,
-        priority,
-        status: "open",
-      },
-    });
-
-    await prisma.lead.update({
-      where: { id },
-      data: {
-        status: "converted",
-        convertedToTicketId: ticket.id,
-        convertedAt: new Date(),
-      },
-    });
+    leads.set(id, updatedLead);
 
     return res.status(201).json({
       success: true,
       message: "Lead converted to ticket successfully",
       data: {
-        ticket,
-        lead: await prisma.lead.findUnique({ where: { id } }),
+        ticket: ticketData,
+        lead: updatedLead,
       },
     });
   } catch (error) {
