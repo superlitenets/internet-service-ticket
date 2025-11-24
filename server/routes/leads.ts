@@ -303,7 +303,13 @@ export const deleteLead: RequestHandler = async (req, res) => {
 export const convertLeadToTicket: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { subject, description, priority = "medium", category, assignedTo = "Unassigned" } = req.body;
+    const {
+      subject,
+      description,
+      priority = "medium",
+      category,
+      assignedTo = "Unassigned",
+    } = req.body;
     const userId = (req as any).user?.id || "user-1";
 
     if (!subject || !description) {

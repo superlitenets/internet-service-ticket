@@ -294,7 +294,9 @@ export default function Leads() {
         const ticket = result.ticket;
         try {
           const existingTickets = localStorage.getItem("tickets_data");
-          const ticketsArray = existingTickets ? JSON.parse(existingTickets) : [];
+          const ticketsArray = existingTickets
+            ? JSON.parse(existingTickets)
+            : [];
           ticketsArray.push(ticket);
           localStorage.setItem("tickets_data", JSON.stringify(ticketsArray));
         } catch (storageError) {
