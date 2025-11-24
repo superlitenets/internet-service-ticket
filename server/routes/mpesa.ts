@@ -364,7 +364,6 @@ export const handleMpesaStkPush: RequestHandler<
       amount,
       accountReference,
       transactionDescription,
-      callbackUrl,
       credentials,
     } = req.body;
 
