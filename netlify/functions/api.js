@@ -48,7 +48,9 @@ async function getMpesaAccessToken(consumerKey, consumerSecret) {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to get access token from MPESA");
+      const errorData = await response.json().catch(() => ({}));
+      console.error("MPESA Token Error:", { status: response.status, data: errorData });
+      throw new Error(`Failed to get access token from MPESA: ${errorData.error_description || response.statusText}`);
     }
 
     const data = await response.json();
