@@ -164,6 +164,21 @@ exports.handler = async (event) => {
       };
     }
 
+    if (event.path === "/api/auth/logout" && event.httpMethod === "POST") {
+      const token = event.headers.authorization?.replace("Bearer ", "");
+      if (token) {
+        sessions.delete(token);
+      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          message: "Logged out successfully",
+        }),
+      };
+    }
+
     if (event.path === "/api/auth/me" && event.httpMethod === "GET") {
       const token = event.headers.authorization?.replace("Bearer ", "");
 
