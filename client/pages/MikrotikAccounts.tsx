@@ -262,6 +262,13 @@ export default function MikrotikAccountsPage() {
                             <p className="text-xs text-muted-foreground">
                               {account.customerEmail}
                             </p>
+                            {(account.location || account.apartment || account.roomNumber) && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {[account.location, account.apartment, account.roomNumber]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </p>
+                            )}
                           </div>
                         </td>
                         <td className="py-3 px-4 text-muted-foreground">
