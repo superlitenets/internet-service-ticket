@@ -1,4 +1,6 @@
 import serverless from "serverless-http";
-import { createServer } from "../../dist/server/production.mjs";
+import { createServer } from "../../server/index";
 
-export const handler = serverless(createServer());
+const app = createServer();
+
+export const handler = serverless(app);
