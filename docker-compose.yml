@@ -1,82 +1,53 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: netflow-db
-    environment:
-      POSTGRES_USER: netflow
-      POSTGRES_PASSWORD: Mgathoni.2016#
-      POSTGRES_DB: netflow
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - netflow-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U netflow -d netflow"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  # NetFlow CRM Application
-  app:
+  # PHP Application
+  php:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: netflow-app
-    environment:
-      NODE_ENV: production
-      PORT: 9000
-      DATABASE_URL: postgresql://netflow:Mgathoni.2016%23@postgres:5432/netflow
-      JWT_SECRET: ${JWT_SECRET:-change-this-to-a-secure-value-in-production}
-
-      # Optional: Mikrotik Configuration
-      # MIKROTIK_API_URL: https://your-router-ip:8728
-      # MIKROTIK_USERNAME: admin
-      # MIKROTIK_PASSWORD: your_password
-
-      # Optional: M-Pesa Configuration
-      # MPESA_CONSUMER_KEY: your_key
-      # MPESA_CONSUMER_SECRET: your_secret
-      # MPESA_BUSINESS_SHORT_CODE: your_code
-      # MPESA_PASSKEY: your_passkey
-
-      # Optional: SMS Configuration
-      # SMS_PROVIDER: advanta
-      # ADVANTA_API_KEY: your_key
-      # ADVANTA_PARTNER_ID: your_id
-    ports:
-      - "9000:9000"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    container_name: netflow-php
+    working_dir: /app
     volumes:
-      - ./logs:/app/logs
+      - ./:/app
+      - ./storage/logs:/app/storage/logs
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: netflow_db
+      DB_USER: netflow_user
+      DB_PASSWORD: secure_password
+      APP_DEBUG: "true"
+      APP_ENV: development
+    depends_on:
+      - mysql
+      - redis
     networks:
       - netflow-network
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/api/ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
 
-  # Optional: Nginx Reverse Proxy
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: netflow-mysql
+    environment:
+      MYSQL_DATABASE: netflow_db
+      MYSQL_USER: netflow_user
+      MYSQL_PASSWORD: secure_password
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - netflow-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Nginx Web Server
   nginx:
     image: nginx:alpine
     container_name: netflow-nginx
@@ -84,24 +55,46 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-      - ./logs/nginx:/var/log/nginx
+      - ./public:/app/public:ro
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./storage/logs:/app/storage/logs
     depends_on:
-      - app
+      - php
     networks:
       - netflow-network
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
-volumes:
-  postgres_data:
-    driver: local
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: netflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - netflow-network
+
+  # phpMyAdmin (for development only)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: netflow-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: netflow_user
+      PMA_PASSWORD: secure_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - netflow-network
 
 networks:
   netflow-network:
     driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
