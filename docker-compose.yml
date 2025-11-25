@@ -1,29 +1,36 @@
 version: '3.8'
 
 services:
-  # PHP Application
-  php:
+  # Node.js Application (TypeScript Backend & Frontend)
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: netflow-php
+    container_name: netflow-app
     working_dir: /app
+    ports:
+      - "9000:9000"
+      - "5173:5173"
     volumes:
       - ./:/app
-      - ./storage/logs:/app/storage/logs
+      - /app/node_modules
     environment:
+      NODE_ENV: development
+      PORT: 9000
+      DATABASE_URL: mysql://netflow_user:secure_password@mysql:3306/netflow_db
       DB_HOST: mysql
       DB_PORT: 3306
       DB_NAME: netflow_db
       DB_USER: netflow_user
       DB_PASSWORD: secure_password
-      APP_DEBUG: "true"
-      APP_ENV: development
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - netflow-network
+    command: npm run dev
 
   # MySQL Database
   mysql:
