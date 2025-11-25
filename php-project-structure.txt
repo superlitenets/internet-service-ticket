@@ -1,0 +1,147 @@
+NetFlow PHP Full-Stack Project Structure
+==========================================
+
+netflow-php/
+├── public/                          # Web root
+│   ├── index.php                    # Application entry point
+│   ├── .htaccess                    # Apache rewrite rules
+│   ├── css/
+│   │   ├── styles.css               # Main stylesheet
+│   │   ├── landing.css              # Landing page styles
+│   │   ├── admin.css                # Admin dashboard styles
+│   │   └── responsive.css           # Mobile responsive styles
+│   ├── js/
+│   │   ├── app.js                   # Main application script
+│   │   ├── landing.js               # Landing page interactions
+│   │   ├── admin.js                 # Admin dashboard features
+│   │   ├── auth.js                  # Authentication logic
+│   │   └── utils.js                 # Utility functions
+│   ├── images/
+│   │   ├── logo.png
+│   │   ├── favicon.ico
+│   │   └── placeholder.png
+│   └── uploads/                     # User uploads directory
+│
+├── src/                             # Application source code
+│   ├── Controllers/
+│   │   ├── AuthController.php
+│   │   ├── DashboardController.php
+│   │   ├── CustomerController.php
+│   │   ├── BillingController.php
+��   │   ├── TicketController.php
+│   │   ├── AdminController.php
+│   │   └── TenantController.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Customer.php
+│   │   ├── Invoice.php
+│   │   ├── Ticket.php
+│   │   ├── Service.php
+│   │   └── Tenant.php
+│   ├── Services/
+│   │   ├── AuthService.php
+│   │   ├── BillingService.php
+│   │   ├── EmailService.php
+│   │   └── ReportService.php
+│   ├── Middleware/
+│   │   ├── AuthMiddleware.php
+│   │   ├── TenantMiddleware.php
+│   │   └── AdminMiddleware.php
+│   └── Helpers/
+│       ├── Database.php
+│       ├── Validator.php
+│       └── Formatter.php
+│
+├── views/                           # HTML templates
+│   ├── layouts/
+│   │   ├── main.html                # Main layout
+│   │   └── admin.html               # Admin layout
+│   ├── pages/
+│   │   ├── landing.html             # Public landing page
+│   │   ├── login.html               # Login page
+│   │   ├── register.html            # Registration page
+│   │   ├── dashboard.html           # User dashboard
+│   │   ├── customers.html           # Customers list
+│   │   ├── invoices.html            # Invoices page
+│   │   ├── tickets.html             # Support tickets
+│   │   └── settings.html            # User settings
+│   ├── admin/
+│   │   ├── dashboard.html           # Admin dashboard
+│   │   ├── users.html               # User management
+│   │   ├── tenants.html             # Tenant management
+│   │   ├── settings.html            # System settings
+│   │   └── reports.html             # Analytics reports
+│   └── components/
+│       ├── navbar.html
+│       ├── sidebar.html
+│       ├── footer.html
+│       ├── modal.html
+│       └── form.html
+│
+├── database/
+│   ├── schema.sql                   # MySQL schema
+│   ├── migrations/
+│   │   ├── 001_initial_schema.sql
+│   │   ├── 002_add_multitenancy.sql
+│   │   └── migrate.php              # Migration runner
+│   └── seeders/
+│       └── seed.php
+│
+├── config/
+│   ├── database.php                 # Database configuration
+│   ├── app.php                      # App configuration
+│   ├── auth.php                     # Auth configuration
+│   └── routes.php                   # Route definitions
+│
+├── routes/
+│   ├── api.php                      # API routes
+│   ├── web.php                      # Web routes
+│   ├── admin.php                    # Admin routes
+│   └── auth.php                     # Auth routes
+│
+├── cron/
+│   ├── billing-automation.php       # Billing cron job
+│   ├── notification-sender.php      # Send notifications
+│   └── report-generator.php         # Generate reports
+│
+├── storage/
+│   ├── logs/                        # Application logs
+│   ├── cache/                       # Cache files
+│   ├── uploads/                     # Uploaded files
+│   └── exports/                     # Exported reports
+│
+├── tests/
+│   ├── Unit/
+│   ├── Feature/
+│   └── TestCase.php
+│
+├── docker/
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── nginx.conf
+│
+├── .env.example                     # Environment variables template
+├── composer.json                    # PHP dependencies
+├── package.json                     # JavaScript dependencies
+├── .gitignore                       # Git ignore file
+├��─ README.md                        # Project documentation
+├── INSTALLATION.md                  # Installation guide
+├── DEPLOYMENT.md                    # Deployment guide
+├── API.md                           # API documentation
+└── ARCHITECTURE.md                  # Architecture documentation
+
+Key Features:
+=============
+✅ Multi-tenant architecture
+✅ MySQL database
+✅ Slim Framework for routing
+✅ MVC architecture
+✅ RESTful API
+✅ Admin dashboard
+✅ Public landing page
+✅ Authentication & Authorization
+✅ Responsive design
+✅ Docker support
+✅ cPanel installation wizard
+✅ VPS deployment scripts
+✅ Comprehensive documentation
