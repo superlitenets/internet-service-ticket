@@ -1,490 +1,502 @@
 <?php
 /**
- * NetFlow cPanel Installer Wizard
- * This script provides an interactive installation process for cPanel environments
+ * NetFlow cPanel Installation Wizard
+ * 
+ * Usage: Access via browser at: https://your-domain.com/install-cpanel.php
  */
 
-define('NETFLOW_VERSION', '1.0.0');
-define('MIN_PHP_VERSION', '8.1');
+session_start();
 
-class NetFlowInstaller
-{
-    private $steps = [
-        'welcome' => 'Welcome',
-        'requirements' => 'Check Requirements',
-        'database' => 'Database Configuration',
-        'admin' => 'Admin Account',
-        'settings' => 'Application Settings',
-        'install' => 'Installation',
-        'complete' => 'Installation Complete',
-    ];
+// Check if installation is already complete
+if (file_exists(__DIR__ . '/.installed')) {
+    die('NetFlow is already installed. Delete the .installed file to reinstall.');
+}
 
-    private $currentStep = 'welcome';
-    private $config = [];
+// Define base path
+define('BASE_PATH', __DIR__);
 
-    public function run()
-    {
-        if (php_sapi_name() !== 'cli') {
-            $this->runWeb();
-        } else {
-            $this->runCLI();
-        }
+// Get current step
+$step = $_GET['step'] ?? 1;
+$step = (int)$step;
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    switch ($step) {
+        case 1:
+            handleSystemCheck();
+            break;
+        case 2:
+            handleDatabaseSetup();
+            break;
+        case 3:
+            handleAdminSetup();
+            break;
     }
+}
 
-    private function runWeb()
-    {
-        session_start();
-        $step = $_GET['step'] ?? 'welcome';
-
-        if ($_POST) {
-            $this->handlePostRequest();
+function handleSystemCheck() {
+    // Check PHP version
+    $phpVersion = PHP_VERSION_ID;
+    if ($phpVersion < 70400) {
+        setError('PHP 7.4+ is required. Current version: ' . PHP_VERSION);
+        return;
+    }
+    
+    // Check extensions
+    $required_extensions = ['pdo', 'pdo_mysql', 'json', 'mbstring', 'curl'];
+    foreach ($required_extensions as $ext) {
+        if (!extension_loaded($ext)) {
+            setError("PHP extension required: $ext");
             return;
         }
-
-        $this->currentStep = $step;
-        $this->renderWebInterface();
     }
-
-    private function runCLI()
-    {
-        echo "\n";
-        echo str_repeat("═", 60) . "\n";
-        echo "  NetFlow - ISP Management System v" . NETFLOW_VERSION . "\n";
-        echo "  cPanel Installation Wizard\n";
-        echo str_repeat("═", 60) . "\n\n";
-
-        $this->stepWelcome();
-        $this->stepRequirements();
-        $this->stepDatabaseConfig();
-        $this->stepAdminAccount();
-        $this->stepApplicationSettings();
-        $this->stepInstall();
-        $this->stepComplete();
-    }
-
-    private function stepWelcome()
-    {
-        echo "Welcome to NetFlow Installation!\n\n";
-        echo "This wizard will help you install NetFlow on your server.\n";
-        echo "Please ensure you have the following:\n";
-        echo "  • PHP " . MIN_PHP_VERSION . " or higher\n";
-        echo "  • PostgreSQL or MySQL database\n";
-        echo "  • cPanel access (if installing on shared hosting)\n";
-        echo "  • Composer installed\n\n";
-
-        $this->pause("Press Enter to continue...");
-    }
-
-    private function stepRequirements()
-    {
-        echo "\n" . str_repeat("─", 60) . "\n";
-        echo "Checking System Requirements...\n";
-        echo str_repeat("─", 60) . "\n\n";
-
-        $checks = [
-            'PHP Version' => version_compare(PHP_VERSION, MIN_PHP_VERSION, '>='),
-            'PDO Extension' => extension_loaded('pdo'),
-            'PostgreSQL Driver' => extension_loaded('pdo_pgsql'),
-            'JSON Extension' => extension_loaded('json'),
-            'CURL Extension' => extension_loaded('curl'),
-            'OpenSSL Extension' => extension_loaded('openssl'),
-            'Composer' => $this->checkComposerInstalled(),
-        ];
-
-        $allPass = true;
-        foreach ($checks as $requirement => $status) {
-            $symbol = $status ? '✓' : '✗';
-            $color = $status ? "\033[32m" : "\033[31m"; // Green or Red
-            echo "{$color}{$symbol}\033[0m {$requirement}\n";
-            if (!$status && $requirement !== 'Composer') {
-                $allPass = false;
-            }
-        }
-
-        if (!$allPass) {
-            echo "\n\033[31m❌ Some requirements are not met. Please install them first.\033[0m\n";
-            exit(1);
-        }
-
-        echo "\n\033[32m✅ All requirements are met!\033[0m\n";
-        $this->pause("Press Enter to continue...");
-    }
-
-    private function stepDatabaseConfig()
-    {
-        echo "\n" . str_repeat("─", 60) . "\n";
-        echo "Database Configuration\n";
-        echo str_repeat("─", 60) . "\n\n";
-
-        $this->config['DB_HOST'] = $this->prompt('Database Host', 'localhost');
-        $this->config['DB_PORT'] = $this->prompt('Database Port', '5432');
-        $this->config['DB_NAME'] = $this->prompt('Database Name', 'netflow_db');
-        $this->config['DB_USER'] = $this->prompt('Database User', 'netflow_user');
-        $this->config['DB_PASSWORD'] = $this->promptSecret('Database Password');
-        $this->config['DB_TYPE'] = $this->prompt('Database Type (pgsql/mysql)', 'pgsql');
-
-        // Test connection
-        echo "\nTesting database connection...\n";
-        if ($this->testDatabaseConnection()) {
-            echo "\033[32m✅ Database connection successful!\033[0m\n";
-        } else {
-            echo "\033[31m❌ Database connection failed. Please check your credentials.\033[0m\n";
-            $this->stepDatabaseConfig();
+    
+    // Check writable directories
+    $writable = ['storage', 'storage/logs'];
+    foreach ($writable as $dir) {
+        if (!is_writable(BASE_PATH . '/' . $dir)) {
+            setError("Directory not writable: $dir");
             return;
         }
-
-        $this->pause("Press Enter to continue...");
     }
+    
+    $_SESSION['system_check'] = true;
+    setSuccess('System check passed!');
+}
 
-    private function stepAdminAccount()
-    {
-        echo "\n" . str_repeat("─", 60) . "\n";
-        echo "Create Admin Account\n";
-        echo str_repeat("─", 60) . "\n\n";
-
-        $this->config['ADMIN_USERNAME'] = $this->prompt('Admin Username', 'admin');
-        $this->config['ADMIN_EMAIL'] = $this->prompt('Admin Email', 'admin@example.com');
-        $this->config['ADMIN_PASSWORD'] = $this->promptSecret('Admin Password');
-        $this->config['ADMIN_FULL_NAME'] = $this->prompt('Admin Full Name', 'Administrator');
-
-        $this->pause("Press Enter to continue...");
+function handleDatabaseSetup() {
+    $dbHost = $_POST['db_host'] ?? '';
+    $dbName = $_POST['db_name'] ?? '';
+    $dbUser = $_POST['db_user'] ?? '';
+    $dbPassword = $_POST['db_password'] ?? '';
+    
+    // Validate inputs
+    if (empty($dbHost) || empty($dbName) || empty($dbUser)) {
+        setError('All database fields are required.');
+        return;
     }
-
-    private function stepApplicationSettings()
-    {
-        echo "\n" . str_repeat("─", 60) . "\n";
-        echo "Application Settings\n";
-        echo str_repeat("─", 60) . "\n\n";
-
-        $this->config['APP_URL'] = $this->prompt('Application URL', 'https://example.com');
-        $this->config['APP_ENV'] = $this->prompt('Environment (production/development)', 'production');
-        $this->config['APP_KEY'] = $this->generateRandomKey(32);
-        $this->config['JWT_SECRET'] = $this->generateRandomKey(64);
-
-        $this->pause("Press Enter to continue with installation...");
-    }
-
-    private function stepInstall()
-    {
-        echo "\n" . str_repeat("─", 60) . "\n";
-        echo "Installing NetFlow...\n";
-        echo str_repeat("─", 60) . "\n\n";
-
+    
+    // Try to connect
+    try {
+        $dsn = "mysql:host=$dbHost;charset=utf8mb4";
+        $pdo = new PDO($dsn, $dbUser, $dbPassword);
+        
+        // Create database
+        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        
+        // Select database
+        $pdo->exec("USE `$dbName`");
+        
+        // Load and execute schema
+        $schema = file_get_contents(BASE_PATH . '/database/schema.sql');
+        $pdo->exec($schema);
+        
         // Create .env file
-        echo "Creating .env configuration file...\n";
-        $this->createEnvFile();
+        $envContent = file_get_contents(BASE_PATH . '/.env.example');
+        $envContent = str_replace(
+            ['DB_HOST=localhost', 'DB_NAME=netflow_db', 'DB_USER=netflow_user', 'DB_PASSWORD=secure_password_here'],
+            ["DB_HOST=$dbHost", "DB_NAME=$dbName", "DB_USER=$dbUser", "DB_PASSWORD=$dbPassword"],
+            $envContent
+        );
+        
+        // Add JWT secret
+        $jwtSecret = bin2hex(random_bytes(32));
+        $envContent = str_replace('JWT_SECRET=your_jwt_secret_key_here_change_in_production', "JWT_SECRET=$jwtSecret", $envContent);
+        
+        file_put_contents(BASE_PATH . '/.env', $envContent);
+        
+        $_SESSION['database_setup'] = true;
+        setSuccess('Database setup complete!');
+    } catch (PDOException $e) {
+        setError('Database error: ' . $e->getMessage());
+    }
+}
 
-        // Install composer dependencies
-        echo "Installing composer dependencies...\n";
-        if (!$this->runCommand('composer install --no-dev --optimize-autoloader')) {
-            echo "\033[31m❌ Failed to install dependencies.\033[0m\n";
-            exit(1);
+function handleAdminSetup() {
+    $email = $_POST['admin_email'] ?? '';
+    $password = $_POST['admin_password'] ?? '';
+    $fullName = $_POST['admin_name'] ?? '';
+    
+    // Validate inputs
+    if (empty($email) || empty($password) || empty($fullName)) {
+        setError('All admin fields are required.');
+        return;
+    }
+    
+    if (strlen($password) < 8) {
+        setError('Password must be at least 8 characters.');
+        return;
+    }
+    
+    try {
+        // Load .env
+        $env = parse_ini_file(BASE_PATH . '/.env');
+        
+        // Connect to database
+        $dsn = "mysql:host={$env['DB_HOST']};dbname={$env['DB_NAME']};charset=utf8mb4";
+        $pdo = new PDO($dsn, $env['DB_USER'], $env['DB_PASSWORD']);
+        
+        // Hash password
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+        
+        // Insert admin user
+        $stmt = $pdo->prepare(
+            'INSERT INTO users (tenant_id, email, password, full_name, username, role, status) 
+             VALUES (1, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([$email, $hashedPassword, $fullName, $email, 'admin', 'active']);
+        
+        // Mark installation as complete
+        touch(BASE_PATH . '/.installed');
+        
+        $_SESSION['installation_complete'] = true;
+        setSuccess('Installation complete! You can now login with your admin credentials.');
+    } catch (PDOException $e) {
+        setError('Error creating admin user: ' . $e->getMessage());
+    }
+}
+
+function setError($message) {
+    $_SESSION['error'] = $message;
+}
+
+function setSuccess($message) {
+    $_SESSION['success'] = $message;
+}
+
+function getError() {
+    $error = $_SESSION['error'] ?? '';
+    unset($_SESSION['error']);
+    return $error;
+}
+
+function getSuccess() {
+    $success = $_SESSION['success'] ?? '';
+    unset($_SESSION['success']);
+    return $success;
+}
+
+// HTML output
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetFlow Installation Wizard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        // Run database migrations
-        echo "Running database migrations...\n";
-        if (!$this->runCommand('php database/migrate.php')) {
-            echo "\033[31m❌ Failed to run migrations.\033[0m\n";
-            exit(1);
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
-
-        // Create admin user
-        echo "Creating admin account...\n";
-        $this->createAdminUser();
-
-        // Create necessary directories
-        echo "Creating necessary directories...\n";
-        $this->createDirectories();
-
-        // Set permissions
-        echo "Setting file permissions...\n";
-        $this->setPermissions();
-
-        echo "\n\033[32m✅ Installation completed successfully!\033[0m\n";
-    }
-
-    private function stepComplete()
-    {
-        echo "\n" . str_repeat("═", 60) . "\n";
-        echo "Installation Complete!\n";
-        echo str_repeat("═", 60) . "\n\n";
-
-        echo "NetFlow is now ready to use!\n\n";
-
-        echo "Next Steps:\n";
-        echo "1. Set up your web server (Nginx/Apache)\n";
-        echo "2. Configure SSL certificate\n";
-        echo "3. Access the application at: " . $this->config['APP_URL'] . "\n";
-        echo "4. Login with:\n";
-        echo "   Email: " . $this->config['ADMIN_EMAIL'] . "\n";
-        echo "   Password: (the one you entered)\n\n";
-
-        echo "For more information, visit: https://netflow.example.com/docs\n\n";
-    }
-
-    private function createEnvFile()
-    {
-        $envContent = <<<ENV
-# NetFlow Environment Configuration
-APP_ENV={$this->config['APP_ENV']}
-APP_DEBUG=false
-APP_URL={$this->config['APP_URL']}
-APP_KEY={$this->config['APP_KEY']}
-
-# Database Configuration
-DB_HOST={$this->config['DB_HOST']}
-DB_PORT={$this->config['DB_PORT']}
-DB_NAME={$this->config['DB_NAME']}
-DB_USER={$this->config['DB_USER']}
-DB_PASSWORD={$this->config['DB_PASSWORD']}
-DB_TYPE={$this->config['DB_TYPE']}
-
-# JWT Configuration
-JWT_SECRET={$this->config['JWT_SECRET']}
-JWT_ALGORITHM=HS256
-JWT_EXPIRY=86400
-
-# Session Configuration
-SESSION_TIMEOUT=3600
-SESSION_NAME=netflow_session
-
-# File Uploads
-MAX_UPLOAD_SIZE=10485760
-UPLOAD_DIR=storage/uploads
-
-# Logging
-LOG_LEVEL=info
-LOG_FILE=storage/logs/app.log
-ENV;
-
-        file_put_contents('.env', $envContent);
-        echo "✓ .env file created\n";
-    }
-
-    private function createAdminUser()
-    {
-        $hashedPassword = password_hash($this->config['ADMIN_PASSWORD'], PASSWORD_BCRYPT);
-
-        try {
-            $db = new PDO(
-                $this->getDSN(),
-                $this->config['DB_USER'],
-                $this->config['DB_PASSWORD']
-            );
-
-            $stmt = $db->prepare(
-                'INSERT INTO users (username, email, password, full_name, role, status) VALUES (?, ?, ?, ?, ?, ?)'
-            );
-
-            $stmt->execute([
-                $this->config['ADMIN_USERNAME'],
-                $this->config['ADMIN_EMAIL'],
-                $hashedPassword,
-                $this->config['ADMIN_FULL_NAME'],
-                'admin',
-                'active',
-            ]);
-
-            echo "✓ Admin account created\n";
-        } catch (\Exception $e) {
-            echo "⚠ Admin account already exists or error: " . $e->getMessage() . "\n";
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 3rem;
         }
-    }
-
-    private function createDirectories()
-    {
-        $directories = [
-            'storage' => 0755,
-            'storage/logs' => 0755,
-            'storage/uploads' => 0755,
-            'storage/cache' => 0755,
-        ];
-
-        foreach ($directories as $dir => $perms) {
-            if (!is_dir($dir)) {
-                mkdir($dir, $perms, true);
-                echo "✓ Created {$dir}\n";
-            }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-    }
-
-    private function setPermissions()
-    {
-        $paths = [
-            'storage' => 0755,
-            'storage/logs' => 0755,
-            'storage/uploads' => 0755,
-            'storage/cache' => 0755,
-        ];
-
-        foreach ($paths as $path => $perms) {
-            if (is_dir($path)) {
-                chmod($path, $perms);
-            }
+        
+        .header h1 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
         }
-
-        echo "✓ Permissions set\n";
-    }
-
-    private function testDatabaseConnection(): bool
-    {
-        try {
-            $pdo = new PDO(
-                $this->getDSN(),
-                $this->config['DB_USER'],
-                $this->config['DB_PASSWORD']
-            );
-            return true;
-        } catch (\Exception $e) {
-            return false;
+        
+        .header p {
+            color: #666;
         }
-    }
-
-    private function getDSN(): string
-    {
-        $type = $this->config['DB_TYPE'] ?? 'pgsql';
-        $host = $this->config['DB_HOST'] ?? 'localhost';
-        $port = $this->config['DB_PORT'] ?? '5432';
-        $name = $this->config['DB_NAME'] ?? 'netflow_db';
-
-        return "{$type}:host={$host};port={$port};dbname={$name}";
-    }
-
-    private function checkComposerInstalled(): bool
-    {
-        return $this->runCommand('composer --version > /dev/null 2>&1', true);
-    }
-
-    private function runCommand(string $command, bool $silent = false): bool
-    {
-        if ($silent) {
-            exec($command, $output, $exitCode);
-            return $exitCode === 0;
+        
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
         }
-
-        echo "Executing: {$command}\n";
-        exec($command, $output, $exitCode);
-
-        if ($exitCode !== 0) {
-            echo implode("\n", $output) . "\n";
-            return false;
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
         }
-
-        return true;
-    }
-
-    private function prompt(string $question, string $default = ''): string
-    {
-        if ($default) {
-            echo "{$question} [{$default}]: ";
-        } else {
-            echo "{$question}: ";
+        
+        .step::before {
+            content: attr(data-step);
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #666;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
-
-        $input = trim(fgets(STDIN));
-        return empty($input) ? $default : $input;
-    }
-
-    private function promptSecret(string $question): string
-    {
-        echo "{$question}: ";
-        system('stty -echo');
-        $password = trim(fgets(STDIN));
-        system('stty echo');
-        echo "\n";
-        return $password;
-    }
-
-    private function pause(string $message = '')
-    {
-        if ($message) {
-            echo "\n{$message}";
+        
+        .step.active::before {
+            background: #667eea;
+            color: white;
         }
-        fgets(STDIN);
-    }
-
-    private function generateRandomKey(int $length): string
-    {
-        return bin2hex(random_bytes($length / 2));
-    }
-
-    private function renderWebInterface()
-    {
-        ?>
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>NetFlow Installation Wizard</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
-                .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-                .header h1 { font-size: 28px; margin-bottom: 5px; }
-                .header p { opacity: 0.9; font-size: 14px; }
-                .content { padding: 30px; }
-                .steps { display: flex; justify-content: space-between; margin-bottom: 30px; }
-                .step { flex: 1; text-align: center; padding: 10px; position: relative; }
-                .step.active { background: #667eea; color: white; border-radius: 4px; }
-                .step.completed { color: #667eea; }
-                .form-group { margin-bottom: 20px; }
-                .form-group label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
-                .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-                .form-group input:focus { outline: none; border-color: #667eea; }
-                .buttons { display: flex; gap: 10px; justify-content: flex-end; }
-                button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; }
-                .btn-primary { background: #667eea; color: white; }
-                .btn-primary:hover { background: #5568d3; }
-                .btn-secondary { background: #ddd; color: #333; }
-                .btn-secondary:hover { background: #ccc; }
-                .alert { padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-                .alert-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-                .alert-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>NetFlow Installation</h1>
-                    <p>ISP Management System v<?php echo NETFLOW_VERSION; ?></p>
+        
+        .step.completed::before {
+            background: #10b981;
+            color: white;
+            content: '✓';
+        }
+        
+        .step p {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #047857;
+            border-left: 4px solid #10b981;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .complete-message {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .complete-message h2 {
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .complete-message p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NetFlow</h1>
+            <p>ISP Management System Installation Wizard</p>
+        </div>
+        
+        <?php if (isset($_SESSION['installation_complete'])): ?>
+            <div class="complete-message">
+                <h2>✓ Installation Complete</h2>
+                <p>NetFlow has been successfully installed!</p>
+                <p>You can now login with your admin credentials.</p>
+                <a href="/login" style="display: inline-block; padding: 0.75rem 1.5rem; background: #667eea; color: white; text-decoration: none; border-radius: 4px;">Go to Login</a>
+            </div>
+            <?php unset($_SESSION['installation_complete']); ?>
+        <?php else: ?>
+            <div class="progress">
+                <div class="step <?php echo $step >= 1 ? 'active' : ''; ?> <?php echo $step > 1 ? 'completed' : ''; ?>" data-step="1">
+                    <p>System Check</p>
                 </div>
-                <div class="content">
-                    <div class="steps">
-                        <?php foreach ($this->steps as $key => $label): ?>
-                            <div class="step <?php echo $key === $this->currentStep ? 'active' : ''; ?>">
-                                <?php echo $label; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <?php
-                    $method = 'renderStep' . ucfirst($this->currentStep);
-                    if (method_exists($this, $method)) {
-                        $this->$method();
-                    }
-                    ?>
+                <div class="step <?php echo $step >= 2 ? 'active' : ''; ?> <?php echo $step > 2 ? 'completed' : ''; ?>" data-step="2">
+                    <p>Database</p>
+                </div>
+                <div class="step <?php echo $step >= 3 ? 'active' : ''; ?>" data-step="3">
+                    <p>Admin User</p>
                 </div>
             </div>
-        </body>
-        </html>
-        <?php
-    }
-
-    private function handlePostRequest()
-    {
-        // Handle form submission
-    }
-}
-
-// Check if running as CLI
-if (php_sapi_name() === 'cli') {
-    $installer = new NetFlowInstaller();
-    $installer->run();
-} else {
-    // Web interface
-    $installer = new NetFlowInstaller();
-    $installer->run();
-}
-?>
+            
+            <?php if ($error = getError()): ?>
+                <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+            
+            <?php if ($success = getSuccess()): ?>
+                <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+            <?php endif; ?>
+            
+            <!-- Step 1: System Check -->
+            <?php if ($step === 1): ?>
+                <h2 style="margin-bottom: 1rem;">System Check</h2>
+                <p style="margin-bottom: 2rem; color: #666;">Verifying your server meets the requirements...</p>
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label style="font-weight: 600;">PHP Version: <?php echo phpversion(); ?></label>
+                        <p style="font-size: 0.875rem; color: #666; margin: 0.5rem 0;">
+                            <?php echo PHP_VERSION_ID >= 70400 ? '✓ OK' : '✗ PHP 7.4+ required'; ?>
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="font-weight: 600;">Required Extensions</label>
+                        <div style="font-size: 0.875rem; color: #666;">
+                            <?php
+                            $extensions = ['pdo', 'pdo_mysql', 'json', 'mbstring', 'curl'];
+                            foreach ($extensions as $ext) {
+                                $status = extension_loaded($ext) ? '✓' : '✗';
+                                echo "<p>$status $ext</p>";
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button type="submit" class="btn-primary">Proceed to Next Step</button>
+                    </div>
+                </form>
+            <?php endif; ?>
+            
+            <!-- Step 2: Database Setup -->
+            <?php if ($step === 2): ?>
+                <h2 style="margin-bottom: 1rem;">Database Configuration</h2>
+                <p style="margin-bottom: 2rem; color: #666;">Enter your MySQL database credentials...</p>
+                
+                <form method="POST">
+                    <input type="hidden" name="step" value="2">
+                    
+                    <div class="form-group">
+                        <label for="db_host">Database Host</label>
+                        <input type="text" id="db_host" name="db_host" value="localhost" required>
+                        <small style="color: #666; margin-top: 0.25rem; display: block;">Usually localhost</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="db_name">Database Name</label>
+                        <input type="text" id="db_name" name="db_name" value="netflow_db" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="db_user">Database User</label>
+                        <input type="text" id="db_user" name="db_user" value="netflow_user" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="db_password">Database Password</label>
+                        <input type="password" id="db_password" name="db_password" required>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button type="button" class="btn-secondary" onclick="history.back();">Back</button>
+                        <button type="submit" class="btn-primary">Create Database</button>
+                    </div>
+                </form>
+            <?php endif; ?>
+            
+            <!-- Step 3: Admin Setup -->
+            <?php if ($step === 3): ?>
+                <h2 style="margin-bottom: 1rem;">Create Admin User</h2>
+                <p style="margin-bottom: 2rem; color: #666;">Create your administrator account...</p>
+                
+                <form method="POST">
+                    <input type="hidden" name="step" value="3">
+                    
+                    <div class="form-group">
+                        <label for="admin_name">Full Name</label>
+                        <input type="text" id="admin_name" name="admin_name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin_email">Email Address</label>
+                        <input type="email" id="admin_email" name="admin_email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin_password">Password</label>
+                        <input type="password" id="admin_password" name="admin_password" required>
+                        <small style="color: #666; margin-top: 0.25rem; display: block;">Minimum 8 characters</small>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button type="button" class="btn-secondary" onclick="history.back();">Back</button>
+                        <button type="submit" class="btn-primary">Complete Installation</button>
+                    </div>
+                </form>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+</body>
+</html>
