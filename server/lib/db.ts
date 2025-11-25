@@ -5,7 +5,14 @@ let prisma: any | undefined;
 
 export function getPrismaClient(): any {
   if (!prisma) {
-    prisma = new PrismaClient();
+    try {
+      prisma = new PrismaClient({
+        errorFormat: "pretty",
+      });
+    } catch (error) {
+      console.error("Failed to initialize Prisma Client:", error);
+      throw error;
+    }
   }
   return prisma;
 }
@@ -13,8 +20,16 @@ export function getPrismaClient(): any {
 export async function closePrismaClient() {
   if (prisma) {
     await prisma.$disconnect();
+    prisma = undefined;
   }
 }
 
-// Singleton instance
-export const db = getPrismaClient();
+// Lazy singleton - only created when first accessed
+export const db = new Proxy(
+  {},
+  {
+    get(target, prop) {
+      return getPrismaClient()[prop as string];
+    },
+  }
+) as any;
