@@ -215,6 +215,12 @@ export function createServer() {
   app.put("/api/auth/users/:id", updateUser);
   app.delete("/api/auth/users/:id", deleteUser);
 
+  // Database test endpoints (for development/debugging)
+  app.get("/api/test/health", checkDatabaseConnection);
+  app.post("/api/test/users", createTestUser);
+  app.get("/api/test/users", getTestUsers);
+  app.delete("/api/test/users", deleteTestUsers);
+
   // MPESA Payment endpoints
   app.post("/api/mpesa/c2b", handleMpesaC2B);
   app.post("/api/mpesa/b2b", handleMpesaB2B);
