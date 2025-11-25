@@ -30,7 +30,7 @@ services:
         condition: service_started
     networks:
       - netflow-network
-    command: npm run dev
+    command: sh -c "pnpm prisma migrate deploy --skip-generate && pnpm run dev"
 
   # MySQL Database
   mysql:
