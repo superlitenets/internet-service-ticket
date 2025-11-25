@@ -1,26 +1,64 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+/**
+ * NetFlow ISP Management System
+ * Main Application Entry Point
+ */
 
-use Slim\Factory\AppFactory;
-use Psr\Log\LogLevel;
-use Core\TenantContext;
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Define base path
+define('BASE_PATH', dirname(__DIR__));
+define('PUBLIC_PATH', __DIR__);
 
 // Load environment variables
-$dotenv = new \Dotenv\Dotenv(__DIR__ . '/..');
-$dotenv->safeLoad();
+if (file_exists(BASE_PATH . '/.env')) {
+    $env = parse_ini_file(BASE_PATH . '/.env');
+    foreach ($env as $key => $value) {
+        putenv("$key=$value");
+    }
+}
 
-// Create app
-$app = AppFactory::create();
+// Set timezone
+date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'UTC');
 
-// Add middleware for tenant context identification
-$app->add(function ($request, $handler) {
-    // Identify tenant from various sources (JWT, subdomain, API key, headers)
-    TenantContext::identify();
+// Autoload classes
+require_once BASE_PATH . '/vendor/autoload.php';
 
-    return $handler->handle($request);
-});
+// Load configuration
+$config = [
+    'db' => [
+        'host' => getenv('DB_HOST'),
+        'port' => getenv('DB_PORT'),
+        'database' => getenv('DB_NAME'),
+        'username' => getenv('DB_USER'),
+        'password' => getenv('DB_PASSWORD'),
+        'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
+    ],
+    'app' => [
+        'name' => getenv('APP_NAME'),
+        'url' => getenv('APP_URL'),
+        'debug' => getenv('APP_DEBUG') === 'true',
+    ],
+    'jwt' => [
+        'secret' => getenv('JWT_SECRET'),
+        'algorithm' => getenv('JWT_ALGORITHM') ?: 'HS256',
+        'expiry' => (int)getenv('JWT_EXPIRY') ?: 86400,
+    ],
+];
 
-// Add middleware for CORS
+// Create Slim app
+$app = \Slim\Factory\AppFactory::create();
+
+// Add error middleware
+$app->addErrorMiddleware(
+    $config['app']['debug'],
+    true,
+    true
+);
+
+// Add CORS middleware
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);
     return $response
@@ -30,27 +68,30 @@ $app->add(function ($request, $handler) {
         ->withHeader('Content-Type', 'application/json');
 });
 
-// Add error handling middleware
-$app->addErrorMiddleware($_ENV['APP_DEBUG'] ?? false, true, true);
+// Store config in container
+$container = $app->getContainer();
+$container->set('config', $config);
 
-// Add core routes
-require_once __DIR__ . '/../app/routes.php';
+// Register database service
+$container->set('db', function ($c) {
+    $config = $c->get('config')['db'];
+    try {
+        $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']};charset={$config['charset']}";
+        $pdo = new PDO($dsn, $config['username'], $config['password'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        return $pdo;
+    } catch (PDOException $e) {
+        die('Database connection failed: ' . $e->getMessage());
+    }
+});
 
-// Add extended routes
-require_once __DIR__ . '/../app/routes-extended.php';
+// Routes
+require_once BASE_PATH . '/routes/web.php';
+require_once BASE_PATH . '/routes/api.php';
+require_once BASE_PATH . '/routes/auth.php';
+require_once BASE_PATH . '/routes/admin.php';
 
-// Add integration routes
-require_once __DIR__ . '/../app/integrations.php';
-
-// Add multitenancy routes
-require_once __DIR__ . '/../app/multitenancy.php';
-
-// Add ISP billing module routes
-require_once __DIR__ . '/../app/isp-mikrotik.php';
-require_once __DIR__ . '/../app/isp-billing.php';
-require_once __DIR__ . '/../app/isp-monitoring.php';
-require_once __DIR__ . '/../app/isp-reports.php';
-require_once __DIR__ . '/../app/isp-customer-portal.php';
-
-// Run app
+// Run the app
 $app->run();
