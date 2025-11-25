@@ -14,6 +14,12 @@ import {
   updateUser,
   deleteUser,
 } from "./routes/auth";
+import {
+  createTestUser,
+  getTestUsers,
+  deleteTestUsers,
+  checkDatabaseConnection,
+} from "./routes/test";
 import { handleSendSms } from "./routes/sms";
 import {
   getEmployees,
