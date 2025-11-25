@@ -8,52 +8,60 @@ Complete full-stack ISP management solution built with PHP, HTML/CSS/JavaScript,
 
 ## Features
 
-✅ **Multi-Tenant Architecture**  
-- Single database with tenant isolation  
-- Support for unlimited ISPs  
+✅ **Multi-Tenant Architecture**
+
+- Single database with tenant isolation
+- Support for unlimited ISPs
 - Independent branding per tenant
 
-✅ **Customer Management**  
-- Customer profiles and accounts  
-- Service management  
-- Auto-renewal support  
+✅ **Customer Management**
+
+- Customer profiles and accounts
+- Service management
+- Auto-renewal support
 - Account balance tracking
 
-✅ **Billing System**  
-- Automated invoicing  
-- Payment tracking  
-- Subscription management  
+✅ **Billing System**
+
+- Automated invoicing
+- Payment tracking
+- Subscription management
 - Overdue payment reminders
 
-✅ **Real-Time Monitoring**  
-- Bandwidth monitoring  
-- Usage tracking  
-- Service status  
+✅ **Real-Time Monitoring**
+
+- Bandwidth monitoring
+- Usage tracking
+- Service status
 - Performance metrics
 
-✅ **Support Tickets**  
-- Customer support tickets  
-- Internal notes  
-- Priority-based assignment  
+✅ **Support Tickets**
+
+- Customer support tickets
+- Internal notes
+- Priority-based assignment
 - Auto-response system
 
-✅ **Admin Dashboard**  
-- Comprehensive analytics  
-- User management  
-- System settings  
+✅ **Admin Dashboard**
+
+- Comprehensive analytics
+- User management
+- System settings
 - Audit logs
 
-✅ **Responsive Design**  
-- Mobile-friendly interface  
-- Works on all devices  
-- Offline-capable features  
+✅ **Responsive Design**
+
+- Mobile-friendly interface
+- Works on all devices
+- Offline-capable features
 - Progressive web app ready
 
-✅ **Security**  
-- JWT authentication  
-- Password hashing (bcrypt)  
-- CSRF protection  
-- SQL injection prevention  
+✅ **Security**
+
+- JWT authentication
+- Password hashing (bcrypt)
+- CSRF protection
+- SQL injection prevention
 - XSS protection
 
 ## Technology Stack
@@ -260,6 +268,7 @@ php database/migrate.php
 ### Docker Deployment
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for:
+
 - AWS EC2 deployment
 - DigitalOcean droplet setup
 - Docker Swarm configuration
@@ -339,6 +348,7 @@ chmod -R 775 /var/www/netflow/storage
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: [Create an issue](https://github.com/superlitenets/php-ticket-superlite/issues)
 - Email: support@netflow.com
 - Documentation: https://docs.netflow.com
@@ -358,6 +368,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Changelog
 
 ### v1.0.0 (2024)
+
 - Initial release
 - Multi-tenant support
 - Full ISP management features

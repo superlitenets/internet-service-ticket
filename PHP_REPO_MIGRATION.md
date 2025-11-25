@@ -10,6 +10,7 @@ This guide helps you separate the PHP and TypeScript projects into different Git
 ## Files to Move to PHP Repo
 
 ### PHP Application Files
+
 ```
 app/
 ├── integrations.php
@@ -56,12 +57,14 @@ views/
 ```
 
 ### Configuration Files (PHP Specific)
+
 ```
 .env.example.php
 composer.json
 ```
 
 ### PHP Documentation
+
 ```
 CPANEL_INSTALLATION.md
 DATABASE_SETUP.md
@@ -78,6 +81,7 @@ PHP_MIGRATION.md
 ```
 
 ### Scripts
+
 ```
 install-cpanel.php
 install-production.sh
@@ -311,6 +315,7 @@ git push origin main
 ## Verification Checklist
 
 ### PHP Repo (php-ticket-superlite)
+
 - [ ] All PHP files present
 - [ ] composer.json exists with dependencies
 - [ ] .env.example.php present
@@ -320,6 +325,7 @@ git push origin main
 - [ ] Multitenancy files present
 
 ### TypeScript Repo (internet-service-ticket)
+
 - [ ] No PHP files remain
 - [ ] No composer.json
 - [ ] No public/index.php
@@ -341,12 +347,14 @@ git push origin main
 ## Deployment
 
 ### PHP Backend
+
 - Deploy from `php-ticket-superlite` repo
 - Use CPANEL_INSTALLATION.md or DEPLOYMENT_PHP.md
 - Requires PostgreSQL database
 - Requires PHP 7.4+
 
 ### TypeScript Frontend
+
 - Deploy from `internet-service-ticket` repo
 - Use existing Fly.io or Vercel setup
 - Node.js 18+

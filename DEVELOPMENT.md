@@ -75,6 +75,7 @@ docker-compose up -d
 ```
 
 This will:
+
 - ✅ Start MySQL database
 - ✅ Start Redis cache
 - ✅ Start Node.js app with frontend and backend
@@ -84,7 +85,7 @@ This will:
 ### Access Points
 
 - **Frontend**: http://localhost:5173
-- **Backend APIs**: http://localhost:9000/api/*
+- **Backend APIs**: http://localhost:9000/api/\*
 - **phpMyAdmin**: http://localhost:8081
 - **MySQL**: localhost:3306
 
@@ -106,10 +107,12 @@ docker-compose up -d
 ### Making Changes
 
 **Frontend Changes** (React components, styles):
+
 - Changes are hot-reloaded automatically by Vite
 - No restart needed
 
 **Backend Changes** (API routes, database models):
+
 - Restart Terminal 2 to see changes
 - Or use tsx with watch mode (if available)
 
@@ -207,6 +210,7 @@ pnpm install
 ### Port Already in Use
 
 Change ports in:
+
 - `vite.config.ts` (frontend port)
 - `server/index.ts` or `.env` (backend port)
 - `docker-compose.yml` (Docker ports)
@@ -228,6 +232,7 @@ pnpm build
 ```
 
 This creates:
+
 - `dist/spa/` - Built React frontend
 - `dist/server/production.mjs` - Compiled backend
 

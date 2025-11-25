@@ -5,11 +5,13 @@ This guide shows how to set up Neon (PostgreSQL) as your database and deploy to 
 ## Step 1: Create a Neon Database
 
 ### 1.1 Sign Up for Neon
+
 - Visit [neon.tech](https://neon.tech)
 - Sign up or log in
 - Create a new project
 
 ### 1.2 Get Your Connection String
+
 1. Go to your Neon project dashboard
 2. Click **Databases** (left sidebar)
 3. Click on your database name (e.g., `neondb`)
@@ -19,6 +21,7 @@ This guide shows how to set up Neon (PostgreSQL) as your database and deploy to 
    ```
 
 ### 1.3 Update Your `.env` File
+
 Replace `DATABASE_URL` with your Neon connection string:
 
 ```env
@@ -30,6 +33,7 @@ PORT=9000
 ## Step 2: Initialize Database Schema
 
 ### 2.1 Run Migrations Locally
+
 Ensure Prisma is configured for PostgreSQL (it is by default now):
 
 ```bash
@@ -43,6 +47,7 @@ pnpm prisma migrate deploy
 This creates all tables in your Neon database.
 
 ### 2.2 Verify Database Setup
+
 Check that tables were created:
 
 ```bash
@@ -56,6 +61,7 @@ SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
 ### 3.1 Deployment Options
 
 Your application has two parts:
+
 - **Frontend** (React/Vite) → Deploy to Netlify
 - **Backend** (Express) → Requires separate backend hosting
 
@@ -76,6 +82,7 @@ The frontend will be served, but APIs won't work unless you have a backend runni
 #### Option B: Full Stack with Separate Backend Service
 
 Deploy the backend to a service like:
+
 - **Railway** (recommended, $5/month)
 - **Render** (free tier available)
 - **Heroku** (paid, but reliable)
@@ -85,7 +92,7 @@ Then update your frontend to call the backend API:
 
 ```typescript
 // client/lib/api.ts
-const API_BASE = process.env.VITE_API_URL || 'http://localhost:9000';
+const API_BASE = process.env.VITE_API_URL || "http://localhost:9000";
 
 export async function fetchApi(endpoint: string) {
   return fetch(`${API_BASE}/api${endpoint}`);
@@ -93,6 +100,7 @@ export async function fetchApi(endpoint: string) {
 ```
 
 Update `.env`:
+
 ```env
 VITE_API_URL=https://your-backend-service.com
 ```
@@ -256,6 +264,7 @@ SELECT * FROM "User";
 ## Environment Variables
 
 ### Local Development (`.env`)
+
 ```env
 NODE_ENV=development
 PORT=9000
@@ -263,12 +272,14 @@ DATABASE_URL=postgresql://user:password@localhost:5432/netflow
 ```
 
 ### Netlify (Frontend only)
+
 ```env
 NODE_ENV=production
 VITE_API_URL=https://your-backend.com
 ```
 
 ### Backend Service (Railway/Render)
+
 ```env
 NODE_ENV=production
 PORT=9000
@@ -278,20 +289,24 @@ DATABASE_URL=postgresql://user:password@ep-XXXX.neon.tech/netflow?sslmode=requir
 ## Troubleshooting
 
 ### "Connection refused" Error
+
 - Verify Neon connection string is correct
 - Check that `?sslmode=require` is in the URL
 - Ensure Neon database is running (check Neon console)
 
 ### "relation does not exist" Error
+
 - Run migrations: `pnpm prisma migrate deploy`
 - Check that migrations applied successfully
 
 ### Frontend API Calls Fail
+
 - Check `VITE_API_URL` environment variable
 - Verify backend service is running and accessible
 - Check CORS settings in `server/index.ts`
 
 ### Prisma Client Errors
+
 - Regenerate client: `pnpm prisma generate`
 - Update `@prisma/client`: `pnpm add @prisma/client@latest`
 

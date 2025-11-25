@@ -17,6 +17,7 @@ docker-compose up -d
 ```
 
 This will start:
+
 - **MySQL Database** (port 3306)
 - **Redis Cache** (port 6379)
 - **Node.js App** (port 5173 for frontend, backend APIs embedded)
@@ -25,6 +26,7 @@ This will start:
 ### 2. View Application
 
 Open your browser and navigate to:
+
 - **Frontend**: http://localhost:5173
 - **phpMyAdmin**: http://localhost:8081
 
@@ -36,6 +38,7 @@ Open your browser and navigate to:
 - **Database**: netflow_db
 
 Or use the root user:
+
 - **Username**: root
 - **Password**: root_password
 
@@ -185,11 +188,13 @@ docker-compose exec mysql mysqladmin -u root -proot_password ping
 ### Database Connection Errors
 
 Verify `DATABASE_URL` in `.env`:
+
 ```env
 DATABASE_URL=mysql://netflow_user:secure_password@mysql:3306/netflow_db
 ```
 
 Ensure MySQL container is running and healthy:
+
 ```bash
 docker-compose ps
 docker-compose logs mysql
@@ -198,9 +203,10 @@ docker-compose logs mysql
 ### Port Already in Use
 
 Change port mappings in `docker-compose.yml`:
+
 ```yaml
 ports:
-  - "9173:5173"  # Change 9173 to your available port
+  - "9173:5173" # Change 9173 to your available port
 ```
 
 Then access: http://localhost:9173
@@ -208,6 +214,7 @@ Then access: http://localhost:9173
 ### Permission Denied Errors
 
 Ensure Docker daemon is running:
+
 ```bash
 # On Linux
 sudo docker ps
@@ -230,22 +237,26 @@ See `DOCKER_PRODUCTION_GUIDE.md` for production setup instructions.
 ### Setup
 
 1. Update `.env`:
+
 ```env
 DATABASE_URL=mysql://netflow_user:secure_password@localhost:3306/netflow_db
 NODE_ENV=development
 ```
 
 2. Create database:
+
 ```bash
 mysql -u root -p < database/schema.sql
 ```
 
 3. Run migrations:
+
 ```bash
 pnpm prisma migrate deploy
 ```
 
 4. Start development server:
+
 ```bash
 pnpm run dev
 ```

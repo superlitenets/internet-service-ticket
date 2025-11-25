@@ -36,11 +36,13 @@ PORT=9000
 ## Step 3: Test Connection Locally (2 min)
 
 ### Terminal 1: Start Backend
+
 ```bash
 pnpm exec tsx server/index.ts
 ```
 
 ### Terminal 2: Test Database
+
 ```bash
 # Check if database is connected
 curl http://localhost:9000/api/test/health
@@ -87,7 +89,6 @@ netlify deploy --prod --dir=dist/spa
      - Set build: `pnpm install && pnpm build:server`
      - Set start: `node dist/server/production.mjs`
      - Add `DATABASE_URL` environment variable with your Neon string
-   
 2. **Deploy Frontend to Netlify**
    - Build: `pnpm build`
    - Deploy `dist/spa` folder
@@ -108,30 +109,34 @@ curl https://your-backend-url.com/api/test/health
 ## Troubleshooting
 
 ### "Connection refused"
+
 - Verify Neon connection string is correct
 - Check that the string includes `?sslmode=require`
 - Go to Neon console and verify database is running
 
 ### "relation does not exist"
+
 - Migrations haven't run yet
 - Locally: Run `pnpm prisma migrate deploy`
 - On Railway: Migrations run automatically during deploy
 
 ### "Client not found"
+
 - Run `pnpm prisma generate` to create Prisma client
 
 ### Port 9000 Already in Use
+
 - Change `PORT` in `.env` to something else (e.g., 3000)
 
 ## What Was Changed
 
-| File | Change |
-|------|--------|
-| `prisma/schema.prisma` | Provider: `mysql` → `postgresql` |
-| `.env` | Database URL updated for Neon |
-| `prisma/migrations/` | Migration updated for PostgreSQL syntax |
+| File                    | Change                                       |
+| ----------------------- | -------------------------------------------- |
+| `prisma/schema.prisma`  | Provider: `mysql` → `postgresql`             |
+| `.env`                  | Database URL updated for Neon                |
+| `prisma/migrations/`    | Migration updated for PostgreSQL syntax      |
 | `server/routes/test.ts` | ✨ NEW: Test endpoints to verify data saving |
-| `server/index.ts` | Added test route imports and registrations |
+| `server/index.ts`       | Added test route imports and registrations   |
 
 ## Next Steps
 
