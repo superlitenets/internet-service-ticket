@@ -951,101 +951,32 @@ export default function TicketsPage() {
             </DialogHeader>
 
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Customer Name *
-                  </label>
-                  <Input
-                    value={formData.customer}
-                    onChange={(e) =>
-                      setFormData({ ...formData, customer: e.target.value })
-                    }
-                    placeholder="e.g., Acme Corp"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email *
-                  </label>
-                  <Input
-                    type="email"
-                    value={formData.customerEmail}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        customerEmail: e.target.value,
-                      })
-                    }
-                    placeholder="contact@company.com"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Phone *
+                  Customer *
                 </label>
-                <Input
-                  type="tel"
-                  value={formData.customerPhone}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      customerPhone: e.target.value,
-                    })
+                <Select
+                  value={formData.customerId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, customerId: value })
                   }
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Location / Address
-                </label>
-                <Input
-                  value={formData.customerLocation}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      customerLocation: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Zone A, Downtown"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Apartment / Building
-                  </label>
-                  <Input
-                    value={formData.apartment}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        apartment: e.target.value,
-                      })
-                    }
-                    placeholder="e.g., Building A, Tower 1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Room Number
-                  </label>
-                  <Input
-                    value={formData.roomNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        roomNumber: e.target.value,
-                      })
-                    }
-                    placeholder="e.g., 301, Apt 5B"
-                  />
-                </div>
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a customer..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id}>
+                        {customer.name} ({customer.phone})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {customers.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No customers available. Please create a customer first.
+                  </p>
+                )}
               </div>
 
               <div>
