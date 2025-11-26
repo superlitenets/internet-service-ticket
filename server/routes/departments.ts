@@ -410,6 +410,34 @@ export const addTeamMember: RequestHandler = async (req, res) => {
 };
 
 /**
+ * Get all team members
+ */
+export const getTeamMembers: RequestHandler = async (_req, res) => {
+  try {
+    const members = await db.teamMember.findMany({
+      include: {
+        department: true,
+        teamGroup: true,
+      },
+      orderBy: [{ teamGroupId: "asc" }, { employeeId: "asc" }],
+    });
+
+    return res.json({
+      success: true,
+      teamMembers: members,
+      count: members.length,
+    });
+  } catch (error) {
+    console.error("Get team members error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch team members",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+/**
  * Get team memberships for an employee
  */
 export const getEmployeeTeamMemberships: RequestHandler = async (req, res) => {
