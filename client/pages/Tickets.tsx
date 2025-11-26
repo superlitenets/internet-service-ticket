@@ -271,6 +271,22 @@ export default function TicketsPage() {
           console.error("Failed to load employees:", error);
         }
 
+        // Load team groups
+        try {
+          const teamGroupsData = await getTeamGroups();
+          setTeamGroups(teamGroupsData);
+        } catch (error) {
+          console.error("Failed to load team groups:", error);
+        }
+
+        // Load team members
+        try {
+          const teamMembersData = await getTeamMembers();
+          setTeamMembers(teamMembersData);
+        } catch (error) {
+          console.error("Failed to load team members:", error);
+        }
+
         // Load tickets
         const dbTickets = await apiGetTickets();
 
