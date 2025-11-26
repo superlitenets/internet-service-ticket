@@ -126,7 +126,7 @@ const handler: Handler = async (event) => {
     }
 
     // AUTH - Get current user
-    if (path === "/api/auth/me" && method === "GET") {
+    if (path === "/auth/me" && method === "GET") {
       const token = extractToken(event.headers.authorization);
       if (!token) {
         return jsonResponse(401, {
@@ -170,7 +170,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Get all
-    if (path === "/api/customers" && method === "GET") {
+    if (path === "/customers" && method === "GET") {
       try {
         const customers = await sql(
           `SELECT * FROM "Customer" ORDER BY "registeredAt" DESC`,
@@ -190,7 +190,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Create
-    if (path === "/api/customers" && method === "POST") {
+    if (path === "/customers" && method === "POST") {
       const { name, email, phone, accountType } = body;
 
       if (!name || !phone) {
@@ -223,7 +223,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Get by ID
-    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "GET") {
+    if (path.match(/^\/customers\/[^/]+$/) && method === "GET") {
       const customerId = path.split("/").pop();
       try {
         const result = await sql(`SELECT * FROM "Customer" WHERE id = $1`, [
@@ -251,7 +251,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Update
-    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "PUT") {
+    if (path.match(/^\/customers\/[^/]+$/) && method === "PUT") {
       const customerId = path.split("/").pop();
       const { name, email, phone, accountType, status } = body;
 
@@ -311,7 +311,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Delete
-    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "DELETE") {
+    if (path.match(/^\/customers\/[^/]+$/) && method === "DELETE") {
       const customerId = path.split("/").pop();
       try {
         const result = await sql(
@@ -340,7 +340,7 @@ const handler: Handler = async (event) => {
     }
 
     // EMPLOYEES - Get all
-    if (path === "/api/employees" && method === "GET") {
+    if (path === "/employees" && method === "GET") {
       try {
         const employees = await sql(
           `SELECT * FROM "Employee" ORDER BY "createdAt" DESC`,
@@ -360,7 +360,7 @@ const handler: Handler = async (event) => {
     }
 
     // TICKETS - Get all
-    if (path === "/api/tickets" && method === "GET") {
+    if (path === "/tickets" && method === "GET") {
       try {
         const tickets = await sql(
           `SELECT t.*, c.name as customer_name FROM "Ticket" t 
@@ -382,7 +382,7 @@ const handler: Handler = async (event) => {
     }
 
     // TICKETS - Get stats
-    if (path === "/api/tickets/stats" && method === "GET") {
+    if (path === "/tickets/stats" && method === "GET") {
       try {
         const stats = await sql(
           `SELECT 
@@ -407,7 +407,7 @@ const handler: Handler = async (event) => {
     }
 
     // SMS - Send
-    if (path === "/api/sms/send" && method === "POST") {
+    if (path === "/sms/send" && method === "POST") {
       const {
         to,
         message,
