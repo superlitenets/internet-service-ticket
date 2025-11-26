@@ -30,7 +30,9 @@ export const createTicket: RequestHandler = async (req, res) => {
     let finalCustomerId = customerId;
     if (!finalCustomerId || finalCustomerId === "temp-customer") {
       // Generate truly unique phone and email
-      const uniqueId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const uniqueId =
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
       const phoneNumber = `+254${Math.floor(Math.random() * 900000000) + 100000000}`;
       const customer = await db.customer.create({
         data: {
