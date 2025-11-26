@@ -249,6 +249,28 @@ export function createServer() {
   app.get("/api/ticket-replies/:id", getTicketReplyById);
   app.delete("/api/ticket-replies/:id", deleteTicketReply);
 
+  // Ticket Tasks endpoints
+  app.post("/api/tickets/:ticketId/tasks", createTask);
+  app.get("/api/tickets/:ticketId/tasks", getTasks);
+  app.put("/api/tickets/tasks/:taskId", updateTask);
+  app.delete("/api/tickets/tasks/:taskId", deleteTask);
+
+  // Time Logging endpoints
+  app.post("/api/tickets/time-logs", logTime);
+  app.get("/api/tickets/:ticketId/time-logs", getTimeLogs);
+
+  // Comments endpoints
+  app.post("/api/tickets/:ticketId/comments", addComment);
+  app.get("/api/tickets/:ticketId/comments", getComments);
+
+  // Activity Log endpoints
+  app.get("/api/tickets/:ticketId/activity", getActivityLog);
+
+  // SLA and Performance endpoints
+  app.get("/api/sla/policies", getSLAPolicies);
+  app.get("/api/performance/employee/:userId", getPerformanceMetrics);
+  app.get("/api/performance/team", getTeamPerformanceReport);
+
   // Customers endpoints
   app.post("/api/customers", createCustomer);
   app.get("/api/customers", getCustomers);
