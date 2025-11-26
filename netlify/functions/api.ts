@@ -991,7 +991,16 @@ const handler: Handler = async (event) => {
     // TICKETS - Update
     if (path.match(/^\/tickets\/[^/]+$/) && method === "PUT") {
       const ticketId = path.split("/").pop();
-      const { subject, description, status, priority, category, userId, teamGroupId, assignedTeamMemberId } = body;
+      const {
+        subject,
+        description,
+        status,
+        priority,
+        category,
+        userId,
+        teamGroupId,
+        assignedTeamMemberId,
+      } = body;
 
       try {
         // Verify team group exists if provided

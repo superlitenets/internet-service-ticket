@@ -291,7 +291,8 @@ export const updateTicket: RequestHandler = async (req, res) => {
     if (resolution !== undefined) updateData.resolution = resolution;
     if (userId !== undefined) updateData.userId = userId;
     if (teamGroupId !== undefined) updateData.teamGroupId = teamGroupId || null;
-    if (assignedTeamMemberId !== undefined) updateData.assignedTeamMemberId = assignedTeamMemberId || null;
+    if (assignedTeamMemberId !== undefined)
+      updateData.assignedTeamMemberId = assignedTeamMemberId || null;
 
     const updatedTicket = await db.ticket.update({
       where: { id },

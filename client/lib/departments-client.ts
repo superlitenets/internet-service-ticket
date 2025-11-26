@@ -28,11 +28,11 @@ export interface TeamMember {
  */
 export async function getTeamGroups(): Promise<TeamGroup[]> {
   const response = await fetch("/api/team-groups");
-  
+
   if (!response.ok) {
     throw new Error("Failed to fetch team groups");
   }
-  
+
   const result = await response.json();
   return result.teamGroups || result;
 }
@@ -42,11 +42,11 @@ export async function getTeamGroups(): Promise<TeamGroup[]> {
  */
 export async function getTeamMembers(): Promise<TeamMember[]> {
   const response = await fetch("/api/team-members");
-  
+
   if (!response.ok) {
     throw new Error("Failed to fetch team members");
   }
-  
+
   const result = await response.json();
   return result || [];
 }
@@ -54,13 +54,15 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 /**
  * Get team memberships for an employee
  */
-export async function getEmployeeTeamMemberships(employeeId: string): Promise<TeamMember[]> {
+export async function getEmployeeTeamMemberships(
+  employeeId: string,
+): Promise<TeamMember[]> {
   const response = await fetch(`/api/team-members/employee/${employeeId}`);
-  
+
   if (!response.ok) {
     throw new Error("Failed to fetch employee team memberships");
   }
-  
+
   const result = await response.json();
   return result.teamMemberships || result;
 }
@@ -79,11 +81,11 @@ export async function createTeamGroup(data: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     throw new Error("Failed to create team group");
   }
-  
+
   const result = await response.json();
   return result.teamGroup || result;
 }
@@ -102,11 +104,11 @@ export async function addTeamMember(data: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     throw new Error("Failed to add team member");
   }
-  
+
   const result = await response.json();
   return result.teamMember || result;
 }

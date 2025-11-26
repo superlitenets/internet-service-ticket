@@ -35,7 +35,10 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getCustomers, createCustomer as apiCreateCustomer } from "@/lib/customers-client";
+import {
+  getCustomers,
+  createCustomer as apiCreateCustomer,
+} from "@/lib/customers-client";
 import { getEmployees } from "@/lib/employees-client";
 import { getTeamGroups, getTeamMembers } from "@/lib/departments-client";
 import { sendSmsToPhone } from "@/lib/sms-client";
@@ -117,7 +120,8 @@ export default function TicketsPage() {
   const [sendingSms, setSendingSms] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [createCustomerDialogOpen, setCreateCustomerDialogOpen] = useState(false);
+  const [createCustomerDialogOpen, setCreateCustomerDialogOpen] =
+    useState(false);
   const [creatingCustomer, setCreatingCustomer] = useState(false);
   const [newCustomerData, setNewCustomerData] = useState({
     name: "",
@@ -508,7 +512,8 @@ export default function TicketsPage() {
           customer: selectedCustomer?.name || "Unknown",
           customerEmail: selectedCustomer?.email || "",
           customerPhone: selectedCustomer?.phone || "",
-          customerLocation: formData.location || selectedCustomer?.location || "",
+          customerLocation:
+            formData.location || selectedCustomer?.location || "",
           apartment: formData.apartment || selectedCustomer?.apartment || "",
           roomNumber: formData.roomNumber || selectedCustomer?.roomNumber || "",
           title: formData.title,
@@ -976,7 +981,9 @@ export default function TicketsPage() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="unassigned">Unassigned</SelectItem>
+                                <SelectItem value="unassigned">
+                                  Unassigned
+                                </SelectItem>
                                 {employees.map((employee) => (
                                   <SelectItem
                                     key={employee.id}
@@ -1103,7 +1110,9 @@ export default function TicketsPage() {
                 <Select
                   value={formData.customerId}
                   onValueChange={(value) => {
-                    const selectedCustomer = customers.find((c) => c.id === value);
+                    const selectedCustomer = customers.find(
+                      (c) => c.id === value,
+                    );
                     setFormData({
                       ...formData,
                       customerId: value,
@@ -1185,7 +1194,10 @@ export default function TicketsPage() {
                     <Input
                       value={formData.streetAddress}
                       onChange={(e) =>
-                        setFormData({ ...formData, streetAddress: e.target.value })
+                        setFormData({
+                          ...formData,
+                          streetAddress: e.target.value,
+                        })
                       }
                       placeholder="Leave blank to use customer address"
                     />
@@ -1199,7 +1211,10 @@ export default function TicketsPage() {
                       <Input
                         value={formData.apartment}
                         onChange={(e) =>
-                          setFormData({ ...formData, apartment: e.target.value })
+                          setFormData({
+                            ...formData,
+                            apartment: e.target.value,
+                          })
                         }
                         placeholder="Leave blank to use customer"
                       />
@@ -1212,7 +1227,10 @@ export default function TicketsPage() {
                       <Input
                         value={formData.roomNumber}
                         onChange={(e) =>
-                          setFormData({ ...formData, roomNumber: e.target.value })
+                          setFormData({
+                            ...formData,
+                            roomNumber: e.target.value,
+                          })
                         }
                         placeholder="Leave blank to use customer"
                       />
@@ -1342,7 +1360,8 @@ export default function TicketsPage() {
                       <SelectItem value="">None</SelectItem>
                       {teamMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id}>
-                          {member.department?.name || "No Department"} - {member.teamGroup?.name || "No Team"}
+                          {member.department?.name || "No Department"} -{" "}
+                          {member.teamGroup?.name || "No Team"}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1404,7 +1423,10 @@ export default function TicketsPage() {
         </Dialog>
 
         {/* Create Customer Dialog */}
-        <Dialog open={createCustomerDialogOpen} onOpenChange={setCreateCustomerDialogOpen}>
+        <Dialog
+          open={createCustomerDialogOpen}
+          onOpenChange={setCreateCustomerDialogOpen}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Create New Customer</DialogTitle>
@@ -1421,7 +1443,10 @@ export default function TicketsPage() {
                 <Input
                   value={newCustomerData.name}
                   onChange={(e) =>
-                    setNewCustomerData({ ...newCustomerData, name: e.target.value })
+                    setNewCustomerData({
+                      ...newCustomerData,
+                      name: e.target.value,
+                    })
                   }
                   placeholder="e.g., John Doe"
                 />
@@ -1434,7 +1459,10 @@ export default function TicketsPage() {
                 <Input
                   value={newCustomerData.phone}
                   onChange={(e) =>
-                    setNewCustomerData({ ...newCustomerData, phone: e.target.value })
+                    setNewCustomerData({
+                      ...newCustomerData,
+                      phone: e.target.value,
+                    })
                   }
                   placeholder="e.g., +254712345678"
                 />
@@ -1448,7 +1476,10 @@ export default function TicketsPage() {
                   type="email"
                   value={newCustomerData.email}
                   onChange={(e) =>
-                    setNewCustomerData({ ...newCustomerData, email: e.target.value })
+                    setNewCustomerData({
+                      ...newCustomerData,
+                      email: e.target.value,
+                    })
                   }
                   placeholder="e.g., john@example.com"
                 />
@@ -1461,7 +1492,10 @@ export default function TicketsPage() {
                 <Input
                   value={newCustomerData.location}
                   onChange={(e) =>
-                    setNewCustomerData({ ...newCustomerData, location: e.target.value })
+                    setNewCustomerData({
+                      ...newCustomerData,
+                      location: e.target.value,
+                    })
                   }
                   placeholder="e.g., Nairobi"
                 />
@@ -1474,7 +1508,10 @@ export default function TicketsPage() {
                 <Input
                   value={newCustomerData.streetAddress}
                   onChange={(e) =>
-                    setNewCustomerData({ ...newCustomerData, streetAddress: e.target.value })
+                    setNewCustomerData({
+                      ...newCustomerData,
+                      streetAddress: e.target.value,
+                    })
                   }
                   placeholder="e.g., 123 Main Street"
                 />
@@ -1488,7 +1525,10 @@ export default function TicketsPage() {
                   <Input
                     value={newCustomerData.apartment}
                     onChange={(e) =>
-                      setNewCustomerData({ ...newCustomerData, apartment: e.target.value })
+                      setNewCustomerData({
+                        ...newCustomerData,
+                        apartment: e.target.value,
+                      })
                     }
                     placeholder="e.g., Apt 101"
                   />
@@ -1501,7 +1541,10 @@ export default function TicketsPage() {
                   <Input
                     value={newCustomerData.roomNumber}
                     onChange={(e) =>
-                      setNewCustomerData({ ...newCustomerData, roomNumber: e.target.value })
+                      setNewCustomerData({
+                        ...newCustomerData,
+                        roomNumber: e.target.value,
+                      })
                     }
                     placeholder="e.g., Room 5"
                   />
