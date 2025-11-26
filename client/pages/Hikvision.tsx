@@ -367,8 +367,8 @@ export default function HikvisionPage() {
               </div>
 
               <p className="text-sm text-blue-800 bg-blue-50 p-3 rounded">
-                💡 Tip: The default port for Hikvision devices is 8000. Ensure your
-                device is accessible from your network.
+                💡 Tip: Hikvision attendance records are synced automatically once connected.
+                The device will track employee entry/exit with face recognition or card IDs.
               </p>
             </div>
 
