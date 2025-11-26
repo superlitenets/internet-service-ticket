@@ -259,6 +259,7 @@ export function createServer() {
   // Time Logging endpoints
   app.post("/api/tickets/time-logs", logTime);
   app.get("/api/tickets/:ticketId/time-logs", getTimeLogs);
+  app.delete("/api/tickets/time-logs/:timeLogId", deleteTimeLog);
 
   // Comments endpoints
   app.post("/api/tickets/:ticketId/comments", addComment);
