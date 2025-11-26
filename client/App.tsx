@@ -23,6 +23,7 @@ import Performance from "./pages/Performance";
 import Payments from "./pages/Payments";
 import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
 import LandingContentEditor from "./pages/LandingContentEditor";
 import { AccountingPage } from "./pages/Accounting";
 import Departments from "./pages/Departments";
