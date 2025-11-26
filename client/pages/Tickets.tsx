@@ -1273,7 +1273,7 @@ export default function TicketsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Assign To
+                    Assign To (Individual)
                   </label>
                   <Select
                     value={formData.assignedTo}
@@ -1289,6 +1289,56 @@ export default function TicketsPage() {
                       {employees.map((employee) => (
                         <SelectItem key={employee.id} value={employee.id}>
                           {employee.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Assign to Team Group (Optional)
+                  </label>
+                  <Select
+                    value={formData.teamGroupId}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, teamGroupId: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a team group..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {teamGroups.map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Assign to Team Member (Optional)
+                  </label>
+                  <Select
+                    value={formData.assignedTeamMemberId}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, assignedTeamMemberId: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a team member..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {teamMembers.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
+                          {member.department?.name || "No Department"} - {member.teamGroup?.name || "No Team"}
                         </SelectItem>
                       ))}
                     </SelectContent>
