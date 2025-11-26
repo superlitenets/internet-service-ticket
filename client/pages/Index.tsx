@@ -169,6 +169,79 @@ export default function Dashboard() {
     }
   };
 
+  const handleAddCustomer = () => {
+    navigate("/customers");
+  };
+
+  const handleOpenBulkSmsDialog = () => {
+    setSelectedCustomersForSms(customers.map((c) => c.id));
+    setBulkSmsMessage("");
+    setBulkSmsDialogOpen(true);
+  };
+
+  const handleSendBulkSms = async () => {
+    if (!bulkSmsMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a message",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedCustomersForSms.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please select at least one customer",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setSendingBulkSms(true);
+
+      const selectedCustomerObjects = customers.filter((c) =>
+        selectedCustomersForSms.includes(c.id),
+      );
+
+      const phoneNumbers = selectedCustomerObjects
+        .map((c) => c.phone)
+        .filter((phone) => phone);
+
+      if (phoneNumbers.length === 0) {
+        toast({
+          title: "Error",
+          description:
+            "Selected customers do not have phone numbers available",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      await sendSmsBatch(phoneNumbers, bulkSmsMessage);
+
+      toast({
+        title: "Success",
+        description: `Bulk SMS sent to ${phoneNumbers.length} customer(s)`,
+      });
+
+      setBulkSmsDialogOpen(false);
+      setBulkSmsMessage("");
+      setSelectedCustomersForSms([]);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to send bulk SMS";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setSendingBulkSms(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="p-6 md:p-8 space-y-8">
