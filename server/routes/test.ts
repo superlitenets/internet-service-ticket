@@ -6,11 +6,12 @@ interface TestUserInput {
   phone: string;
   name?: string;
   password?: string;
+  role?: string;
 }
 
 export async function createTestUser(req: any, res: any) {
   try {
-    const { email, phone, name, password } = req.body as TestUserInput;
+    const { email, phone, name, password, role } = req.body as TestUserInput;
 
     if (!email || !phone) {
       return res.status(400).json({
@@ -30,7 +31,7 @@ export async function createTestUser(req: any, res: any) {
         phone,
         password: hashedPassword,
         name: name || "Test User",
-        role: "user",
+        role: role || "admin",
         status: "active",
       },
     });
