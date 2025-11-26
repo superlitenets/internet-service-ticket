@@ -65,6 +65,20 @@ import {
   deleteTicketReply,
 } from "./routes/ticket-replies";
 import {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+  logTime,
+  getTimeLogs,
+  getActivityLog,
+  addComment,
+  getComments,
+  getSLAPolicies,
+  getPerformanceMetrics,
+  getTeamPerformanceReport,
+} from "./routes/tickets-tasks";
+import {
   createCustomer,
   getCustomers,
   getCustomerById,
