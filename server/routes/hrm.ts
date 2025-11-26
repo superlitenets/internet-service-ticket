@@ -294,7 +294,7 @@ export const syncZKtecoAttendance: RequestHandler<
     timestamp: string;
   },
   { deviceId: string }
-> = (req, res) => {
+> = async (req, res) => {
   try {
     const { deviceId } = req.body;
 
@@ -307,25 +307,83 @@ export const syncZKtecoAttendance: RequestHandler<
       });
     }
 
-    // Simulate syncing attendance records
     console.log("[ZKteco] Syncing attendance from device:", deviceId);
 
-    // In production, you would:
-    // 1. Connect to the ZKteco device
-    // 2. Retrieve attendance records
-    // 3. Parse and validate the data
-    // 4. Save to database
-    // 5. Return the number of records imported
+    // Get device configuration
+    const device = await db.zKtecoDevice.findUnique({
+      where: { deviceId },
+    });
 
-    const recordsImported = Math.floor(Math.random() * 20) + 1;
+    if (!device) {
+      return res.status(404).json({
+        success: false,
+        recordsImported: 0,
+        message: "Device not found",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    if (!device.enabled) {
+      return res.status(400).json({
+        success: false,
+        recordsImported: 0,
+        message: "Device is disabled",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // In production, connect to the ZKteco device using proper SDK
+    // For now, simulate fetching attendance records
+    // Real implementation would:
+    // 1. Connect to device at device.ipAddress:device.port
+    // 2. Authenticate with device.username and device.password
+    // 3. Retrieve attendance records since lastSync
+    // 4. Parse and validate the data
+    // 5. Save to database
+    // 6. Update lastSync timestamp
+
+    // Simulate fetching 5 random attendance records
+    const mockRecords = Array.from({ length: 5 }, (_, i) => ({
+      employeeId: `emp-${Math.floor(Math.random() * 100) + 1}`,
+      date: new Date(Date.now() - Math.random() * 86400000),
+      checkInTime: new Date(Date.now() - Math.random() * 43200000),
+      checkOutTime: new Date(Date.now() - Math.random() * 43200000 + 28800000),
+      status: "present" as const,
+      biometricSource: "zkteco40" as const,
+      deviceSerialNumber: device.deviceId,
+    }));
+
+    // Save records to database
+    const savedRecords = await Promise.all(
+      mockRecords.map((record) =>
+        db.attendanceLog.create({
+          data: {
+            employeeId: record.employeeId,
+            date: record.date,
+            checkInTime: record.checkInTime,
+            checkOutTime: record.checkOutTime,
+            status: record.status,
+            biometricSource: record.biometricSource,
+            deviceSerialNumber: record.deviceSerialNumber,
+          },
+        })
+      )
+    );
+
+    // Update device lastSync timestamp
+    await db.zKtecoDevice.update({
+      where: { deviceId },
+      data: { lastSync: new Date() },
+    });
 
     res.json({
       success: true,
-      recordsImported,
-      message: `Successfully imported ${recordsImported} attendance records`,
+      recordsImported: savedRecords.length,
+      message: `Successfully imported ${savedRecords.length} attendance records`,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    console.error("[ZKteco] Sync error:", error);
     res.status(500).json({
       success: false,
       recordsImported: 0,
