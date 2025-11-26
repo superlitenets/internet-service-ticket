@@ -991,9 +991,37 @@ const handler: Handler = async (event) => {
     // TICKETS - Update
     if (path.match(/^\/tickets\/[^/]+$/) && method === "PUT") {
       const ticketId = path.split("/").pop();
-      const { subject, description, status, priority, category, userId } = body;
+      const { subject, description, status, priority, category, userId, teamGroupId, assignedTeamMemberId } = body;
 
       try {
+        // Verify team group exists if provided
+        if (teamGroupId) {
+          const teamGroupCheck = await sql(
+            `SELECT id FROM "TeamGroup" WHERE id = $1`,
+            [teamGroupId],
+          );
+          if (teamGroupCheck.length === 0) {
+            return jsonResponse(404, {
+              success: false,
+              message: "Team group not found",
+            });
+          }
+        }
+
+        // Verify team member exists if provided
+        if (assignedTeamMemberId) {
+          const teamMemberCheck = await sql(
+            `SELECT id FROM "TeamMember" WHERE id = $1`,
+            [assignedTeamMemberId],
+          );
+          if (teamMemberCheck.length === 0) {
+            return jsonResponse(404, {
+              success: false,
+              message: "Team member not found",
+            });
+          }
+        }
+
         const updates: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
@@ -1021,6 +1049,14 @@ const handler: Handler = async (event) => {
         if (userId !== undefined) {
           updates.push(`"userId" = $${paramCount++}`);
           values.push(userId);
+        }
+        if (teamGroupId !== undefined) {
+          updates.push(`"teamGroupId" = $${paramCount++}`);
+          values.push(teamGroupId || null);
+        }
+        if (assignedTeamMemberId !== undefined) {
+          updates.push(`"assignedTeamMemberId" = $${paramCount++}`);
+          values.push(assignedTeamMemberId || null);
         }
 
         updates.push(`"updatedAt" = NOW()`);
