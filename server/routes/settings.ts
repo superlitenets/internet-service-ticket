@@ -62,7 +62,8 @@ router.post("/:key", async (req, res) => {
     const { key } = req.params;
     const { value, category } = req.body;
 
-    const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+    const stringValue =
+      typeof value === "string" ? value : JSON.stringify(value);
 
     const setting = await db.appSettings.upsert({
       where: { key },
