@@ -60,7 +60,11 @@ export default function Landing() {
             description: "Great for small businesses",
             speed: { uploadMbps: 20, downloadMbps: 100 },
             dataQuota: 500,
-            features: ["Priority Support", "99.9% Uptime SLA", "Dedicated Account Manager"],
+            features: [
+              "Priority Support",
+              "99.9% Uptime SLA",
+              "Dedicated Account Manager",
+            ],
           },
           {
             id: "demo-3",
@@ -72,7 +76,12 @@ export default function Landing() {
             description: "For large organizations",
             speed: { uploadMbps: 50, downloadMbps: 500 },
             dataQuota: 2000,
-            features: ["24/7 Phone Support", "99.99% Uptime SLA", "Custom Solutions", "Network Optimization"],
+            features: [
+              "24/7 Phone Support",
+              "99.99% Uptime SLA",
+              "Custom Solutions",
+              "Network Optimization",
+            ],
           },
         ];
         setPlans(defaultPlans);
