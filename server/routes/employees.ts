@@ -26,6 +26,12 @@ export const createEmployee: RequestHandler = async (req, res) => {
       });
     }
 
+    // Parse hireDate - use today if not provided
+    let parsedHireDate = hireDate ? new Date(hireDate) : new Date();
+    if (isNaN(parsedHireDate.getTime())) {
+      parsedHireDate = new Date();
+    }
+
     // Create or link user if userId provided
     let linkedUserId = userId;
     if (!linkedUserId) {
@@ -43,7 +49,7 @@ export const createEmployee: RequestHandler = async (req, res) => {
         position: position || undefined,
         department: department || undefined,
         salary: salary || undefined,
-        hireDate: new Date(hireDate),
+        hireDate: parsedHireDate,
         status: "active",
         emergencyContact: emergencyContact || undefined,
       },

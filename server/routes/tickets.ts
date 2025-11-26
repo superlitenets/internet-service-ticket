@@ -14,19 +14,37 @@ export const createTicket: RequestHandler = async (req, res) => {
       category,
       priority,
       status,
+      customerName,
+      customerEmail,
+      customerPhone,
     } = req.body;
 
-    if (!customerId || !subject || !description) {
+    if (!subject || !description) {
       return res.status(400).json({
         success: false,
-        message: "Customer ID, subject, and description are required",
+        message: "Subject and description are required",
       });
+    }
+
+    // If customerId is not provided or is a placeholder, create a temporary customer
+    let finalCustomerId = customerId;
+    if (!finalCustomerId || finalCustomerId === "temp-customer") {
+      const customer = await db.customer.create({
+        data: {
+          name: customerName || "Unknown Customer",
+          email: customerEmail || `customer-${Date.now()}@example.com`,
+          phone: customerPhone || `+0000000000${Date.now().toString().slice(-4)}`,
+          accountType: "residential",
+          status: "active",
+        },
+      });
+      finalCustomerId = customer.id;
     }
 
     const ticket = await db.ticket.create({
       data: {
         ticketId: `TK-${Date.now()}`,
-        customerId,
+        customerId: finalCustomerId,
         userId: userId || undefined,
         subject,
         description,
