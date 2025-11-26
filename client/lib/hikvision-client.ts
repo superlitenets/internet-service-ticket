@@ -85,30 +85,3 @@ export async function getAccessControlEvents(
     throw new Error(errorMessage);
   }
 }
-
-/**
- * Get surveillance events from Hikvision camera
- */
-export async function getSurveillanceEvents(
-  cameraId: string,
-): Promise<{ success: boolean; events: SurveillanceEvent[]; message: string }> {
-  try {
-    const response = await fetch(`/api/hrm/hikvision/surveillance/${cameraId}`);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch events: ${response.statusText}`);
-    }
-
-    return (await response.json()) as {
-      success: boolean;
-      events: SurveillanceEvent[];
-      message: string;
-    };
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Failed to fetch surveillance events";
-    throw new Error(errorMessage);
-  }
-}
