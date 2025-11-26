@@ -678,3 +678,98 @@ model AccountingSummary {
 
   @@index([summaryDate])
 }
+
+// Attendance Logs (from biometric devices or manual)
+model AttendanceLog {
+  id              String   @id @default(cuid())
+  employeeId      String
+  date            DateTime
+  checkInTime     DateTime?
+  checkOutTime    DateTime?
+  status          String   @default("present") // present, absent, late, half-day
+  biometricSource String   @default("manual") // manual, zkteco40, mobile, hikvision
+  deviceSerialNumber String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([date])
+  @@index([biometricSource])
+}
+
+// ZKteco Device Configuration
+model ZKtecoDevice {
+  id              String   @id @default(cuid())
+  deviceId        String   @unique
+  ipAddress       String
+  port            Int      @default(4370)
+  username        String
+  password        String
+  deviceName      String?
+  location        String?
+  enabled         Boolean  @default(true)
+  lastSync        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([deviceId])
+  @@index([enabled])
+}
+
+// Hikvision Device Configuration (IP Cameras, Access Control)
+model HikvisionDevice {
+  id              String   @id @default(cuid())
+  deviceId        String   @unique
+  ipAddress       String
+  port            Int      @default(8000)
+  username        String
+  password        String
+  deviceType      String   // camera, access_control, nvr
+  deviceName      String?
+  location        String?
+  enabled         Boolean  @default(true)
+  lastSync        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([deviceId])
+  @@index([deviceType])
+  @@index([enabled])
+}
+
+// Access Control Events (from Hikvision)
+model AccessControlEvent {
+  id              String   @id @default(cuid())
+  deviceId        String
+  employeeId      String?
+  eventType       String   // entry, exit, denied, alarm
+  accessPoint     String?
+  eventTime       DateTime
+  cardNumber      String?
+  personName      String?
+  status          String?
+  createdAt       DateTime @default(now())
+
+  @@index([deviceId])
+  @@index([employeeId])
+  @@index([eventTime])
+  @@index([eventType])
+}
+
+// Surveillance Events (from Hikvision cameras)
+model SurveillanceEvent {
+  id              String   @id @default(cuid())
+  cameraId        String
+  eventType       String   // motion, intrusion, line_crossing, loitering
+  eventTime       DateTime
+  severity        String   @default("info") // info, warning, critical
+  location        String?
+  snapshotUrl     String?
+  description     String?
+  createdAt       DateTime @default(now())
+
+  @@index([cameraId])
+  @@index([eventTime])
+  @@index([eventType])
+}
