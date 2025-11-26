@@ -1071,9 +1071,17 @@ export default function TicketsPage() {
                 </div>
                 <Select
                   value={formData.customerId}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, customerId: value })
-                  }
+                  onValueChange={(value) => {
+                    const selectedCustomer = customers.find((c) => c.id === value);
+                    setFormData({
+                      ...formData,
+                      customerId: value,
+                      location: selectedCustomer?.location || "",
+                      apartment: selectedCustomer?.apartment || "",
+                      roomNumber: selectedCustomer?.roomNumber || "",
+                      streetAddress: selectedCustomer?.streetAddress || "",
+                    });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a customer..." />
