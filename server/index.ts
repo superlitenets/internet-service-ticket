@@ -107,6 +107,7 @@ import {
   updateAttendanceRecord,
   deleteAttendanceRecord,
 } from "./routes/attendance";
+import settingsRouter from "./routes/settings";
 import {
   getChartOfAccounts,
   createChartOfAccount,
