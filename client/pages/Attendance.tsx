@@ -38,6 +38,10 @@ import {
   updateAttendanceRecord,
   deleteAttendanceRecord,
 } from "@/lib/attendance-client";
+import {
+  testZKtecoConnection,
+  syncZKtecoAttendance,
+} from "@/lib/zkteco-client";
 
 interface ExtendedAttendanceRecord extends AttendanceRecord {
   employeeName?: string;
