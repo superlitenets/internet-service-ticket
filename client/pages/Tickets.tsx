@@ -1303,6 +1303,60 @@ export default function TicketsPage() {
                   placeholder="e.g., john@example.com"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Location/City
+                </label>
+                <Input
+                  value={newCustomerData.location}
+                  onChange={(e) =>
+                    setNewCustomerData({ ...newCustomerData, location: e.target.value })
+                  }
+                  placeholder="e.g., Nairobi"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Street Address
+                </label>
+                <Input
+                  value={newCustomerData.streetAddress}
+                  onChange={(e) =>
+                    setNewCustomerData({ ...newCustomerData, streetAddress: e.target.value })
+                  }
+                  placeholder="e.g., 123 Main Street"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Apartment/Unit
+                  </label>
+                  <Input
+                    value={newCustomerData.apartment}
+                    onChange={(e) =>
+                      setNewCustomerData({ ...newCustomerData, apartment: e.target.value })
+                    }
+                    placeholder="e.g., Apt 101"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Room Number
+                  </label>
+                  <Input
+                    value={newCustomerData.roomNumber}
+                    onChange={(e) =>
+                      setNewCustomerData({ ...newCustomerData, roomNumber: e.target.value })
+                    }
+                    placeholder="e.g., Room 5"
+                  />
+                </div>
+              </div>
             </div>
 
             <DialogFooter>
