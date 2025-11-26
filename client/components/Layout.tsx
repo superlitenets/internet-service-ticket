@@ -11,7 +11,6 @@ import {
   Calendar,
   DollarSign,
   TrendingUp,
-  Wifi,
   FileText,
   ChevronDown,
   Briefcase,
