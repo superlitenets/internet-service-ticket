@@ -494,7 +494,17 @@ const handler: Handler = async (event) => {
     // CUSTOMERS - Update
     if (path.match(/^\/customers\/[^/]+$/) && method === "PUT") {
       const customerId = path.split("/").pop();
-      const { name, email, phone, accountType, status } = body;
+      const {
+        name,
+        email,
+        phone,
+        accountType,
+        location,
+        apartment,
+        roomNumber,
+        streetAddress,
+        status,
+      } = body;
 
       try {
         const updates: string[] = [];
@@ -516,6 +526,22 @@ const handler: Handler = async (event) => {
         if (accountType !== undefined) {
           updates.push(`"accountType" = $${paramCount++}`);
           values.push(accountType);
+        }
+        if (location !== undefined) {
+          updates.push(`location = $${paramCount++}`);
+          values.push(location);
+        }
+        if (apartment !== undefined) {
+          updates.push(`apartment = $${paramCount++}`);
+          values.push(apartment);
+        }
+        if (roomNumber !== undefined) {
+          updates.push(`"roomNumber" = $${paramCount++}`);
+          values.push(roomNumber);
+        }
+        if (streetAddress !== undefined) {
+          updates.push(`"streetAddress" = $${paramCount++}`);
+          values.push(streetAddress);
         }
         if (status !== undefined) {
           updates.push(`status = $${paramCount++}`);
