@@ -50,6 +50,7 @@ interface RecentTicket {
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [ticketStats, setTicketStats] = useState<TicketStats>({
     total: 0,
     open: 0,
@@ -60,6 +61,13 @@ export default function Dashboard() {
   const [recentTickets, setRecentTickets] = useState<RecentTicket[]>([]);
   const [teamMembersCount, setTeamMembersCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [bulkSmsDialogOpen, setBulkSmsDialogOpen] = useState(false);
+  const [bulkSmsMessage, setBulkSmsMessage] = useState("");
+  const [sendingBulkSms, setSendingBulkSms] = useState(false);
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [selectedCustomersForSms, setSelectedCustomersForSms] = useState<
+    string[]
+  >([]);
 
   useEffect(() => {
     const loadDashboardData = async () => {
