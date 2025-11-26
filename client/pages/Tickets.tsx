@@ -551,10 +551,9 @@ export default function TicketsPage() {
       });
       setSavingTicket(false);
       return;
-    } finally {
-      setSavingTicket(false);
     }
 
+    setSavingTicket(false);
     setDialogOpen(false);
     setFormData({
       customerId: "",
