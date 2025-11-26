@@ -94,6 +94,42 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
       "Ticket #{{ticketId}} for {{customerName}} ({{customerPhone}}) status changed to {{status}}.",
     variables: ["ticketId", "customerName", "customerPhone", "status"],
   },
+  {
+    id: "template_lead_created_customer",
+    eventType: "lead_created",
+    recipientType: "customer",
+    name: "Lead Created - Customer",
+    message:
+      "Hi {{customerName}}, thank you for your interest in {{package}}. Your lead has been registered. Our sales team will contact you at {{phone}} shortly. Thank you!",
+    variables: ["customerName", "package", "phone"],
+  },
+  {
+    id: "template_lead_created_sales",
+    eventType: "lead_created",
+    recipientType: "sales",
+    name: "Lead Created - Sales",
+    message:
+      "New lead: {{customerName}} ({{phone}}) at {{location}}. Package: {{package}}. Install fee: {{agreedInstallAmount}}. Notes: {{notes}}",
+    variables: ["customerName", "phone", "location", "package", "agreedInstallAmount", "notes"],
+  },
+  {
+    id: "template_lead_converted_customer",
+    eventType: "lead_converted",
+    recipientType: "customer",
+    name: "Lead Converted - Customer",
+    message:
+      "Hi {{customerName}}, your lead has been converted to ticket #{{ticketId}}. Your technician {{technicianName}} will contact you soon at {{technicianPhone}}. Thank you!",
+    variables: ["customerName", "ticketId", "technicianName", "technicianPhone"],
+  },
+  {
+    id: "template_lead_converted_sales",
+    eventType: "lead_converted",
+    recipientType: "sales",
+    name: "Lead Converted - Sales",
+    message:
+      "Lead {{customerName}} converted to ticket #{{ticketId}}. Assigned to: {{technicianName}}. Priority: {{priority}}.",
+    variables: ["customerName", "ticketId", "technicianName", "priority"],
+  },
 ];
 
 /**
