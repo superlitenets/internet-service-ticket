@@ -235,6 +235,8 @@ export const updateTicket: RequestHandler = async (req, res) => {
       category,
       resolution,
       userId,
+      teamGroupId,
+      assignedTeamMemberId,
     } = req.body;
 
     const ticket = await db.ticket.findUnique({
@@ -246,6 +248,32 @@ export const updateTicket: RequestHandler = async (req, res) => {
         success: false,
         message: "Ticket not found",
       });
+    }
+
+    // Verify team group exists if provided
+    if (teamGroupId) {
+      const teamGroup = await db.teamGroup.findUnique({
+        where: { id: teamGroupId },
+      });
+      if (!teamGroup) {
+        return res.status(404).json({
+          success: false,
+          message: "Team group not found",
+        });
+      }
+    }
+
+    // Verify team member exists if provided
+    if (assignedTeamMemberId) {
+      const teamMember = await db.teamMember.findUnique({
+        where: { id: assignedTeamMemberId },
+      });
+      if (!teamMember) {
+        return res.status(404).json({
+          success: false,
+          message: "Team member not found",
+        });
+      }
     }
 
     const updateData: any = {};
@@ -262,6 +290,8 @@ export const updateTicket: RequestHandler = async (req, res) => {
     if (category !== undefined) updateData.category = category;
     if (resolution !== undefined) updateData.resolution = resolution;
     if (userId !== undefined) updateData.userId = userId;
+    if (teamGroupId !== undefined) updateData.teamGroupId = teamGroupId || null;
+    if (assignedTeamMemberId !== undefined) updateData.assignedTeamMemberId = assignedTeamMemberId || null;
 
     const updatedTicket = await db.ticket.update({
       where: { id },
@@ -269,6 +299,15 @@ export const updateTicket: RequestHandler = async (req, res) => {
       include: {
         customer: true,
         user: true,
+        teamGroup: {
+          include: { members: true },
+        },
+        assignedTeamMember: {
+          include: {
+            department: true,
+            teamGroup: true,
+          },
+        },
       },
     });
 
