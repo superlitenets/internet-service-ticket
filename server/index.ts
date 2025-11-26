@@ -82,6 +82,20 @@ import {
   deleteEmployee,
 } from "./routes/employees";
 import {
+  createDepartment,
+  getDepartments,
+  getDepartmentById,
+  updateDepartment,
+  deleteDepartment,
+  createTeamGroup,
+  getTeamGroups,
+  getTeamGroupById,
+  updateTeamGroup,
+  deleteTeamGroup,
+  addTeamMember,
+  getEmployeeTeamMemberships,
+} from "./routes/departments";
+import {
   createPOSItem,
   getPOSItems,
   getPOSItemById,
