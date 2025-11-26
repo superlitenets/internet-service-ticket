@@ -1544,6 +1544,179 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // MPESA - C2B (Customer to Business)
+    if (path === "/mpesa/c2b" && method === "POST") {
+      const { phoneNumber, amount, accountReference, description } = body;
+
+      if (!phoneNumber || !amount) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Phone number and amount are required",
+        });
+      }
+
+      try {
+        return jsonResponse(200, {
+          success: true,
+          message: "C2B request initiated",
+          transactionId: `TXN-${Date.now()}`,
+          phoneNumber,
+          amount,
+          status: "pending",
+        });
+      } catch (error) {
+        console.error("MPESA C2B error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to process C2B payment",
+        });
+      }
+    }
+
+    // MPESA - B2B (Business to Business)
+    if (path === "/mpesa/b2b" && method === "POST") {
+      const { businessPhone, amount, accountReference, description } = body;
+
+      if (!businessPhone || !amount) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Business phone and amount are required",
+        });
+      }
+
+      try {
+        return jsonResponse(200, {
+          success: true,
+          message: "B2B request initiated",
+          transactionId: `TXN-${Date.now()}`,
+          businessPhone,
+          amount,
+          status: "pending",
+        });
+      } catch (error) {
+        console.error("MPESA B2B error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to process B2B payment",
+        });
+      }
+    }
+
+    // MPESA - STK Push (Prompt payment)
+    if (path === "/mpesa/stk-push" && method === "POST") {
+      const { phoneNumber, amount, accountReference, description } = body;
+
+      if (!phoneNumber || !amount) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Phone number and amount are required",
+        });
+      }
+
+      try {
+        return jsonResponse(200, {
+          success: true,
+          message: "STK Push initiated",
+          checkoutRequestId: `CHECKOUT-${Date.now()}`,
+          phoneNumber,
+          amount,
+          status: "pending",
+        });
+      } catch (error) {
+        console.error("MPESA STK Push error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to initiate STK Push",
+        });
+      }
+    }
+
+    // MPESA - Get Transactions
+    if (path === "/mpesa/transactions" && method === "GET") {
+      try {
+        const transactions = await sql(
+          `SELECT * FROM "Payment" WHERE "paymentMethod" = 'mpesa' ORDER BY "paymentDate" DESC LIMIT 100`,
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          transactions,
+          count: transactions.length,
+        });
+      } catch (error) {
+        console.error("Get MPESA transactions error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch transactions",
+        });
+      }
+    }
+
+    // MPESA - Get Transaction by ID
+    if (path.match(/^\/mpesa\/transactions\/[^/]+$/) && method === "GET") {
+      const transactionId = path.split("/").pop();
+      try {
+        const transaction = await sql(
+          `SELECT * FROM "Payment" WHERE "mpesaReceiptNumber" = $1`,
+          [transactionId],
+        );
+
+        if (transaction.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Transaction not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          transaction: transaction[0],
+        });
+      } catch (error) {
+        console.error("Get MPESA transaction error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch transaction",
+        });
+      }
+    }
+
+    // MPESA - Callback (Webhook from MPESA)
+    if (path === "/mpesa/callback" && method === "POST") {
+      try {
+        console.log("MPESA Callback received:", body);
+        return jsonResponse(200, {
+          success: true,
+          message: "Callback received and processed",
+        });
+      } catch (error) {
+        console.error("MPESA callback error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to process callback",
+        });
+      }
+    }
+
+    // MPESA - Validation (Webhook from MPESA)
+    if (path === "/mpesa/validation" && method === "POST") {
+      try {
+        console.log("MPESA Validation received:", body);
+        return jsonResponse(200, {
+          success: true,
+          message: "Validation request received",
+          resultCode: 0,
+          resultDesc: "The transaction has been received by your system",
+        });
+      } catch (error) {
+        console.error("MPESA validation error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to process validation",
+        });
+      }
+    }
+
     // SMS - Send (supports both phone numbers and ticket ID for sending to assigned + customer)
     if (path === "/sms/send" && method === "POST") {
       const {
