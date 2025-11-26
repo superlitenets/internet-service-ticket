@@ -153,10 +153,10 @@ export default function HikvisionPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Hikvision Surveillance & Access Control
+              Hikvision Attendance Control
             </h1>
             <p className="text-muted-foreground mt-1">
-              Manage IP cameras, access control devices, and monitor surveillance events
+              Integrate Hikvision access control devices for biometric attendance tracking
             </p>
           </div>
           <Button
@@ -174,13 +174,9 @@ export default function HikvisionPage() {
               <Camera size={16} />
               Devices
             </TabsTrigger>
-            <TabsTrigger value="access-control" className="gap-2">
-              <Lock size={16} />
-              Access Control
-            </TabsTrigger>
-            <TabsTrigger value="surveillance" className="gap-2">
-              <AlertTriangle size={16} />
-              Surveillance
+            <TabsTrigger value="attendance" className="gap-2">
+              <CheckCircle2 size={16} />
+              Attendance Records
             </TabsTrigger>
           </TabsList>
 
