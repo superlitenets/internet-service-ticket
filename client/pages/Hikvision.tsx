@@ -290,9 +290,7 @@ export default function HikvisionPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="camera">IP Camera</SelectItem>
-                    <SelectItem value="access_control">Access Control</SelectItem>
-                    <SelectItem value="nvr">NVR (Network Video Recorder)</SelectItem>
+                    <SelectItem value="access_control">Access Control (Face/Card Recognition)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
