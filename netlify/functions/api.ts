@@ -439,7 +439,7 @@ const handler: Handler = async (event) => {
            RETURNING *`,
           [
             name,
-            email || "",
+            email || null,
             phone,
             accountType || "residential",
             location || "",
