@@ -223,7 +223,7 @@ export default function EmployeesPage() {
 
         toast({
           title: "Success",
-          description: "Employee updated successfully",
+          description: `✓ Employee "${formData.firstName} ${formData.lastName}" updated successfully`,
         });
       } else {
         const newEmployee = await apiCreateEmployee({
