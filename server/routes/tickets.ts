@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { db } from "../lib/db";
+import { generateTicketId } from "../lib/ticket-id-generator";
 
 /**
  * Create a new ticket
