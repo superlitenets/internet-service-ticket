@@ -399,11 +399,11 @@ export default function TicketsPage() {
       const createdCustomer = await apiCreateCustomer({
         name: newCustomerData.name,
         phone: newCustomerData.phone,
-        email: newCustomerData.email || "",
-        location: newCustomerData.location || "",
-        apartment: newCustomerData.apartment || "",
-        roomNumber: newCustomerData.roomNumber || "",
-        streetAddress: newCustomerData.streetAddress || "",
+        email: newCustomerData.email,
+        location: newCustomerData.location,
+        apartment: newCustomerData.apartment,
+        roomNumber: newCustomerData.roomNumber,
+        streetAddress: newCustomerData.streetAddress,
       });
 
       // Add the new customer to the list
