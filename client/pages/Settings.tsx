@@ -187,22 +187,65 @@ export default function SettingsPage() {
     updatedAt: new Date().toISOString(),
   });
 
-  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, and Company settings from storage on mount
+  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, and Company settings from API on mount
   useEffect(() => {
-    const saved = getSmsSettings();
-    if (saved) {
-      setSmsSettings(saved);
-    }
-    const templates = getSmsTemplates();
-    setSmsTemplates(templates);
-    const deductions = getDeductionSettings();
-    setDeductionSettings(deductions);
-    const whatsappConfig = getWhatsAppConfig();
-    setWhatsappSettings(whatsappConfig);
-    const mpesaConfig = getMpesaSettings();
-    setMpesaSettings(mpesaConfig);
-    const companyConfig = getCompanySettings();
-    setCompanySettings(companyConfig);
+    const loadSettings = async () => {
+      try {
+        // Try loading from API first, fall back to localStorage
+        const smsConfig = await getSmsSettingsApi();
+        if (smsConfig) {
+          setSmsSettings(smsConfig);
+        } else {
+          const saved = getSmsSettings();
+          if (saved) {
+            setSmsSettings(saved);
+          }
+        }
+
+        const templates = await getSmsTemplatesApi();
+        setSmsTemplates(templates || getSmsTemplates());
+
+        const deductions = await getDeductionSettingsApi();
+        setDeductionSettings(deductions || getDeductionSettings());
+
+        const whatsapp = await getWhatsAppSettingsApi();
+        if (whatsapp) {
+          setWhatsappSettings(whatsapp);
+        } else {
+          setWhatsappSettings(getWhatsAppConfig());
+        }
+
+        const mpesa = await getMpesaSettingsApi();
+        if (mpesa) {
+          setMpesaSettings(mpesa);
+        } else {
+          setMpesaSettings(getMpesaSettings());
+        }
+
+        const company = await getCompanySettingsApi();
+        if (company) {
+          setCompanySettings(company);
+        } else {
+          setCompanySettings(getCompanySettings());
+        }
+
+        const notifPrefs = await getNotificationPrefsApi();
+        if (notifPrefs) {
+          setNotificationPrefs(notifPrefs);
+        }
+      } catch (error) {
+        // Fall back to localStorage on API error
+        const saved = getSmsSettings();
+        if (saved) setSmsSettings(saved);
+        setSmsTemplates(getSmsTemplates());
+        setDeductionSettings(getDeductionSettings());
+        setWhatsappSettings(getWhatsAppConfig());
+        setMpesaSettings(getMpesaSettings());
+        setCompanySettings(getCompanySettings());
+      }
+    };
+
+    loadSettings();
   }, []);
 
   // Notification Preferences State
