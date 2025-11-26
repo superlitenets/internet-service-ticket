@@ -494,6 +494,8 @@ export default function TicketsPage() {
           status: "open",
           priority: formData.priority,
           category: "general",
+          teamGroupId: formData.teamGroupId || undefined,
+          assignedTeamMemberId: formData.assignedTeamMemberId || undefined,
         });
 
         const newTicket: Ticket = {
