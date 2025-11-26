@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { db } from "../server/lib/db";
 import { hashPassword } from "../server/lib/crypto";
 
