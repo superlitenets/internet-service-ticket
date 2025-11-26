@@ -18,17 +18,24 @@ export async function createCustomer(data: {
   phone: string;
   accountType?: string;
 }): Promise<Customer> {
+  console.log("[Customer API] Creating customer with data:", data);
+
   const response = await fetch("/api/customers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
+  console.log("[Customer API] Response status:", response.status);
+
   if (!response.ok) {
-    throw new Error("Failed to create customer");
+    const errorText = await response.text();
+    console.error("[Customer API] Error response:", errorText);
+    throw new Error(`Failed to create customer: ${response.status} ${errorText}`);
   }
 
   const result = await response.json();
+  console.log("[Customer API] Success response:", result);
   return result.customer || result;
 }
 
