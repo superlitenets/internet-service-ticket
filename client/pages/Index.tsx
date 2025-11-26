@@ -227,7 +227,9 @@ export default function Dashboard() {
                 <p className="text-sm font-medium text-muted-foreground">
                   Team Members
                 </p>
-                <p className="text-3xl font-bold text-primary mt-2">12</p>
+                <p className="text-3xl font-bold text-primary mt-2">
+                  {teamMembersCount}
+                </p>
               </div>
               <div className="p-3 rounded-lg bg-primary/10">
                 <Users size={24} className="text-primary" />
