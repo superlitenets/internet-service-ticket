@@ -2,72 +2,42 @@ export interface Ticket {
   id: string;
   ticketId: string;
   customerId: string;
-  userId?: string | null;
-  subject: string;
-  description: string;
-  category?: string;
-  priority: "low" | "medium" | "high";
-  status: "open" | "in-progress" | "pending" | "resolved" | "closed";
-  resolution?: string | null;
-  createdAt: string;
-  resolvedAt?: string | null;
-  updatedAt: string;
-  customer?: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string;
-  };
-  user?: {
-    id: string;
-    name?: string;
-    email: string;
-  };
-}
-
-export interface TicketStats {
-  total: number;
-  byStatus: {
-    open: number;
-    inProgress: number;
-    pending: number;
-    resolved: number;
-  };
-  byPriority: {
-    high: number;
-    medium: number;
-    low: number;
-  };
-}
-
-/**
- * Create a new ticket
- */
-export async function createTicket(data: {
-  customerId: string;
   userId?: string;
   subject: string;
   description: string;
   category?: string;
-  priority?: "low" | "medium" | "high";
-  status?: "open" | "in-progress" | "pending";
-}): Promise<Ticket> {
-  const response = await fetch("/api/tickets", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  priority: "high" | "medium" | "low";
+  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed";
+  resolution?: string;
+  createdAt: string;
+  updatedAt: string;
+  customer?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
 
-  if (!response.ok) {
-    throw new Error("Failed to create ticket");
-  }
-
-  const result = await response.json();
-  return result.ticket;
+export interface TicketReply {
+  id: string;
+  ticketId: string;
+  userId: string;
+  message: string;
+  isInternal: boolean;
+  createdAt: string;
+  updatedAt: string;
+  name?: string;
+  email?: string;
 }
 
 /**
- * Get all tickets with optional filters
+ * Get all tickets with filters
  */
 export async function getTickets(filters?: {
   status?: string;
@@ -75,24 +45,33 @@ export async function getTickets(filters?: {
   customerId?: string;
   userId?: string;
 }): Promise<Ticket[]> {
+  let url = "/api/tickets";
   const params = new URLSearchParams();
 
-  if (filters) {
-    if (filters.status) params.append("status", filters.status);
-    if (filters.priority) params.append("priority", filters.priority);
-    if (filters.customerId) params.append("customerId", filters.customerId);
-    if (filters.userId) params.append("userId", filters.userId);
+  if (filters?.status && filters.status !== "all") {
+    params.append("status", filters.status);
+  }
+  if (filters?.priority && filters.priority !== "all") {
+    params.append("priority", filters.priority);
+  }
+  if (filters?.customerId) {
+    params.append("customerId", filters.customerId);
+  }
+  if (filters?.userId) {
+    params.append("userId", filters.userId);
   }
 
-  const query = params.toString() ? `?${params.toString()}` : "";
-  const response = await fetch(`/api/tickets${query}`);
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
 
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch tickets");
   }
 
   const result = await response.json();
-  return result.tickets;
+  return result.tickets || result;
 }
 
 /**
@@ -106,7 +85,33 @@ export async function getTicketById(id: string): Promise<Ticket> {
   }
 
   const result = await response.json();
-  return result.ticket;
+  return result.ticket || result;
+}
+
+/**
+ * Create a new ticket
+ */
+export async function createTicket(data: {
+  customerId: string;
+  userId?: string;
+  subject: string;
+  description: string;
+  category?: string;
+  priority?: string;
+  status?: string;
+}): Promise<Ticket> {
+  const response = await fetch("/api/tickets", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create ticket");
+  }
+
+  const result = await response.json();
+  return result.ticket || result;
 }
 
 /**
@@ -114,15 +119,7 @@ export async function getTicketById(id: string): Promise<Ticket> {
  */
 export async function updateTicket(
   id: string,
-  data: {
-    subject?: string;
-    description?: string;
-    status?: "open" | "in-progress" | "pending" | "resolved" | "closed";
-    priority?: "low" | "medium" | "high";
-    category?: string;
-    resolution?: string;
-    userId?: string;
-  },
+  data: Partial<Omit<Ticket, "id" | "createdAt" | "updatedAt">>,
 ): Promise<Ticket> {
   const response = await fetch(`/api/tickets/${id}`, {
     method: "PUT",
@@ -135,7 +132,7 @@ export async function updateTicket(
   }
 
   const result = await response.json();
-  return result.ticket;
+  return result.ticket || result;
 }
 
 /**
@@ -152,52 +149,48 @@ export async function deleteTicket(id: string): Promise<void> {
 }
 
 /**
- * Get tickets by customer ID
+ * Get all replies for a ticket
  */
-export async function getTicketsByCustomer(
-  customerId: string,
-): Promise<Ticket[]> {
-  const response = await fetch(`/api/tickets/customer/${customerId}`);
+export async function getTicketReplies(ticketId: string): Promise<TicketReply[]> {
+  const response = await fetch(`/api/tickets/${ticketId}/replies`);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch customer tickets");
+    throw new Error("Failed to fetch ticket replies");
   }
 
   const result = await response.json();
-  return result.tickets;
+  return result.replies || [];
 }
 
 /**
- * Assign a ticket to a user
+ * Create a reply to a ticket
  */
-export async function assignTicket(
-  id: string,
-  userId: string,
-): Promise<Ticket> {
-  const response = await fetch(`/api/tickets/${id}/assign`, {
+export async function createTicketReply(data: {
+  ticketId: string;
+  userId: string;
+  message: string;
+  isInternal?: boolean;
+}): Promise<TicketReply> {
+  const response = await fetch("/api/ticket-replies", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId }),
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to assign ticket");
+    throw new Error("Failed to create ticket reply");
   }
 
   const result = await response.json();
-  return result.ticket;
+  return result.reply || result;
 }
 
 /**
- * Get ticket statistics
+ * Update ticket status
  */
-export async function getTicketStats(): Promise<TicketStats> {
-  const response = await fetch("/api/tickets/stats");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch ticket statistics");
-  }
-
-  const result = await response.json();
-  return result.stats;
+export async function updateTicketStatus(
+  id: string,
+  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed",
+): Promise<Ticket> {
+  return updateTicket(id, { status });
 }
