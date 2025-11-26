@@ -7,10 +7,10 @@ const JWT_EXPIRY = "24h";
 const BCRYPT_ROUNDS = 10;
 
 /**
- * Hash a password using bcrypt
+ * Hash a password using bcryptjs
  */
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, BCRYPT_ROUNDS);
+  return bcryptjs.hash(password, BCRYPT_ROUNDS);
 }
 
 /**
@@ -20,7 +20,7 @@ export async function verifyPassword(
   password: string,
   hash: string,
 ): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  return bcryptjs.compare(password, hash);
 }
 
 /**
