@@ -118,10 +118,6 @@ import {
   getExpenses,
   createExpense,
   updateExpense,
-  getPOSItems,
-  createPOSItem,
-  createPOSTransaction,
-  getPOSTransactions,
   getAccountingSummary,
   getTrialBalance,
 } from "./routes/accounting";
