@@ -40,82 +40,9 @@ import {
 export default function PayrollPage() {
   const { toast } = useToast();
 
-  // Mock attendance data for deduction calculations
-  const mockAttendanceData: AttendanceRecord[] = [
-    {
-      id: "ATT-001",
-      employeeId: "EMP-001",
-      employeeName: "John Smith",
-      checkInTime: "09:00 AM",
-      checkOutTime: "05:45 PM",
-      date: "2024-01-10",
-      status: "late",
-      biometricSource: "zkteco40",
-      duration: 555,
-      createdAt: "2024-01-10 09:00 AM",
-      updatedAt: "2024-01-10 05:45 PM",
-    },
-    {
-      id: "ATT-002",
-      employeeId: "EMP-001",
-      employeeName: "John Smith",
-      checkInTime: "08:50 AM",
-      checkOutTime: "06:00 PM",
-      date: "2024-01-15",
-      status: "present",
-      biometricSource: "zkteco40",
-      duration: 550,
-      createdAt: "2024-01-15 08:50 AM",
-      updatedAt: "2024-01-15 06:00 PM",
-    },
-    {
-      id: "ATT-003",
-      employeeId: "EMP-002",
-      employeeName: "Maria Garcia",
-      checkInTime: "09:30 AM",
-      checkOutTime: "06:00 PM",
-      date: "2024-01-20",
-      status: "late",
-      biometricSource: "zkteco40",
-      duration: 510,
-      createdAt: "2024-01-20 09:30 AM",
-      updatedAt: "2024-01-20 06:00 PM",
-    },
-  ];
-
-  const [allRecords, setAllRecords] = useState<PayrollRecord[]>([
-    {
-      id: "PAY-001",
-      employeeId: "EMP-001",
-      employeeName: "John Smith",
-      month: "January",
-      year: 2024,
-      baseSalary: 45000,
-      bonus: 2000,
-      deductions: 5000,
-      netSalary: 42000,
-      status: "paid",
-      paymentDate: "2024-01-31",
-      createdAt: "2024-01-01 09:00 AM",
-      updatedAt: "2024-01-31 02:45 PM",
-    },
-    {
-      id: "PAY-002",
-      employeeId: "EMP-002",
-      employeeName: "Maria Garcia",
-      month: "January",
-      year: 2024,
-      baseSalary: 38000,
-      bonus: 1500,
-      deductions: 4200,
-      netSalary: 35300,
-      status: "approved",
-      paymentDate: "2024-01-31",
-      createdAt: "2024-01-01 09:00 AM",
-      updatedAt: "2024-01-15 10:30 AM",
-    },
-  ]);
-
+  const [allRecords, setAllRecords] = useState<PayrollRecord[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<PayrollRecord | null>(
     null,
@@ -128,7 +55,7 @@ export default function PayrollPage() {
   const [deductionSettings] = useState(() => getDeductionSettings());
   const [monthlyDeductions] = useState(() =>
     calculateMonthlyDeductions(
-      mockAttendanceData,
+      attendanceRecords,
       allRecords,
       deductionSettings,
     ),
