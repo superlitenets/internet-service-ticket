@@ -145,7 +145,10 @@ export default function CustomersPage() {
 
     try {
       if (editingCustomer) {
-        console.log("[Customers Page] Updating existing customer:", editingCustomer.id);
+        console.log(
+          "[Customers Page] Updating existing customer:",
+          editingCustomer.id,
+        );
         // Update existing customer
         await apiUpdateCustomer(editingCustomer.id, {
           name: formData.name,
@@ -178,7 +181,10 @@ export default function CustomersPage() {
           description: "Customer updated successfully",
         });
       } else {
-        console.log("[Customers Page] Creating new customer with data:", formData);
+        console.log(
+          "[Customers Page] Creating new customer with data:",
+          formData,
+        );
         // Create new customer
         const newCustomer = await apiCreateCustomer({
           name: formData.name,
@@ -187,7 +193,10 @@ export default function CustomersPage() {
           accountType: formData.accountType,
         });
 
-        console.log("[Customers Page] Customer created successfully:", newCustomer);
+        console.log(
+          "[Customers Page] Customer created successfully:",
+          newCustomer,
+        );
 
         setCustomers((prev) => [
           ...prev,
@@ -212,7 +221,8 @@ export default function CustomersPage() {
       setDialogOpen(false);
     } catch (error) {
       console.error("[Customers Page] Save customer error:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error",
         description: `Failed to save customer: ${errorMessage}`,

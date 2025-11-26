@@ -31,7 +31,9 @@ export async function createCustomer(data: {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("[Customer API] Error response:", errorText);
-    throw new Error(`Failed to create customer: ${response.status} ${errorText}`);
+    throw new Error(
+      `Failed to create customer: ${response.status} ${errorText}`,
+    );
   }
 
   const result = await response.json();

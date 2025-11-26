@@ -41,7 +41,9 @@ export default function PayrollPage() {
   const { toast } = useToast();
 
   const [allRecords, setAllRecords] = useState<PayrollRecord[]>([]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    AttendanceRecord[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<PayrollRecord | null>(
@@ -293,7 +295,9 @@ export default function PayrollPage() {
           </Card>
           {deductionSettings.enabled && (
             <Card className="p-4 border-0 shadow-sm bg-orange-50">
-              <p className="text-sm text-muted-foreground mb-1">Late Deductions</p>
+              <p className="text-sm text-muted-foreground mb-1">
+                Late Deductions
+              </p>
               <p className="text-2xl font-bold text-orange-600">
                 $
                 {Array.from(monthlyDeductions.values())
@@ -393,7 +397,9 @@ export default function PayrollPage() {
                         )}
                         {record.deductions > 0 && (
                           <div>
-                            <p className="text-muted-foreground">Standard Ded.</p>
+                            <p className="text-muted-foreground">
+                              Standard Ded.
+                            </p>
                             <p className="font-semibold text-red-600">
                               -${record.deductions.toLocaleString()}
                             </p>
@@ -403,14 +409,21 @@ export default function PayrollPage() {
                           <div>
                             <p className="text-muted-foreground">Late Ded.</p>
                             <p className="font-semibold text-orange-600">
-                              -${getEmployeeDeduction(record.employeeId).toLocaleString()}
+                              -$
+                              {getEmployeeDeduction(
+                                record.employeeId,
+                              ).toLocaleString()}
                             </p>
                           </div>
                         )}
                         <div>
                           <p className="text-muted-foreground">Net Salary</p>
                           <p className="font-semibold text-lg">
-                            ${(record.netSalary - getEmployeeDeduction(record.employeeId)).toLocaleString()}
+                            $
+                            {(
+                              record.netSalary -
+                              getEmployeeDeduction(record.employeeId)
+                            ).toLocaleString()}
                           </p>
                         </div>
                         {record.paymentDate && (

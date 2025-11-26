@@ -329,7 +329,8 @@ export default function TicketsPage() {
     if (!formData.customerId || !formData.title || !formData.description) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields (Customer, Title, Description)",
+        description:
+          "Please fill in all required fields (Customer, Title, Description)",
         variant: "destructive",
       });
       return;
@@ -366,7 +367,9 @@ export default function TicketsPage() {
         });
       } else {
         // Create new ticket with customerId
-        const selectedCustomer = customers.find((c) => c.id === formData.customerId);
+        const selectedCustomer = customers.find(
+          (c) => c.id === formData.customerId,
+        );
 
         const newApiTicket = await apiCreateTicket({
           customerId: formData.customerId,
@@ -840,9 +843,7 @@ export default function TicketsPage() {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="">
-                                  Unassigned
-                                </SelectItem>
+                                <SelectItem value="">Unassigned</SelectItem>
                                 {employees.map((employee) => (
                                   <SelectItem
                                     key={employee.id}

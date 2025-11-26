@@ -12,14 +12,24 @@ export const createCustomer: RequestHandler = async (req, res) => {
     const { name, email, phone, accountType } = req.body;
 
     if (!name || !phone) {
-      console.warn("[API] Missing required fields - name:", name, "phone:", phone);
+      console.warn(
+        "[API] Missing required fields - name:",
+        name,
+        "phone:",
+        phone,
+      );
       return res.status(400).json({
         success: false,
         message: "Name and phone are required",
       });
     }
 
-    console.log("[API] Creating customer in database with:", { name, email, phone, accountType });
+    console.log("[API] Creating customer in database with:", {
+      name,
+      email,
+      phone,
+      accountType,
+    });
 
     const customer = await db.customer.create({
       data: {
