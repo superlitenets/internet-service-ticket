@@ -910,13 +910,44 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 p-4 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground mb-3">
+                      Test SMS Delivery
+                    </h4>
+
+                    {smsSettings.provider === "advanta" && (
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Provider</p>
+                          <p className="text-sm font-medium">Advanta SMS</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Status</p>
+                          <Badge variant={smsSettings.enabled ? "default" : "secondary"} className="gap-1">
+                            {smsSettings.enabled ? (
+                              <>
+                                <CheckCircle2 size={12} />
+                                Ready
+                              </>
+                            ) : (
+                              <>
+                                <AlertCircle size={12} />
+                                Disabled
+                              </>
+                            )}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Test Phone Number
                     </label>
                     <p className="text-xs text-muted-foreground mb-2">
-                      Enter a phone number to receive the test SMS
+                      Enter your phone number to receive a test SMS. Format: +254712345678 or 0712345678
                     </p>
                     <Input
                       type="tel"
@@ -924,6 +955,7 @@ export default function SettingsPage() {
                       onChange={(e) => setTestPhoneNumber(e.target.value)}
                       placeholder="e.g., +254712345678 or 0712345678"
                       disabled={testingSms || !smsSettings.enabled}
+                      className="bg-white dark:bg-slate-950"
                     />
                   </div>
                 </div>
@@ -943,8 +975,10 @@ export default function SettingsPage() {
                     disabled={
                       testingSms ||
                       !smsSettings.enabled ||
-                      !testPhoneNumber.trim()
+                      !testPhoneNumber.trim() ||
+                      !smsSettings.customApiUrl
                     }
+                    title={!smsSettings.customApiUrl ? "Please configure API Endpoint URL first" : ""}
                   >
                     <MessageSquare size={16} />
                     {testingSms ? "Testing..." : "Test SMS"}
