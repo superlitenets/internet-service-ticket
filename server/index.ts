@@ -246,6 +246,24 @@ export function createServer() {
   app.put("/api/employees/:id", updateEmployee);
   app.delete("/api/employees/:id", deleteEmployee);
 
+  // Departments endpoints
+  app.post("/api/departments", createDepartment);
+  app.get("/api/departments", getDepartments);
+  app.get("/api/departments/:id", getDepartmentById);
+  app.put("/api/departments/:id", updateDepartment);
+  app.delete("/api/departments/:id", deleteDepartment);
+
+  // Team Groups endpoints
+  app.post("/api/team-groups", createTeamGroup);
+  app.get("/api/team-groups", getTeamGroups);
+  app.get("/api/team-groups/:id", getTeamGroupById);
+  app.put("/api/team-groups/:id", updateTeamGroup);
+  app.delete("/api/team-groups/:id", deleteTeamGroup);
+
+  // Team Members endpoints
+  app.post("/api/team-members", addTeamMember);
+  app.get("/api/team-members/employee/:employeeId", getEmployeeTeamMemberships);
+
   // Inventory endpoints
   app.post("/api/inventory/items", createPOSItem);
   app.get("/api/inventory/items", getPOSItems);
