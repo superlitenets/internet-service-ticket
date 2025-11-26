@@ -1019,9 +1019,20 @@ export default function TicketsPage() {
 
             <div className="space-y-4 max-h-96 overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Customer *
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-foreground">
+                    Customer *
+                  </label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCreateCustomerDialogOpen(true)}
+                    className="text-xs h-auto py-1"
+                  >
+                    <Plus size={14} className="mr-1" />
+                    Create Customer
+                  </Button>
+                </div>
                 <Select
                   value={formData.customerId}
                   onValueChange={(value) =>
