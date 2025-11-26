@@ -173,10 +173,7 @@ export function AccountingPage() {
               : tx,
           ),
         );
-        toast({
-          title: "Success",
-          description: "Transaction updated successfully",
-        });
+        toast(getSaveNotification({ itemName: `Transaction "${formData.title}"`, action: "updated" }));
       } else {
         const typeInitials: Record<string, string> = {
           invoice: "INV",
