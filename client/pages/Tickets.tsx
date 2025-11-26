@@ -1360,16 +1360,16 @@ export default function TicketsPage() {
                     Assign to Team Member (Optional)
                   </label>
                   <Select
-                    value={formData.assignedTeamMemberId}
+                    value={formData.assignedTeamMemberId || "none"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, assignedTeamMemberId: value })
+                      setFormData({ ...formData, assignedTeamMemberId: value === "none" ? "" : value })
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a team member..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {teamMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id}>
                           {member.department?.name || "No Department"} -{" "}
