@@ -67,6 +67,7 @@ interface Reply {
 
 interface Ticket {
   id: string;
+  customerId: string;
   customer: string;
   customerEmail: string;
   customerPhone: string;
@@ -84,9 +85,17 @@ interface Ticket {
   replies?: Reply[];
 }
 
-interface TeamMember {
+interface Customer {
+  id: string;
   name: string;
+  email: string;
   phone: string;
+}
+
+interface Employee {
+  id: string;
+  name: string;
+  email?: string;
 }
 
 export default function TicketsPage() {
