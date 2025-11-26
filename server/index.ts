@@ -59,6 +59,12 @@ import {
   getTicketStats,
 } from "./routes/tickets";
 import {
+  createTicketReply,
+  getTicketReplies,
+  getTicketReplyById,
+  deleteTicketReply,
+} from "./routes/ticket-replies";
+import {
   createCustomer,
   getCustomers,
   getCustomerById,
