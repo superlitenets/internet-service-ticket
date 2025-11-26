@@ -87,6 +87,10 @@ import {
   type CompanySettings,
 } from "@/lib/company-settings-storage";
 import {
+  getTicketPrefix,
+  setTicketPrefix,
+} from "@/lib/ticket-settings-api";
+import {
   saveSmsSettingsApi,
   getSmsSettingsApi,
   saveSmsTemplatesApi,
