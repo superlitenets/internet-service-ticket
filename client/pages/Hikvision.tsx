@@ -215,102 +215,50 @@ export default function HikvisionPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="access-control" className="space-y-4">
+          <TabsContent value="attendance" className="space-y-4">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Access Control Events</h2>
+                <h2 className="text-xl font-semibold">Attendance Records</h2>
                 <Button
-                  onClick={handleFetchAccessEvents}
+                  onClick={handleFetchAttendanceEvents}
                   disabled={loadingEvents}
                   variant="outline"
                 >
-                  {loadingEvents ? "Loading..." : "Refresh Events"}
+                  {loadingEvents ? "Loading..." : "Refresh Records"}
                 </Button>
               </div>
 
-              {accessEvents.length === 0 ? (
-                <p className="text-muted-foreground">No access control events</p>
+              {attendanceEvents.length === 0 ? (
+                <p className="text-muted-foreground">No attendance records found</p>
               ) : (
                 <div className="space-y-3">
-                  {accessEvents.map((event) => (
+                  {attendanceEvents.map((event) => (
                     <div
                       key={event.id}
                       className="border rounded-lg p-4 flex items-start gap-3"
                     >
                       <div className="mt-1">{getEventTypeIcon(event.eventType)}</div>
                       <div className="flex-1">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-2">
                           <p className="font-medium">{event.personName || "Unknown"}</p>
                           <span className="text-sm text-muted-foreground">
                             {new Date(event.eventTime).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {event.eventType} at {event.accessPoint || "Unknown"}
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {event.eventType.replace(/_/g, " ")} • {event.accessPoint || "Main Entrance"}
                         </p>
                         {event.cardNumber && (
                           <p className="text-xs text-muted-foreground mt-1">
-                            Card: {event.cardNumber}
+                            ID: {event.cardNumber}
                           </p>
                         )}
+                        {event.status && (
+                          <div className="mt-2">
+                            {getStatusBadge(event.status)}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="surveillance" className="space-y-4">
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Surveillance Events</h2>
-                <Button
-                  onClick={handleFetchSurveillanceEvents}
-                  disabled={loadingEvents}
-                  variant="outline"
-                >
-                  {loadingEvents ? "Loading..." : "Refresh Events"}
-                </Button>
-              </div>
-
-              {surveillanceEvents.length === 0 ? (
-                <p className="text-muted-foreground">No surveillance events</p>
-              ) : (
-                <div className="space-y-3">
-                  {surveillanceEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="border rounded-lg p-4"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <p className="font-medium">{event.eventType}</p>
-                          <Badge className={`mt-2 ${getSeverityColor(event.severity)}`}>
-                            {event.severity}
-                          </Badge>
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(event.eventTime).toLocaleString()}
-                        </span>
-                      </div>
-                      {event.location && (
-                        <p className="text-sm text-muted-foreground">
-                          Location: {event.location}
-                        </p>
-                      )}
-                      {event.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {event.description}
-                        </p>
-                      )}
-                      {event.snapshotUrl && (
-                        <img
-                          src={event.snapshotUrl}
-                          alt="Snapshot"
-                          className="mt-2 rounded max-h-32 object-cover"
-                        />
-                      )}
                     </div>
                   ))}
                 </div>
