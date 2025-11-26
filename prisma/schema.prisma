@@ -228,18 +228,19 @@ model Department {
   @@index([name])
 }
 
-// Team Groups (for organizing employees into teams)
+// Team Groups (for organizing employees into teams - can span multiple departments)
 model TeamGroup {
   id          String   @id @default(cuid())
   name        String   @unique
   description String?
-  departmentId String?
+  departmentId String?  // Optional: primary department, members can be from other departments
   manager     String?  // Employee ID of team lead
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
   members     TeamMember[]
+  assignedTickets Ticket[]
 
   @@index([departmentId])
   @@index([name])
