@@ -165,27 +165,33 @@ model Lead {
 
 // Support Tickets
 model Ticket {
-  id          String   @id @default(cuid())
-  ticketId    String   @unique
-  customerId  String
-  userId      String?
-  subject     String
-  description String
-  category    String? // technical, billing, complaint, general
-  priority    String   @default("medium") // low, medium, high, urgent
-  status      String   @default("open") // open, in-progress, bounced, waiting, resolved, closed
-  resolution  String?
-  createdAt   DateTime @default(now())
-  resolvedAt  DateTime?
-  updatedAt   DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  ticketId              String   @unique
+  customerId            String
+  userId                String?
+  teamGroupId           String?  // Assign entire team group
+  assignedTeamMemberId  String?  // Assign specific team member
+  subject               String
+  description           String
+  category              String? // technical, billing, complaint, general
+  priority              String   @default("medium") // low, medium, high, urgent
+  status                String   @default("open") // open, in-progress, bounced, waiting, resolved, closed
+  resolution            String?
+  createdAt             DateTime @default(now())
+  resolvedAt            DateTime?
+  updatedAt             DateTime @updatedAt
 
   // Relations
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  user     User?    @relation(fields: [userId], references: [id])
-  replies  TicketReply[]
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user          User?    @relation(fields: [userId], references: [id])
+  teamGroup     TeamGroup? @relation(fields: [teamGroupId], references: [id], onDelete: SetNull)
+  assignedTeamMember TeamMember? @relation(fields: [assignedTeamMemberId], references: [id], onDelete: SetNull)
+  replies       TicketReply[]
 
   @@index([customerId])
   @@index([userId])
+  @@index([teamGroupId])
+  @@index([assignedTeamMemberId])
   @@index([ticketId])
 }
 
