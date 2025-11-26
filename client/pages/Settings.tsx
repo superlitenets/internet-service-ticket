@@ -644,11 +644,12 @@ export default function SettingsPage() {
         if (
           !smsSettings.apiKey ||
           !smsSettings.partnerId ||
-          !smsSettings.shortcode
+          !smsSettings.shortcode ||
+          !smsSettings.customApiUrl
         ) {
           toast({
             title: "Error",
-            description: "Please configure all Advanta SMS credentials",
+            description: "Please configure all Advanta SMS credentials (API Key, Partner ID, Shortcode, and API Endpoint URL)",
             variant: "destructive",
           });
           return;
