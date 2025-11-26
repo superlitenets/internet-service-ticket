@@ -814,6 +814,8 @@ const handler: Handler = async (event) => {
       const {
         customerId,
         userId,
+        teamGroupId,
+        assignedTeamMemberId,
         subject,
         description,
         category,
@@ -841,16 +843,46 @@ const handler: Handler = async (event) => {
           });
         }
 
+        // Verify team group exists if provided
+        if (teamGroupId) {
+          const teamGroupCheck = await sql(
+            `SELECT id FROM "TeamGroup" WHERE id = $1`,
+            [teamGroupId],
+          );
+          if (teamGroupCheck.length === 0) {
+            return jsonResponse(404, {
+              success: false,
+              message: "Team group not found",
+            });
+          }
+        }
+
+        // Verify team member exists if provided
+        if (assignedTeamMemberId) {
+          const teamMemberCheck = await sql(
+            `SELECT id FROM "TeamMember" WHERE id = $1`,
+            [assignedTeamMemberId],
+          );
+          if (teamMemberCheck.length === 0) {
+            return jsonResponse(404, {
+              success: false,
+              message: "Team member not found",
+            });
+          }
+        }
+
         const ticketId = `TK-${Date.now()}`;
         const result = await sql(
-          `INSERT INTO "Ticket" (id, "ticketId", "customerId", "userId", subject, description, category, priority, status, "createdAt", "updatedAt")
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+          `INSERT INTO "Ticket" (id, "ticketId", "customerId", "userId", "teamGroupId", "assignedTeamMemberId", subject, description, category, priority, status, "createdAt", "updatedAt")
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
            RETURNING *`,
           [
             ticketId,
             ticketId,
             customerId,
             userId || null,
+            teamGroupId || null,
+            assignedTeamMemberId || null,
             subject,
             description,
             category || "general",
