@@ -57,7 +57,12 @@ async function parseBody(event: any): Promise<any> {
 
 // Main handler
 const handler: Handler = async (event) => {
-  console.log("API Request:", { path: event.path, method: event.httpMethod });
+  console.log("API Request:", {
+    path: event.path,
+    rawPath: (event as any).rawPath,
+    rawUrl: (event as any).rawUrl,
+    method: event.httpMethod
+  });
 
   // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
@@ -66,13 +71,30 @@ const handler: Handler = async (event) => {
 
   try {
     const body = await parseBody(event);
-    // Netlify rewrite redirects /api/* to /.netlify/functions/api, preserving the original /api/* path
-    // We need to strip the /api prefix to get the route path
-    let path = event.path.replace(/^\/api/, "") || "/";
+
+    // Extract path from various possible sources in Netlify
+    let path = event.path || "/";
+
+    // If path is just "/" or doesn't start with "/", try to extract from rawUrl or rawPath
+    if ((path === "/" || !path.includes("api")) && (event as any).rawUrl) {
+      const url = new URL((event as any).rawUrl, "http://localhost");
+      path = url.pathname;
+    } else if ((path === "/" || !path.includes("api")) && (event as any).rawPath) {
+      path = (event as any).rawPath;
+    }
+
+    // Strip /api prefix if present
+    if (path.startsWith("/api")) {
+      path = path.replace(/^\/api/, "") || "/";
+    }
+
     // Ensure path starts with /
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
+
+    console.log("Parsed path:", { original: event.path, final: path, method: event.httpMethod });
+
     const method = event.httpMethod;
 
     // AUTH - Login
