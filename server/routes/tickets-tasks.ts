@@ -548,3 +548,39 @@ export const getTeamPerformanceReport: RequestHandler = async (req, res) => {
     });
   }
 };
+
+/**
+ * Delete a time log
+ */
+export const deleteTimeLog: RequestHandler = async (req, res) => {
+  try {
+    const { timeLogId } = req.params;
+
+    const timeLog = await db.timeLog.findUnique({
+      where: { id: timeLogId },
+    });
+
+    if (!timeLog) {
+      return res.status(404).json({
+        success: false,
+        message: "Time log not found",
+      });
+    }
+
+    await db.timeLog.delete({
+      where: { id: timeLogId },
+    });
+
+    return res.json({
+      success: true,
+      message: "Time log deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete time log error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete time log",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
