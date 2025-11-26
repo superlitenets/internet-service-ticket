@@ -608,6 +608,53 @@ Get MikroTik router interfaces.
 
 ---
 
+## 📱 SMS Settings Endpoints
+
+### GET /api/sms-settings
+
+Get current SMS provider configuration.
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "settings": {
+    "provider": "advanta",
+    "enabled": true,
+    "apiKey": "***hidden***",
+    "partnerId": "PARTNER123",
+    "shortcode": "MYSHORTCODE",
+    "customApiUrl": "https://api.advantasms.com/send"
+  }
+}
+```
+
+### POST /api/sms-settings
+
+Update SMS provider configuration.
+
+**Request:**
+```json
+{
+  "provider": "advanta",
+  "enabled": true,
+  "apiKey": "your-api-key",
+  "partnerId": "PARTNER123",
+  "shortcode": "MYSHORTCODE",
+  "customApiUrl": "https://api.advantasms.com/send"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "SMS settings saved successfully"
+}
+```
+
+---
+
 ## 🔍 Lead Endpoints
 
 ### GET /leads
