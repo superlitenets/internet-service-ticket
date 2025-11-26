@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
@@ -21,7 +21,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Users,
   Plus,
   Edit,
   Trash2,
@@ -29,129 +28,148 @@ import {
   Mail,
   Phone,
   Briefcase,
-  Calendar,
-  DollarSign,
-  Eye,
-  EyeOff,
 } from "lucide-react";
-import type { Employee } from "@shared/api";
+import {
+  getEmployees as apiGetEmployees,
+  createEmployee as apiCreateEmployee,
+  updateEmployee as apiUpdateEmployee,
+  deleteEmployee as apiDeleteEmployee,
+  type Employee as ApiEmployee,
+} from "@/lib/employees-client";
+
+interface Employee {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  position?: string;
+  department?: string;
+  salary?: number;
+  hireDate: string;
+  status: "active" | "on_leave" | "inactive";
+  emergencyContact?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function EmployeesPage() {
   const { toast } = useToast();
-  const [allEmployees, setAllEmployees] = useState<Employee[]>([
-    {
-      id: "EMP-001",
-      name: "John Smith",
-      email: "john.smith@ispcorp.com",
-      phone: "+1555111111",
-      department: "Technical Support",
-      position: "Senior Technician",
-      employeeId: "E001",
-      dateOfJoining: "2022-01-15",
-      salary: 45000,
-      biometricId: "BIO001",
-      status: "active",
-      createdAt: "2022-01-15 09:00 AM",
-      updatedAt: "2024-01-15 02:45 PM",
-    },
-    {
-      id: "EMP-002",
-      name: "Maria Garcia",
-      email: "maria.garcia@ispcorp.com",
-      phone: "+1555222222",
-      department: "Field Operations",
-      position: "Field Technician",
-      employeeId: "E002",
-      dateOfJoining: "2022-06-20",
-      salary: 38000,
-      biometricId: "BIO002",
-      status: "active",
-      createdAt: "2022-06-20 09:00 AM",
-      updatedAt: "2024-01-15 01:20 PM",
-    },
-    {
-      id: "EMP-003",
-      name: "Alex Johnson",
-      email: "alex.johnson@ispcorp.com",
-      phone: "+1555333333",
-      department: "Network Management",
-      position: "Network Administrator",
-      employeeId: "E003",
-      dateOfJoining: "2023-03-10",
-      salary: 52000,
-      biometricId: "BIO003",
-      status: "active",
-      createdAt: "2023-03-10 09:00 AM",
-      updatedAt: "2024-01-14 03:45 PM",
-    },
-  ]);
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("all");
-  const [showPassword, setShowPassword] = useState(false);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
-    department: "Technical Support",
+    department: "",
     position: "",
-    employeeId: "",
-    dateOfJoining: new Date().toISOString().split("T")[0],
-    salary: 0,
-    biometricId: "",
+    salary: "",
+    hireDate: "",
+    emergencyContact: "",
     status: "active" as const,
   });
 
-  const filteredEmployees = allEmployees.filter((emp) => {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+  // Load employees from API on mount
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        setLoading(true);
+        const dbEmployees = await apiGetEmployees();
+        
+        const uiEmployees = dbEmployees.map((e: ApiEmployee) => ({
+          id: e.id,
+          firstName: e.firstName,
+          lastName: e.lastName,
+          email: e.email,
+          phone: e.phone,
+          position: e.position,
+          department: e.department,
+          salary: e.salary,
+          hireDate: new Date(e.hireDate).toLocaleDateString(),
+          status: e.status as "active" | "on_leave" | "inactive",
+          emergencyContact: e.emergencyContact,
+          createdAt: new Date(e.createdAt).toLocaleString(),
+          updatedAt: new Date(e.updatedAt).toLocaleString(),
+        }));
+        
+        setEmployees(uiEmployees);
+      } catch (error) {
+        console.error("Failed to load employees:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load employees from database",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadEmployees();
+  }, []);
+
+  const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
-      emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.employeeId.toLowerCase().includes(searchTerm.toLowerCase());
+      emp.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.email.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesDepartment =
       filterDepartment === "all" || emp.department === filterDepartment;
-    return matchesSearch && matchesDepartment;
+    const matchesStatus =
+      filterStatus === "all" || emp.status === filterStatus;
+
+    return matchesSearch && matchesDepartment && matchesStatus;
   });
 
-  const departments = [...new Set(allEmployees.map((e) => e.department))];
+  const departments = [
+    ...new Set(employees.map((e) => e.department).filter(Boolean)),
+  ];
 
   const handleOpenDialog = (employee?: Employee) => {
     if (employee) {
       setEditingEmployee(employee);
       setFormData({
-        name: employee.name,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
         email: employee.email,
         phone: employee.phone,
-        department: employee.department,
-        position: employee.position,
-        employeeId: employee.employeeId,
-        dateOfJoining: employee.dateOfJoining,
-        salary: employee.salary,
-        biometricId: employee.biometricId || "",
+        department: employee.department || "",
+        position: employee.position || "",
+        salary: employee.salary?.toString() || "",
+        hireDate: employee.hireDate,
+        emergencyContact: employee.emergencyContact || "",
         status: employee.status,
       });
     } else {
       setEditingEmployee(null);
       setFormData({
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
         phone: "",
-        department: "Technical Support",
+        department: "",
         position: "",
-        employeeId: "",
-        dateOfJoining: new Date().toISOString().split("T")[0],
-        salary: 0,
-        biometricId: "",
+        salary: "",
+        hireDate: "",
+        emergencyContact: "",
         status: "active",
       });
     }
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
-    if (!formData.name || !formData.email || !formData.employeeId) {
+  const handleSave = async () => {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -160,180 +178,309 @@ export default function EmployeesPage() {
       return;
     }
 
-    if (editingEmployee) {
-      setAllEmployees((prev) =>
-        prev.map((e) =>
-          e.id === editingEmployee.id
-            ? {
-                ...e,
-                ...formData,
-                updatedAt: new Date().toLocaleString(),
-              }
-            : e,
-        ),
-      );
+    try {
+      if (editingEmployee) {
+        await apiUpdateEmployee(editingEmployee.id, {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          department: formData.department || undefined,
+          position: formData.position || undefined,
+          salary: formData.salary ? parseInt(formData.salary) : undefined,
+          status: formData.status,
+          emergencyContact: formData.emergencyContact || undefined,
+          hireDate: editingEmployee.hireDate,
+          createdAt: editingEmployee.createdAt,
+          updatedAt: new Date().toISOString(),
+        });
+
+        setEmployees((prev) =>
+          prev.map((e) =>
+            e.id === editingEmployee.id
+              ? {
+                  ...e,
+                  firstName: formData.firstName,
+                  lastName: formData.lastName,
+                  email: formData.email,
+                  phone: formData.phone,
+                  department: formData.department,
+                  position: formData.position,
+                  salary: formData.salary ? parseInt(formData.salary) : undefined,
+                  status: formData.status,
+                  emergencyContact: formData.emergencyContact,
+                  updatedAt: new Date().toLocaleString(),
+                }
+              : e,
+          ),
+        );
+
+        toast({
+          title: "Success",
+          description: "Employee updated successfully",
+        });
+      } else {
+        const newEmployee = await apiCreateEmployee({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          department: formData.department || undefined,
+          position: formData.position || undefined,
+          salary: formData.salary ? parseInt(formData.salary) : undefined,
+          hireDate: formData.hireDate,
+          emergencyContact: formData.emergencyContact || undefined,
+        });
+
+        setEmployees((prev) => [
+          ...prev,
+          {
+            id: newEmployee.id,
+            firstName: newEmployee.firstName,
+            lastName: newEmployee.lastName,
+            email: newEmployee.email,
+            phone: newEmployee.phone,
+            position: newEmployee.position,
+            department: newEmployee.department,
+            salary: newEmployee.salary,
+            hireDate: new Date(newEmployee.hireDate).toLocaleDateString(),
+            status: newEmployee.status,
+            emergencyContact: newEmployee.emergencyContact,
+            createdAt: new Date(newEmployee.createdAt).toLocaleString(),
+            updatedAt: new Date(newEmployee.updatedAt).toLocaleString(),
+          },
+        ]);
+
+        toast({
+          title: "Success",
+          description: "Employee added successfully",
+        });
+      }
+    } catch (error) {
+      console.error("Save employee error:", error);
       toast({
-        title: "Success",
-        description: "Employee updated successfully",
+        title: "Error",
+        description: "Failed to save employee",
+        variant: "destructive",
       });
-    } else {
-      const newEmployee: Employee = {
-        id: `EMP-${String(allEmployees.length + 1).padStart(3, "0")}`,
-        ...formData,
-        createdAt: new Date().toLocaleString(),
-        updatedAt: new Date().toLocaleString(),
-      };
-      setAllEmployees((prev) => [...prev, newEmployee]);
-      toast({
-        title: "Success",
-        description: "Employee added successfully",
-      });
+      return;
     }
 
     setDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setAllEmployees((prev) => prev.filter((e) => e.id !== id));
-    toast({
-      title: "Success",
-      description: "Employee deleted successfully",
-    });
+  const handleDelete = async (employeeId: string) => {
+    try {
+      await apiDeleteEmployee(employeeId);
+      setEmployees((prev) => prev.filter((e) => e.id !== employeeId));
+      setDeleteConfirm(null);
+      toast({
+        title: "Success",
+        description: "Employee deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete employee error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete employee",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-accent/10 text-accent";
+      case "on_leave":
+        return "bg-primary/10 text-primary";
+      case "inactive":
+        return "bg-destructive/10 text-destructive";
+      default:
+        return "bg-muted/10 text-muted-foreground";
+    }
   };
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Employees</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage employee profiles and information
-            </p>
+      <div className="p-6 md:p-8 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+              Employees
+            </h1>
+            <p className="text-muted-foreground">Manage employee records and information</p>
           </div>
-          <Button onClick={() => handleOpenDialog()} className="gap-2">
-            <Plus size={16} />
+          <Button
+            onClick={() => handleOpenDialog()}
+            className="w-full md:w-auto gap-2"
+            size="lg"
+          >
+            <Plus size={18} />
             Add Employee
           </Button>
         </div>
 
+        {/* Filters */}
         <Card className="p-6 border-0 shadow-sm">
-          <div className="flex gap-4 mb-6">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
               <div className="relative">
                 <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                   size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 />
                 <Input
-                  placeholder="Search by name, email, or ID..."
+                  placeholder="Search by name or email..."
+                  className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
                 />
               </div>
             </div>
-            <Select
-              value={filterDepartment}
-              onValueChange={setFilterDepartment}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue />
+
+            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Departments" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
                 {departments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
+                  <SelectItem key={dept} value={dept || ""}>
+                    {dept || "Unknown"}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
 
-          <div className="space-y-4">
-            {filteredEmployees.length === 0 ? (
-              <div className="text-center py-8">
-                <Users
-                  size={32}
-                  className="mx-auto text-muted-foreground mb-2"
-                />
-                <p className="text-muted-foreground">No employees found</p>
-              </div>
-            ) : (
-              filteredEmployees.map((employee) => (
-                <div
-                  key={employee.id}
-                  className="p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          {employee.name}
-                        </h3>
-                        <Badge
-                          variant={
-                            employee.status === "active"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {employee.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {employee.position} • {employee.department}
-                      </p>
-                      <div className="flex flex-wrap gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <Mail size={14} className="text-muted-foreground" />
-                          {employee.email}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Phone size={14} className="text-muted-foreground" />
-                          {employee.phone}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                          Joined {employee.dateOfJoining}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <DollarSign
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                          ${employee.salary.toLocaleString()}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenDialog(employee)}
-                      >
-                        <Edit size={14} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(employee.id)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="on_leave">On Leave</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </Card>
 
-        {/* Employee Dialog */}
+        {/* Employees Table */}
+        <Card className="border-0 shadow-sm overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center">
+              <p className="text-muted-foreground">Loading employees from database...</p>
+            </div>
+          ) : (
+            <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Phone
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Department
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Position
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredEmployees.length > 0 ? (
+                    filteredEmployees.map((employee) => (
+                      <tr
+                        key={employee.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                          {employee.firstName} {employee.lastName}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Mail size={14} className="text-muted-foreground" />
+                            {employee.email}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Phone size={14} className="text-muted-foreground" />
+                            {employee.phone}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          {employee.department || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          {employee.position || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge
+                            variant="secondary"
+                            className={getStatusColor(employee.status)}
+                          >
+                            {employee.status === "on_leave"
+                              ? "On Leave"
+                              : employee.status.charAt(0).toUpperCase() +
+                                employee.status.slice(1)}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenDialog(employee)}
+                            >
+                              <Edit size={14} />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => setDeleteConfirm(employee.id)}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center">
+                        <p className="text-muted-foreground">No employees found</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-border px-6 py-4 bg-muted/30">
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredEmployees.length} of {employees.length} employees
+              </p>
+            </div>
+            </>
+          )}
+        </Card>
+
+        {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
@@ -343,65 +490,64 @@ export default function EmployeesPage() {
               <DialogDescription>
                 {editingEmployee
                   ? "Update employee information"
-                  : "Add a new employee to the system"}
+                  : "Create a new employee record"}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Full Name *
+                    First Name *
                   </label>
                   <Input
-                    value={formData.name}
+                    value={formData.firstName}
                     onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, firstName: e.target.value })
                     }
-                    placeholder="John Smith"
+                    placeholder="John"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Employee ID *
+                    Last Name *
                   </label>
                   <Input
-                    value={formData.employeeId}
+                    value={formData.lastName}
                     onChange={(e) =>
-                      setFormData({ ...formData, employeeId: e.target.value })
+                      setFormData({ ...formData, lastName: e.target.value })
                     }
-                    placeholder="E001"
+                    placeholder="Smith"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email *
-                  </label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    placeholder="john@company.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone
-                  </label>
-                  <Input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Email *
+                </label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="john@company.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Phone *
+                </label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="+1 (555) 123-4567"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -409,34 +555,13 @@ export default function EmployeesPage() {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Department
                   </label>
-                  <Select
+                  <Input
                     value={formData.department}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, department: value })
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
                     }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Technical Support">
-                        Technical Support
-                      </SelectItem>
-                      <SelectItem value="Field Operations">
-                        Field Operations
-                      </SelectItem>
-                      <SelectItem value="Network Management">
-                        Network Management
-                      </SelectItem>
-                      <SelectItem value="Administration">
-                        Administration
-                      </SelectItem>
-                      <SelectItem value="Human Resources">
-                        Human Resources
-                      </SelectItem>
-                      <SelectItem value="Finance">Finance</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    placeholder="Technical Support"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -455,76 +580,69 @@ export default function EmployeesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Date of Joining
-                  </label>
-                  <Input
-                    type="date"
-                    value={formData.dateOfJoining}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        dateOfJoining: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Monthly Salary
+                    Salary
                   </label>
                   <Input
                     type="number"
                     value={formData.salary}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        salary: parseInt(e.target.value) || 0,
-                      })
+                      setFormData({ ...formData, salary: e.target.value })
                     }
                     placeholder="45000"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Biometric ID
+                    Hire Date
                   </label>
                   <Input
-                    value={formData.biometricId}
+                    type="date"
+                    value={formData.hireDate}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        biometricId: e.target.value,
-                      })
+                      setFormData({ ...formData, hireDate: e.target.value })
                     }
-                    placeholder="BIO001"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Status
-                  </label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        status: value as "active" | "inactive" | "on-leave",
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="on-leave">On Leave</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Emergency Contact
+                </label>
+                <Input
+                  value={formData.emergencyContact}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emergencyContact: e.target.value,
+                    })
+                  }
+                  placeholder="Contact information"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Status
+                </label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      status: value as "active" | "on_leave" | "inactive",
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="on_leave">On Leave</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -534,6 +652,33 @@ export default function EmployeesPage() {
               </Button>
               <Button onClick={handleSave}>
                 {editingEmployee ? "Update" : "Create"} Employee
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={!!deleteConfirm}
+          onOpenChange={() => setDeleteConfirm(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Employee</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this employee? This action cannot
+                be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
+              >
+                Delete
               </Button>
             </DialogFooter>
           </DialogContent>
