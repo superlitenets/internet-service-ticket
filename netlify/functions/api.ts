@@ -9,7 +9,8 @@ const DATABASE_URL =
 const sqlClient = neon(DATABASE_URL);
 
 // Neon now uses .query() for parameterized queries
-const sql = (query: string, params?: any[]) => sqlClient.query(query, params || []);
+const sql = (query: string, params?: any[]) =>
+  sqlClient.query(query, params || []);
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Helper to create JSON response
