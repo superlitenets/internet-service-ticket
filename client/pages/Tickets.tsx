@@ -538,7 +538,10 @@ export default function TicketsPage() {
         try {
           await sendTicketSms("ticket_created", newTicket);
         } catch (smsError) {
-          console.warn("SMS notification failed, but ticket created successfully:", smsError);
+          console.warn(
+            "SMS notification failed, but ticket created successfully:",
+            smsError,
+          );
         }
 
         toast({
@@ -1338,7 +1341,10 @@ export default function TicketsPage() {
                   <Select
                     value={formData.teamGroupId || "none"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, teamGroupId: value === "none" ? "" : value })
+                      setFormData({
+                        ...formData,
+                        teamGroupId: value === "none" ? "" : value,
+                      })
                     }
                   >
                     <SelectTrigger>
@@ -1362,7 +1368,10 @@ export default function TicketsPage() {
                   <Select
                     value={formData.assignedTeamMemberId || "none"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, assignedTeamMemberId: value === "none" ? "" : value })
+                      setFormData({
+                        ...formData,
+                        assignedTeamMemberId: value === "none" ? "" : value,
+                      })
                     }
                   >
                     <SelectTrigger>
@@ -1383,11 +1392,22 @@ export default function TicketsPage() {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={savingTicket}>
+              <Button
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+                disabled={savingTicket}
+              >
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={savingTicket}>
-                {savingTicket ? (editingTicket ? "Updating..." : "Creating...") : (editingTicket ? "Update" : "Create")} Ticket
+                {savingTicket
+                  ? editingTicket
+                    ? "Updating..."
+                    : "Creating..."
+                  : editingTicket
+                    ? "Update"
+                    : "Create"}{" "}
+                Ticket
               </Button>
             </DialogFooter>
           </DialogContent>

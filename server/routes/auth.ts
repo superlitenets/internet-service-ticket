@@ -50,7 +50,9 @@ export const handleLogin: RequestHandler = async (req, res) => {
 
     // Verify password
     const passwordValid = await verifyPassword(password, user.password);
-    console.log(`[LOGIN] Password verification: ${passwordValid ? "PASSED" : "FAILED"}`);
+    console.log(
+      `[LOGIN] Password verification: ${passwordValid ? "PASSED" : "FAILED"}`,
+    );
 
     if (!passwordValid) {
       return res.status(401).json({

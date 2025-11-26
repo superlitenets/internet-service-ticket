@@ -44,7 +44,7 @@ export default function TimeTracking({
   const [hours, setHours] = useState<string>("0.5");
   const [description, setDescription] = useState<string>("");
   const [logDate, setLogDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [expandedForm, setExpandedForm] = useState(false);
 
@@ -155,7 +155,7 @@ export default function TimeTracking({
       acc[userId].push(log);
       return acc;
     },
-    {} as Record<string, TimeLog[]>
+    {} as Record<string, TimeLog[]>,
   );
 
   return (
@@ -181,10 +181,10 @@ export default function TimeTracking({
             <div className="text-2xl font-bold">{formatHours(totalHours)}</div>
           </div>
           <div className="bg-blue-500/5 border border-blue-500/10 rounded-lg p-4">
-            <div className="text-sm text-muted-foreground mb-1">
-              Your Time
+            <div className="text-sm text-muted-foreground mb-1">Your Time</div>
+            <div className="text-2xl font-bold">
+              {formatHours(userTotalHours)}
             </div>
-            <div className="text-2xl font-bold">{formatHours(userTotalHours)}</div>
           </div>
         </div>
 

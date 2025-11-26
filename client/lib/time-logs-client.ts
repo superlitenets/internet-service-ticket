@@ -63,15 +63,15 @@ export async function deleteTimeLog(timeLogId: string): Promise<void> {
 export function formatHours(hours: number): string {
   const wholeHours = Math.floor(hours);
   const minutes = Math.round((hours - wholeHours) * 60);
-  
+
   if (wholeHours === 0) {
     return `${minutes}m`;
   }
-  
+
   if (minutes === 0) {
     return `${wholeHours}h`;
   }
-  
+
   return `${wholeHours}h ${minutes}m`;
 }
 
@@ -81,7 +81,7 @@ export function getTotalHours(timeLogs: TimeLog[]): number {
 
 export function getTeamMemberTotal(
   timeLogs: TimeLog[],
-  userId: string
+  userId: string,
 ): number {
   return timeLogs
     .filter((log) => log.userId === userId)
