@@ -103,6 +103,14 @@ export default function Dashboard() {
         } catch {
           setTeamMembersCount(0);
         }
+
+        // Load customers for bulk SMS
+        try {
+          const customersData = await getCustomers();
+          setCustomers(customersData);
+        } catch {
+          setCustomers([]);
+        }
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
         toast({
