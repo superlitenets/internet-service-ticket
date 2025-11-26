@@ -233,9 +233,18 @@ export default function AttendancePage() {
       setAllRecords((prev) => [...prev, mappedRecord]);
       toast({
         title: "Success",
-        description: "Attendance record added",
+        description: `✓ Attendance record saved for ${formData.employeeName}`,
       });
       setDialogOpen(false);
+      // Reset form
+      setFormData({
+        employeeId: "",
+        employeeName: "",
+        checkInTime: new Date().toLocaleTimeString(),
+        checkOutTime: "",
+        status: "present" as const,
+        biometricSource: "manual" as const,
+      });
     } catch (error) {
       toast({
         title: "Error",
