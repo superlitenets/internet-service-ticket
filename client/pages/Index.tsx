@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getTickets } from "@/lib/tickets-client";
+import { getEmployees } from "@/lib/employees-client";
 
 interface TicketStats {
   total: number;
