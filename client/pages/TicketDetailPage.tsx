@@ -410,6 +410,15 @@ export default function TicketDetailPage() {
                 </Button>
               </div>
             </Card>
+
+            {/* Workflow Management */}
+            <Card className="p-6 border-0 shadow-sm">
+              <TicketWorkflow
+                ticketId={ticket.id}
+                ticketSubject={ticket.subject}
+                currentUserId={user?.id || ""}
+              />
+            </Card>
           </div>
 
           {/* Sidebar - Right Column */}
