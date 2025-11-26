@@ -47,15 +47,16 @@ export default function Dashboard() {
     pending: 0,
   });
   const [recentTickets, setRecentTickets] = useState<RecentTicket[]>([]);
+  const [teamMembersCount, setTeamMembersCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTicketData = async () => {
+    const loadDashboardData = async () => {
       try {
         setLoading(true);
-        const tickets = await getTickets();
 
-        // Calculate stats
+        // Load tickets
+        const tickets = await getTickets();
         const stats = {
           total: tickets.length,
           open: tickets.filter((t) => t.status === "open").length,
@@ -63,10 +64,8 @@ export default function Dashboard() {
           resolved: tickets.filter((t) => t.status === "resolved").length,
           pending: tickets.filter((t) => t.status === "pending").length,
         };
-
         setTicketStats(stats);
 
-        // Format recent tickets
         const recent = tickets.slice(0, 5).map((t) => ({
           id: t.id,
           customer: t.customer?.name || "Unknown",
@@ -76,10 +75,17 @@ export default function Dashboard() {
           createdAt: new Date(t.createdAt).toLocaleDateString(),
           assignedTo: t.user?.name || "Unassigned",
         }));
-
         setRecentTickets(recent);
+
+        // Load employees
+        try {
+          const employees = await getEmployees();
+          setTeamMembersCount(employees.length);
+        } catch {
+          setTeamMembersCount(0);
+        }
       } catch (error) {
-        console.error("Failed to load ticket data:", error);
+        console.error("Failed to load dashboard data:", error);
         toast({
           title: "Error",
           description: "Failed to load dashboard data",
@@ -90,7 +96,7 @@ export default function Dashboard() {
       }
     };
 
-    loadTicketData();
+    loadDashboardData();
   }, []);
 
   const getStatusColor = (status: string) => {
