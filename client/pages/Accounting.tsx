@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
@@ -72,68 +72,30 @@ export function AccountingPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [transactions, setTransactions] = useState<AccountingTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [transactions, setTransactions] = useState<AccountingTransaction[]>([
-    {
-      id: "INV-2024-001",
-      type: "invoice",
-      title: "Invoice #2024-001",
-      description: "ABC Corp - Monthly Service",
-      amount: 5000,
-      date: "2024-01-15",
-      status: "paid",
-      reference: "ABC-001",
-    },
-    {
-      id: "QT-2024-001",
-      type: "quote",
-      title: "Quote #2024-001",
-      description: "XYZ Ltd - Network Setup",
-      amount: 8500,
-      date: "2024-01-14",
-      status: "pending",
-      reference: "XYZ-QT-001",
-    },
-    {
-      id: "SAL-2024-001",
-      type: "sales",
-      title: "Sales Transaction",
-      description: "Direct Sales - Internet Packages",
-      amount: 3200,
-      date: "2024-01-13",
-      status: "completed",
-      reference: "SAL-001",
-    },
-    {
-      id: "EXP-2024-001",
-      type: "expense",
-      title: "Office Supplies",
-      description: "Monthly office supplies purchase",
-      amount: 850,
-      date: "2024-01-12",
-      status: "completed",
-    },
-    {
-      id: "PAY-2024-001",
-      type: "payment",
-      title: "Payment Received",
-      description: "Invoice #2024-001 Payment",
-      amount: 5000,
-      date: "2024-01-10",
-      status: "completed",
-      reference: "INV-2024-001",
-    },
-    {
-      id: "POS-2024-001",
-      type: "pos",
-      title: "POS Transaction",
-      description: "Retail Sales",
-      amount: 1500,
-      date: "2024-01-09",
-      status: "completed",
-      reference: "POS-001",
-    },
-  ]);
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        setLoading(true);
+        setTransactions([]);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to load transactions",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTransactions();
+  }, []);
 
   const [formData, setFormData] = useState({
     type: "invoice" as const,
@@ -188,7 +150,7 @@ export function AccountingPage() {
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title || !formData.description || formData.amount <= 0) {
       toast({
         title: "Error",
@@ -198,59 +160,82 @@ export function AccountingPage() {
       return;
     }
 
-    if (editingTransaction) {
-      setTransactions((prev) =>
-        prev.map((tx) =>
-          tx.id === editingTransaction.id
-            ? {
-                ...tx,
-                ...formData,
-              }
-            : tx,
-        ),
-      );
-      toast({
-        title: "Success",
-        description: "Transaction updated successfully",
-      });
-    } else {
-      const typeInitials: Record<string, string> = {
-        invoice: "INV",
-        quote: "QT",
-        sales: "SAL",
-        expense: "EXP",
-        payment: "PAY",
-        pos: "POS",
-      };
-      const newId = `${typeInitials[formData.type]}-${new Date().getFullYear()}-${String(transactions.length + 1).padStart(3, "0")}`;
+    try {
+      if (editingTransaction) {
+        setTransactions((prev) =>
+          prev.map((tx) =>
+            tx.id === editingTransaction.id
+              ? {
+                  ...tx,
+                  ...formData,
+                }
+              : tx,
+          ),
+        );
+        toast({
+          title: "Success",
+          description: "Transaction updated successfully",
+        });
+      } else {
+        const typeInitials: Record<string, string> = {
+          invoice: "INV",
+          quote: "QT",
+          sales: "SAL",
+          expense: "EXP",
+          payment: "PAY",
+          pos: "POS",
+        };
+        const newId = `${typeInitials[formData.type]}-${new Date().getFullYear()}-${String(transactions.length + 1).padStart(3, "0")}`;
 
-      const newTransaction: AccountingTransaction = {
-        id: newId,
-        type: formData.type,
-        title: formData.title,
-        description: formData.description,
-        amount: formData.amount,
-        date: formData.date,
-        status: formData.status,
-        reference: formData.reference,
-        notes: formData.notes,
-      };
-      setTransactions((prev) => [newTransaction, ...prev]);
+        const newTransaction: AccountingTransaction = {
+          id: newId,
+          type: formData.type,
+          title: formData.title,
+          description: formData.description,
+          amount: formData.amount,
+          date: formData.date,
+          status: formData.status,
+          reference: formData.reference,
+          notes: formData.notes,
+        };
+        setTransactions((prev) => [newTransaction, ...prev]);
+        toast({
+          title: "Success",
+          description: "Transaction created successfully",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Success",
-        description: "Transaction created successfully",
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to save transaction",
+        variant: "destructive",
       });
+      return;
     }
 
     setDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setTransactions((prev) => prev.filter((tx) => tx.id !== id));
-    toast({
-      title: "Success",
-      description: "Transaction deleted successfully",
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+      toast({
+        title: "Success",
+        description: "Transaction deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete transaction",
+        variant: "destructive",
+      });
+    }
   };
 
   const totalRevenue = transactions

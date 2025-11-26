@@ -31,8 +31,14 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  createInventoryItem,
+  getInventoryItems,
+  updateInventoryItem,
+  deleteInventoryItem,
+} from "@/lib/inventory-client";
 
 interface InventoryItem {
   id: string;
@@ -103,107 +109,52 @@ export default function InventoryPage() {
     notes: "",
   });
 
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
-    {
-      id: "inv_001",
-      name: "Gigabit Router Pro",
-      type: "router",
-      model: "GR-1000X",
-      serialNumber: "SN-001-GR-1000X",
-      quantity: 15,
-      condition: "new",
-      costPerUnit: 250,
-      purchaseDate: "2024-01-10",
-      warrantyExpiration: "2026-01-10",
-      createdAt: "2024-01-10",
-    },
-    {
-      id: "inv_002",
-      name: "DOCSIS 3.1 Modem",
-      type: "modem",
-      model: "DCM-500",
-      serialNumber: "SN-002-DCM-500",
-      quantity: 8,
-      condition: "good",
-      costPerUnit: 180,
-      purchaseDate: "2024-01-05",
-      warrantyExpiration: "2025-01-05",
-      assignedTo: "Acme Corp",
-      assignedLocation: "Floor 3, Building A",
-      createdAt: "2024-01-05",
-    },
-    {
-      id: "inv_003",
-      name: "Fiber Optic Cable (100m)",
-      type: "cable",
-      model: "FOC-100M",
-      serialNumber: "SN-003-FOC-100M",
-      quantity: 50,
-      condition: "good",
-      costPerUnit: 45,
-      purchaseDate: "2023-12-15",
-      warrantyExpiration: "2024-12-15",
-      createdAt: "2023-12-15",
-    },
-    {
-      id: "inv_004",
-      name: "Optical Network Terminal",
-      type: "ont",
-      model: "ONT-200",
-      serialNumber: "SN-004-ONT-200",
-      quantity: 20,
-      condition: "new",
-      costPerUnit: 120,
-      purchaseDate: "2024-01-08",
-      warrantyExpiration: "2026-01-08",
-      createdAt: "2024-01-08",
-    },
-  ]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [history, setHistory] = useState<InventoryHistory[]>([
-    {
-      id: "hist_001",
-      itemId: "inv_002",
-      action: "assigned",
-      details: "Assigned to Acme Corp",
-      timestamp: "2024-01-14",
-      performedBy: "Mike Johnson",
-    },
-    {
-      id: "hist_002",
-      itemId: "inv_001",
-      action: "created",
-      details: "Added 15 units to inventory",
-      timestamp: "2024-01-10",
-      performedBy: "David Brown",
-    },
-  ]);
+  const [history, setHistory] = useState<InventoryHistory[]>([]);
 
   const [assignmentRequests, setAssignmentRequests] = useState<
     AssignmentRequest[]
-  >([
-    {
-      id: "req_001",
-      itemId: "inv_001",
-      itemName: "Gigabit Router Pro",
-      requestedBy: "TK-001",
-      customerId: "Acme Corp",
-      status: "pending",
-      requestDate: "2024-01-15",
-      notes: "Required for ticket TK-001",
-    },
-    {
-      id: "req_002",
-      itemId: "inv_004",
-      itemName: "Optical Network Terminal",
-      requestedBy: "TK-003",
-      customerId: "Global Industries",
-      status: "approved",
-      requestDate: "2024-01-14",
-      assignedDate: "2024-01-15",
-      notes: "For new customer installation",
-    },
-  ]);
+  >([]);
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      try {
+        setLoading(true);
+        const items = await getInventoryItems();
+        const mappedItems: InventoryItem[] = items.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          type: item.category || "other",
+          model: item.description || "",
+          serialNumber: item.sku,
+          quantity: item.quantity,
+          condition: "good",
+          costPerUnit: item.unitPrice,
+          purchaseDate: new Date().toISOString().split("T")[0],
+          warrantyExpiration: "",
+          createdAt: new Date(item.createdAt).toISOString().split("T")[0],
+        }));
+        setInventoryItems(mappedItems);
+        setHistory([]);
+        setAssignmentRequests([]);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to load inventory",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInventory();
+  }, []);
 
   const filteredItems = inventoryItems.filter((item) => {
     const matchesSearch =
@@ -249,7 +200,7 @@ export default function InventoryPage() {
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.model || !formData.serialNumber) {
       toast({
         title: "Error",
@@ -259,72 +210,86 @@ export default function InventoryPage() {
       return;
     }
 
-    if (editingItem) {
-      setInventoryItems((prev) =>
-        prev.map((item) =>
-          item.id === editingItem.id ? { ...item, ...formData } : item,
-        ),
-      );
-      setHistory((prev) => [
-        ...prev,
-        {
-          id: `hist_${Date.now()}`,
-          itemId: editingItem.id,
-          action: "updated",
-          details: `Updated inventory item`,
-          timestamp: new Date().toISOString().split("T")[0],
-          performedBy: "Current User",
-        },
-      ]);
+    try {
+      if (editingItem) {
+        await updateInventoryItem(editingItem.id, {
+          name: formData.name,
+          description: formData.model,
+          category: formData.type,
+          unitPrice: formData.costPerUnit,
+          quantity: formData.quantity,
+        });
+        setInventoryItems((prev) =>
+          prev.map((item) =>
+            item.id === editingItem.id ? { ...item, ...formData } : item,
+          ),
+        );
+        toast({
+          title: "Success",
+          description: "Inventory item updated successfully",
+        });
+      } else {
+        const newItem = await createInventoryItem({
+          name: formData.name,
+          sku: formData.serialNumber,
+          description: formData.model,
+          category: formData.type,
+          unitPrice: formData.costPerUnit,
+          quantity: formData.quantity,
+        });
+        const mappedItem: InventoryItem = {
+          id: newItem.id,
+          name: newItem.name,
+          type: newItem.category || "other",
+          model: newItem.description || "",
+          serialNumber: newItem.sku,
+          quantity: newItem.quantity,
+          condition: "good",
+          costPerUnit: newItem.unitPrice,
+          purchaseDate: new Date().toISOString().split("T")[0],
+          warrantyExpiration: "",
+          createdAt: new Date(newItem.createdAt).toISOString().split("T")[0],
+        };
+        setInventoryItems((prev) => [...prev, mappedItem]);
+        toast({
+          title: "Success",
+          description: "Inventory item added successfully",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Success",
-        description: "Inventory item updated successfully",
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to save inventory item",
+        variant: "destructive",
       });
-    } else {
-      const newItem: InventoryItem = {
-        id: `inv_${Date.now()}`,
-        ...formData,
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      setInventoryItems((prev) => [...prev, newItem]);
-      setHistory((prev) => [
-        ...prev,
-        {
-          id: `hist_${Date.now()}`,
-          itemId: newItem.id,
-          action: "created",
-          details: `Added ${formData.quantity} units`,
-          timestamp: new Date().toISOString().split("T")[0],
-          performedBy: "Current User",
-        },
-      ]);
-      toast({
-        title: "Success",
-        description: "Inventory item added successfully",
-      });
+      return;
     }
 
     setDialogOpen(false);
   };
 
-  const handleDelete = (itemId: string) => {
-    setInventoryItems((prev) => prev.filter((item) => item.id !== itemId));
-    setHistory((prev) => [
-      ...prev,
-      {
-        id: `hist_${Date.now()}`,
-        itemId,
-        action: "updated",
-        details: "Item deleted from inventory",
-        timestamp: new Date().toISOString().split("T")[0],
-        performedBy: "Current User",
-      },
-    ]);
-    setDeleteConfirm(null);
-    toast({
-      title: "Success",
-      description: "Inventory item deleted successfully",
-    });
+  const handleDelete = async (itemId: string) => {
+    try {
+      await deleteInventoryItem(itemId);
+      setInventoryItems((prev) => prev.filter((item) => item.id !== itemId));
+      setDeleteConfirm(null);
+      toast({
+        title: "Success",
+        description: "Inventory item deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete inventory item",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAssignItem = () => {

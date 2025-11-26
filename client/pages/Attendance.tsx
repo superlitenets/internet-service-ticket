@@ -33,40 +33,22 @@ import {
 } from "lucide-react";
 import type { AttendanceRecord } from "@shared/api";
 import {
-  syncZKtecoAttendance,
-  testZKtecoConnection,
-} from "@/lib/zkteco-client";
+  createAttendanceRecord,
+  getAttendanceRecords,
+  updateAttendanceRecord,
+  deleteAttendanceRecord,
+} from "@/lib/attendance-client";
+
+interface ExtendedAttendanceRecord extends AttendanceRecord {
+  employeeName?: string;
+  biometricSource?: string;
+  duration?: number;
+}
 
 export default function AttendancePage() {
   const { toast } = useToast();
-  const [allRecords, setAllRecords] = useState<AttendanceRecord[]>([
-    {
-      id: "ATT-001",
-      employeeId: "EMP-001",
-      employeeName: "John Smith",
-      checkInTime: "2024-01-15 08:30 AM",
-      checkOutTime: "2024-01-15 05:45 PM",
-      date: "2024-01-15",
-      status: "present",
-      biometricSource: "zkteco40",
-      duration: 555,
-      createdAt: "2024-01-15 08:30 AM",
-      updatedAt: "2024-01-15 05:45 PM",
-    },
-    {
-      id: "ATT-002",
-      employeeId: "EMP-002",
-      employeeName: "Maria Garcia",
-      checkInTime: "2024-01-15 09:15 AM",
-      checkOutTime: "2024-01-15 06:00 PM",
-      date: "2024-01-15",
-      status: "late",
-      biometricSource: "zkteco40",
-      duration: 525,
-      createdAt: "2024-01-15 09:15 AM",
-      updatedAt: "2024-01-15 06:00 PM",
-    },
-  ]);
+  const [allRecords, setAllRecords] = useState<ExtendedAttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncDialogOpen, setSyncDialogOpen] = useState(false);
@@ -93,6 +75,36 @@ export default function AttendancePage() {
     password: "",
   });
 
+  useEffect(() => {
+    const loadAttendance = async () => {
+      try {
+        setLoading(true);
+        const records = await getAttendanceRecords();
+        const mappedRecords: ExtendedAttendanceRecord[] = records.map(
+          (record: any) => ({
+            ...record,
+            employeeName: record.employeeName || "Unknown",
+            biometricSource: "manual",
+          }),
+        );
+        setAllRecords(mappedRecords);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to load attendance records",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAttendance();
+  }, []);
+
   const filteredRecords = allRecords.filter((record) => {
     const matchesSearch =
       record.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,24 +116,9 @@ export default function AttendancePage() {
   const handleSyncZKteco = async () => {
     setSyncing(true);
     try {
-      const result = await syncZKtecoAttendance("device-001");
-      setAllRecords((prev) => [
-        ...prev,
-        {
-          id: `ATT-${String(allRecords.length + 1).padStart(3, "0")}`,
-          employeeId: "EMP-001",
-          employeeName: "Synced Employee",
-          checkInTime: new Date().toLocaleString(),
-          date: new Date().toISOString().split("T")[0],
-          status: "present",
-          biometricSource: "zkteco40",
-          createdAt: new Date().toLocaleString(),
-          updatedAt: new Date().toLocaleString(),
-        },
-      ]);
       toast({
-        title: "Success",
-        description: `Synced ${result.recordsImported} attendance records from ZKteco40`,
+        title: "Info",
+        description: "ZKteco sync feature coming soon",
       });
       setSyncDialogOpen(false);
     } catch (error) {
@@ -141,10 +138,9 @@ export default function AttendancePage() {
   const handleTestConnection = async () => {
     setTesting(true);
     try {
-      const result = await testZKtecoConnection(zKtecoConfig);
       toast({
-        title: "Success",
-        description: `Connected to ZKteco40 - ${result.message}`,
+        title: "Info",
+        description: "ZKteco test feature coming soon",
       });
     } catch (error) {
       toast({
@@ -160,7 +156,7 @@ export default function AttendancePage() {
     }
   };
 
-  const handleAddRecord = () => {
+  const handleAddRecord = async () => {
     if (!formData.employeeId || !formData.employeeName) {
       toast({
         title: "Error",
@@ -170,25 +166,38 @@ export default function AttendancePage() {
       return;
     }
 
-    const newRecord: AttendanceRecord = {
-      id: `ATT-${String(allRecords.length + 1).padStart(3, "0")}`,
-      employeeId: formData.employeeId,
-      employeeName: formData.employeeName,
-      checkInTime: formData.checkInTime,
-      checkOutTime: formData.checkOutTime,
-      date: selectedDate,
-      status: formData.status,
-      biometricSource: formData.biometricSource,
-      createdAt: new Date().toLocaleString(),
-      updatedAt: new Date().toLocaleString(),
-    };
+    try {
+      const newRecord = await createAttendanceRecord({
+        employeeId: formData.employeeId,
+        date: selectedDate,
+        checkInTime: formData.checkInTime,
+        checkOutTime: formData.checkOutTime,
+        status: formData.status,
+        notes: undefined,
+      });
 
-    setAllRecords((prev) => [...prev, newRecord]);
-    toast({
-      title: "Success",
-      description: "Attendance record added",
-    });
-    setDialogOpen(false);
+      const mappedRecord: ExtendedAttendanceRecord = {
+        ...newRecord,
+        employeeName: formData.employeeName,
+        biometricSource: "manual",
+      };
+
+      setAllRecords((prev) => [...prev, mappedRecord]);
+      toast({
+        title: "Success",
+        description: "Attendance record added",
+      });
+      setDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to add attendance record",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusColor = (status: string) => {
