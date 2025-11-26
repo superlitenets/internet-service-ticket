@@ -218,16 +218,12 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Get by ID
-    if (
-      path.match(/^\/api\/customers\/[^/]+$/) &&
-      method === "GET"
-    ) {
+    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "GET") {
       const customerId = path.split("/").pop();
       try {
-        const result = await sql(
-          `SELECT * FROM "Customer" WHERE id = $1`,
-          [customerId],
-        );
+        const result = await sql(`SELECT * FROM "Customer" WHERE id = $1`, [
+          customerId,
+        ]);
 
         if (result.length === 0) {
           return jsonResponse(404, {
@@ -250,10 +246,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Update
-    if (
-      path.match(/^\/api\/customers\/[^/]+$/) &&
-      method === "PUT"
-    ) {
+    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "PUT") {
       const customerId = path.split("/").pop();
       const { name, email, phone, accountType, status } = body;
 
@@ -313,10 +306,7 @@ const handler: Handler = async (event) => {
     }
 
     // CUSTOMERS - Delete
-    if (
-      path.match(/^\/api\/customers\/[^/]+$/) &&
-      method === "DELETE"
-    ) {
+    if (path.match(/^\/api\/customers\/[^/]+$/) && method === "DELETE") {
       const customerId = path.split("/").pop();
       try {
         const result = await sql(
