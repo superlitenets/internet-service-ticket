@@ -191,12 +191,10 @@ export default function DepartmentsPage() {
 
       if (!response.ok) throw new Error("Failed to delete department");
 
+      const deptName = departments.find((d) => d.id === id)?.name || "Department";
       setDepartments((prev) => prev.filter((d) => d.id !== id));
 
-      toast({
-        title: "Success",
-        description: "Department deleted successfully",
-      });
+      toast(getSaveNotification({ itemName: `"${deptName}"`, action: "deleted" }));
     } catch (error) {
       console.error("Delete department error:", error);
       toast({
