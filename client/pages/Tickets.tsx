@@ -326,10 +326,10 @@ export default function TicketsPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.customer || !formData.title || !formData.description) {
+    if (!formData.customerId || !formData.title || !formData.description) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields (Customer, Title, Description)",
         variant: "destructive",
       });
       return;
@@ -365,12 +365,11 @@ export default function TicketsPage() {
           description: "Ticket updated successfully",
         });
       } else {
-        // Create new ticket with customer info
+        // Create new ticket with customerId
+        const selectedCustomer = customers.find((c) => c.id === formData.customerId);
+
         const newApiTicket = await apiCreateTicket({
-          customerId: "",
-          customerName: formData.customer || "Unknown Customer",
-          customerEmail: formData.customerEmail || "",
-          customerPhone: formData.customerPhone || "",
+          customerId: formData.customerId,
           subject: formData.title,
           description: formData.description,
           status: "open",
@@ -380,12 +379,13 @@ export default function TicketsPage() {
 
         const newTicket: Ticket = {
           id: newApiTicket.id,
-          customer: formData.customer,
-          customerEmail: formData.customerEmail,
-          customerPhone: formData.customerPhone,
-          customerLocation: formData.customerLocation,
-          apartment: formData.apartment,
-          roomNumber: formData.roomNumber,
+          customerId: formData.customerId,
+          customer: selectedCustomer?.name || "Unknown",
+          customerEmail: selectedCustomer?.email || "",
+          customerPhone: selectedCustomer?.phone || "",
+          customerLocation: "",
+          apartment: "",
+          roomNumber: "",
           title: formData.title,
           description: formData.description,
           status: "open",
@@ -410,7 +410,7 @@ export default function TicketsPage() {
       console.error("Save ticket error:", error);
       toast({
         title: "Error",
-        description: "Failed to save ticket",
+        description: `Failed to save ticket: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
       return;
@@ -418,17 +418,12 @@ export default function TicketsPage() {
 
     setDialogOpen(false);
     setFormData({
-      customer: "",
-      customerEmail: "",
-      customerPhone: "",
-      customerLocation: "",
-      apartment: "",
-      roomNumber: "",
+      customerId: "",
       title: "",
       description: "",
       status: "open",
       priority: "medium",
-      assignedTo: "Unassigned",
+      assignedTo: "",
     });
   };
 
