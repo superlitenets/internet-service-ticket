@@ -302,7 +302,7 @@ export default function HikvisionPage() {
                   onChange={(e) =>
                     setDeviceConfig({ ...deviceConfig, deviceName: e.target.value })
                   }
-                  placeholder="e.g., Main Entrance Camera"
+                  placeholder="e.g., Main Entrance Access Control"
                 />
               </div>
 
@@ -313,7 +313,7 @@ export default function HikvisionPage() {
                   onChange={(e) =>
                     setDeviceConfig({ ...deviceConfig, location: e.target.value })
                   }
-                  placeholder="e.g., Front Gate"
+                  placeholder="e.g., Main Entrance"
                 />
               </div>
 
