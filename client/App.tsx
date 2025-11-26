@@ -17,6 +17,7 @@ import Inventory from "./pages/Inventory";
 import Settings from "./pages/Settings";
 import Employees from "./pages/Employees";
 import Attendance from "./pages/Attendance";
+import Hikvision from "./pages/Hikvision";
 import Leave from "./pages/Leave";
 import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
