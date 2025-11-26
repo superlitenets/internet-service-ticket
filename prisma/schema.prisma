@@ -43,6 +43,10 @@ model Customer {
   email         String   @unique
   name          String
   accountType   String? // residential, business
+  location      String?  // City/Location
+  apartment     String?  // Apartment/Unit number
+  roomNumber    String?  // Room number
+  streetAddress String?  // Street address
   status        String   @default("active") // active, suspended, inactive
   registeredAt  DateTime @default(now())
   updatedAt     DateTime @updatedAt
