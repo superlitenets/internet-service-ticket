@@ -356,9 +356,10 @@ export default function SettingsPage() {
     }));
   };
 
-  const handleSaveSettings = (section: string) => {
+  const handleSaveSettings = async (section: string) => {
     if (section === "SMS") {
       try {
+        await saveSmsSettingsApi(smsSettings);
         saveSmsSettings(smsSettings);
         toast({
           title: "Success",
@@ -373,6 +374,7 @@ export default function SettingsPage() {
       }
     } else if (section === "WhatsApp") {
       try {
+        await saveWhatsAppSettingsApi(whatsappSettings);
         saveWhatsAppConfig(whatsappSettings);
         toast({
           title: "Success",
@@ -387,6 +389,7 @@ export default function SettingsPage() {
       }
     } else if (section === "MPESA") {
       try {
+        await saveMpesaSettingsApi(mpesaSettings);
         saveMpesaSettings(mpesaSettings);
         toast({
           title: "Success",
@@ -401,6 +404,7 @@ export default function SettingsPage() {
       }
     } else if (section === "Company") {
       try {
+        await saveCompanySettingsApi(companySettings);
         saveCompanySettings(companySettings);
         toast({
           title: "Success",
@@ -410,6 +414,35 @@ export default function SettingsPage() {
         toast({
           title: "Error",
           description: "Failed to save company settings.",
+          variant: "destructive",
+        });
+      }
+    } else if (section === "Deduction") {
+      try {
+        await saveDeductionSettingsApi(deductionSettings);
+        saveDeductionSettings(deductionSettings);
+        toast({
+          title: "Success",
+          description: "Deduction settings saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save deduction settings.",
+          variant: "destructive",
+        });
+      }
+    } else if (section === "Notifications") {
+      try {
+        await saveNotificationPrefsApi(notificationPrefs);
+        toast({
+          title: "Success",
+          description: "Notification preferences saved successfully.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to save notification preferences.",
           variant: "destructive",
         });
       }
