@@ -211,7 +211,7 @@ export const deleteTask: RequestHandler = async (req, res) => {
  */
 export const logTime: RequestHandler = async (req, res) => {
   try {
-    const { taskId, ticketId, userId, hours, description } = req.body;
+    const { taskId, ticketId, userId, hours, description, date } = req.body;
 
     if (!ticketId || !userId || !hours) {
       return res.status(400).json({
@@ -227,6 +227,7 @@ export const logTime: RequestHandler = async (req, res) => {
         userId,
         hours,
         description: description || undefined,
+        date: date ? new Date(date) : new Date(),
       },
       include: {
         user: true,
