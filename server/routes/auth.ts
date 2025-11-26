@@ -16,7 +16,10 @@ export const handleLogin: RequestHandler = async (req, res) => {
   try {
     const { identifier, password } = req.body as LoginRequest;
 
+    console.log(`[LOGIN] Attempt with identifier: "${identifier}"`);
+
     if (!identifier || !password) {
+      console.log("[LOGIN] Missing identifier or password");
       return res.status(400).json({
         success: false,
         message: "Identifier and password are required",
@@ -31,6 +34,12 @@ export const handleLogin: RequestHandler = async (req, res) => {
       },
     });
 
+    if (!user) {
+      console.log(`[LOGIN] User not found with identifier: "${identifier}"`);
+    } else {
+      console.log(`[LOGIN] User found: ${user.email} (status: ${user.status})`);
+    }
+
     if (!user || user.status === "inactive" || user.status === "suspended") {
       return res.status(401).json({
         success: false,
@@ -41,6 +50,8 @@ export const handleLogin: RequestHandler = async (req, res) => {
 
     // Verify password
     const passwordValid = await verifyPassword(password, user.password);
+    console.log(`[LOGIN] Password verification: ${passwordValid ? "PASSED" : "FAILED"}`);
+
     if (!passwordValid) {
       return res.status(401).json({
         success: false,
