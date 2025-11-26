@@ -122,7 +122,120 @@ export default function Leads() {
 
   useEffect(() => {
     loadLeads();
+    loadEmployees();
   }, []);
+
+  const loadEmployees = async () => {
+    try {
+      const employeesData = await getEmployees();
+      setEmployees(employeesData);
+    } catch (error) {
+      console.error("Failed to load employees:", error);
+    }
+  };
+
+  const getSalesTeamPhone = (technicianId: string): string | undefined => {
+    return employees.find((e) => e.id === technicianId)?.phone;
+  };
+
+  const sendLeadNotifications = async (
+    eventType: "lead_created" | "lead_converted",
+    lead: any,
+    technicianInfo?: { name: string; phone: string; id: string },
+  ) => {
+    try {
+      const smsSettings = getSmsSettings();
+      const whatsappSettings = getWhatsAppConfig();
+
+      if (
+        (!smsSettings || !smsSettings.enabled) &&
+        (!whatsappSettings || !whatsappSettings.enabled)
+      ) {
+        console.log("No messaging service enabled");
+        return;
+      }
+
+      // Prepare message variables
+      const messageVars: any = {
+        customerName: lead.customerName,
+        phone: lead.phone,
+        location: lead.location,
+        package: lead.package,
+        agreedInstallAmount: lead.agreedInstallAmount,
+        notes: lead.notes || "N/A",
+      };
+
+      if (technicianInfo) {
+        messageVars.ticketId = lead.ticketId || "TKT001";
+        messageVars.technicianName = technicianInfo.name;
+        messageVars.technicianPhone = technicianInfo.phone;
+        messageVars.priority = "medium";
+      }
+
+      // Send to customer via SMS
+      if (smsSettings?.enabled) {
+        const customerTemplate = getTemplate(eventType, "customer");
+        if (customerTemplate) {
+          const customerMessage = renderTemplate(customerTemplate, messageVars);
+          await sendSmsToPhone(lead.phone, customerMessage);
+        }
+      }
+
+      // Send to customer via WhatsApp
+      if (whatsappSettings?.enabled) {
+        const customerTemplate = getTemplate(eventType, "customer");
+        if (customerTemplate) {
+          const customerMessage = renderTemplate(customerTemplate, messageVars);
+          try {
+            await sendWhatsAppUnifiedToPhone(
+              lead.phone,
+              customerMessage,
+              whatsappSettings.mode,
+              whatsappSettings.failoverEnabled,
+            );
+          } catch (error) {
+            console.warn("WhatsApp send failed, continuing...", error);
+          }
+        }
+      }
+
+      // Send to sales team via SMS
+      if (smsSettings?.enabled) {
+        const salesTemplate = getTemplate(eventType, "sales");
+        if (salesTemplate) {
+          const salesMessage = renderTemplate(salesTemplate, messageVars);
+          // Send to all sales team members (we can extend this to target specific team)
+          const firstSalesEmployee = employees.find((e) => e.phone);
+          if (firstSalesEmployee) {
+            await sendSmsToPhone(firstSalesEmployee.phone, salesMessage);
+          }
+        }
+      }
+
+      // Send to sales team via WhatsApp
+      if (whatsappSettings?.enabled) {
+        const salesTemplate = getTemplate(eventType, "sales");
+        if (salesTemplate) {
+          const salesMessage = renderTemplate(salesTemplate, messageVars);
+          const firstSalesEmployee = employees.find((e) => e.phone);
+          if (firstSalesEmployee) {
+            try {
+              await sendWhatsAppUnifiedToPhone(
+                firstSalesEmployee.phone,
+                salesMessage,
+                whatsappSettings.mode,
+                whatsappSettings.failoverEnabled,
+              );
+            } catch (error) {
+              console.warn("WhatsApp send failed, continuing...", error);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to send notifications:", error);
+    }
+  };
 
   useEffect(() => {
     filterLeads();
