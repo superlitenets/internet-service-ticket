@@ -7,7 +7,7 @@ UPDATE "Ticket" SET "oldTicketId" = "ticketId";
 -- Create app settings for ticket prefix if not exists
 INSERT INTO "AppSettings" (id, key, value, category, "createdAt", "updatedAt")
 VALUES (
-  concat('setting_', EXTRACT(EPOCH FROM NOW())::text),
+  gen_random_uuid()::text,
   'ticket_prefix',
   'TKT',
   'ticket',
@@ -19,7 +19,7 @@ ON CONFLICT ("key") DO NOTHING;
 -- Initialize ticket counter based on count of existing tickets
 INSERT INTO "AppSettings" (id, key, value, category, "createdAt", "updatedAt")
 SELECT
-  concat('setting_', EXTRACT(EPOCH FROM NOW())::text),
+  gen_random_uuid()::text,
   'ticket_counter',
   (COUNT(*))::text,
   'ticket',
