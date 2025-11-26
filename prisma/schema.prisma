@@ -25,11 +25,12 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tickets   Ticket[]
-  payments  Payment[]
-  employees Employee?
-  accounts  Account[]
-  leads     Lead[] @relation("leads")
+  tickets      Ticket[]
+  payments     Payment[]
+  employees    Employee?
+  accounts     Account[]
+  leads        Lead[] @relation("leads")
+  ticketReplies TicketReply[]
 
   @@index([email])
   @@index([phone])
