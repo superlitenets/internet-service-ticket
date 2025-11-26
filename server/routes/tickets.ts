@@ -33,7 +33,8 @@ export const createTicket: RequestHandler = async (req, res) => {
         data: {
           name: customerName || "Unknown Customer",
           email: customerEmail || `customer-${Date.now()}@example.com`,
-          phone: customerPhone || `+0000000000${Date.now().toString().slice(-4)}`,
+          phone:
+            customerPhone || `+0000000000${Date.now().toString().slice(-4)}`,
           accountType: "residential",
           status: "active",
         },

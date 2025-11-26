@@ -261,7 +261,10 @@ export default function Dashboard() {
                 </Card>
               ) : recentTickets.length === 0 ? (
                 <Card className="border-0 shadow-sm p-8 text-center">
-                  <TicketIcon size={32} className="mx-auto text-muted-foreground mb-3" />
+                  <TicketIcon
+                    size={32}
+                    className="mx-auto text-muted-foreground mb-3"
+                  />
                   <p className="text-muted-foreground">No tickets yet</p>
                   <Link to="/tickets">
                     <Button className="mt-4" size="sm">
