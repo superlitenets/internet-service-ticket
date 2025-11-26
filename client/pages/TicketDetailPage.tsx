@@ -420,6 +420,15 @@ export default function TicketDetailPage() {
                 currentUserId={user?.id || ""}
               />
             </Card>
+
+            {/* Time Tracking */}
+            {user && (
+              <TimeTracking
+                ticketId={ticket.id}
+                currentUserId={user.id}
+                currentUserName={user.name || user.email || ""}
+              />
+            )}
           </div>
 
           {/* Sidebar - Right Column */}
