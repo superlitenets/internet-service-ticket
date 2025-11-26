@@ -112,6 +112,10 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("sms");
   const [visibleKey, setVisibleKey] = useState<string | null>(null);
 
+  // Ticket Settings State
+  const [ticketPrefix, setTicketPrefix] = useState("TKT");
+  const [savingTicketPrefix, setSavingTicketPrefix] = useState(false);
+
   // SMS Settings State
   const [smsSettings, setSmsSettings] = useState<
     SmsSettings & {
