@@ -10,6 +10,8 @@ export const createTicket: RequestHandler = async (req, res) => {
     const {
       customerId,
       userId,
+      teamGroupId,
+      assignedTeamMemberId,
       subject,
       description,
       category,
@@ -43,6 +45,32 @@ export const createTicket: RequestHandler = async (req, res) => {
       });
     }
 
+    // Verify team group exists if provided
+    if (teamGroupId) {
+      const teamGroup = await db.teamGroup.findUnique({
+        where: { id: teamGroupId },
+      });
+      if (!teamGroup) {
+        return res.status(404).json({
+          success: false,
+          message: "Team group not found",
+        });
+      }
+    }
+
+    // Verify team member exists if provided
+    if (assignedTeamMemberId) {
+      const teamMember = await db.teamMember.findUnique({
+        where: { id: assignedTeamMemberId },
+      });
+      if (!teamMember) {
+        return res.status(404).json({
+          success: false,
+          message: "Team member not found",
+        });
+      }
+    }
+
     const newTicketId = await generateTicketId();
 
     const ticket = await db.ticket.create({
@@ -50,11 +78,26 @@ export const createTicket: RequestHandler = async (req, res) => {
         ticketId: newTicketId,
         customerId,
         userId: userId || undefined,
+        teamGroupId: teamGroupId || undefined,
+        assignedTeamMemberId: assignedTeamMemberId || undefined,
         subject,
         description,
         category: category || "general",
         priority: priority || "medium",
         status: status || "open",
+      },
+      include: {
+        customer: true,
+        user: true,
+        teamGroup: {
+          include: { members: true },
+        },
+        assignedTeamMember: {
+          include: {
+            department: true,
+            teamGroup: true,
+          },
+        },
       },
     });
 
