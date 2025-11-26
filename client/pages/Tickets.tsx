@@ -1216,6 +1216,78 @@ export default function TicketsPage() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Create Customer Dialog */}
+        <Dialog open={createCustomerDialogOpen} onOpenChange={setCreateCustomerDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Customer</DialogTitle>
+              <DialogDescription>
+                Add a new customer to the system
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Customer Name *
+                </label>
+                <Input
+                  value={newCustomerData.name}
+                  onChange={(e) =>
+                    setNewCustomerData({ ...newCustomerData, name: e.target.value })
+                  }
+                  placeholder="e.g., John Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Phone Number *
+                </label>
+                <Input
+                  value={newCustomerData.phone}
+                  onChange={(e) =>
+                    setNewCustomerData({ ...newCustomerData, phone: e.target.value })
+                  }
+                  placeholder="e.g., +254712345678"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Email Address
+                </label>
+                <Input
+                  type="email"
+                  value={newCustomerData.email}
+                  onChange={(e) =>
+                    setNewCustomerData({ ...newCustomerData, email: e.target.value })
+                  }
+                  placeholder="e.g., john@example.com"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCreateCustomerDialogOpen(false);
+                  setNewCustomerData({ name: "", phone: "", email: "" });
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateCustomer}
+                disabled={creatingCustomer}
+              >
+                {creatingCustomer ? "Creating..." : "Create Customer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
