@@ -414,7 +414,16 @@ const handler: Handler = async (event) => {
 
     // CUSTOMERS - Create
     if (path === "/customers" && method === "POST") {
-      const { name, email, phone, accountType } = body;
+      const {
+        name,
+        email,
+        phone,
+        accountType,
+        location,
+        apartment,
+        roomNumber,
+        streetAddress,
+      } = body;
 
       if (!name || !phone) {
         return jsonResponse(400, {
@@ -425,10 +434,19 @@ const handler: Handler = async (event) => {
 
       try {
         const result = await sql(
-          `INSERT INTO "Customer" (id, name, email, phone, "accountType", status, "registeredAt", "updatedAt") 
-           VALUES (gen_random_uuid(), $1, $2, $3, $4, 'active', NOW(), NOW()) 
+          `INSERT INTO "Customer" (id, name, email, phone, "accountType", location, apartment, "roomNumber", "streetAddress", status, "registeredAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, 'active', NOW(), NOW())
            RETURNING *`,
-          [name, email || "", phone, accountType || "residential"],
+          [
+            name,
+            email || "",
+            phone,
+            accountType || "residential",
+            location || "",
+            apartment || "",
+            roomNumber || "",
+            streetAddress || "",
+          ],
         );
 
         return jsonResponse(201, {
