@@ -101,13 +101,16 @@ export interface PerformanceMetric {
 }
 
 // Task Management APIs
-export async function createTask(ticketId: string, data: {
-  title: string;
-  description?: string;
-  assignedTo?: string;
-  priority?: string;
-  estimatedHours?: number;
-}): Promise<TicketTask> {
+export async function createTask(
+  ticketId: string,
+  data: {
+    title: string;
+    description?: string;
+    assignedTo?: string;
+    priority?: string;
+    estimatedHours?: number;
+  },
+): Promise<TicketTask> {
   const response = await fetch(`/api/tickets/${ticketId}/tasks`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -133,7 +136,10 @@ export async function getTasks(ticketId: string): Promise<TicketTask[]> {
   return result.tasks || result;
 }
 
-export async function updateTask(taskId: string, data: Partial<TicketTask>): Promise<TicketTask> {
+export async function updateTask(
+  taskId: string,
+  data: Partial<TicketTask>,
+): Promise<TicketTask> {
   const response = await fetch(`/api/tickets/tasks/${taskId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -180,7 +186,9 @@ export async function logTime(data: {
   return result.timeLog || result;
 }
 
-export async function getTimeLogs(ticketId: string): Promise<{ timeLogs: TimeLog[]; totalHours: number }> {
+export async function getTimeLogs(
+  ticketId: string,
+): Promise<{ timeLogs: TimeLog[]; totalHours: number }> {
   const response = await fetch(`/api/tickets/${ticketId}/time-logs`);
 
   if (!response.ok) {
@@ -191,11 +199,14 @@ export async function getTimeLogs(ticketId: string): Promise<{ timeLogs: TimeLog
 }
 
 // Comment APIs
-export async function addComment(ticketId: string, data: {
-  userId: string;
-  content: string;
-  isInternal?: boolean;
-}): Promise<TicketComment> {
+export async function addComment(
+  ticketId: string,
+  data: {
+    userId: string;
+    content: string;
+    isInternal?: boolean;
+  },
+): Promise<TicketComment> {
   const response = await fetch(`/api/tickets/${ticketId}/comments`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -210,7 +221,10 @@ export async function addComment(ticketId: string, data: {
   return result.comment || result;
 }
 
-export async function getComments(ticketId: string, internalOnly = false): Promise<TicketComment[]> {
+export async function getComments(
+  ticketId: string,
+  internalOnly = false,
+): Promise<TicketComment[]> {
   const url = `/api/tickets/${ticketId}/comments${internalOnly ? "?internalOnly=true" : ""}`;
   const response = await fetch(url);
 
@@ -246,7 +260,10 @@ export async function getSLAPolicies(): Promise<SLAPolicy[]> {
   return result.policies || result;
 }
 
-export async function getEmployeePerformance(userId: string, period?: string): Promise<PerformanceMetric[]> {
+export async function getEmployeePerformance(
+  userId: string,
+  period?: string,
+): Promise<PerformanceMetric[]> {
   const url = `/api/performance/employee/${userId}${period ? `?period=${period}` : ""}`;
   const response = await fetch(url);
 
@@ -258,15 +275,15 @@ export async function getEmployeePerformance(userId: string, period?: string): P
   return result.metrics || result;
 }
 
-export async function getTeamPerformance(period?: string): Promise<{ 
-  metrics: PerformanceMetric[]; 
+export async function getTeamPerformance(period?: string): Promise<{
+  metrics: PerformanceMetric[];
   teamTotals: {
     totalTicketsHandled: number;
     totalTicketsResolved: number;
     avgResolutionTime: number;
     avgSLACompliance: number;
     totalHoursLogged: number;
-  }
+  };
 }> {
   const url = `/api/performance/team${period ? `?period=${period}` : ""}`;
   const response = await fetch(url);
@@ -279,7 +296,11 @@ export async function getTeamPerformance(period?: string): Promise<{
 }
 
 // Utility function to calculate SLA compliance
-export function calculateSLACompliance(createdAt: Date, resolvedAt: Date | null, slaHours: number): boolean {
+export function calculateSLACompliance(
+  createdAt: Date,
+  resolvedAt: Date | null,
+  slaHours: number,
+): boolean {
   if (!resolvedAt) return true; // Not yet resolved
   const hours = (resolvedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
   return hours <= slaHours;

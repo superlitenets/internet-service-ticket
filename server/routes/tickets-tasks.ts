@@ -6,7 +6,14 @@ import { db } from "../lib/db";
  */
 export const createTask: RequestHandler = async (req, res) => {
   try {
-    const { ticketId, title, description, assignedTo, priority, estimatedHours } = req.body;
+    const {
+      ticketId,
+      title,
+      description,
+      assignedTo,
+      priority,
+      estimatedHours,
+    } = req.body;
 
     if (!ticketId || !title) {
       return res.status(400).json({
@@ -99,7 +106,8 @@ export const getTasks: RequestHandler = async (req, res) => {
 export const updateTask: RequestHandler = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { title, description, assignedTo, status, priority, estimatedHours } = req.body;
+    const { title, description, assignedTo, status, priority, estimatedHours } =
+      req.body;
 
     const task = await db.ticketTask.findUnique({ where: { id: taskId } });
     if (!task) {
@@ -120,7 +128,8 @@ export const updateTask: RequestHandler = async (req, res) => {
       }
     }
     if (priority !== undefined) updateData.priority = priority;
-    if (estimatedHours !== undefined) updateData.estimatedHours = estimatedHours;
+    if (estimatedHours !== undefined)
+      updateData.estimatedHours = estimatedHours;
 
     const updatedTask = await db.ticketTask.update({
       where: { id: taskId },
@@ -438,7 +447,11 @@ export const getPerformanceMetrics: RequestHandler = async (req, res) => {
     const where: any = { userId };
     if (period) {
       const startDate = new Date(`${period}-01`);
-      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        1,
+      );
       where.period = {
         gte: startDate,
         lt: endDate,
@@ -475,7 +488,11 @@ export const getTeamPerformanceReport: RequestHandler = async (req, res) => {
     const where: any = {};
     if (period) {
       const startDate = new Date(`${period}-01`);
-      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        1,
+      );
       where.period = {
         gte: startDate,
         lt: endDate,
@@ -498,10 +515,20 @@ export const getTeamPerformanceReport: RequestHandler = async (req, res) => {
 
     // Calculate team totals
     const teamTotals = {
-      totalTicketsHandled: metrics.reduce((sum, m) => sum + m.ticketsHandled, 0),
-      totalTicketsResolved: metrics.reduce((sum, m) => sum + m.ticketsResolved, 0),
-      avgResolutionTime: metrics.reduce((sum, m) => sum + m.avgResolutionHours, 0) / metrics.length || 0,
-      avgSLACompliance: metrics.reduce((sum, m) => sum + m.slaCompliancePercent, 0) / metrics.length || 0,
+      totalTicketsHandled: metrics.reduce(
+        (sum, m) => sum + m.ticketsHandled,
+        0,
+      ),
+      totalTicketsResolved: metrics.reduce(
+        (sum, m) => sum + m.ticketsResolved,
+        0,
+      ),
+      avgResolutionTime:
+        metrics.reduce((sum, m) => sum + m.avgResolutionHours, 0) /
+          metrics.length || 0,
+      avgSLACompliance:
+        metrics.reduce((sum, m) => sum + m.slaCompliancePercent, 0) /
+          metrics.length || 0,
       totalHoursLogged: metrics.reduce((sum, m) => sum + m.totalHoursLogged, 0),
     };
 

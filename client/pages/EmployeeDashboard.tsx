@@ -2,10 +2,21 @@ import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, Clock, AlertTriangle, TrendingUp, Users } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getTasks, getTimeLogs, getActivityLog } from "@/lib/ticket-workflow-client";
+import {
+  getTasks,
+  getTimeLogs,
+  getActivityLog,
+} from "@/lib/ticket-workflow-client";
 import { getTickets } from "@/lib/tickets-client";
 import type { TicketTask } from "@/lib/ticket-workflow-client";
 import type { Ticket } from "@/lib/tickets-client";
@@ -38,7 +49,9 @@ export default function EmployeeDashboard() {
 
       // Load tickets assigned to current user
       const ticketsData = await getTickets();
-      const userTickets = ticketsData.filter((t: Ticket) => t.userId || t.assignedTeamMemberId);
+      const userTickets = ticketsData.filter(
+        (t: Ticket) => t.userId || t.assignedTeamMemberId,
+      );
       setMyTickets(userTickets);
 
       // Load all tasks for user's tickets and aggregate
@@ -68,10 +81,13 @@ export default function EmployeeDashboard() {
       setStats({
         totalTasks: allTasks.length,
         completedTasks: allTasks.filter((t) => t.status === "completed").length,
-        inProgressTasks: allTasks.filter((t) => t.status === "in-progress").length,
+        inProgressTasks: allTasks.filter((t) => t.status === "in-progress")
+          .length,
         blockedTasks: allTasks.filter((t) => t.status === "blocked").length,
         totalHoursLogged: totalHours,
-        activeTickets: userTickets.filter((t) => t.status !== "resolved" && t.status !== "closed").length,
+        activeTickets: userTickets.filter(
+          (t) => t.status !== "resolved" && t.status !== "closed",
+        ).length,
       });
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
@@ -138,7 +154,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Tasks</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalTasks}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats.totalTasks}
+                </p>
               </div>
               <AlertCircle className="w-6 h-6 text-muted-foreground" />
             </div>
@@ -148,7 +166,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{stats.completedTasks}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.completedTasks}
+                </p>
               </div>
               <CheckCircle2 className="w-6 h-6 text-green-600" />
             </div>
@@ -158,7 +178,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.inProgressTasks}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {stats.inProgressTasks}
+                </p>
               </div>
               <Clock className="w-6 h-6 text-blue-600" />
             </div>
@@ -168,7 +190,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Blocked</p>
-                <p className="text-2xl font-bold text-red-600">{stats.blockedTasks}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {stats.blockedTasks}
+                </p>
               </div>
               <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
@@ -178,7 +202,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Hours Logged</p>
-                <p className="text-2xl font-bold text-foreground">{stats.totalHoursLogged.toFixed(1)}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats.totalHoursLogged.toFixed(1)}
+                </p>
               </div>
               <TrendingUp className="w-6 h-6 text-muted-foreground" />
             </div>
@@ -188,7 +214,9 @@ export default function EmployeeDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Active Tickets</p>
-                <p className="text-2xl font-bold text-foreground">{stats.activeTickets}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats.activeTickets}
+                </p>
               </div>
               <Users className="w-6 h-6 text-muted-foreground" />
             </div>
@@ -225,10 +253,16 @@ export default function EmployeeDashboard() {
                         </p>
                       </div>
                       <div className="flex gap-1 flex-shrink-0">
-                        <Badge variant="outline" className={getPriorityColor(task.priority)}>
+                        <Badge
+                          variant="outline"
+                          className={getPriorityColor(task.priority)}
+                        >
                           {task.priority}
                         </Badge>
-                        <Badge variant="outline" className={getStatusColor(task.status)}>
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(task.status)}
+                        >
                           {task.status}
                         </Badge>
                       </div>
@@ -272,7 +306,10 @@ export default function EmployeeDashboard() {
                         </p>
                       </div>
                       <div className="flex gap-1 flex-shrink-0">
-                        <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
+                        <Badge
+                          variant="outline"
+                          className={getPriorityColor(ticket.priority)}
+                        >
                           {ticket.priority}
                         </Badge>
                       </div>
@@ -281,7 +318,8 @@ export default function EmployeeDashboard() {
                       <Badge
                         variant="outline"
                         className={
-                          ticket.status === "resolved" || ticket.status === "closed"
+                          ticket.status === "resolved" ||
+                          ticket.status === "closed"
                             ? "bg-green-100 text-green-800"
                             : "bg-blue-100 text-blue-800"
                         }
@@ -306,8 +344,9 @@ export default function EmployeeDashboard() {
             <div className="text-sm text-blue-900">
               <p className="font-medium">Track Your Progress</p>
               <p className="mt-1">
-                View your assigned tasks and tickets here. Update task status, log hours, and add comments 
-                directly from the ticket details page to keep everyone informed.
+                View your assigned tasks and tickets here. Update task status,
+                log hours, and add comments directly from the ticket details
+                page to keep everyone informed.
               </p>
             </div>
           </div>

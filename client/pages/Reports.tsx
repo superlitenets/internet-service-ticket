@@ -1,11 +1,28 @@
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, LineChart, PieChart, TrendingUp, Users, Target } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  TrendingUp,
+  Users,
+  Target,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getTeamPerformance, getEmployeePerformance, type PerformanceMetric } from "@/lib/ticket-workflow-client";
+import {
+  getTeamPerformance,
+  getEmployeePerformance,
+  type PerformanceMetric,
+} from "@/lib/ticket-workflow-client";
 
 interface TeamMetrics {
   metrics: PerformanceMetric[];
@@ -66,7 +83,9 @@ export default function Reports() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Reports & Analytics</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Reports & Analytics
+          </h1>
           <p className="text-muted-foreground mt-2">
             Team performance metrics, SLA compliance, and productivity insights
           </p>
@@ -85,7 +104,9 @@ export default function Reports() {
               <SelectContent>
                 <SelectItem value="">All Time</SelectItem>
                 <SelectItem value={getCurrentMonth()}>Current Month</SelectItem>
-                <SelectItem value={`${new Date().getFullYear()}-${String(new Date().getMonth()).padStart(2, "0")}`}>
+                <SelectItem
+                  value={`${new Date().getFullYear()}-${String(new Date().getMonth()).padStart(2, "0")}`}
+                >
                   Previous Month
                 </SelectItem>
               </SelectContent>
@@ -95,7 +116,10 @@ export default function Reports() {
             <label className="block text-sm font-medium text-foreground mb-2">
               View
             </label>
-            <Select value={viewMode} onValueChange={(v) => setViewMode(v as "team" | "individual")}>
+            <Select
+              value={viewMode}
+              onValueChange={(v) => setViewMode(v as "team" | "individual")}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -114,7 +138,9 @@ export default function Reports() {
               <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tickets Handled</p>
+                    <p className="text-sm text-muted-foreground">
+                      Tickets Handled
+                    </p>
                     <p className="text-2xl font-bold text-foreground">
                       {teamMetrics.teamTotals.totalTicketsHandled}
                     </p>
@@ -138,7 +164,9 @@ export default function Reports() {
               <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Avg Resolution</p>
+                    <p className="text-sm text-muted-foreground">
+                      Avg Resolution
+                    </p>
                     <p className="text-2xl font-bold text-foreground">
                       {teamMetrics.teamTotals.avgResolutionTime.toFixed(1)}h
                     </p>
@@ -150,7 +178,9 @@ export default function Reports() {
               <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">SLA Compliance</p>
+                    <p className="text-sm text-muted-foreground">
+                      SLA Compliance
+                    </p>
                     <p className="text-2xl font-bold text-blue-600">
                       {teamMetrics.teamTotals.avgSLACompliance.toFixed(1)}%
                     </p>
@@ -183,19 +213,38 @@ export default function Reports() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left p-3 font-medium text-foreground">Employee</th>
-                        <th className="text-center p-3 font-medium text-foreground">Tickets</th>
-                        <th className="text-center p-3 font-medium text-foreground">Resolved</th>
-                        <th className="text-center p-3 font-medium text-foreground">Overdue</th>
-                        <th className="text-center p-3 font-medium text-foreground">Avg Time</th>
-                        <th className="text-center p-3 font-medium text-foreground">SLA %</th>
-                        <th className="text-center p-3 font-medium text-foreground">Hours</th>
-                        <th className="text-center p-3 font-medium text-foreground">Task %</th>
+                        <th className="text-left p-3 font-medium text-foreground">
+                          Employee
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Tickets
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Resolved
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Overdue
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Avg Time
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          SLA %
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Hours
+                        </th>
+                        <th className="text-center p-3 font-medium text-foreground">
+                          Task %
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {teamMetrics.metrics.map((metric) => (
-                        <tr key={metric.id} className="border-b border-border hover:bg-accent">
+                        <tr
+                          key={metric.id}
+                          className="border-b border-border hover:bg-accent"
+                        >
                           <td className="p-3 font-medium text-foreground">
                             {metric.employeeName || "Unknown"}
                           </td>
@@ -269,7 +318,8 @@ export default function Reports() {
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {metric.ticketsResolved} of {metric.ticketsHandled} tickets resolved
+                          {metric.ticketsResolved} of {metric.ticketsHandled}{" "}
+                          tickets resolved
                         </p>
                       </div>
                     ))}
@@ -277,7 +327,9 @@ export default function Reports() {
                 </Card>
 
                 <Card className="p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Key Insights</h2>
+                  <h2 className="text-xl font-bold text-foreground mb-4">
+                    Key Insights
+                  </h2>
 
                   <div className="space-y-4 text-sm">
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -285,7 +337,8 @@ export default function Reports() {
                         Average Resolution Time
                       </p>
                       <p className="text-blue-800">
-                        {teamMetrics.teamTotals.avgResolutionTime.toFixed(1)} hours per ticket
+                        {teamMetrics.teamTotals.avgResolutionTime.toFixed(1)}{" "}
+                        hours per ticket
                       </p>
                     </div>
 
@@ -294,7 +347,8 @@ export default function Reports() {
                         SLA Compliance Rate
                       </p>
                       <p className="text-green-800">
-                        {teamMetrics.teamTotals.avgSLACompliance.toFixed(1)}% of tickets resolved on time
+                        {teamMetrics.teamTotals.avgSLACompliance.toFixed(1)}% of
+                        tickets resolved on time
                       </p>
                     </div>
 
@@ -303,7 +357,8 @@ export default function Reports() {
                         Total Team Hours
                       </p>
                       <p className="text-purple-800">
-                        {teamMetrics.teamTotals.totalHoursLogged.toFixed(1)} hours logged
+                        {teamMetrics.teamTotals.totalHoursLogged.toFixed(1)}{" "}
+                        hours logged
                       </p>
                     </div>
                   </div>

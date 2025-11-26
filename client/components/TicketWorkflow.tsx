@@ -44,7 +44,10 @@ export default function TicketWorkflow({
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("tasks");
   const [tasks, setTasks] = useState<TicketTask[]>([]);
-  const [timeLogs, setTimeLogs] = useState<{ timeLogs: TimeLog[]; totalHours: number }>({
+  const [timeLogs, setTimeLogs] = useState<{
+    timeLogs: TimeLog[];
+    totalHours: number;
+  }>({
     timeLogs: [],
     totalHours: 0,
   });
@@ -65,12 +68,13 @@ export default function TicketWorkflow({
   const loadWorkflowData = async () => {
     try {
       setLoading(true);
-      const [tasksData, timeLogsData, commentsData, activitiesData] = await Promise.all([
-        getTasks(ticketId),
-        getTimeLogs(ticketId),
-        getComments(ticketId),
-        getActivityLog(ticketId),
-      ]);
+      const [tasksData, timeLogsData, commentsData, activitiesData] =
+        await Promise.all([
+          getTasks(ticketId),
+          getTimeLogs(ticketId),
+          getComments(ticketId),
+          getActivityLog(ticketId),
+        ]);
 
       setTasks(tasksData);
       setTimeLogs(timeLogsData);
@@ -232,7 +236,9 @@ export default function TicketWorkflow({
   };
 
   if (loading) {
-    return <div className="text-center text-muted-foreground py-4">Loading...</div>;
+    return (
+      <div className="text-center text-muted-foreground py-4">Loading...</div>
+    );
   }
 
   return (
@@ -345,7 +351,8 @@ export default function TicketWorkflow({
 
         <Card className="p-4 bg-blue-50 border-blue-200">
           <p className="text-sm font-medium text-blue-900">
-            Total Hours Logged: <span className="text-lg">{timeLogs.totalHours.toFixed(1)}h</span>
+            Total Hours Logged:{" "}
+            <span className="text-lg">{timeLogs.totalHours.toFixed(1)}h</span>
           </p>
         </Card>
 
