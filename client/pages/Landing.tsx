@@ -14,12 +14,23 @@ import {
   Phone,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getMikrotikPlans } from "@/lib/mikrotik-client";
-import { MikrotikPlan } from "@shared/api";
 import {
   getLandingContent,
   LandingContent,
 } from "@/lib/landing-content-storage";
+
+interface MikrotikPlan {
+  id: string;
+  planName: string;
+  planType: string;
+  monthlyFee: number;
+  setupFee?: number;
+  activationFee?: number;
+  description?: string;
+  speed?: { uploadMbps: number; downloadMbps: number };
+  dataQuota?: number;
+  features?: string[];
+}
 
 export default function Landing() {
   const navigate = useNavigate();
