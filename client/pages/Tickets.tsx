@@ -427,8 +427,10 @@ export default function TicketsPage() {
       const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
       if (!ticketToUpdate) return;
 
-      // For now, just update locally (real implementation would update userId)
-      await apiUpdateTicket(ticketId, {});
+      // Store assignee name as resolution note since we don't have user lookup
+      await apiUpdateTicket(ticketId, {
+        resolution: `Assigned to: ${assignee}`,
+      });
 
       const updatedTicket: Ticket = {
         ...ticketToUpdate,
