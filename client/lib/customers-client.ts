@@ -4,6 +4,10 @@ export interface Customer {
   email: string;
   phone: string;
   accountType?: string;
+  location?: string;
+  apartment?: string;
+  roomNumber?: string;
+  streetAddress?: string;
   status: "active" | "suspended" | "inactive";
   registeredAt: string;
   updatedAt: string;
