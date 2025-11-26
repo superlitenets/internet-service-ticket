@@ -360,15 +360,23 @@ export default function TicketsPage() {
         name: newCustomerData.name,
         phone: newCustomerData.phone,
         email: newCustomerData.email || "",
+        location: newCustomerData.location || "",
+        apartment: newCustomerData.apartment || "",
+        roomNumber: newCustomerData.roomNumber || "",
+        streetAddress: newCustomerData.streetAddress || "",
       });
 
       // Add the new customer to the list
       setCustomers((prev) => [...prev, createdCustomer]);
 
-      // Auto-select the newly created customer
+      // Auto-select the newly created customer and populate location fields
       setFormData((prev) => ({
         ...prev,
         customerId: createdCustomer.id,
+        location: createdCustomer.location || "",
+        apartment: createdCustomer.apartment || "",
+        roomNumber: createdCustomer.roomNumber || "",
+        streetAddress: createdCustomer.streetAddress || "",
       }));
 
       // Reset the create customer form
@@ -376,6 +384,10 @@ export default function TicketsPage() {
         name: "",
         phone: "",
         email: "",
+        location: "",
+        apartment: "",
+        roomNumber: "",
+        streetAddress: "",
       });
 
       setCreateCustomerDialogOpen(false);
