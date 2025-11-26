@@ -513,8 +513,7 @@ const handler: Handler = async (event) => {
 
     return jsonResponse(404, {
       error: "Not found",
-      path,
-      method,
+      debug: { path, method },
     });
   } catch (error) {
     console.error("Error:", error);
