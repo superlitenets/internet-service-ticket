@@ -3,6 +3,8 @@ export interface Ticket {
   ticketId: string;
   customerId: string;
   userId?: string;
+  teamGroupId?: string;
+  assignedTeamMemberId?: string;
   subject: string;
   description: string;
   category?: string;
@@ -27,6 +29,29 @@ export interface Ticket {
     id: string;
     name: string;
     email: string;
+  };
+  teamGroup?: {
+    id: string;
+    name: string;
+    description?: string;
+    members?: Array<{
+      id: string;
+      employeeId: string;
+      role?: string;
+    }>;
+  };
+  assignedTeamMember?: {
+    id: string;
+    employeeId: string;
+    role?: string;
+    department?: {
+      id: string;
+      name: string;
+    };
+    teamGroup?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
