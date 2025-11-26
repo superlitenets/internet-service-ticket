@@ -21,6 +21,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import TicketWorkflow from "@/components/TicketWorkflow";
+import TimeTracking from "@/components/TimeTracking";
 
 interface TicketReply {
   id: string;
