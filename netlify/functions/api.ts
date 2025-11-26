@@ -898,6 +898,31 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // TICKETS - Get stats (must come before /tickets/[id] to avoid pattern match)
+    if (path === "/tickets/stats" && method === "GET") {
+      try {
+        const stats = await sql(
+          `SELECT
+             COUNT(*) as total,
+             COUNT(CASE WHEN status = 'open' THEN 1 END) as open,
+             COUNT(CASE WHEN status = 'in-progress' THEN 1 END) as "inProgress",
+             COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+             COUNT(CASE WHEN status = 'resolved' THEN 1 END) as resolved
+           FROM "Ticket"`,
+        );
+        return jsonResponse(200, {
+          success: true,
+          stats: stats[0],
+        });
+      } catch (error) {
+        console.error("Get ticket stats error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch ticket stats",
+        });
+      }
+    }
+
     // TICKETS - Get by ID
     if (path.match(/^\/tickets\/[^/]+$/) && method === "GET") {
       const ticketId = path.split("/").pop();
