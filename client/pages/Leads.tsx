@@ -312,10 +312,7 @@ export default function Leads() {
           agreedInstallAmount: parseFloat(formData.agreedInstallAmount),
           notes: formData.notes || undefined,
         });
-        toast({
-          title: "Success",
-          description: "Lead updated successfully",
-        });
+        toast(getSaveNotification({ itemName: `Lead "${formData.name}"`, action: "updated" }));
       } else {
         const newLead = await createLead({
           customerName: formData.customerName,
