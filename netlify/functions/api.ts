@@ -125,6 +125,57 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // AUTH - Register
+    if (path === "/auth/register" && method === "POST") {
+      const { name, email, phone, password, role } = body;
+
+      if (!name || !phone || !password) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Name, phone, and password are required",
+        });
+      }
+
+      try {
+        const existingUser = await sql(
+          `SELECT * FROM "User" WHERE email = $1 OR phone = $2`,
+          [email || null, phone],
+        );
+
+        if (existingUser.length > 0) {
+          return jsonResponse(409, {
+            success: false,
+            message: "User already exists",
+          });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = Math.random().toString(36).substring(2, 15);
+
+        const result = await sql(
+          `INSERT INTO "User" (id, name, email, phone, password, role, status, "createdAt", "updatedAt")
+           VALUES ($1, $2, $3, $4, $5, $6, 'active', NOW(), NOW())
+           RETURNING id, name, email, phone, role, status, "createdAt", "updatedAt"`,
+          [userId, name, email || null, phone, hashedPassword, role || "user"],
+        );
+
+        const token = generateToken(result[0].id);
+        return jsonResponse(201, {
+          success: true,
+          message: "User registered successfully",
+          user: result[0],
+          token,
+        });
+      } catch (error) {
+        console.error("Register error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Registration failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
     // AUTH - Get current user
     if (path === "/auth/me" && method === "GET") {
       const token = extractToken(event.headers.authorization);
@@ -165,6 +216,168 @@ const handler: Handler = async (event) => {
         return jsonResponse(500, {
           success: false,
           message: "Failed to get user",
+        });
+      }
+    }
+
+    // AUTH - Get all users
+    if (path === "/auth/users" && method === "GET") {
+      try {
+        const users = await sql(
+          `SELECT id, name, email, phone, role, status, "createdAt", "updatedAt" FROM "User" ORDER BY "createdAt" DESC`,
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          users,
+        });
+      } catch (error) {
+        console.error("Get all users error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch users",
+        });
+      }
+    }
+
+    // AUTH - Create user
+    if (path === "/auth/users" && method === "POST") {
+      const { name, email, phone, password, role, active } = body;
+
+      if (!name || !phone || !password) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Name, phone, and password are required",
+        });
+      }
+
+      try {
+        const existingUser = await sql(
+          `SELECT * FROM "User" WHERE email = $1 OR phone = $2`,
+          [email || null, phone],
+        );
+
+        if (existingUser.length > 0) {
+          return jsonResponse(409, {
+            success: false,
+            message: "User already exists",
+          });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const userId = Math.random().toString(36).substring(2, 15);
+        const status = active !== undefined ? (active ? "active" : "inactive") : "active";
+
+        const result = await sql(
+          `INSERT INTO "User" (id, name, email, phone, password, role, status, "createdAt", "updatedAt")
+           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+           RETURNING id, name, email, phone, role, status, "createdAt", "updatedAt"`,
+          [userId, name, email || null, phone, hashedPassword, role || "user", status],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          user: result[0],
+        });
+      } catch (error) {
+        console.error("Create user error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create user",
+        });
+      }
+    }
+
+    // AUTH - Update user
+    if (path.match(/^\/auth\/users\/[^/]+$/) && method === "PUT") {
+      const userId = path.split("/").pop();
+      const { name, email, phone, password, role, active } = body;
+
+      try {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        if (name !== undefined) {
+          updates.push(`name = $${paramCount++}`);
+          values.push(name);
+        }
+        if (email !== undefined) {
+          updates.push(`email = $${paramCount++}`);
+          values.push(email);
+        }
+        if (phone !== undefined) {
+          updates.push(`phone = $${paramCount++}`);
+          values.push(phone);
+        }
+        if (password !== undefined) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          updates.push(`password = $${paramCount++}`);
+          values.push(hashedPassword);
+        }
+        if (role !== undefined) {
+          updates.push(`role = $${paramCount++}`);
+          values.push(role);
+        }
+        if (active !== undefined) {
+          updates.push(`status = $${paramCount++}`);
+          values.push(active ? "active" : "inactive");
+        }
+
+        updates.push(`"updatedAt" = NOW()`);
+        values.push(userId);
+
+        const result = await sql(
+          `UPDATE "User" SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING id, name, email, phone, role, status, "createdAt", "updatedAt"`,
+          values,
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          user: result[0],
+        });
+      } catch (error) {
+        console.error("Update user error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to update user",
+        });
+      }
+    }
+
+    // AUTH - Delete user
+    if (path.match(/^\/auth\/users\/[^/]+$/) && method === "DELETE") {
+      const userId = path.split("/").pop();
+
+      try {
+        const result = await sql(
+          `DELETE FROM "User" WHERE id = $1 RETURNING *`,
+          [userId],
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "User deleted successfully",
+        });
+      } catch (error) {
+        console.error("Delete user error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to delete user",
         });
       }
     }
