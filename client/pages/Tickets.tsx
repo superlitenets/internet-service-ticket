@@ -112,31 +112,21 @@ export default function TicketsPage() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
   const [formData, setFormData] = useState({
-    customer: "",
-    customerEmail: "",
-    customerPhone: "",
-    customerLocation: "",
-    apartment: "",
-    roomNumber: "",
+    customerId: "",
     title: "",
     description: "",
     status: "open" as const,
     priority: "medium" as const,
-    assignedTo: "Unassigned" as string,
+    assignedTo: "" as string,
   });
 
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
-  const teamMembers: TeamMember[] = [
-    { name: "Mike Johnson", phone: "+1555111111" },
-    { name: "Sarah Smith", phone: "+1555222222" },
-    { name: "Alex Chen", phone: "+1555333333" },
-    { name: "David Brown", phone: "+1555444444" },
-  ];
-
-  const getTechnicianPhone = (technicianName: string): string | undefined => {
-    return teamMembers.find((t) => t.name === technicianName)?.phone;
+  const getTechnicianPhone = (technicianId: string): string | undefined => {
+    return employees.find((e) => e.id === technicianId)?.email;
   };
 
   const sendTicketSms = async (
