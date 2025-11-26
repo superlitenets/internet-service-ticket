@@ -531,15 +531,20 @@ Initiate M-Pesa STK push payment.
 }
 ```
 
-### POST /integrations/sms/send
+### POST /api/sms/send
 
-Send SMS to customer.
+Send SMS via configured provider (Advanta SMS).
 
 **Request:**
 ```json
 {
-  "phone": "+254712345678",
-  "message": "Your invoice is due on 2024-02-15"
+  "to": "+254712345678",
+  "message": "Your invoice is due on 2024-02-15",
+  "provider": "advanta",
+  "apiKey": "your-api-key",
+  "partnerId": "your-partner-id",
+  "shortcode": "your-sender-id",
+  "customApiUrl": "https://api.advantasms.com/send"
 }
 ```
 
@@ -547,11 +552,39 @@ Send SMS to customer.
 ```json
 {
   "success": true,
-  "data": {
-    "status": "sent",
-    "message_id": "SMS-12345"
-  }
+  "message": "SMS sent successfully to 1 recipient(s)",
+  "messageIds": ["msg_1234567890_abc123"],
+  "recipients": 1
 }
+```
+
+**Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Missing Advanta SMS credentials: apiKey, partnerId, shortcode"
+}
+```
+
+**Advanta SMS Configuration:**
+- **Provider**: advanta
+- **Required Fields**: apiKey, partnerId, shortcode, customApiUrl
+- **Phone Format**: Automatically converts to E.164 format (e.g., 254712345678)
+- **Message Length**: 1-1600 characters
+
+**Example Test Request:**
+```bash
+curl -X POST https://yourdomain.com/api/sms/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": "0712345678",
+    "message": "Test SMS from CRM",
+    "provider": "advanta",
+    "apiKey": "your-api-key",
+    "partnerId": "your-partner-id",
+    "shortcode": "MYSHORTCODE",
+    "customApiUrl": "https://api.advantasms.com/send"
+  }'
 ```
 
 ### GET /integrations/mikrotik/interfaces
