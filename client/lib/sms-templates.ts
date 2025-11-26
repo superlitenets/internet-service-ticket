@@ -5,8 +5,8 @@
 
 export interface SmsTemplate {
   id: string;
-  eventType: "ticket_created" | "ticket_assigned" | "ticket_status_change";
-  recipientType: "customer" | "technician";
+  eventType: "ticket_created" | "ticket_assigned" | "ticket_status_change" | "lead_created" | "lead_converted";
+  recipientType: "customer" | "technician" | "sales";
   name: string;
   message: string;
   variables: string[];
