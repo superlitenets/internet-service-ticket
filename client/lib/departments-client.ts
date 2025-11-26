@@ -64,7 +64,7 @@ export async function getEmployeeTeamMemberships(
   }
 
   const result = await response.json();
-  return result.teamMemberships || result;
+  return result.teamMemberships || [];
 }
 
 /**
