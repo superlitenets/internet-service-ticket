@@ -229,6 +229,12 @@ export function createServer() {
   app.delete("/api/tickets/:id", deleteTicket);
   app.post("/api/tickets/:id/assign", assignTicket);
 
+  // Ticket Replies endpoints
+  app.post("/api/ticket-replies", createTicketReply);
+  app.get("/api/tickets/:ticketId/replies", getTicketReplies);
+  app.get("/api/ticket-replies/:id", getTicketReplyById);
+  app.delete("/api/ticket-replies/:id", deleteTicketReply);
+
   // Customers endpoints
   app.post("/api/customers", createCustomer);
   app.get("/api/customers", getCustomers);
