@@ -118,6 +118,7 @@ export default function TicketsPage() {
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [sendingSms, setSendingSms] = useState(false);
+  const [savingTicket, setSavingTicket] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [createCustomerDialogOpen, setCreateCustomerDialogOpen] =
