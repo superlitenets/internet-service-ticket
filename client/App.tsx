@@ -180,6 +180,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/departments"
+      element={
+        <ProtectedRoute requiredRole={["admin"]}>
+          <Departments />
+        </ProtectedRoute>
+      }
+    />
     {/* Catch-all route */}
     <Route path="*" element={<NotFound />} />
   </Routes>
