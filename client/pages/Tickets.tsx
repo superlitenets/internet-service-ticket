@@ -355,9 +355,12 @@ export default function TicketsPage() {
           description: "Ticket updated successfully",
         });
       } else {
-        // Create new ticket
+        // Create new ticket with customer info
         const newApiTicket = await apiCreateTicket({
-          customerId: "temp-customer", // Will need to be updated with real customer selection
+          customerId: "",
+          customerName: formData.customer || "Unknown Customer",
+          customerEmail: formData.customerEmail || "",
+          customerPhone: formData.customerPhone || "",
           subject: formData.title,
           description: formData.description,
           status: "open",
