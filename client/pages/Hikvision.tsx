@@ -106,7 +106,17 @@ export default function HikvisionPage() {
   const handleFetchAttendanceEvents = async () => {
     setLoadingEvents(true);
     try {
-      const result = await getAccessControlEvents("hik-access-control");
+      if (devices.length === 0) {
+        toast({
+          title: "Info",
+          description: "No Hikvision devices configured. Please add a device first.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const deviceId = devices[0].id;
+      const result = await getAccessControlEvents(deviceId);
       setAttendanceEvents(result.events);
 
       toast({
@@ -119,7 +129,7 @@ export default function HikvisionPage() {
         description:
           error instanceof Error
             ? error.message
-            : "Failed to fetch attendance events",
+            : "Failed to fetch attendance records",
         variant: "destructive",
       });
     } finally {
