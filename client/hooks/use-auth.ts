@@ -103,7 +103,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ identifier, password }),
       });
 
-      const data = await response.json();
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        // If response is not JSON (e.g., HTML error page), provide helpful error
+        throw new Error(
+          `Backend server error (HTTP ${response.status}). Please ensure the backend server is running on port 9000.`,
+        );
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || data.message || "Login failed");
