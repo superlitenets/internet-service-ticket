@@ -25,6 +25,7 @@ import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
 import LandingContentEditor from "./pages/LandingContentEditor";
 import { AccountingPage } from "./pages/Accounting";
+import Departments from "./pages/Departments";
 
 const queryClient = new QueryClient();
 
