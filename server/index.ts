@@ -58,6 +58,16 @@ import {
   convertLeadToTicket,
 } from "./routes/leads";
 import {
+  createTicket,
+  getTickets,
+  getTicketById,
+  updateTicket,
+  deleteTicket,
+  getTicketsByCustomer,
+  assignTicket,
+  getTicketStats,
+} from "./routes/tickets";
+import {
   getChartOfAccounts,
   createChartOfAccount,
   updateChartOfAccount,
