@@ -1032,10 +1032,8 @@ export default function TicketsPage() {
                     <SelectContent>
                       <SelectItem value="open">Open</SelectItem>
                       <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="bounced">Bounced</SelectItem>
-                      <SelectItem value="waiting">Waiting</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="resolved">Resolved</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
