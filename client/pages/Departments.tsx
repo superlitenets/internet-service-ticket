@@ -125,15 +125,23 @@ export default function DepartmentsPage() {
 
     try {
       if (editingDept) {
+        console.log("[Departments] Updating department:", editingDept.id, deptFormData);
         const response = await fetch(`/api/departments/${editingDept.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(deptFormData),
         });
 
-        if (!response.ok) throw new Error("Failed to update department");
+        console.log("[Departments] Update response status:", response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("[Departments] Update error response:", errorText);
+          throw new Error(`Failed to update department: ${response.status} ${errorText}`);
+        }
 
         const result = await response.json();
+        console.log("[Departments] Updated successfully:", result);
         setDepartments((prev) =>
           prev.map((d) => (d.id === editingDept.id ? result.department : d)),
         );
