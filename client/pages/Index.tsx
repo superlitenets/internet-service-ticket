@@ -14,7 +14,6 @@ import {
   Ticket as TicketIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { MikrotikStats } from "@/components/MikrotikStats";
 
 interface TicketStats {
   total: number;
