@@ -197,6 +197,11 @@ export function createServer() {
   app.post("/api/hrm/zkteco/sync", syncZKtecoAttendance);
   app.get("/api/hrm/zkteco/realtime/:deviceId", getZKtecoRealtime);
 
+  // Hikvision Integration
+  app.post("/api/hrm/hikvision/test", testHikvisionConnection);
+  app.get("/api/hrm/hikvision/access-events/:deviceId", getAccessControlEvents);
+  app.get("/api/hrm/hikvision/surveillance/:cameraId", getSurveillanceEvents);
+
   // WhatsApp API endpoints
   app.post("/api/whatsapp/send", handleSendWhatsApp);
   app.post("/api/whatsapp/test", testWhatsAppConnection);
