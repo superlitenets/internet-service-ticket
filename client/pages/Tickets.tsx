@@ -518,6 +518,10 @@ export default function TicketsPage() {
       status: "open",
       priority: "medium",
       assignedTo: "unassigned",
+      location: "",
+      apartment: "",
+      roomNumber: "",
+      streetAddress: "",
     });
   };
 
