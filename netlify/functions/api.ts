@@ -983,6 +983,438 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // DEPARTMENTS - Create
+    if (path === "/departments" && method === "POST") {
+      const { name, description, manager } = body;
+
+      if (!name) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Department name is required",
+        });
+      }
+
+      try {
+        const existingDept = await sql(
+          `SELECT * FROM "Department" WHERE name = $1`,
+          [name],
+        );
+
+        if (existingDept.length > 0) {
+          return jsonResponse(409, {
+            success: false,
+            message: "Department already exists",
+          });
+        }
+
+        const result = await sql(
+          `INSERT INTO "Department" (id, name, description, manager, "createdAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, NOW(), NOW())
+           RETURNING *`,
+          [name, description || null, manager || null],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Department created successfully",
+          department: result[0],
+        });
+      } catch (error) {
+        console.error("Create department error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create department",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // DEPARTMENTS - Get all
+    if (path === "/departments" && method === "GET") {
+      try {
+        const departments = await sql(
+          `SELECT * FROM "Department" ORDER BY name ASC`,
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          departments,
+          count: departments.length,
+        });
+      } catch (error) {
+        console.error("Get departments error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch departments",
+        });
+      }
+    }
+
+    // DEPARTMENTS - Get by ID
+    if (path.match(/^\/departments\/[^/]+$/) && method === "GET") {
+      const deptId = path.split("/").pop();
+      try {
+        const dept = await sql(
+          `SELECT * FROM "Department" WHERE id = $1`,
+          [deptId],
+        );
+
+        if (dept.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Department not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          department: dept[0],
+        });
+      } catch (error) {
+        console.error("Get department error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch department",
+        });
+      }
+    }
+
+    // DEPARTMENTS - Update
+    if (path.match(/^\/departments\/[^/]+$/) && method === "PUT") {
+      const deptId = path.split("/").pop();
+      const { name, description, manager } = body;
+
+      try {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        if (name !== undefined) {
+          updates.push(`name = $${paramCount++}`);
+          values.push(name);
+        }
+        if (description !== undefined) {
+          updates.push(`description = $${paramCount++}`);
+          values.push(description);
+        }
+        if (manager !== undefined) {
+          updates.push(`manager = $${paramCount++}`);
+          values.push(manager);
+        }
+
+        if (updates.length === 0) {
+          return jsonResponse(400, {
+            success: false,
+            message: "No fields to update",
+          });
+        }
+
+        updates.push(`"updatedAt" = NOW()`);
+        values.push(deptId);
+
+        const result = await sql(
+          `UPDATE "Department" SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`,
+          values,
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Department not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Department updated successfully",
+          department: result[0],
+        });
+      } catch (error) {
+        console.error("Update department error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to update department",
+        });
+      }
+    }
+
+    // DEPARTMENTS - Delete
+    if (path.match(/^\/departments\/[^/]+$/) && method === "DELETE") {
+      const deptId = path.split("/").pop();
+      try {
+        const result = await sql(
+          `DELETE FROM "Department" WHERE id = $1 RETURNING *`,
+          [deptId],
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Department not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Department deleted successfully",
+        });
+      } catch (error) {
+        console.error("Delete department error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to delete department",
+        });
+      }
+    }
+
+    // TEAM GROUPS - Create
+    if (path === "/team-groups" && method === "POST") {
+      const { name, description, departmentId, manager } = body;
+
+      if (!name) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Team group name is required",
+        });
+      }
+
+      try {
+        const existingGroup = await sql(
+          `SELECT * FROM "TeamGroup" WHERE name = $1`,
+          [name],
+        );
+
+        if (existingGroup.length > 0) {
+          return jsonResponse(409, {
+            success: false,
+            message: "Team group already exists",
+          });
+        }
+
+        const result = await sql(
+          `INSERT INTO "TeamGroup" (id, name, description, "departmentId", manager, "createdAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
+           RETURNING *`,
+          [name, description || null, departmentId || null, manager || null],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Team group created successfully",
+          teamGroup: result[0],
+        });
+      } catch (error) {
+        console.error("Create team group error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create team group",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // TEAM GROUPS - Get all
+    if (path === "/team-groups" && method === "GET") {
+      try {
+        const teamGroups = await sql(
+          `SELECT * FROM "TeamGroup" ORDER BY name ASC`,
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          teamGroups,
+          count: teamGroups.length,
+        });
+      } catch (error) {
+        console.error("Get team groups error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch team groups",
+        });
+      }
+    }
+
+    // TEAM GROUPS - Get by ID
+    if (path.match(/^\/team-groups\/[^/]+$/) && method === "GET") {
+      const groupId = path.split("/").pop();
+      try {
+        const group = await sql(
+          `SELECT * FROM "TeamGroup" WHERE id = $1`,
+          [groupId],
+        );
+
+        if (group.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Team group not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          teamGroup: group[0],
+        });
+      } catch (error) {
+        console.error("Get team group error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch team group",
+        });
+      }
+    }
+
+    // TEAM GROUPS - Update
+    if (path.match(/^\/team-groups\/[^/]+$/) && method === "PUT") {
+      const groupId = path.split("/").pop();
+      const { name, description, departmentId, manager } = body;
+
+      try {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        if (name !== undefined) {
+          updates.push(`name = $${paramCount++}`);
+          values.push(name);
+        }
+        if (description !== undefined) {
+          updates.push(`description = $${paramCount++}`);
+          values.push(description);
+        }
+        if (departmentId !== undefined) {
+          updates.push(`"departmentId" = $${paramCount++}`);
+          values.push(departmentId);
+        }
+        if (manager !== undefined) {
+          updates.push(`manager = $${paramCount++}`);
+          values.push(manager);
+        }
+
+        if (updates.length === 0) {
+          return jsonResponse(400, {
+            success: false,
+            message: "No fields to update",
+          });
+        }
+
+        updates.push(`"updatedAt" = NOW()`);
+        values.push(groupId);
+
+        const result = await sql(
+          `UPDATE "TeamGroup" SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`,
+          values,
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Team group not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Team group updated successfully",
+          teamGroup: result[0],
+        });
+      } catch (error) {
+        console.error("Update team group error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to update team group",
+        });
+      }
+    }
+
+    // TEAM GROUPS - Delete
+    if (path.match(/^\/team-groups\/[^/]+$/) && method === "DELETE") {
+      const groupId = path.split("/").pop();
+      try {
+        const result = await sql(
+          `DELETE FROM "TeamGroup" WHERE id = $1 RETURNING *`,
+          [groupId],
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Team group not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Team group deleted successfully",
+        });
+      } catch (error) {
+        console.error("Delete team group error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to delete team group",
+        });
+      }
+    }
+
+    // TEAM MEMBERS - Add employee to team/department
+    if (path === "/team-members" && method === "POST") {
+      const { employeeId, departmentId, teamGroupId, role } = body;
+
+      if (!employeeId) {
+        return jsonResponse(400, {
+          success: false,
+          message: "Employee ID is required",
+        });
+      }
+
+      try {
+        const result = await sql(
+          `INSERT INTO "TeamMember" (id, "employeeId", "departmentId", "teamGroupId", role, "createdAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
+           RETURNING *`,
+          [employeeId, departmentId || null, teamGroupId || null, role || "Member"],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Employee added to team/department",
+          teamMember: result[0],
+        });
+      } catch (error) {
+        console.error("Add team member error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to add team member",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // TEAM MEMBERS - Get by employee ID
+    if (path.match(/^\/team-members\/employee\/[^/]+$/) && method === "GET") {
+      const employeeId = path.split("/").pop();
+      try {
+        const members = await sql(
+          `SELECT tm.*, d.name as department_name, tg.name as team_name
+           FROM "TeamMember" tm
+           LEFT JOIN "Department" d ON tm."departmentId" = d.id
+           LEFT JOIN "TeamGroup" tg ON tm."teamGroupId" = tg.id
+           WHERE tm."employeeId" = $1`,
+          [employeeId],
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          teamMemberships: members,
+        });
+      } catch (error) {
+        console.error("Get team members error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch team memberships",
+        });
+      }
+    }
+
     // SMS - Send (supports both phone numbers and ticket ID for sending to assigned + customer)
     if (path === "/sms/send" && method === "POST") {
       const {
