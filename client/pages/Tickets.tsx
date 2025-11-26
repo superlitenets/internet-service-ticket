@@ -1121,6 +1121,67 @@ export default function TicketsPage() {
                 />
               </div>
 
+              <div className="border-t border-border pt-4">
+                <h4 className="text-sm font-semibold text-foreground mb-3">
+                  Location Details (Optional - will override customer details)
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Location/City
+                    </label>
+                    <Input
+                      value={formData.location}
+                      onChange={(e) =>
+                        setFormData({ ...formData, location: e.target.value })
+                      }
+                      placeholder="Leave blank to use customer location"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Street Address
+                    </label>
+                    <Input
+                      value={formData.streetAddress}
+                      onChange={(e) =>
+                        setFormData({ ...formData, streetAddress: e.target.value })
+                      }
+                      placeholder="Leave blank to use customer address"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Apartment/Unit
+                      </label>
+                      <Input
+                        value={formData.apartment}
+                        onChange={(e) =>
+                          setFormData({ ...formData, apartment: e.target.value })
+                        }
+                        placeholder="Leave blank to use customer"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        Room Number
+                      </label>
+                      <Input
+                        value={formData.roomNumber}
+                        onChange={(e) =>
+                          setFormData({ ...formData, roomNumber: e.target.value })
+                        }
+                        placeholder="Leave blank to use customer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
