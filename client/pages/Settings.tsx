@@ -171,72 +171,7 @@ export default function SettingsPage() {
     updatedAt: new Date().toISOString(),
   });
 
-  // Mikrotik Instances State
-  const [mikrotikInstances, setMikrotikInstances] = useState<
-    MikrotikInstance[]
-  >([]);
-  const [showInstanceDialog, setShowInstanceDialog] = useState(false);
-  const [editingInstance, setEditingInstance] =
-    useState<MikrotikInstance | null>(null);
-  const [instanceForm, setInstanceForm] = useState({
-    name: "",
-    apiUrl: "",
-    username: "",
-    password: "",
-    port: 8728,
-    useSsl: false,
-  });
-
-  // RADIUS Configuration State
-  const [radiusConfig, setRadiusConfig] = useState<RADIUSConfig>({
-    enabled: false,
-    host: "",
-    port: 1812,
-    sharedSecret: "",
-    syncOnCreate: true,
-    syncOnUpdate: true,
-    syncOnDelete: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
-  const [radiusForm, setRadiusForm] = useState({
-    host: "",
-    port: 1812,
-    sharedSecret: "",
-    syncOnCreate: true,
-    syncOnUpdate: true,
-    syncOnDelete: true,
-  });
-  const [testingRadius, setTestingRadius] = useState(false);
-  const [selectedInstanceForRadius, setSelectedInstanceForRadius] =
-    useState<string>("");
-
-  // Load RADIUS config when selected instance changes
-  useEffect(() => {
-    if (selectedInstanceForRadius) {
-      const loadRadiusConfig = async () => {
-        try {
-          const config = await getRADIUSConfig(selectedInstanceForRadius);
-          if (config) {
-            setRadiusConfig(config);
-            setRadiusForm({
-              host: config.host || "",
-              port: config.port || 1812,
-              sharedSecret: "",
-              syncOnCreate: config.syncOnCreate !== false,
-              syncOnUpdate: config.syncOnUpdate !== false,
-              syncOnDelete: config.syncOnDelete !== false,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to load RADIUS config:", error);
-        }
-      };
-      loadRadiusConfig();
-    }
-  }, [selectedInstanceForRadius]);
-
-  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, Company settings, Mikrotik instances, and RADIUS config from storage on mount
+  // Load SMS settings, templates, deduction settings, WhatsApp config, MPESA config, and Company settings from storage on mount
   useEffect(() => {
     const saved = getSmsSettings();
     if (saved) {
