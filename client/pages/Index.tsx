@@ -14,6 +14,9 @@ import {
   Ticket as TicketIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { getTickets } from "@/lib/tickets-client";
 
 interface TicketStats {
   total: number;
@@ -34,61 +37,60 @@ interface RecentTicket {
 }
 
 export default function Dashboard() {
-  const ticketStats: TicketStats = {
-    total: 48,
-    open: 12,
-    inProgress: 18,
-    resolved: 15,
-    pending: 3,
-  };
+  const { toast } = useToast();
+  const [ticketStats, setTicketStats] = useState<TicketStats>({
+    total: 0,
+    open: 0,
+    inProgress: 0,
+    resolved: 0,
+    pending: 0,
+  });
+  const [recentTickets, setRecentTickets] = useState<RecentTicket[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const recentTickets: RecentTicket[] = [
-    {
-      id: "TK-001",
-      customer: "Acme Corp",
-      title: "Internet connectivity issues on Floor 3",
-      status: "in-progress",
-      priority: "high",
-      createdAt: "2 hours ago",
-      assignedTo: "Mike Johnson",
-    },
-    {
-      id: "TK-002",
-      customer: "Tech Startup Inc",
-      title: "Monthly billing inquiry",
-      status: "pending",
-      priority: "low",
-      createdAt: "4 hours ago",
-      assignedTo: "Sarah Smith",
-    },
-    {
-      id: "TK-003",
-      customer: "Global Industries",
-      title: "Router replacement request",
-      status: "open",
-      priority: "medium",
-      createdAt: "1 day ago",
-      assignedTo: "Unassigned",
-    },
-    {
-      id: "TK-004",
-      customer: "Finance Corp",
-      title: "VPN configuration setup",
-      status: "in-progress",
-      priority: "high",
-      createdAt: "1 day ago",
-      assignedTo: "Alex Chen",
-    },
-    {
-      id: "TK-005",
-      customer: "Retail Solutions",
-      title: "Speed upgrade completed",
-      status: "resolved",
-      priority: "low",
-      createdAt: "2 days ago",
-      assignedTo: "Mike Johnson",
-    },
-  ];
+  useEffect(() => {
+    const loadTicketData = async () => {
+      try {
+        setLoading(true);
+        const tickets = await getTickets();
+
+        // Calculate stats
+        const stats = {
+          total: tickets.length,
+          open: tickets.filter((t) => t.status === "open").length,
+          inProgress: tickets.filter((t) => t.status === "in-progress").length,
+          resolved: tickets.filter((t) => t.status === "resolved").length,
+          pending: tickets.filter((t) => t.status === "pending").length,
+        };
+
+        setTicketStats(stats);
+
+        // Format recent tickets
+        const recent = tickets.slice(0, 5).map((t) => ({
+          id: t.id,
+          customer: t.customer?.name || "Unknown",
+          title: t.subject,
+          status: t.status as "open" | "in-progress" | "pending" | "resolved",
+          priority: t.priority,
+          createdAt: new Date(t.createdAt).toLocaleDateString(),
+          assignedTo: t.user?.name || "Unassigned",
+        }));
+
+        setRecentTickets(recent);
+      } catch (error) {
+        console.error("Failed to load ticket data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTicketData();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
