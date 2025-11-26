@@ -28,17 +28,12 @@ async function main() {
     process.exit(0);
   } catch (error: any) {
     if (error.code === "P2002") {
-      console.log(
-        "✓ User admin@testing.com already exists - ready to login!",
-      );
+      console.log("✓ User admin@testing.com already exists - ready to login!");
       console.log("\nLogin with:");
       console.log("  Email: admin@testing.com");
       console.log("  Password: password123");
     } else {
-      console.error(
-        "Error:",
-        error instanceof Error ? error.message : error,
-      );
+      console.error("Error:", error instanceof Error ? error.message : error);
     }
     process.exit(0);
   }
