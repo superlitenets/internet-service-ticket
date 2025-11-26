@@ -1379,11 +1379,11 @@ export default function TicketsPage() {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={savingTicket}>
                 Cancel
               </Button>
-              <Button onClick={handleSave}>
-                {editingTicket ? "Update" : "Create"} Ticket
+              <Button onClick={handleSave} disabled={savingTicket}>
+                {savingTicket ? (editingTicket ? "Updating..." : "Creating...") : (editingTicket ? "Update" : "Create")} Ticket
               </Button>
             </DialogFooter>
           </DialogContent>
