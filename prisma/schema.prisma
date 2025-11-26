@@ -186,7 +186,7 @@ model Ticket {
 // Employees (HRM)
 model Employee {
   id              String   @id @default(cuid())
-  userId          String   @unique
+  userId          String?  @unique
   firstName       String
   lastName        String
   email           String   @unique
@@ -201,7 +201,7 @@ model Employee {
   updatedAt       DateTime @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([email])
