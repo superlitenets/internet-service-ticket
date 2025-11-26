@@ -329,6 +329,10 @@ export default function TicketsPage() {
         status: ticket.status,
         priority: ticket.priority,
         assignedTo: ticket.assignedTo,
+        location: ticket.customerLocation || "",
+        apartment: ticket.apartment || "",
+        roomNumber: ticket.roomNumber || "",
+        streetAddress: "",
       });
     } else {
       setEditingTicket(null);
@@ -339,6 +343,10 @@ export default function TicketsPage() {
         status: "open",
         priority: "medium",
         assignedTo: "unassigned",
+        location: "",
+        apartment: "",
+        roomNumber: "",
+        streetAddress: "",
       });
     }
     setDialogOpen(true);
