@@ -93,6 +93,7 @@ export default function Leads() {
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [editingLead, setEditingLead] = useState<Lead | null>(null);
+  const [employees, setEmployees] = useState<any[]>([]);
 
   const [formData, setFormData] = useState<CreateLeadForm>({
     customerName: "",
