@@ -9,7 +9,7 @@ export const createCustomer: RequestHandler = async (req, res) => {
     console.log("[API] POST /api/customers - Creating customer");
     console.log("[API] Request body:", req.body);
 
-    const { name, email, phone, accountType } = req.body;
+    const { name, email, phone, accountType, location, apartment, roomNumber, streetAddress } = req.body;
 
     if (!name || !phone) {
       console.warn(
@@ -29,6 +29,10 @@ export const createCustomer: RequestHandler = async (req, res) => {
       email,
       phone,
       accountType,
+      location,
+      apartment,
+      roomNumber,
+      streetAddress,
     });
 
     const customer = await db.customer.create({
@@ -37,6 +41,10 @@ export const createCustomer: RequestHandler = async (req, res) => {
         email: email || "",
         phone,
         accountType: accountType || "residential",
+        location: location || null,
+        apartment: apartment || null,
+        roomNumber: roomNumber || null,
+        streetAddress: streetAddress || null,
         status: "active",
       },
     });
