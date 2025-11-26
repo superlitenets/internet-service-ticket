@@ -47,6 +47,13 @@ import {
   sendWhatsAppUnifiedBatch,
 } from "@/lib/whatsapp-unified-client";
 import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
+import {
+  createTicket as apiCreateTicket,
+  getTickets as apiGetTickets,
+  updateTicket as apiUpdateTicket,
+  deleteTicket as apiDeleteTicket,
+  type Ticket as ApiTicket,
+} from "@/lib/tickets-client";
 
 interface Reply {
   id: string;
@@ -107,73 +114,8 @@ export default function TicketsPage() {
     assignedTo: "Unassigned" as string,
   });
 
-  const [allTickets, setAllTickets] = useState<Ticket[]>([
-    {
-      id: "TK-001",
-      customer: "Acme Corp",
-      customerEmail: "contact@acme.com",
-      customerPhone: "+1234567890",
-      customerLocation: "123 Business Ave, Floor 3, New York, NY 10001",
-      title: "Internet connectivity issues on Floor 3",
-      description: "Experiencing intermittent disconnections and slow speeds",
-      status: "in-progress",
-      priority: "high",
-      createdAt: "2024-01-15 10:30 AM",
-      updatedAt: "2024-01-15 02:45 PM",
-      assignedTo: "Mike Johnson",
-      smsNotificationsSent: 2,
-      replies: [
-        {
-          id: "reply-1",
-          author: "Mike Johnson",
-          authorRole: "support",
-          message:
-            "We have identified the issue. It appears to be a faulty switch on Floor 3. We are ordering a replacement.",
-          timestamp: "2024-01-15 11:00 AM",
-        },
-        {
-          id: "reply-2",
-          author: "John Doe",
-          authorRole: "customer",
-          message:
-            "Thank you for looking into this. How soon can we expect the replacement?",
-          timestamp: "2024-01-15 11:30 AM",
-        },
-      ],
-    },
-    {
-      id: "TK-002",
-      customer: "Tech Startup Inc",
-      customerEmail: "support@techstartup.com",
-      customerPhone: "+1987654321",
-      customerLocation: "456 Innovation Plaza, San Francisco, CA 94102",
-      title: "Monthly billing inquiry",
-      description: "Questions about invoice charges for January",
-      status: "pending",
-      priority: "low",
-      createdAt: "2024-01-15 09:15 AM",
-      updatedAt: "2024-01-15 01:20 PM",
-      assignedTo: "Sarah Smith",
-      smsNotificationsSent: 1,
-      replies: [],
-    },
-    {
-      id: "TK-003",
-      customer: "Global Industries",
-      customerEmail: "info@global-ind.com",
-      customerPhone: "+1555555555",
-      customerLocation: "789 Commerce Drive, Chicago, IL 60601",
-      title: "Router replacement request",
-      description: "Old router needs replacement",
-      status: "open",
-      priority: "medium",
-      createdAt: "2024-01-14 03:45 PM",
-      updatedAt: "2024-01-14 03:45 PM",
-      assignedTo: "Unassigned",
-      smsNotificationsSent: 0,
-      replies: [],
-    },
-  ]);
+  const [allTickets, setAllTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const teamMembers: TeamMember[] = [
     { name: "Mike Johnson", phone: "+1555111111" },
@@ -280,14 +222,49 @@ export default function TicketsPage() {
     }
   };
 
-  // Save tickets to localStorage whenever they change
+  // Load tickets from API on mount
   useEffect(() => {
-    try {
-      localStorage.setItem("tickets_data", JSON.stringify(allTickets));
-    } catch (error) {
-      console.error("Failed to save tickets to localStorage:", error);
-    }
-  }, [allTickets]);
+    const loadTickets = async () => {
+      try {
+        setLoading(true);
+        const dbTickets = await apiGetTickets();
+
+        // Convert API tickets to UI format
+        const uiTickets = dbTickets.map((t: ApiTicket) => ({
+          id: t.id,
+          customer: t.customer?.name || "Unknown",
+          customerEmail: t.customer?.email || "",
+          customerPhone: t.customer?.phone || "",
+          customerLocation: "",
+          apartment: "",
+          roomNumber: "",
+          title: t.subject,
+          description: t.description,
+          status: t.status as "open" | "in-progress" | "pending" | "resolved",
+          priority: t.priority,
+          createdAt: new Date(t.createdAt).toLocaleString(),
+          updatedAt: new Date(t.updatedAt).toLocaleString(),
+          assignedTo: t.user?.name || "Unassigned",
+          smsNotificationsSent: 0,
+          replies: [],
+          _apiData: t, // Store original API data
+        }));
+
+        setAllTickets(uiTickets);
+      } catch (error) {
+        console.error("Failed to load tickets:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load tickets from database",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTickets();
+  }, []);
 
   const filteredTickets = allTickets.filter((ticket) => {
     const matchesSearch =
@@ -348,39 +325,82 @@ export default function TicketsPage() {
       return;
     }
 
-    if (editingTicket) {
-      setAllTickets((prev) =>
-        prev.map((t) =>
-          t.id === editingTicket.id
-            ? {
-                ...t,
-                ...formData,
-                updatedAt: new Date().toLocaleString(),
-              }
-            : t,
-        ),
-      );
-      toast({
-        title: "Success",
-        description: "Ticket updated successfully",
-      });
-    } else {
-      const newTicket: Ticket = {
-        id: `TK-${String(allTickets.length + 1).padStart(3, "0")}`,
-        ...formData,
-        createdAt: new Date().toLocaleString(),
-        updatedAt: new Date().toLocaleString(),
-        smsNotificationsSent: 0,
-      };
-      setAllTickets((prev) => [...prev, newTicket]);
+    try {
+      if (editingTicket) {
+        // Update existing ticket
+        await apiUpdateTicket(editingTicket.id, {
+          subject: formData.title,
+          description: formData.description,
+          status: formData.status,
+          priority: formData.priority,
+        });
 
-      // Send SMS notifications for new ticket
-      await sendTicketSms("ticket_created", newTicket);
+        setAllTickets((prev) =>
+          prev.map((t) =>
+            t.id === editingTicket.id
+              ? {
+                  ...t,
+                  title: formData.title,
+                  description: formData.description,
+                  status: formData.status,
+                  priority: formData.priority,
+                  updatedAt: new Date().toLocaleString(),
+                }
+              : t,
+          ),
+        );
 
+        toast({
+          title: "Success",
+          description: "Ticket updated successfully",
+        });
+      } else {
+        // Create new ticket
+        const newApiTicket = await apiCreateTicket({
+          customerId: "temp-customer", // Will need to be updated with real customer selection
+          subject: formData.title,
+          description: formData.description,
+          status: "open",
+          priority: formData.priority,
+          category: "general",
+        });
+
+        const newTicket: Ticket = {
+          id: newApiTicket.id,
+          customer: formData.customer,
+          customerEmail: formData.customerEmail,
+          customerPhone: formData.customerPhone,
+          customerLocation: formData.customerLocation,
+          apartment: formData.apartment,
+          roomNumber: formData.roomNumber,
+          title: formData.title,
+          description: formData.description,
+          status: "open",
+          priority: formData.priority,
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+          assignedTo: "Unassigned",
+          smsNotificationsSent: 0,
+        };
+
+        setAllTickets((prev) => [...prev, newTicket]);
+
+        // Send SMS notifications for new ticket
+        await sendTicketSms("ticket_created", newTicket);
+
+        toast({
+          title: "Success",
+          description: "Ticket created successfully",
+        });
+      }
+    } catch (error) {
+      console.error("Save ticket error:", error);
       toast({
-        title: "Success",
-        description: "Ticket created successfully",
+        title: "Error",
+        description: "Failed to save ticket",
+        variant: "destructive",
       });
+      return;
     }
 
     setDialogOpen(false);
@@ -400,48 +420,73 @@ export default function TicketsPage() {
   };
 
   const handleAssignTicket = async (ticketId: string, assignee: string) => {
-    const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
-    if (!ticketToUpdate) return;
+    try {
+      const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
+      if (!ticketToUpdate) return;
 
-    const updatedTicket: Ticket = {
-      ...ticketToUpdate,
-      assignedTo: assignee,
-      updatedAt: new Date().toLocaleString(),
-    };
+      // For now, just update locally (real implementation would update userId)
+      await apiUpdateTicket(ticketId, {});
 
-    setAllTickets((prev) =>
-      prev.map((t) => (t.id === ticketId ? updatedTicket : t)),
-    );
+      const updatedTicket: Ticket = {
+        ...ticketToUpdate,
+        assignedTo: assignee,
+        updatedAt: new Date().toLocaleString(),
+      };
 
-    // Send SMS notifications for assignment
-    await sendTicketSms("ticket_assigned", updatedTicket);
+      setAllTickets((prev) =>
+        prev.map((t) => (t.id === ticketId ? updatedTicket : t)),
+      );
 
-    toast({
-      title: "Success",
-      description: `Ticket assigned to ${assignee}`,
-    });
+      // Send SMS notifications for assignment
+      await sendTicketSms("ticket_assigned", updatedTicket);
+
+      toast({
+        title: "Success",
+        description: `Ticket assigned to ${assignee}`,
+      });
+    } catch (error) {
+      console.error("Assign ticket error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to assign ticket",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleStatusChange = (ticketId: string, newStatus: string) => {
-    setAllTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId
-          ? {
-              ...t,
-              status: newStatus as
-                | "open"
-                | "in-progress"
-                | "pending"
-                | "resolved",
-              updatedAt: new Date().toLocaleString(),
-            }
-          : t,
-      ),
-    );
-    toast({
-      title: "Success",
-      description: `Ticket status updated to ${newStatus}`,
-    });
+  const handleStatusChange = async (ticketId: string, newStatus: string) => {
+    try {
+      await apiUpdateTicket(ticketId, {
+        status: newStatus as "open" | "in-progress" | "pending" | "resolved" | "closed",
+      });
+
+      setAllTickets((prev) =>
+        prev.map((t) =>
+          t.id === ticketId
+            ? {
+                ...t,
+                status: newStatus as
+                  | "open"
+                  | "in-progress"
+                  | "pending"
+                  | "resolved",
+                updatedAt: new Date().toLocaleString(),
+              }
+            : t,
+        ),
+      );
+      toast({
+        title: "Success",
+        description: `Ticket status updated to ${newStatus}`,
+      });
+    } catch (error) {
+      console.error("Status change error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update ticket status",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSendSmsNotification = async (ticket: Ticket) => {
@@ -493,13 +538,23 @@ export default function TicketsPage() {
     }
   };
 
-  const handleDelete = (ticketId: string) => {
-    setAllTickets((prev) => prev.filter((t) => t.id !== ticketId));
-    setDeleteConfirm(null);
-    toast({
-      title: "Success",
-      description: "Ticket deleted successfully",
-    });
+  const handleDelete = async (ticketId: string) => {
+    try {
+      await apiDeleteTicket(ticketId);
+      setAllTickets((prev) => prev.filter((t) => t.id !== ticketId));
+      setDeleteConfirm(null);
+      toast({
+        title: "Success",
+        description: "Ticket deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete ticket error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete ticket",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleOpenDetail = (ticket: Ticket) => {
