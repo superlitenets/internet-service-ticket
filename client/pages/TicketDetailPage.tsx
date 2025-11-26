@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import TicketWorkflow from "@/components/TicketWorkflow";
 
 interface TicketReply {
   id: string;
