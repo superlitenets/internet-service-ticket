@@ -6,13 +6,10 @@ import path from "path";
 export default defineConfig(({ mode }) => {
   const plugins = [react()];
 
-  // Disabled: Express plugin causes Prisma to connect immediately
-  // For development, run frontend and backend separately:
-  // Terminal 1: pnpm run dev (frontend only - Vite)
-  // Terminal 2: node --loader tsx server/index.ts (backend)
-  // if (mode === "development") {
-  //   plugins.push(expressPlugin());
-  // }
+  // Express plugin: Integrates backend with Vite dev server
+  if (mode === "development") {
+    plugins.push(expressPlugin());
+  }
 
   return {
     server: {
