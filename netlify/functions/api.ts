@@ -3,7 +3,9 @@ import { neon } from "@neondatabase/serverless";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 
-const sql = neon(process.env.DATABASE_URL || "");
+// Netlify automatically prefixes env vars with NETLIFY_, so check both
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "";
+const sql = neon(DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Helper to create JSON response
