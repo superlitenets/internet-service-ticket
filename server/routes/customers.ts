@@ -6,14 +6,20 @@ import { db } from "../lib/db";
  */
 export const createCustomer: RequestHandler = async (req, res) => {
   try {
+    console.log("[API] POST /api/customers - Creating customer");
+    console.log("[API] Request body:", req.body);
+
     const { name, email, phone, accountType } = req.body;
 
     if (!name || !phone) {
+      console.warn("[API] Missing required fields - name:", name, "phone:", phone);
       return res.status(400).json({
         success: false,
         message: "Name and phone are required",
       });
     }
+
+    console.log("[API] Creating customer in database with:", { name, email, phone, accountType });
 
     const customer = await db.customer.create({
       data: {
@@ -25,13 +31,15 @@ export const createCustomer: RequestHandler = async (req, res) => {
       },
     });
 
+    console.log("[API] Customer created successfully:", customer);
+
     return res.status(201).json({
       success: true,
       message: "Customer created successfully",
       customer,
     });
   } catch (error) {
-    console.error("Create customer error:", error);
+    console.error("[API] Create customer error:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create customer",
