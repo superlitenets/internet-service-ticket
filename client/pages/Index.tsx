@@ -2,6 +2,15 @@ import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertCircle,
   CheckCircle2,
@@ -13,11 +22,13 @@ import {
   MessageCircle,
   Ticket as TicketIcon,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getTickets } from "@/lib/tickets-client";
 import { getEmployees } from "@/lib/employees-client";
+import { getCustomers } from "@/lib/customers-client";
+import { sendSmsBatch } from "@/lib/sms-client";
 
 interface TicketStats {
   total: number;
