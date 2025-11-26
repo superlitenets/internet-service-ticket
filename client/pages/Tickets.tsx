@@ -435,14 +435,21 @@ export default function TicketsPage() {
       const ticketToUpdate = allTickets.find((t) => t.id === ticketId);
       if (!ticketToUpdate) return;
 
+      // Get the actual name for the assignee (either employee name or "Unassigned")
+      let assigneeName = "Unassigned";
+      if (assignee !== "unassigned") {
+        const employee = employees.find((e) => e.id === assignee);
+        assigneeName = employee?.name || assignee;
+      }
+
       // Store assignee name as resolution note since we don't have user lookup
       await apiUpdateTicket(ticketId, {
-        resolution: `Assigned to: ${assignee}`,
+        resolution: `Assigned to: ${assigneeName}`,
       });
 
       const updatedTicket: Ticket = {
         ...ticketToUpdate,
-        assignedTo: assignee,
+        assignedTo: assigneeName,
         updatedAt: new Date().toLocaleString(),
       };
 
@@ -455,7 +462,7 @@ export default function TicketsPage() {
 
       toast({
         title: "Success",
-        description: `Ticket assigned to ${assignee}`,
+        description: `Ticket assigned to ${assigneeName}`,
       });
     } catch (error) {
       console.error("Assign ticket error:", error);
