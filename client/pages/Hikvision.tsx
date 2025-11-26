@@ -126,27 +126,25 @@ export default function HikvisionPage() {
     }
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return "bg-red-100 text-red-800";
-      case "warning":
-        return "bg-yellow-100 text-yellow-800";
-      case "info":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const getEventTypeIcon = (eventType: string) => {
-    if (eventType.includes("entry") || eventType.includes("exit")) {
-      return <Lock size={16} className="text-blue-600" />;
+    if (eventType.includes("entry") || eventType.includes("access")) {
+      return <CheckCircle2 size={16} className="text-green-600" />;
     }
     if (eventType.includes("denied") || eventType.includes("alarm")) {
       return <AlertTriangle size={16} className="text-red-600" />;
     }
-    return <CheckCircle2 size={16} className="text-green-600" />;
+    return <Camera size={16} className="text-blue-600" />;
+  };
+
+  const getStatusBadge = (status?: string) => {
+    if (!status) return null;
+    if (status.toLowerCase().includes("success") || status.toLowerCase().includes("approved")) {
+      return <Badge className="bg-green-100 text-green-800">Verified</Badge>;
+    }
+    if (status.toLowerCase().includes("failed") || status.toLowerCase().includes("denied")) {
+      return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
+    }
+    return <Badge className="bg-blue-100 text-blue-800">{status}</Badge>;
   };
 
   return (
