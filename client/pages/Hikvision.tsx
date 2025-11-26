@@ -271,9 +271,9 @@ export default function HikvisionPage() {
         <Dialog open={deviceDialogOpen} onOpenChange={setDeviceDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Hikvision Device</DialogTitle>
+              <DialogTitle>Add Hikvision Access Control Device</DialogTitle>
               <DialogDescription>
-                Configure a new Hikvision device (camera, access control, or NVR)
+                Configure a Hikvision access control device for biometric attendance tracking
               </DialogDescription>
             </DialogHeader>
 
