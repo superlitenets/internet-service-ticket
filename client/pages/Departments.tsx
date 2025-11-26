@@ -147,10 +147,7 @@ export default function DepartmentsPage() {
           prev.map((d) => (d.id === editingDept.id ? result.department : d)),
         );
 
-        toast({
-          title: "Success",
-          description: "Department updated successfully",
-        });
+        toast(getSaveNotification({ itemName: `Department "${deptFormData.name}"`, action: "updated" }));
       } else {
         console.log("[Departments] Creating department with data:", deptFormData);
         const response = await fetch("/api/departments", {
