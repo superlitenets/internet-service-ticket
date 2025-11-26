@@ -319,7 +319,7 @@ export default function TicketsPage() {
         description: "",
         status: "open",
         priority: "medium",
-        assignedTo: "",
+        assignedTo: "unassigned",
       });
     }
     setDialogOpen(true);
@@ -426,7 +426,7 @@ export default function TicketsPage() {
       description: "",
       status: "open",
       priority: "medium",
-      assignedTo: "",
+      assignedTo: "unassigned",
     });
   };
 
