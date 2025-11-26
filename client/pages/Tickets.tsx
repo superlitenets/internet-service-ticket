@@ -148,6 +148,8 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [teamGroups, setTeamGroups] = useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
 
   const getTechnicianPhone = (technicianId: string): string | undefined => {
     return employees.find((e) => e.id === technicianId)?.email;
