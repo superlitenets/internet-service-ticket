@@ -119,6 +119,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/hikvision"
+      element={
+        <ProtectedRoute requiredRole={["admin", "manager"]}>
+          <Hikvision />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/leave"
       element={
         <ProtectedRoute>
