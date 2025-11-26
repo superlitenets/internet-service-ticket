@@ -131,10 +131,13 @@ export default function CustomersPage() {
   };
 
   const handleSave = async () => {
+    console.log("[Customers Page] handleSave called with formData:", formData);
+
     if (!formData.name || !formData.email || !formData.phone) {
+      console.warn("[Customers Page] Missing required fields:", formData);
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields (Name, Email, Phone)",
         variant: "destructive",
       });
       return;
@@ -142,6 +145,7 @@ export default function CustomersPage() {
 
     try {
       if (editingCustomer) {
+        console.log("[Customers Page] Updating existing customer:", editingCustomer.id);
         // Update existing customer
         await apiUpdateCustomer(editingCustomer.id, {
           name: formData.name,
@@ -174,6 +178,7 @@ export default function CustomersPage() {
           description: "Customer updated successfully",
         });
       } else {
+        console.log("[Customers Page] Creating new customer with data:", formData);
         // Create new customer
         const newCustomer = await apiCreateCustomer({
           name: formData.name,
@@ -181,6 +186,8 @@ export default function CustomersPage() {
           phone: formData.phone,
           accountType: formData.accountType,
         });
+
+        console.log("[Customers Page] Customer created successfully:", newCustomer);
 
         setCustomers((prev) => [
           ...prev,
@@ -201,17 +208,17 @@ export default function CustomersPage() {
           description: "Customer added successfully",
         });
       }
+
+      setDialogOpen(false);
     } catch (error) {
-      console.error("Save customer error:", error);
+      console.error("[Customers Page] Save customer error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       toast({
         title: "Error",
-        description: "Failed to save customer",
+        description: `Failed to save customer: ${errorMessage}`,
         variant: "destructive",
       });
-      return;
     }
-
-    setDialogOpen(false);
   };
 
   const handleDelete = async (customerId: string) => {
