@@ -168,10 +168,7 @@ export default function DepartmentsPage() {
         console.log("[Departments] Created successfully:", result);
         setDepartments((prev) => [...prev, result.department]);
 
-        toast({
-          title: "Success",
-          description: "Department created successfully",
-        });
+        toast(getSaveNotification({ itemName: `Department "${result.department.name}"`, action: "created" }));
       }
 
       setDeptDialogOpen(false);
