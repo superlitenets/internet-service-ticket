@@ -13,6 +13,7 @@ import {
 import { Plus, Edit, Trash2, Search, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { getSaveNotification } from "@/lib/save-notification";
 
 interface Department {
   id: string;
