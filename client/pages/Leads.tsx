@@ -380,11 +380,9 @@ export default function Leads() {
 
     try {
       setLoading(true);
+      const leadName = leads.find((l) => l.id === id)?.customerName || "Lead";
       await deleteLead(id);
-      toast({
-        title: "Success",
-        description: "Lead deleted successfully",
-      });
+      toast(getSaveNotification({ itemName: `"${leadName}"`, action: "deleted" }));
       await loadLeads();
     } catch (error) {
       toast({
