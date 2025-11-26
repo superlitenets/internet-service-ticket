@@ -452,11 +452,19 @@ export default function Dashboard() {
                     New Ticket
                   </Button>
                 </Link>
-                <Button className="w-full gap-2" variant="outline">
+                <Button
+                  className="w-full gap-2"
+                  variant="outline"
+                  onClick={handleAddCustomer}
+                >
                   <Users size={16} />
                   Add Customer
                 </Button>
-                <Button className="w-full gap-2" variant="outline">
+                <Button
+                  className="w-full gap-2"
+                  variant="outline"
+                  onClick={handleOpenBulkSmsDialog}
+                >
                   <MessageCircle size={16} />
                   Send Bulk SMS
                 </Button>
