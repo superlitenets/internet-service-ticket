@@ -312,6 +312,7 @@ export function createServer() {
   app.delete("/api/team-groups/:id", deleteTeamGroup);
 
   // Team Members endpoints
+  app.get("/api/team-members", getTeamMembers);
   app.post("/api/team-members", addTeamMember);
   app.get("/api/team-members/employee/:employeeId", getEmployeeTeamMemberships);
 
