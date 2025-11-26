@@ -45,6 +45,18 @@ import {
   convertLeadToTicket,
   type Lead,
 } from "@/lib/leads-client";
+import { sendSmsToPhone } from "@/lib/sms-client";
+import {
+  getTemplate,
+  renderTemplate,
+  getSmsTemplates,
+} from "@/lib/sms-templates";
+import { getSmsSettings } from "@/lib/sms-settings-storage";
+import {
+  sendWhatsAppUnifiedToPhone,
+} from "@/lib/whatsapp-unified-client";
+import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
+import { getEmployees } from "@/lib/employees-client";
 
 interface CreateLeadForm {
   customerName: string;
