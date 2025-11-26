@@ -36,8 +36,46 @@ export default function Landing() {
         setPlans(fetchedPlans);
       } catch (error) {
         console.error("Failed to fetch plans:", error);
-        // Fall back to empty plans if fetch fails
-        setPlans([]);
+        // Provide default demo plans when API fails
+        const defaultPlans: MikrotikPlan[] = [
+          {
+            id: "demo-1",
+            planName: "Starter",
+            planType: "residential",
+            monthlyFee: 999,
+            setupFee: 500,
+            activationFee: 100,
+            description: "Perfect for home users",
+            speed: { uploadMbps: 5, downloadMbps: 50 },
+            dataQuota: 100,
+            features: ["Email Support", "24/7 Uptime"],
+          },
+          {
+            id: "demo-2",
+            planName: "Professional",
+            planType: "business",
+            monthlyFee: 2499,
+            setupFee: 1000,
+            activationFee: 200,
+            description: "Great for small businesses",
+            speed: { uploadMbps: 20, downloadMbps: 100 },
+            dataQuota: 500,
+            features: ["Priority Support", "99.9% Uptime SLA", "Dedicated Account Manager"],
+          },
+          {
+            id: "demo-3",
+            planName: "Enterprise",
+            planType: "enterprise",
+            monthlyFee: 4999,
+            setupFee: 2000,
+            activationFee: 500,
+            description: "For large organizations",
+            speed: { uploadMbps: 50, downloadMbps: 500 },
+            dataQuota: 2000,
+            features: ["24/7 Phone Support", "99.99% Uptime SLA", "Custom Solutions", "Network Optimization"],
+          },
+        ];
+        setPlans(defaultPlans);
       } finally {
         setLoadingPlans(false);
       }
