@@ -259,7 +259,7 @@ export default function EmployeesPage() {
 
         toast({
           title: "Success",
-          description: "Employee added successfully",
+          description: `✓ Employee "${newEmployee.firstName} ${newEmployee.lastName}" created successfully`,
         });
       }
     } catch (error) {
@@ -277,12 +277,13 @@ export default function EmployeesPage() {
 
   const handleDelete = async (employeeId: string) => {
     try {
+      const employee = employees.find((e) => e.id === employeeId);
       await apiDeleteEmployee(employeeId);
       setEmployees((prev) => prev.filter((e) => e.id !== employeeId));
       setDeleteConfirm(null);
       toast({
         title: "Success",
-        description: "Employee deleted successfully",
+        description: `✓ Employee "${employee?.firstName} ${employee?.lastName}" deleted successfully`,
       });
     } catch (error) {
       console.error("Delete employee error:", error);
