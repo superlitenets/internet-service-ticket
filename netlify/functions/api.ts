@@ -791,10 +791,11 @@ const handler: Handler = async (event) => {
       }
     }
 
-    // SMS - Send
+    // SMS - Send (supports both phone numbers and ticket ID for sending to assigned + customer)
     if (path === "/sms/send" && method === "POST") {
       const {
         to,
+        ticketId,
         message,
         provider = "advanta",
         apiKey,
@@ -803,10 +804,46 @@ const handler: Handler = async (event) => {
         customApiUrl,
       } = body;
 
-      if (!to || !message) {
+      if (!message) {
         return jsonResponse(400, {
           success: false,
-          message: "Missing required fields: 'to' and 'message'",
+          message: "Missing required field: 'message'",
+        });
+      }
+
+      let recipients: string[] = [];
+
+      // If ticketId is provided, send to assigned employee and customer
+      if (ticketId) {
+        try {
+          const ticketData = await sql(
+            `SELECT t.*, c.phone as customer_phone, u.phone as user_phone
+             FROM "Ticket" t
+             LEFT JOIN "Customer" c ON t."customerId" = c.id
+             LEFT JOIN "User" u ON t."userId" = u.id
+             WHERE t.id = $1`,
+            [ticketId],
+          );
+
+          if (ticketData.length > 0) {
+            if (ticketData[0].customer_phone) {
+              recipients.push(ticketData[0].customer_phone);
+            }
+            if (ticketData[0].user_phone) {
+              recipients.push(ticketData[0].user_phone);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching ticket data:", error);
+        }
+      } else if (to) {
+        recipients = Array.isArray(to) ? to : [to];
+      }
+
+      if (recipients.length === 0) {
+        return jsonResponse(400, {
+          success: false,
+          message: "No valid recipients provided",
         });
       }
 
@@ -820,7 +857,6 @@ const handler: Handler = async (event) => {
         }
       }
 
-      const recipients = Array.isArray(to) ? to : [to];
       const validPhoneNumbers = recipients.filter((phone: string) => {
         return /^\+?1?\d{9,15}$/.test(phone.replace(/\D/g, ""));
       });
