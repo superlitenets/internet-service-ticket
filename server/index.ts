@@ -270,6 +270,9 @@ export function createServer() {
   app.put("/api/attendance/:id", updateAttendanceRecord);
   app.delete("/api/attendance/:id", deleteAttendanceRecord);
 
+  // Settings endpoints
+  app.use("/api/settings", settingsRouter);
+
   // Accounting Routes
   // Chart of Accounts
   app.get("/api/accounting/accounts", getChartOfAccounts);
