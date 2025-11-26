@@ -7,7 +7,13 @@ export interface Ticket {
   description: string;
   category?: string;
   priority: "high" | "medium" | "low";
-  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed";
+  status:
+    | "open"
+    | "in-progress"
+    | "bounced"
+    | "waiting"
+    | "resolved"
+    | "closed";
   resolution?: string;
   createdAt: string;
   updatedAt: string;
@@ -151,7 +157,9 @@ export async function deleteTicket(id: string): Promise<void> {
 /**
  * Get all replies for a ticket
  */
-export async function getTicketReplies(ticketId: string): Promise<TicketReply[]> {
+export async function getTicketReplies(
+  ticketId: string,
+): Promise<TicketReply[]> {
   const response = await fetch(`/api/tickets/${ticketId}/replies`);
 
   if (!response.ok) {
@@ -190,7 +198,13 @@ export async function createTicketReply(data: {
  */
 export async function updateTicketStatus(
   id: string,
-  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed",
+  status:
+    | "open"
+    | "in-progress"
+    | "bounced"
+    | "waiting"
+    | "resolved"
+    | "closed",
 ): Promise<Ticket> {
   return updateTicket(id, { status });
 }

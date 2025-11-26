@@ -266,13 +266,22 @@ const handler: Handler = async (event) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const userId = Math.random().toString(36).substring(2, 15);
-        const status = active !== undefined ? (active ? "active" : "inactive") : "active";
+        const status =
+          active !== undefined ? (active ? "active" : "inactive") : "active";
 
         const result = await sql(
           `INSERT INTO "User" (id, name, email, phone, password, role, status, "createdAt", "updatedAt")
            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
            RETURNING id, name, email, phone, role, status, "createdAt", "updatedAt"`,
-          [userId, name, email || null, phone, hashedPassword, role || "user", status],
+          [
+            userId,
+            name,
+            email || null,
+            phone,
+            hashedPassword,
+            role || "user",
+            status,
+          ],
         );
 
         return jsonResponse(201, {
@@ -554,7 +563,18 @@ const handler: Handler = async (event) => {
 
     // EMPLOYEES - Create
     if (path === "/employees" && method === "POST") {
-      const { firstName, lastName, email, phone, position, department, salary, hireDate, emergencyContact, status } = body;
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        position,
+        department,
+        salary,
+        hireDate,
+        emergencyContact,
+        status,
+      } = body;
 
       if (!firstName || !email || !phone) {
         return jsonResponse(400, {
@@ -580,7 +600,18 @@ const handler: Handler = async (event) => {
           `INSERT INTO "Employee" (id, "firstName", "lastName", email, phone, position, department, salary, "hireDate", "emergencyContact", status, "createdAt", "updatedAt")
            VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
            RETURNING *`,
-          [firstName, lastName || "", email, phone, position || null, department || null, salary || null, hireDate || new Date().toISOString(), emergencyContact || null, status || "active"],
+          [
+            firstName,
+            lastName || "",
+            email,
+            phone,
+            position || null,
+            department || null,
+            salary || null,
+            hireDate || new Date().toISOString(),
+            emergencyContact || null,
+            status || "active",
+          ],
         );
 
         return jsonResponse(201, {
@@ -633,7 +664,9 @@ const handler: Handler = async (event) => {
     if (path.match(/^\/employees\/[^/]+$/) && method === "GET") {
       const employeeId = path.split("/").pop();
       try {
-        const employee = await sql(`SELECT * FROM "Employee" WHERE id = $1`, [employeeId]);
+        const employee = await sql(`SELECT * FROM "Employee" WHERE id = $1`, [
+          employeeId,
+        ]);
 
         if (employee.length === 0) {
           return jsonResponse(404, {
@@ -658,7 +691,18 @@ const handler: Handler = async (event) => {
     // EMPLOYEES - Update
     if (path.match(/^\/employees\/[^/]+$/) && method === "PUT") {
       const employeeId = path.split("/").pop();
-      const { firstName, lastName, email, phone, position, department, salary, hireDate, emergencyContact, status } = body;
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        position,
+        department,
+        salary,
+        hireDate,
+        emergencyContact,
+        status,
+      } = body;
 
       try {
         const updates: string[] = [];
@@ -766,7 +810,15 @@ const handler: Handler = async (event) => {
 
     // TICKETS - Create
     if (path === "/tickets" && method === "POST") {
-      const { customerId, userId, subject, description, category, priority, status } = body;
+      const {
+        customerId,
+        userId,
+        subject,
+        description,
+        category,
+        priority,
+        status,
+      } = body;
 
       if (!customerId || !subject || !description) {
         return jsonResponse(400, {
@@ -777,7 +829,10 @@ const handler: Handler = async (event) => {
 
       try {
         // Verify customer exists
-        const customerCheck = await sql(`SELECT id FROM "Customer" WHERE id = $1`, [customerId]);
+        const customerCheck = await sql(
+          `SELECT id FROM "Customer" WHERE id = $1`,
+          [customerId],
+        );
         if (customerCheck.length === 0) {
           return jsonResponse(404, {
             success: false,
@@ -790,7 +845,17 @@ const handler: Handler = async (event) => {
           `INSERT INTO "Ticket" (id, "ticketId", "customerId", "userId", subject, description, category, priority, status, "createdAt", "updatedAt")
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
            RETURNING *`,
-          [ticketId, ticketId, customerId, userId || null, subject, description, category || "general", priority || "medium", status || "open"],
+          [
+            ticketId,
+            ticketId,
+            customerId,
+            userId || null,
+            subject,
+            description,
+            category || "general",
+            priority || "medium",
+            status || "open",
+          ],
         );
 
         return jsonResponse(201, {
@@ -1115,10 +1180,9 @@ const handler: Handler = async (event) => {
     if (path.match(/^\/departments\/[^/]+$/) && method === "GET") {
       const deptId = path.split("/").pop();
       try {
-        const dept = await sql(
-          `SELECT * FROM "Department" WHERE id = $1`,
-          [deptId],
-        );
+        const dept = await sql(`SELECT * FROM "Department" WHERE id = $1`, [
+          deptId,
+        ]);
 
         if (dept.length === 0) {
           return jsonResponse(404, {
@@ -1299,10 +1363,9 @@ const handler: Handler = async (event) => {
     if (path.match(/^\/team-groups\/[^/]+$/) && method === "GET") {
       const groupId = path.split("/").pop();
       try {
-        const group = await sql(
-          `SELECT * FROM "TeamGroup" WHERE id = $1`,
-          [groupId],
-        );
+        const group = await sql(`SELECT * FROM "TeamGroup" WHERE id = $1`, [
+          groupId,
+        ]);
 
         if (group.length === 0) {
           return jsonResponse(404, {
@@ -1432,7 +1495,12 @@ const handler: Handler = async (event) => {
           `INSERT INTO "TeamMember" (id, "employeeId", "departmentId", "teamGroupId", role, "createdAt", "updatedAt")
            VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
            RETURNING *`,
-          [employeeId, departmentId || null, teamGroupId || null, role || "Member"],
+          [
+            employeeId,
+            departmentId || null,
+            teamGroupId || null,
+            role || "Member",
+          ],
         );
 
         return jsonResponse(201, {

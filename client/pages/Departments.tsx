@@ -36,7 +36,9 @@ interface TeamGroup {
 export default function DepartmentsPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"departments" | "teams">("departments");
+  const [activeTab, setActiveTab] = useState<"departments" | "teams">(
+    "departments",
+  );
 
   // Departments state
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -133,7 +135,7 @@ export default function DepartmentsPage() {
 
         const result = await response.json();
         setDepartments((prev) =>
-          prev.map((d) => (d.id === editingDept.id ? result.department : d))
+          prev.map((d) => (d.id === editingDept.id ? result.department : d)),
         );
 
         toast({
@@ -163,7 +165,8 @@ export default function DepartmentsPage() {
       console.error("Save department error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save department",
+        description:
+          error instanceof Error ? error.message : "Failed to save department",
         variant: "destructive",
       });
     }
@@ -205,7 +208,12 @@ export default function DepartmentsPage() {
       });
     } else {
       setEditingTeam(null);
-      setTeamFormData({ name: "", description: "", departmentId: "", manager: "" });
+      setTeamFormData({
+        name: "",
+        description: "",
+        departmentId: "",
+        manager: "",
+      });
     }
     setTeamDialogOpen(true);
   };
@@ -232,7 +240,7 @@ export default function DepartmentsPage() {
 
         const result = await response.json();
         setTeamGroups((prev) =>
-          prev.map((t) => (t.id === editingTeam.id ? result.teamGroup : t))
+          prev.map((t) => (t.id === editingTeam.id ? result.teamGroup : t)),
         );
 
         toast({
@@ -262,7 +270,8 @@ export default function DepartmentsPage() {
       console.error("Save team error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save team group",
+        description:
+          error instanceof Error ? error.message : "Failed to save team group",
         variant: "destructive",
       });
     }
@@ -293,11 +302,11 @@ export default function DepartmentsPage() {
   };
 
   const filteredDepts = departments.filter((d) =>
-    d.name.toLowerCase().includes(searchDept.toLowerCase())
+    d.name.toLowerCase().includes(searchDept.toLowerCase()),
   );
 
   const filteredTeams = teamGroups.filter((t) =>
-    t.name.toLowerCase().includes(searchTeam.toLowerCase())
+    t.name.toLowerCase().includes(searchTeam.toLowerCase()),
   );
 
   return (
@@ -369,7 +378,9 @@ export default function DepartmentsPage() {
             <div className="grid gap-4">
               {loading ? (
                 <Card className="p-8 text-center">
-                  <p className="text-muted-foreground">Loading departments...</p>
+                  <p className="text-muted-foreground">
+                    Loading departments...
+                  </p>
                 </Card>
               ) : filteredDepts.length === 0 ? (
                 <Card className="p-8 text-center">
@@ -377,12 +388,19 @@ export default function DepartmentsPage() {
                 </Card>
               ) : (
                 filteredDepts.map((dept) => (
-                  <Card key={dept.id} className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow">
+                  <Card
+                    key={dept.id}
+                    className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow"
+                  >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="font-bold text-lg text-foreground">{dept.name}</h3>
+                        <h3 className="font-bold text-lg text-foreground">
+                          {dept.name}
+                        </h3>
                         {dept.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{dept.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {dept.description}
+                          </p>
                         )}
                         {dept.manager && (
                           <p className="text-xs text-muted-foreground mt-2">
@@ -450,7 +468,9 @@ export default function DepartmentsPage() {
             <div className="grid gap-4">
               {loading ? (
                 <Card className="p-8 text-center">
-                  <p className="text-muted-foreground">Loading team groups...</p>
+                  <p className="text-muted-foreground">
+                    Loading team groups...
+                  </p>
                 </Card>
               ) : filteredTeams.length === 0 ? (
                 <Card className="p-8 text-center">
@@ -458,17 +478,26 @@ export default function DepartmentsPage() {
                 </Card>
               ) : (
                 filteredTeams.map((team) => (
-                  <Card key={team.id} className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow">
+                  <Card
+                    key={team.id}
+                    className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow"
+                  >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="font-bold text-lg text-foreground">{team.name}</h3>
+                        <h3 className="font-bold text-lg text-foreground">
+                          {team.name}
+                        </h3>
                         {team.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{team.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {team.description}
+                          </p>
                         )}
                         <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Users size={12} />
-                            {team.departmentId ? "Has Department" : "No Department"}
+                            {team.departmentId
+                              ? "Has Department"
+                              : "No Department"}
                           </span>
                           {team.manager && <span>Lead: {team.manager}</span>}
                         </div>
@@ -537,7 +566,10 @@ export default function DepartmentsPage() {
               <textarea
                 value={deptFormData.description}
                 onChange={(e) =>
-                  setDeptFormData({ ...deptFormData, description: e.target.value })
+                  setDeptFormData({
+                    ...deptFormData,
+                    description: e.target.value,
+                  })
                 }
                 placeholder="Brief description of the department..."
                 rows={3}

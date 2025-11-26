@@ -11,7 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Send, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Send,
+  Clock,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -36,7 +42,13 @@ interface Ticket {
   description: string;
   category?: string;
   priority: "high" | "medium" | "low";
-  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed";
+  status:
+    | "open"
+    | "in-progress"
+    | "bounced"
+    | "waiting"
+    | "resolved"
+    | "closed";
   resolution?: string;
   customer_name?: string;
   customer_email?: string;
@@ -442,9 +454,7 @@ export default function TicketDetailPage() {
 
             {/* Customer Info */}
             <Card className="p-6 border-0 shadow-sm">
-              <h3 className="font-semibold text-foreground mb-3">
-                Customer
-              </h3>
+              <h3 className="font-semibold text-foreground mb-3">Customer</h3>
               <div className="space-y-2 text-sm">
                 <div>
                   <p className="text-muted-foreground">Name</p>
