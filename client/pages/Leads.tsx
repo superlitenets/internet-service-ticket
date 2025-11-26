@@ -318,7 +318,7 @@ export default function Leads() {
           description: "Lead updated successfully",
         });
       } else {
-        await createLead({
+        const newLead = await createLead({
           customerName: formData.customerName,
           phone: formData.phone,
           email: formData.email || undefined,
@@ -327,6 +327,14 @@ export default function Leads() {
           agreedInstallAmount: parseFloat(formData.agreedInstallAmount),
           notes: formData.notes || undefined,
         });
+
+        // Send SMS/WhatsApp notifications for new lead (don't fail if SMS fails)
+        try {
+          await sendLeadNotifications("lead_created", newLead);
+        } catch (smsError) {
+          console.warn("Notification sending failed, but lead created successfully:", smsError);
+        }
+
         toast({
           title: "Success",
           description: "Lead created successfully",
