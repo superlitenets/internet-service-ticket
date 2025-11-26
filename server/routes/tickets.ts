@@ -146,6 +146,15 @@ export const getTickets: RequestHandler = async (req, res) => {
       include: {
         customer: true,
         user: true,
+        teamGroup: {
+          include: { members: true },
+        },
+        assignedTeamMember: {
+          include: {
+            department: true,
+            teamGroup: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
