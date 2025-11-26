@@ -133,8 +133,6 @@ export function createServer() {
     res.json({ message: ping });
   });
 
-  app.get("/api/demo", handleDemo);
-
   // SMS API endpoints
   app.post("/api/sms/send", handleSendSms);
 
