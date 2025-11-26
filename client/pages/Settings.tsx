@@ -2534,6 +2534,68 @@ export default function SettingsPage() {
               </div>
             </Card>
           </TabsContent>
+
+          {/* Ticket Settings */}
+          <TabsContent value="tickets" className="space-y-6">
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Ticket ID Configuration
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Configure how ticket IDs are generated. Format: PREFIX + sequential number (000001-999999)
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Ticket ID Prefix
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={ticketPrefix}
+                        onChange={(e) => setTicketPrefix(e.target.value.toUpperCase())}
+                        placeholder="e.g., TKT"
+                        maxLength={5}
+                        className="flex-1"
+                      />
+                      <span className="text-sm text-muted-foreground py-2 px-3 rounded border border-input bg-muted">
+                        {ticketPrefix}000001
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Example: First ticket will be {ticketPrefix}000001, second will be {ticketPrefix}000002, etc.
+                    </p>
+                  </div>
+
+                  <div className="pt-4">
+                    <Button
+                      onClick={handleSaveTicketPrefix}
+                      disabled={savingTicketPrefix}
+                      className="gap-2"
+                    >
+                      <Save size={16} />
+                      {savingTicketPrefix ? "Saving..." : "Save Ticket Prefix"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4 mt-6">
+                  <h4 className="text-sm font-semibold text-foreground mb-3">
+                    Information
+                  </h4>
+                  <ul className="text-sm text-muted-foreground space-y-2">
+                    <li>• Ticket IDs are auto-generated and incremented</li>
+                    <li>• Numbering ranges from 000001 to 999999</li>
+                    <li>• Old tickets were migrated to the new format</li>
+                    <li>• Changing the prefix only affects new tickets</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
