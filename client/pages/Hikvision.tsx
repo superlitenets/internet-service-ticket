@@ -102,15 +102,15 @@ export default function HikvisionPage() {
     }
   };
 
-  const handleFetchAccessEvents = async () => {
+  const handleFetchAttendanceEvents = async () => {
     setLoadingEvents(true);
     try {
       const result = await getAccessControlEvents("hik-access-control");
-      setAccessEvents(result.events);
+      setAttendanceEvents(result.events);
 
       toast({
         title: "Success",
-        description: `✓ Retrieved ${result.events.length} access control events`,
+        description: `✓ Retrieved ${result.events.length} attendance records from Hikvision device`,
       });
     } catch (error) {
       toast({
@@ -118,31 +118,7 @@ export default function HikvisionPage() {
         description:
           error instanceof Error
             ? error.message
-            : "Failed to fetch access control events",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingEvents(false);
-    }
-  };
-
-  const handleFetchSurveillanceEvents = async () => {
-    setLoadingEvents(true);
-    try {
-      const result = await getSurveillanceEvents("hik-camera-1");
-      setSurveillanceEvents(result.events);
-
-      toast({
-        title: "Success",
-        description: `✓ Retrieved ${result.events.length} surveillance events`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch surveillance events",
+            : "Failed to fetch attendance events",
         variant: "destructive",
       });
     } finally {
