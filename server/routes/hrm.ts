@@ -400,7 +400,7 @@ export const syncZKtecoAttendance: RequestHandler<
 export const getZKtecoRealtime: RequestHandler<
   { deviceId: string },
   { attendance: AttendanceRecord[] }
-> = (req, res) => {
+> = async (req, res) => {
   try {
     const { deviceId } = req.params;
 
@@ -410,16 +410,218 @@ export const getZKtecoRealtime: RequestHandler<
       });
     }
 
-    // Simulate getting real-time data from device
     console.log("[ZKteco] Getting real-time data from device:", deviceId);
 
-    // In production, you would connect to the device and get live data
+    const device = await db.zKtecoDevice.findUnique({
+      where: { deviceId },
+    });
+
+    if (!device || !device.enabled) {
+      return res.json({
+        attendance: [],
+      });
+    }
+
+    // In production, connect to device and get live attendance data
+    // For now, return recent attendance records from database
+    const recentRecords = await db.attendanceLog.findMany({
+      where: {
+        deviceSerialNumber: device.deviceId,
+        date: {
+          gte: new Date(Date.now() - 3600000), // Last hour
+        },
+      },
+      orderBy: {
+        checkInTime: "desc",
+      },
+      take: 20,
+    });
+
+    const attendance: AttendanceRecord[] = recentRecords.map((record) => ({
+      userId: record.employeeId,
+      date: record.date.toISOString(),
+      checkInTime: record.checkInTime?.toISOString(),
+      checkOutTime: record.checkOutTime?.toISOString(),
+      status: record.status as any,
+      biometricSource: record.biometricSource as any,
+    }));
+
     res.json({
-      attendance: [],
+      attendance,
     });
   } catch (error) {
+    console.error("[ZKteco] Realtime error:", error);
     res.status(500).json({
       attendance: [],
+    });
+  }
+};
+
+/**
+ * Test Hikvision device connection
+ */
+export const testHikvisionConnection: RequestHandler<
+  unknown,
+  { success: boolean; message: string; deviceType?: string },
+  {
+    ipAddress: string;
+    port: number;
+    username: string;
+    password: string;
+    deviceType?: string;
+    deviceName?: string;
+    location?: string;
+  }
+> = async (req, res) => {
+  try {
+    const { ipAddress, port, username, password, deviceType = "camera", deviceName, location } = req.body;
+
+    if (!ipAddress || !port || !username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Hikvision device credentials",
+      });
+    }
+
+    console.log("[Hikvision] Testing connection to device:", {
+      ipAddress,
+      port,
+      deviceType,
+    });
+
+    const deviceId = `hik-${ipAddress.replace(/\./g, '-')}-${port}`;
+
+    // Save or update device configuration
+    const device = await db.hikvisionDevice.upsert({
+      where: { deviceId },
+      update: {
+        ipAddress,
+        port,
+        username,
+        password,
+        deviceType,
+        deviceName: deviceName || `Hikvision ${deviceType} at ${ipAddress}`,
+        location: location || "Unknown",
+        enabled: true,
+      },
+      create: {
+        deviceId,
+        ipAddress,
+        port,
+        username,
+        password,
+        deviceType,
+        deviceName: deviceName || `Hikvision ${deviceType} at ${ipAddress}`,
+        location: location || "Unknown",
+        enabled: true,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `Connected to Hikvision ${deviceType} at ${ipAddress}:${port}`,
+      deviceType: device.deviceType,
+    });
+  } catch (error) {
+    console.error("[Hikvision] Connection error:", error);
+    res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to connect to device",
+    });
+  }
+};
+
+/**
+ * Get access control events from Hikvision
+ */
+export const getAccessControlEvents: RequestHandler<
+  { deviceId: string },
+  { success: boolean; events: any[]; message: string }
+> = async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+
+    if (!deviceId) {
+      return res.status(400).json({
+        success: false,
+        events: [],
+        message: "Device ID is required",
+      });
+    }
+
+    const device = await db.hikvisionDevice.findUnique({
+      where: { deviceId },
+    });
+
+    if (!device) {
+      return res.status(404).json({
+        success: false,
+        events: [],
+        message: "Device not found",
+      });
+    }
+
+    // Fetch recent access control events
+    const events = await db.accessControlEvent.findMany({
+      where: { deviceId },
+      orderBy: { eventTime: "desc" },
+      take: 50,
+    });
+
+    res.json({
+      success: true,
+      events,
+      message: `Retrieved ${events.length} access control events`,
+    });
+  } catch (error) {
+    console.error("[Hikvision] Events error:", error);
+    res.status(500).json({
+      success: false,
+      events: [],
+      message:
+        error instanceof Error ? error.message : "Failed to fetch events",
+    });
+  }
+};
+
+/**
+ * Get surveillance events from Hikvision
+ */
+export const getSurveillanceEvents: RequestHandler<
+  { cameraId: string },
+  { success: boolean; events: any[]; message: string }
+> = async (req, res) => {
+  try {
+    const { cameraId } = req.params;
+
+    if (!cameraId) {
+      return res.status(400).json({
+        success: false,
+        events: [],
+        message: "Camera ID is required",
+      });
+    }
+
+    // Fetch recent surveillance events
+    const events = await db.surveillanceEvent.findMany({
+      where: { cameraId },
+      orderBy: { eventTime: "desc" },
+      take: 50,
+    });
+
+    res.json({
+      success: true,
+      events,
+      message: `Retrieved ${events.length} surveillance events`,
+    });
+  } catch (error) {
+    console.error("[Hikvision] Surveillance error:", error);
+    res.status(500).json({
+      success: false,
+      events: [],
+      message:
+        error instanceof Error ? error.message : "Failed to fetch events",
     });
   }
 };
