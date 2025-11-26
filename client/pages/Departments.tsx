@@ -143,15 +143,23 @@ export default function DepartmentsPage() {
           description: "Department updated successfully",
         });
       } else {
+        console.log("[Departments] Creating department with data:", deptFormData);
         const response = await fetch("/api/departments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(deptFormData),
         });
 
-        if (!response.ok) throw new Error("Failed to create department");
+        console.log("[Departments] Response status:", response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("[Departments] Error response:", errorText);
+          throw new Error(`Failed to create department: ${response.status} ${errorText}`);
+        }
 
         const result = await response.json();
+        console.log("[Departments] Created successfully:", result);
         setDepartments((prev) => [...prev, result.department]);
 
         toast({
