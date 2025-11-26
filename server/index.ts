@@ -22,6 +22,9 @@ import {
   testZKtecoConnection,
   syncZKtecoAttendance,
   getZKtecoRealtime,
+  testHikvisionConnection,
+  getAccessControlEvents,
+  getSurveillanceEvents,
 } from "./routes/hrm";
 import { handleSendWhatsApp, testWhatsAppConnection } from "./routes/whatsapp";
 import {
