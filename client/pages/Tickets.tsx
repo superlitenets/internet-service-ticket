@@ -90,6 +90,10 @@ interface Customer {
   name: string;
   email: string;
   phone: string;
+  location?: string;
+  apartment?: string;
+  roomNumber?: string;
+  streetAddress?: string;
 }
 
 interface Employee {
