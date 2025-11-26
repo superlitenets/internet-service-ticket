@@ -125,6 +125,8 @@ export async function getTicketById(id: string): Promise<Ticket> {
 export async function createTicket(data: {
   customerId: string;
   userId?: string;
+  teamGroupId?: string;
+  assignedTeamMemberId?: string;
   subject: string;
   description: string;
   category?: string;
