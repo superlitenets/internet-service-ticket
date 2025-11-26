@@ -130,7 +130,7 @@ export const getCustomerById: RequestHandler = async (req, res) => {
 export const updateCustomer: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, accountType, status } = req.body;
+    const { name, email, phone, accountType, status, location, apartment, roomNumber, streetAddress } = req.body;
 
     const customer = await db.customer.findUnique({
       where: { id },
@@ -150,6 +150,10 @@ export const updateCustomer: RequestHandler = async (req, res) => {
     if (phone !== undefined) updateData.phone = phone;
     if (accountType !== undefined) updateData.accountType = accountType;
     if (status !== undefined) updateData.status = status;
+    if (location !== undefined) updateData.location = location;
+    if (apartment !== undefined) updateData.apartment = apartment;
+    if (roomNumber !== undefined) updateData.roomNumber = roomNumber;
+    if (streetAddress !== undefined) updateData.streetAddress = streetAddress;
 
     const updatedCustomer = await db.customer.update({
       where: { id },
