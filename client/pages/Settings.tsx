@@ -86,6 +86,22 @@ import {
   saveCompanySettings,
   type CompanySettings,
 } from "@/lib/company-settings-storage";
+import {
+  saveSmsSettingsApi,
+  getSmsSettingsApi,
+  saveSmsTemplatesApi,
+  getSmsTemplatesApi,
+  saveWhatsAppSettingsApi,
+  getWhatsAppSettingsApi,
+  saveMpesaSettingsApi,
+  getMpesaSettingsApi,
+  saveCompanySettingsApi,
+  getCompanySettingsApi,
+  saveDeductionSettingsApi,
+  getDeductionSettingsApi,
+  saveNotificationPrefsApi,
+  getNotificationPrefsApi,
+} from "@/lib/settings-client";
 
 export default function SettingsPage() {
   const { toast } = useToast();
