@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { PrismaClient } from "./generated/prisma/client.js";
 import { hashSync } from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
