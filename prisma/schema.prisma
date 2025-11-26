@@ -183,6 +183,58 @@ model Ticket {
   @@index([ticketId])
 }
 
+// Departments (HRM)
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  manager     String?  // Employee ID of department manager
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  employees TeamMember[]
+
+  @@index([name])
+}
+
+// Team Groups (for organizing employees into teams)
+model TeamGroup {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  departmentId String?
+  manager     String?  // Employee ID of team lead
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  members     TeamMember[]
+
+  @@index([departmentId])
+  @@index([name])
+}
+
+// Team Members (associates employees with teams/departments)
+model TeamMember {
+  id          String   @id @default(cuid())
+  employeeId  String
+  departmentId String?
+  teamGroupId String?
+  role        String?  // Member, Lead, Manager
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  department  Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  teamGroup   TeamGroup?  @relation(fields: [teamGroupId], references: [id], onDelete: SetNull)
+
+  @@unique([employeeId, departmentId, teamGroupId])
+  @@index([employeeId])
+  @@index([departmentId])
+  @@index([teamGroupId])
+}
+
 // Employees (HRM)
 model Employee {
   id              String   @id @default(cuid())
@@ -192,7 +244,7 @@ model Employee {
   email           String   @unique
   phone           String   @unique
   position        String?
-  department      String?
+  department      String?  // Kept for backward compatibility
   salary          Float?
   hireDate        DateTime
   status          String   @default("active") // active, on_leave, inactive
