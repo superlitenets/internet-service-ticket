@@ -353,6 +353,25 @@ export default function SettingsPage() {
     setSmsSettings((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleSaveTicketPrefix = async () => {
+    try {
+      setSavingTicketPrefix(true);
+      await setTicketPrefix(ticketPrefix);
+      toast({
+        title: "Success",
+        description: "Ticket prefix updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to save ticket prefix: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setSavingTicketPrefix(false);
+    }
+  };
+
   const handleCompanySettingChange = (key: string, value: string) => {
     setCompanySettings((prev) => ({ ...prev, [key]: value }));
   };
