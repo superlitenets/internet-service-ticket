@@ -94,20 +94,6 @@ export default function Layout({ children }: LayoutProps) {
         { path: "/accounting", label: "General Accounting", icon: BarChart3 },
       ],
     },
-    {
-      label: "Mikrotik ISP",
-      icon: Wifi,
-      subItems: [
-        { path: "/mikrotik/accounts", label: "Accounts", icon: Users },
-        { path: "/mikrotik/billing", label: "Billing", icon: DollarSign },
-        { path: "/mikrotik/monitoring", label: "Monitoring", icon: TrendingUp },
-        {
-          path: "/mikrotik/routeros",
-          label: "RouterOS Integration",
-          icon: Wifi,
-        },
-      ],
-    },
     { path: "/reports", label: "Reports", icon: FileText },
     { path: "/users", label: "User Management", icon: Users },
     { path: "/landing-content", label: "Landing Page", icon: Edit },
