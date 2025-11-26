@@ -25,12 +25,17 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tickets      Ticket[]
-  payments     Payment[]
-  employees    Employee?
-  accounts     Account[]
-  leads        Lead[] @relation("leads")
-  ticketReplies TicketReply[]
+  tickets           Ticket[]
+  payments          Payment[]
+  employees         Employee?
+  accounts          Account[]
+  leads             Lead[] @relation("leads")
+  ticketReplies     TicketReply[]
+  ticketComments    TicketComment[]
+  assignedTasks     TicketTask[] @relation("assignee")
+  timeLogs          TimeLog[]
+  activityLogs      ActivityLog[]
+  performanceMetrics PerformanceMetric[]
 
   @@index([email])
   @@index([phone])
