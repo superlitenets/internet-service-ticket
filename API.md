@@ -44,6 +44,7 @@ All responses are in JSON format with the following structure:
 Login with email and password to receive a JWT token.
 
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -52,6 +53,7 @@ Login with email and password to receive a JWT token.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -73,6 +75,7 @@ Login with email and password to receive a JWT token.
 Register a new user account.
 
 **Request:**
+
 ```json
 {
   "username": "john_doe",
@@ -83,6 +86,7 @@ Register a new user account.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -104,11 +108,13 @@ Register a new user account.
 Get current authenticated user details.
 
 **Headers:**
+
 ```
 Authorization: Bearer YOUR_TOKEN
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -132,10 +138,12 @@ Authorization: Bearer YOUR_TOKEN
 Get list of all customers.
 
 **Query Parameters:**
+
 - `limit`: Number of results (default: 100)
 - `offset`: Pagination offset (default: 0)
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -150,7 +158,7 @@ Get list of all customers.
       "country": "Kenya",
       "account_number": "CUST-001",
       "status": "active",
-      "balance": 1500.00,
+      "balance": 1500.0,
       "created_at": "2024-01-15 10:30:00"
     }
   ]
@@ -162,6 +170,7 @@ Get list of all customers.
 Create a new customer.
 
 **Request:**
+
 ```json
 {
   "name": "John Doe",
@@ -176,6 +185,7 @@ Create a new customer.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -194,6 +204,7 @@ Create a new customer.
 Get customer details.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -207,7 +218,7 @@ Get customer details.
     "country": "Kenya",
     "account_number": "CUST-001",
     "status": "active",
-    "balance": 1500.00,
+    "balance": 1500.0,
     "created_at": "2024-01-15 10:30:00",
     "updated_at": "2024-01-16 14:20:00"
   }
@@ -219,6 +230,7 @@ Get customer details.
 Update customer information.
 
 **Request:**
+
 ```json
 {
   "name": "Jane Doe",
@@ -229,6 +241,7 @@ Update customer information.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -250,6 +263,7 @@ Update customer information.
 Get list of invoices.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -259,9 +273,9 @@ Get list of invoices.
       "invoice_number": "INV-202401-0001",
       "customer_id": 1,
       "customer_name": "John Doe",
-      "amount": 5000.00,
-      "tax": 500.00,
-      "total": 5500.00,
+      "amount": 5000.0,
+      "tax": 500.0,
+      "total": 5500.0,
       "status": "unpaid",
       "due_date": "2024-02-15",
       "created_at": "2024-01-15 10:30:00"
@@ -275,18 +289,20 @@ Get list of invoices.
 Create a new invoice.
 
 **Request:**
+
 ```json
 {
   "customer_id": 1,
-  "amount": 5000.00,
-  "tax": 500.00,
-  "total": 5500.00,
+  "amount": 5000.0,
+  "tax": 500.0,
+  "total": 5500.0,
   "status": "unpaid",
   "due_date": "2024-02-15"
 }
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -294,7 +310,7 @@ Create a new invoice.
     "id": 1,
     "invoice_number": "INV-202401-0001",
     "customer_id": 1,
-    "total": 5500.00,
+    "total": 5500.0,
     "status": "unpaid"
   }
 }
@@ -313,6 +329,7 @@ Get invoice details.
 Get list of support tickets.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -336,6 +353,7 @@ Get list of support tickets.
 Create a new support ticket.
 
 **Request:**
+
 ```json
 {
   "customer_id": 1,
@@ -347,6 +365,7 @@ Create a new support ticket.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -363,6 +382,7 @@ Create a new support ticket.
 Get ticket details with replies.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -389,6 +409,7 @@ Get ticket details with replies.
 Add reply to ticket.
 
 **Request:**
+
 ```json
 {
   "message": "We found the issue. Please restart your modem.",
@@ -397,6 +418,7 @@ Add reply to ticket.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -418,6 +440,7 @@ Add reply to ticket.
 Get list of payments.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -426,7 +449,7 @@ Get list of payments.
       "id": 1,
       "invoice_id": 1,
       "customer_id": 1,
-      "amount": 5500.00,
+      "amount": 5500.0,
       "payment_method": "mpesa",
       "status": "completed",
       "created_at": "2024-01-15 10:30:00"
@@ -440,17 +463,19 @@ Get list of payments.
 Create a new payment.
 
 **Request:**
+
 ```json
 {
   "invoice_id": 1,
   "customer_id": 1,
-  "amount": 5500.00,
+  "amount": 5500.0,
   "payment_method": "bank_transfer",
   "reference_number": "TRF-12345"
 }
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -470,6 +495,7 @@ Create a new payment.
 Get dashboard statistics.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -477,7 +503,7 @@ Get dashboard statistics.
     "total_customers": 150,
     "total_invoices": 450,
     "unpaid_invoices": 45,
-    "total_payments": 125000.00,
+    "total_payments": 125000.0,
     "open_tickets": 12,
     "recent_leads": []
   }
@@ -489,13 +515,14 @@ Get dashboard statistics.
 Get revenue report.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
   "data": [
     {
       "date": "2024-01-15",
-      "total": 15000.00
+      "total": 15000.0
     }
   ]
 }
@@ -510,6 +537,7 @@ Get revenue report.
 Initiate M-Pesa STK push payment.
 
 **Request:**
+
 ```json
 {
   "phone": "+254712345678",
@@ -520,6 +548,7 @@ Initiate M-Pesa STK push payment.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -536,6 +565,7 @@ Initiate M-Pesa STK push payment.
 Send SMS via configured provider (Advanta SMS).
 
 **Request:**
+
 ```json
 {
   "to": "+254712345678",
@@ -549,6 +579,7 @@ Send SMS via configured provider (Advanta SMS).
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -559,6 +590,7 @@ Send SMS via configured provider (Advanta SMS).
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -567,12 +599,14 @@ Send SMS via configured provider (Advanta SMS).
 ```
 
 **Advanta SMS Configuration:**
+
 - **Provider**: advanta
 - **Required Fields**: apiKey, partnerId, shortcode, customApiUrl
 - **Phone Format**: Automatically converts to E.164 format (e.g., 254712345678)
 - **Message Length**: 1-1600 characters
 
 **Example Test Request:**
+
 ```bash
 curl -X POST https://yourdomain.com/api/sms/send \
   -H "Content-Type: application/json" \
@@ -592,6 +626,7 @@ curl -X POST https://yourdomain.com/api/sms/send \
 Get MikroTik router interfaces.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -615,6 +650,7 @@ Get MikroTik router interfaces.
 Get current SMS provider configuration.
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -634,6 +670,7 @@ Get current SMS provider configuration.
 Update SMS provider configuration.
 
 **Request:**
+
 ```json
 {
   "provider": "advanta",
@@ -646,6 +683,7 @@ Update SMS provider configuration.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -676,6 +714,7 @@ Get lead details.
 ### Authentication Error
 
 **Response (401):**
+
 ```json
 {
   "success": false,
@@ -686,6 +725,7 @@ Get lead details.
 ### Validation Error
 
 **Response (400):**
+
 ```json
 {
   "success": false,
@@ -696,6 +736,7 @@ Get lead details.
 ### Server Error
 
 **Response (500):**
+
 ```json
 {
   "success": false,

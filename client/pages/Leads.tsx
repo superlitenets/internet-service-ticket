@@ -52,9 +52,7 @@ import {
   getSmsTemplates,
 } from "@/lib/sms-templates";
 import { getSmsSettings } from "@/lib/sms-settings-storage";
-import {
-  sendWhatsAppUnifiedToPhone,
-} from "@/lib/whatsapp-unified-client";
+import { sendWhatsAppUnifiedToPhone } from "@/lib/whatsapp-unified-client";
 import { getWhatsAppConfig } from "@/lib/whatsapp-settings-storage";
 import { getEmployees } from "@/lib/employees-client";
 
@@ -332,7 +330,10 @@ export default function Leads() {
         try {
           await sendLeadNotifications("lead_created", newLead);
         } catch (smsError) {
-          console.warn("Notification sending failed, but lead created successfully:", smsError);
+          console.warn(
+            "Notification sending failed, but lead created successfully:",
+            smsError,
+          );
         }
 
         toast({
@@ -442,15 +443,26 @@ export default function Leads() {
         if (selectedLead) {
           try {
             const technicianInfo = employees.find(
-              (e) => e.id === convertForm.assignedTo || e.name === convertForm.assignedTo
+              (e) =>
+                e.id === convertForm.assignedTo ||
+                e.name === convertForm.assignedTo,
             );
-            await sendLeadNotifications("lead_converted", selectedLead,
+            await sendLeadNotifications(
+              "lead_converted",
+              selectedLead,
               technicianInfo
-                ? { name: technicianInfo.name, phone: technicianInfo.phone, id: technicianInfo.id }
-                : undefined
+                ? {
+                    name: technicianInfo.name,
+                    phone: technicianInfo.phone,
+                    id: technicianInfo.id,
+                  }
+                : undefined,
             );
           } catch (smsError) {
-            console.warn("Notification sending failed, but lead converted successfully:", smsError);
+            console.warn(
+              "Notification sending failed, but lead converted successfully:",
+              smsError,
+            );
           }
         }
       }

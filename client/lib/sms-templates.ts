@@ -5,7 +5,12 @@
 
 export interface SmsTemplate {
   id: string;
-  eventType: "ticket_created" | "ticket_assigned" | "ticket_status_change" | "lead_created" | "lead_converted";
+  eventType:
+    | "ticket_created"
+    | "ticket_assigned"
+    | "ticket_status_change"
+    | "lead_created"
+    | "lead_converted";
   recipientType: "customer" | "technician" | "sales";
   name: string;
   message: string;
@@ -110,7 +115,14 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Lead Created - Sales",
     message:
       "New lead: {{customerName}} ({{phone}}) at {{location}}. Package: {{package}}. Install fee: {{agreedInstallAmount}}. Notes: {{notes}}",
-    variables: ["customerName", "phone", "location", "package", "agreedInstallAmount", "notes"],
+    variables: [
+      "customerName",
+      "phone",
+      "location",
+      "package",
+      "agreedInstallAmount",
+      "notes",
+    ],
   },
   {
     id: "template_lead_converted_customer",
@@ -119,7 +131,12 @@ const DEFAULT_TEMPLATES: SmsTemplate[] = [
     name: "Lead Converted - Customer",
     message:
       "Hi {{customerName}}, your lead has been converted to ticket #{{ticketId}}. Your technician {{technicianName}} will contact you soon at {{technicianPhone}}. Thank you!",
-    variables: ["customerName", "ticketId", "technicianName", "technicianPhone"],
+    variables: [
+      "customerName",
+      "ticketId",
+      "technicianName",
+      "technicianPhone",
+    ],
   },
   {
     id: "template_lead_converted_sales",

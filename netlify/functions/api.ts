@@ -61,7 +61,7 @@ const handler: Handler = async (event) => {
     path: event.path,
     rawPath: (event as any).rawPath,
     rawUrl: (event as any).rawUrl,
-    method: event.httpMethod
+    method: event.httpMethod,
   });
 
   // Handle CORS preflight
@@ -79,7 +79,10 @@ const handler: Handler = async (event) => {
     if ((path === "/" || !path.includes("api")) && (event as any).rawUrl) {
       const url = new URL((event as any).rawUrl, "http://localhost");
       path = url.pathname;
-    } else if ((path === "/" || !path.includes("api")) && (event as any).rawPath) {
+    } else if (
+      (path === "/" || !path.includes("api")) &&
+      (event as any).rawPath
+    ) {
       path = (event as any).rawPath;
     }
 
@@ -93,7 +96,11 @@ const handler: Handler = async (event) => {
       path = "/" + path;
     }
 
-    console.log("Parsed path:", { original: event.path, final: path, method: event.httpMethod });
+    console.log("Parsed path:", {
+      original: event.path,
+      final: path,
+      method: event.httpMethod,
+    });
 
     const method = event.httpMethod;
 
@@ -2024,7 +2031,11 @@ const handler: Handler = async (event) => {
       }
     }
 
-    console.warn("No route matched", { path, method, originalPath: event.path });
+    console.warn("No route matched", {
+      path,
+      method,
+      originalPath: event.path,
+    });
     return jsonResponse(404, {
       error: "Not found",
       debug: { path, method, originalPath: event.path },

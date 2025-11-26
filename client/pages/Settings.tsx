@@ -86,10 +86,7 @@ import {
   saveCompanySettings,
   type CompanySettings,
 } from "@/lib/company-settings-storage";
-import {
-  getTicketPrefix,
-  setTicketPrefix,
-} from "@/lib/ticket-settings-api";
+import { getTicketPrefix, setTicketPrefix } from "@/lib/ticket-settings-api";
 import {
   saveSmsSettingsApi,
   getSmsSettingsApi,
@@ -649,7 +646,8 @@ export default function SettingsPage() {
         ) {
           toast({
             title: "Error",
-            description: "Please configure all Advanta SMS credentials (API Key, Partner ID, Shortcode, and API Endpoint URL)",
+            description:
+              "Please configure all Advanta SMS credentials (API Key, Partner ID, Shortcode, and API Endpoint URL)",
             variant: "destructive",
           });
           return;
@@ -875,7 +873,8 @@ export default function SettingsPage() {
                           placeholder="https://api.advantasms.com/send"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Your Advanta SMS API endpoint. Required for sending SMS messages.
+                          Your Advanta SMS API endpoint. Required for sending
+                          SMS messages.
                         </p>
                       </div>
                     </>
@@ -920,12 +919,21 @@ export default function SettingsPage() {
                     {smsSettings.provider === "advanta" && (
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <p className="text-xs text-muted-foreground">Provider</p>
+                          <p className="text-xs text-muted-foreground">
+                            Provider
+                          </p>
                           <p className="text-sm font-medium">Advanta SMS</p>
                         </div>
                         <div>
-                          <p className="text-xs text-muted-foreground">Status</p>
-                          <Badge variant={smsSettings.enabled ? "default" : "secondary"} className="gap-1">
+                          <p className="text-xs text-muted-foreground">
+                            Status
+                          </p>
+                          <Badge
+                            variant={
+                              smsSettings.enabled ? "default" : "secondary"
+                            }
+                            className="gap-1"
+                          >
                             {smsSettings.enabled ? (
                               <>
                                 <CheckCircle2 size={12} />
@@ -948,7 +956,8 @@ export default function SettingsPage() {
                       Test Phone Number
                     </label>
                     <p className="text-xs text-muted-foreground mb-2">
-                      Enter your phone number to receive a test SMS. Format: +254712345678 or 0712345678
+                      Enter your phone number to receive a test SMS. Format:
+                      +254712345678 or 0712345678
                     </p>
                     <Input
                       type="tel"
@@ -979,7 +988,11 @@ export default function SettingsPage() {
                       !testPhoneNumber.trim() ||
                       !smsSettings.customApiUrl
                     }
-                    title={!smsSettings.customApiUrl ? "Please configure API Endpoint URL first" : ""}
+                    title={
+                      !smsSettings.customApiUrl
+                        ? "Please configure API Endpoint URL first"
+                        : ""
+                    }
                   >
                     <MessageSquare size={16} />
                     {testingSms ? "Testing..." : "Test SMS"}
@@ -2580,7 +2593,8 @@ export default function SettingsPage() {
                     Ticket ID Configuration
                   </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Configure how ticket IDs are generated. Format: PREFIX + sequential number (000001-999999)
+                    Configure how ticket IDs are generated. Format: PREFIX +
+                    sequential number (000001-999999)
                   </p>
                 </div>
 
@@ -2592,7 +2606,9 @@ export default function SettingsPage() {
                     <div className="flex gap-2">
                       <Input
                         value={ticketPrefix}
-                        onChange={(e) => setTicketPrefix(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setTicketPrefix(e.target.value.toUpperCase())
+                        }
                         placeholder="e.g., TKT"
                         maxLength={5}
                         className="flex-1"
@@ -2602,7 +2618,8 @@ export default function SettingsPage() {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Example: First ticket will be {ticketPrefix}000001, second will be {ticketPrefix}000002, etc.
+                      Example: First ticket will be {ticketPrefix}000001, second
+                      will be {ticketPrefix}000002, etc.
                     </p>
                   </div>
 
