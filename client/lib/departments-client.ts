@@ -34,7 +34,7 @@ export async function getTeamGroups(): Promise<TeamGroup[]> {
   }
 
   const result = await response.json();
-  return result.teamGroups || result;
+  return result.teamGroups || [];
 }
 
 /**
