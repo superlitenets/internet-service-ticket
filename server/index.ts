@@ -114,6 +114,7 @@ import {
   updateTeamGroup,
   deleteTeamGroup,
   addTeamMember,
+  getTeamMembers,
   getEmployeeTeamMemberships,
 } from "./routes/departments";
 import {
