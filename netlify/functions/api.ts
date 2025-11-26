@@ -2002,9 +2002,10 @@ const handler: Handler = async (event) => {
       }
     }
 
+    console.warn("No route matched", { path, method, originalPath: event.path });
     return jsonResponse(404, {
       error: "Not found",
-      debug: { path, method },
+      debug: { path, method, originalPath: event.path },
     });
   } catch (error) {
     console.error("Error:", error);
