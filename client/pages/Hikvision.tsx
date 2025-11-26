@@ -21,32 +21,21 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
   Camera,
-  Lock,
-  AlertTriangle,
   Plus,
   CheckCircle2,
 } from "lucide-react";
 import {
   testHikvisionConnection,
   getAccessControlEvents,
-  getSurveillanceEvents,
   type HikvisionDevice,
   type AccessControlEvent,
-  type SurveillanceEvent,
 } from "@/lib/hikvision-client";
 
 export default function HikvisionPage() {
   const { toast } = useToast();
   const [devices, setDevices] = useState<any[]>([]);
-  const [accessEvents, setAccessEvents] = useState<AccessControlEvent[]>([]);
-  const [surveillanceEvents, setSurveillanceEvents] = useState<SurveillanceEvent[]>([]);
+  const [attendanceEvents, setAttendanceEvents] = useState<AccessControlEvent[]>([]);
   const [deviceDialogOpen, setDeviceDialogOpen] = useState(false);
   const [testing, setTesting] = useState(false);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -56,9 +45,9 @@ export default function HikvisionPage() {
     port: 8000,
     username: "admin",
     password: "",
-    deviceType: "camera",
-    deviceName: "Main Entrance Camera",
-    location: "Front Gate",
+    deviceType: "access_control",
+    deviceName: "Entrance Access Control",
+    location: "Main Entrance",
   });
 
   const handleTestConnection = async () => {
