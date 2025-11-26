@@ -4,74 +4,90 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowLeft, Send, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
-interface Reply {
+interface TicketReply {
   id: string;
-  author: string;
-  authorRole: "customer" | "support" | "admin";
+  ticketId: string;
+  userId: string;
+  name?: string;
+  email?: string;
   message: string;
-  timestamp: string;
+  isInternal: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Ticket {
   id: string;
-  customer: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerLocation?: string;
-  apartment?: string;
-  roomNumber?: string;
-  title: string;
+  ticketId: string;
+  customerId: string;
+  userId?: string;
+  subject: string;
   description: string;
-  status: "open" | "in-progress" | "pending" | "resolved";
+  category?: string;
   priority: "high" | "medium" | "low";
+  status: "open" | "in-progress" | "bounced" | "waiting" | "resolved" | "closed";
+  resolution?: string;
+  customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
+  user_name?: string;
+  user_email?: string;
   createdAt: string;
   updatedAt: string;
-  assignedTo: string;
-  smsNotificationsSent: number;
-  replies?: Reply[];
 }
 
 export default function TicketDetailPage() {
   const { ticketId } = useParams<{ ticketId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
+
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [replies, setReplies] = useState<Reply[]>([]);
+  const [replies, setReplies] = useState<TicketReply[]>([]);
   const [replyMessage, setReplyMessage] = useState("");
+  const [isInternal, setIsInternal] = useState(false);
   const [sendingReply, setSendingReply] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [newStatus, setNewStatus] = useState<string>("");
 
-  // Load ticket from localStorage or state
+  // Load ticket and replies on mount
   useEffect(() => {
     if (!ticketId) {
       navigate("/tickets");
       return;
     }
 
-    try {
-      // Try to get all tickets from localStorage
-      const ticketsData = localStorage.getItem("tickets_data");
-      if (ticketsData) {
-        const tickets: Ticket[] = JSON.parse(ticketsData);
-        const foundTicket = tickets.find((t) => t.id === ticketId);
-        if (foundTicket) {
-          setTicket(foundTicket);
-          setReplies(foundTicket.replies || []);
-          setLoading(false);
-          return;
-        }
-      }
+    loadTicketAndReplies();
+  }, [ticketId]);
 
-      // If not found in localStorage, show error
-      toast({
-        title: "Error",
-        description: "Ticket not found",
-        variant: "destructive",
-      });
-      navigate("/tickets");
+  const loadTicketAndReplies = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch ticket
+      const ticketRes = await fetch(`/api/tickets/${ticketId}`);
+      if (!ticketRes.ok) throw new Error("Failed to fetch ticket");
+      const ticketData = await ticketRes.json();
+      setTicket(ticketData.ticket);
+      setNewStatus(ticketData.ticket.status);
+
+      // Fetch replies
+      const repliesRes = await fetch(`/api/tickets/${ticketId}/replies`);
+      if (repliesRes.ok) {
+        const repliesData = await repliesRes.json();
+        setReplies(repliesData.replies || []);
+      }
     } catch (error) {
       console.error("Failed to load ticket:", error);
       toast({
@@ -80,11 +96,13 @@ export default function TicketDetailPage() {
         variant: "destructive",
       });
       navigate("/tickets");
+    } finally {
+      setLoading(false);
     }
-  }, [ticketId, navigate, toast]);
+  };
 
   const handleAddReply = async () => {
-    if (!replyMessage.trim() || !ticket) {
+    if (!replyMessage.trim() || !ticket || !user) {
       toast({
         title: "Error",
         description: "Please enter a message",
@@ -95,40 +113,30 @@ export default function TicketDetailPage() {
 
     setSendingReply(true);
     try {
-      const newReply: Reply = {
-        id: `reply_${Date.now()}`,
-        author: "Support Team",
-        authorRole: "support",
-        message: replyMessage,
-        timestamp: new Date().toLocaleString(),
-      };
+      const response = await fetch("/api/ticket-replies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ticketId: ticket.id,
+          userId: user.id,
+          message: replyMessage,
+          isInternal,
+        }),
+      });
 
-      const updatedReplies = [...replies, newReply];
-      setReplies(updatedReplies);
+      if (!response.ok) throw new Error("Failed to add reply");
 
-      // Update ticket in localStorage
-      const ticketsData = localStorage.getItem("tickets_data");
-      if (ticketsData) {
-        const tickets: Ticket[] = JSON.parse(ticketsData);
-        const updatedTickets = tickets.map((t) =>
-          t.id === ticket.id
-            ? {
-                ...t,
-                replies: updatedReplies,
-                updatedAt: new Date().toLocaleString(),
-              }
-            : t,
-        );
-        localStorage.setItem("tickets_data", JSON.stringify(updatedTickets));
-      }
-
+      const result = await response.json();
+      setReplies((prev) => [...prev, result.reply]);
       setReplyMessage("");
+      setIsInternal(false);
+
       toast({
         title: "Success",
         description: "Reply added successfully",
       });
     } catch (error) {
-      console.error("Failed to add reply:", error);
+      console.error("Error adding reply:", error);
       toast({
         title: "Error",
         description: "Failed to add reply",
@@ -136,6 +144,74 @@ export default function TicketDetailPage() {
       });
     } finally {
       setSendingReply(false);
+    }
+  };
+
+  const handleStatusChange = async (status: string) => {
+    if (!ticket) return;
+
+    try {
+      const response = await fetch(`/api/tickets/${ticket.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+
+      const result = await response.json();
+      setTicket(result.ticket);
+      setNewStatus(status);
+
+      toast({
+        title: "Success",
+        description: "Ticket status updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "open":
+        return <AlertCircle size={16} className="text-destructive" />;
+      case "in-progress":
+        return <Clock size={16} className="text-secondary" />;
+      case "bounced":
+        return <AlertCircle size={16} className="text-orange-500" />;
+      case "waiting":
+        return <Clock size={16} className="text-yellow-500" />;
+      case "resolved":
+        return <CheckCircle2 size={16} className="text-accent" />;
+      case "closed":
+        return <CheckCircle2 size={16} className="text-muted-foreground" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "open":
+        return "bg-destructive/10 text-destructive";
+      case "in-progress":
+        return "bg-secondary/10 text-secondary";
+      case "bounced":
+        return "bg-orange-500/10 text-orange-500";
+      case "waiting":
+        return "bg-yellow-500/10 text-yellow-500";
+      case "resolved":
+        return "bg-accent/10 text-accent";
+      case "closed":
+        return "bg-muted/10 text-muted-foreground";
+      default:
+        return "";
     }
   };
 
@@ -148,48 +224,14 @@ export default function TicketDetailPage() {
       case "low":
         return "bg-muted/10 text-muted-foreground";
       default:
-        return "bg-muted/10 text-muted-foreground";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "resolved":
-        return "bg-accent/10 text-accent border-accent/20";
-      case "in-progress":
-        return "bg-secondary/10 text-secondary border-secondary/20";
-      case "open":
-        return "bg-destructive/10 text-destructive border-destructive/20";
-      case "pending":
-        return "bg-primary/10 text-primary border-primary/20";
-      default:
-        return "bg-muted/10 text-muted-foreground border-muted/20";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    return status === "in-progress"
-      ? "In Progress"
-      : status.charAt(0).toUpperCase() + status.slice(1);
-  };
-
-  const getAuthorColor = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "bg-primary/10 text-primary";
-      case "support":
-        return "bg-secondary/10 text-secondary";
-      case "customer":
-        return "bg-muted/10 text-muted-foreground";
-      default:
-        return "bg-muted/10 text-muted-foreground";
+        return "";
     }
   };
 
   if (loading) {
     return (
       <Layout>
-        <div className="p-6 md:p-8 flex items-center justify-center min-h-screen">
+        <div className="p-6 md:p-8">
           <p className="text-muted-foreground">Loading ticket...</p>
         </div>
       </Layout>
@@ -199,14 +241,8 @@ export default function TicketDetailPage() {
   if (!ticket) {
     return (
       <Layout>
-        <div className="p-6 md:p-8 space-y-4">
-          <Button variant="ghost" onClick={() => navigate("/tickets")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Tickets
-          </Button>
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Ticket not found</p>
-          </Card>
+        <div className="p-6 md:p-8">
+          <p className="text-destructive">Ticket not found</p>
         </div>
       </Layout>
     );
@@ -214,155 +250,237 @@ export default function TicketDetailPage() {
 
   return (
     <Layout>
-      <div className="p-6 md:p-8 space-y-6 max-w-4xl">
-        {/* Header */}
-        <div className="space-y-4">
-          <Button variant="ghost" onClick={() => navigate("/tickets")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Tickets
-          </Button>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-              {ticket.title}
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Ticket {ticket.id} • Created {ticket.createdAt}
-            </p>
-          </div>
-        </div>
+      <div className="p-6 md:p-8 space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/tickets")}
+          className="gap-2"
+        >
+          <ArrowLeft size={16} />
+          Back to Tickets
+        </Button>
 
-        {/* Ticket Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-4 border-0 shadow-sm bg-muted/30">
-            <p className="text-xs text-muted-foreground mb-1">Customer</p>
-            <p className="font-semibold text-foreground">{ticket.customer}</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              {ticket.customerEmail}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {ticket.customerPhone}
-            </p>
-            {(ticket.apartment || ticket.roomNumber) && (
-              <>
-                {ticket.apartment && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Apt: {ticket.apartment}
-                  </p>
-                )}
-                {ticket.roomNumber && (
-                  <p className="text-sm text-muted-foreground">
-                    Room: {ticket.roomNumber}
-                  </p>
-                )}
-              </>
-            )}
-          </Card>
-
-          <Card className="p-4 border-0 shadow-sm bg-muted/30">
-            <p className="text-xs text-muted-foreground mb-1">
-              Status & Priority
-            </p>
-            <div className="flex gap-2 mt-2">
-              <Badge className={getStatusColor(ticket.status)}>
-                {getStatusLabel(ticket.status)}
-              </Badge>
-              <Badge className={getPriorityColor(ticket.priority)}>
-                {ticket.priority.charAt(0).toUpperCase() +
-                  ticket.priority.slice(1)}{" "}
-                Priority
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              Assigned to:{" "}
-              <span className="font-semibold">{ticket.assignedTo}</span>
-            </p>
-          </Card>
-        </div>
-
-        {ticket.customerLocation && (
-          <Card className="p-4 border-0 shadow-sm bg-muted/30">
-            <p className="text-xs text-muted-foreground mb-1">Location</p>
-            <p className="text-sm text-foreground">{ticket.customerLocation}</p>
-          </Card>
-        )}
-
-        {/* Original Description */}
-        <Card className="p-4 border-0 shadow-sm">
-          <p className="text-xs text-muted-foreground mb-2 font-semibold">
-            ORIGINAL TICKET
-          </p>
-          <p className="text-sm text-foreground whitespace-pre-wrap">
-            {ticket.description}
-          </p>
-        </Card>
-
-        {/* Conversation Thread */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-foreground text-lg">
-            Conversation ({replies.length})
-          </h3>
-
-          {replies.length === 0 ? (
-            <Card className="p-6 border-0 shadow-sm text-center">
-              <p className="text-muted-foreground">No replies yet</p>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {replies.map((reply) => (
-                <Card
-                  key={reply.id}
-                  className="p-4 border-0 shadow-sm bg-muted/30"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-foreground">
-                        {reply.author}
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className={`text-xs ${getAuthorColor(reply.authorRole)}`}
-                      >
-                        {reply.authorRole.charAt(0).toUpperCase() +
-                          reply.authorRole.slice(1)}
-                      </Badge>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {reply.timestamp}
-                    </span>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Ticket Details - Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Header */}
+            <Card className="p-6 border-0 shadow-sm">
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex-1">
+                    <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                      {ticket.subject}
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {ticket.ticketId}
+                    </p>
                   </div>
-                  <p className="text-sm text-foreground whitespace-pre-wrap">
-                    {reply.message}
-                  </p>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+                </div>
 
-        {/* Reply Input */}
-        <Card className="p-6 border-0 shadow-sm bg-muted/30">
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-foreground">
-              Add Reply
-            </label>
-            <textarea
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
-              placeholder="Type your reply here..."
-              className="w-full p-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              rows={3}
-              disabled={sendingReply}
-            />
-            <Button
-              onClick={handleAddReply}
-              disabled={sendingReply || !replyMessage.trim()}
-              className="w-full gap-2"
-            >
-              <Send size={16} />
-              {sendingReply ? "Sending..." : "Send Reply"}
-            </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant="outline"
+                    className={`gap-1.5 ${getStatusColor(ticket.status)}`}
+                  >
+                    {getStatusIcon(ticket.status)}
+                    {ticket.status.charAt(0).toUpperCase() +
+                      ticket.status.slice(1)}
+                  </Badge>
+                  <Badge
+                    variant="secondary"
+                    className={getPriorityColor(ticket.priority)}
+                  >
+                    {ticket.priority.charAt(0).toUpperCase() +
+                      ticket.priority.slice(1)}
+                  </Badge>
+                  {ticket.category && (
+                    <Badge variant="outline">{ticket.category}</Badge>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Description */}
+            <Card className="p-6 border-0 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-3">
+                Description
+              </h3>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {ticket.description}
+              </p>
+            </Card>
+
+            {/* Replies */}
+            <Card className="p-6 border-0 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-4">
+                Conversation ({replies.length})
+              </h3>
+
+              <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                {replies.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No replies yet. Be the first to reply!
+                  </p>
+                ) : (
+                  replies.map((reply) => (
+                    <div
+                      key={reply.id}
+                      className={`p-4 rounded-lg ${
+                        reply.isInternal
+                          ? "bg-orange-500/10 border border-orange-500/20"
+                          : "bg-muted/30 border border-border"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">
+                            {reply.name || "Unknown User"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {reply.email}
+                          </p>
+                        </div>
+                        {reply.isInternal && (
+                          <Badge variant="secondary" className="text-xs">
+                            Internal
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-foreground mb-2">
+                        {reply.message}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(reply.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Reply Form */}
+              <div className="space-y-3 border-t border-border pt-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Add Reply *
+                  </label>
+                  <textarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    placeholder="Type your reply here..."
+                    rows={4}
+                    className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="internal"
+                    checked={isInternal}
+                    onChange={(e) => setIsInternal(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <label htmlFor="internal" className="text-sm text-foreground">
+                    Internal note (only visible to staff)
+                  </label>
+                </div>
+
+                <Button
+                  onClick={handleAddReply}
+                  disabled={sendingReply}
+                  className="w-full gap-2"
+                >
+                  <Send size={16} />
+                  {sendingReply ? "Sending..." : "Send Reply"}
+                </Button>
+              </div>
+            </Card>
           </div>
-        </Card>
+
+          {/* Sidebar - Right Column */}
+          <div className="space-y-6">
+            {/* Status Management */}
+            <Card className="p-6 border-0 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-3">Status</h3>
+              <Select value={newStatus} onValueChange={handleStatusChange}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="open">Open</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="bounced">Bounced</SelectItem>
+                  <SelectItem value="waiting">Waiting</SelectItem>
+                  <SelectItem value="resolved">Resolved</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
+            </Card>
+
+            {/* Ticket Info */}
+            <Card className="p-6 border-0 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-3">
+                Ticket Info
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Created</p>
+                  <p className="text-foreground">
+                    {new Date(ticket.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Last Updated</p>
+                  <p className="text-foreground">
+                    {new Date(ticket.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Customer Info */}
+            <Card className="p-6 border-0 shadow-sm">
+              <h3 className="font-semibold text-foreground mb-3">
+                Customer
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Name</p>
+                  <p className="text-foreground">{ticket.customer_name}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Email</p>
+                  <p className="text-foreground">{ticket.customer_email}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Phone</p>
+                  <p className="text-foreground">{ticket.customer_phone}</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Assigned To */}
+            {ticket.user_name && (
+              <Card className="p-6 border-0 shadow-sm">
+                <h3 className="font-semibold text-foreground mb-3">
+                  Assigned To
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Agent</p>
+                    <p className="text-foreground">{ticket.user_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Email</p>
+                    <p className="text-foreground">{ticket.user_email}</p>
+                  </div>
+                </div>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </Layout>
   );
