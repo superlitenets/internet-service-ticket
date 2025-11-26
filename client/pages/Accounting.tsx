@@ -197,10 +197,7 @@ export function AccountingPage() {
           notes: formData.notes,
         };
         setTransactions((prev) => [newTransaction, ...prev]);
-        toast({
-          title: "Success",
-          description: "Transaction created successfully",
-        });
+        toast(getSaveNotification({ itemName: `Transaction "${newTransaction.title}"`, action: "created" }));
       }
     } catch (error) {
       toast({
