@@ -458,6 +458,8 @@ export default function TicketsPage() {
           description: formData.description,
           status: formData.status,
           priority: formData.priority,
+          teamGroupId: formData.teamGroupId || undefined,
+          assignedTeamMemberId: formData.assignedTeamMemberId || undefined,
         });
 
         setAllTickets((prev) =>
