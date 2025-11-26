@@ -218,11 +218,11 @@ export const getPerformance: RequestHandler<
  */
 export const testZKtecoConnection: RequestHandler<
   unknown,
-  { success: boolean; message: string; version?: string },
+  { success: boolean; message: string; version?: string; deviceId?: string },
   ZKtecoDeviceConfig
-> = (req, res) => {
+> = async (req, res) => {
   try {
-    const { ipAddress, port, username, password } = req.body;
+    const { ipAddress, port, username, password, deviceName, location } = req.body;
 
     // Validate required fields
     if (!ipAddress || !port || !username || !password) {
@@ -232,21 +232,48 @@ export const testZKtecoConnection: RequestHandler<
       });
     }
 
-    // Simulate ZKteco device connection
     console.log("[ZKteco] Testing connection to device:", {
       ipAddress,
       port,
       username,
     });
 
-    // In production, you would use a ZKteco SDK or API to connect
-    // For now, we'll simulate a successful connection
+    // In production, implement real TCP/HTTP connection to ZKteco device
+    // For now, we simulate a successful connection
+    const deviceId = `zk-${ipAddress.replace(/\./g, '-')}-${port}`;
+
+    // Save or update device configuration
+    const device = await db.zKtecoDevice.upsert({
+      where: { deviceId },
+      update: {
+        ipAddress,
+        port,
+        username,
+        password,
+        deviceName: deviceName || `ZKteco Device at ${ipAddress}`,
+        location: location || "Unknown",
+        enabled: true,
+      },
+      create: {
+        deviceId,
+        ipAddress,
+        port,
+        username,
+        password,
+        deviceName: deviceName || `ZKteco Device at ${ipAddress}`,
+        location: location || "Unknown",
+        enabled: true,
+      },
+    });
+
     res.json({
       success: true,
       message: `Connected to ZKteco40 device at ${ipAddress}:${port}`,
       version: "V5.3.1",
+      deviceId: device.id,
     });
   } catch (error) {
+    console.error("[ZKteco] Connection error:", error);
     res.status(500).json({
       success: false,
       message:
