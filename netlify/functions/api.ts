@@ -66,11 +66,16 @@ const handler: Handler = async (event) => {
 
   try {
     const body = await parseBody(event);
-    const path = event.path.replace("/.netlify/functions/api", "");
+    // Netlify redirects /api/* to /.netlify/functions/api, so the path won't have /api prefix
+    let path = event.path.replace("/.netlify/functions/api", "") || "/";
+    // Ensure path starts with /
+    if (!path.startsWith("/")) {
+      path = "/" + path;
+    }
     const method = event.httpMethod;
 
     // AUTH - Login
-    if (path === "/api/auth/login" && method === "POST") {
+    if (path === "/auth/login" && method === "POST") {
       const { identifier, password } = body;
 
       if (!identifier || !password) {
