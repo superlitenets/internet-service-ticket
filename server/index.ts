@@ -68,6 +68,46 @@ import {
   getTicketStats,
 } from "./routes/tickets";
 import {
+  createCustomer,
+  getCustomers,
+  getCustomerById,
+  updateCustomer,
+  deleteCustomer,
+} from "./routes/customers";
+import {
+  createPayment,
+  getPayments,
+  getPaymentById,
+  getPaymentsByInvoice,
+  getPaymentsByCustomer,
+  updatePayment,
+  deletePayment,
+} from "./routes/payments";
+import {
+  createEmployee,
+  getEmployees,
+  getEmployeeById,
+  updateEmployee,
+  deleteEmployee,
+} from "./routes/employees";
+import {
+  createPOSItem,
+  getPOSItems,
+  getPOSItemById,
+  updatePOSItem,
+  deletePOSItem,
+  createPOSTransaction,
+  getPOSTransactions,
+  getPOSTransactionById,
+} from "./routes/inventory";
+import {
+  createAttendanceRecord,
+  getAttendanceRecords,
+  getAttendanceRecordById,
+  updateAttendanceRecord,
+  deleteAttendanceRecord,
+} from "./routes/attendance";
+import {
   getChartOfAccounts,
   createChartOfAccount,
   updateChartOfAccount,
