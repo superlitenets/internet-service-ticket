@@ -6,7 +6,12 @@ import * as bcrypt from "bcryptjs";
 // Netlify automatically prefixes env vars with NETLIFY_, so check both
 const DATABASE_URL =
   process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "";
-const sql = neon(DATABASE_URL);
+const sqlClient = neon(DATABASE_URL);
+
+// Wrapper to support both old and new Neon API
+const sql = (query: string, params: any[] = []) => {
+  return sqlClient.query(query, params);
+};
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Helper to create JSON response
