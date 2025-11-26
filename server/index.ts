@@ -229,6 +229,46 @@ export function createServer() {
   app.delete("/api/tickets/:id", deleteTicket);
   app.post("/api/tickets/:id/assign", assignTicket);
 
+  // Customers endpoints
+  app.post("/api/customers", createCustomer);
+  app.get("/api/customers", getCustomers);
+  app.get("/api/customers/:id", getCustomerById);
+  app.put("/api/customers/:id", updateCustomer);
+  app.delete("/api/customers/:id", deleteCustomer);
+
+  // Payments endpoints
+  app.post("/api/payments", createPayment);
+  app.get("/api/payments", getPayments);
+  app.get("/api/payments/:id", getPaymentById);
+  app.get("/api/payments/invoice/:invoiceId", getPaymentsByInvoice);
+  app.get("/api/payments/customer/:customerId", getPaymentsByCustomer);
+  app.put("/api/payments/:id", updatePayment);
+  app.delete("/api/payments/:id", deletePayment);
+
+  // Employees endpoints
+  app.post("/api/employees", createEmployee);
+  app.get("/api/employees", getEmployees);
+  app.get("/api/employees/:id", getEmployeeById);
+  app.put("/api/employees/:id", updateEmployee);
+  app.delete("/api/employees/:id", deleteEmployee);
+
+  // Inventory endpoints
+  app.post("/api/inventory/items", createPOSItem);
+  app.get("/api/inventory/items", getPOSItems);
+  app.get("/api/inventory/items/:id", getPOSItemById);
+  app.put("/api/inventory/items/:id", updatePOSItem);
+  app.delete("/api/inventory/items/:id", deletePOSItem);
+  app.post("/api/inventory/transactions", createPOSTransaction);
+  app.get("/api/inventory/transactions", getPOSTransactions);
+  app.get("/api/inventory/transactions/:id", getPOSTransactionById);
+
+  // Attendance endpoints
+  app.post("/api/attendance", createAttendanceRecord);
+  app.get("/api/attendance", getAttendanceRecords);
+  app.get("/api/attendance/:id", getAttendanceRecordById);
+  app.put("/api/attendance/:id", updateAttendanceRecord);
+  app.delete("/api/attendance/:id", deleteAttendanceRecord);
+
   // Accounting Routes
   // Chart of Accounts
   app.get("/api/accounting/accounts", getChartOfAccounts);
