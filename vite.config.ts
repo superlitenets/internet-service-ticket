@@ -6,10 +6,13 @@ import path from "path";
 export default defineConfig(({ mode }) => {
   const plugins = [react()];
 
-  // Express plugin: Integrates backend with Vite dev server
-  if (mode === "development") {
-    plugins.push(expressPlugin());
-  }
+  // Disabled: Express plugin causes bcrypt native module issues
+  // For development, run frontend and backend separately:
+  // Terminal 1: pnpm run dev (frontend only - Vite)
+  // Terminal 2: pnpm run dev:backend (backend)
+  // if (mode === "development") {
+  //   plugins.push(expressPlugin());
+  // }
 
   return {
     server: {
