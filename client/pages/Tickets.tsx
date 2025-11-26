@@ -549,7 +549,10 @@ export default function TicketsPage() {
         description: `Failed to save ticket: ${error instanceof Error ? error.message : "Unknown error"}`,
         variant: "destructive",
       });
+      setSavingTicket(false);
       return;
+    } finally {
+      setSavingTicket(false);
     }
 
     setDialogOpen(false);
