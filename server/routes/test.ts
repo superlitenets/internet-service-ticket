@@ -1,14 +1,16 @@
 import { db } from "../lib/db";
+import { hashPassword } from "../lib/crypto";
 
 interface TestUserInput {
   email: string;
   phone: string;
   name?: string;
+  password?: string;
 }
 
 export async function createTestUser(req: any, res: any) {
   try {
-    const { email, phone, name } = req.body as TestUserInput;
+    const { email, phone, name, password } = req.body as TestUserInput;
 
     if (!email || !phone) {
       return res.status(400).json({
@@ -17,12 +19,16 @@ export async function createTestUser(req: any, res: any) {
       });
     }
 
+    // Use provided password or default to "test123"
+    const userPassword = password || "test123";
+    const hashedPassword = await hashPassword(userPassword);
+
     const user = await db.user.create({
       data: {
         id: "test-" + Date.now() + "-" + Math.random(),
         email,
         phone,
-        password: "test_password_hashed",
+        password: hashedPassword,
         name: name || "Test User",
         role: "user",
         status: "active",
@@ -37,8 +43,10 @@ export async function createTestUser(req: any, res: any) {
         email: user.email,
         phone: user.phone,
         name: user.name,
+        password: userPassword,
         createdAt: user.createdAt,
       },
+      loginInstructions: `You can now login with:\nEmail/Phone: ${email}\nPassword: ${userPassword}`,
     });
   } catch (error: any) {
     console.error("Error creating test user:", error);
