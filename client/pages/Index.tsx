@@ -540,6 +540,102 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Bulk SMS Dialog */}
+      <Dialog open={bulkSmsDialogOpen} onOpenChange={setBulkSmsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Send Bulk SMS</DialogTitle>
+            <DialogDescription>
+              Send the same message to multiple customers
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Message *
+              </label>
+              <textarea
+                className="w-full px-3 py-2 border border-border rounded-md text-sm"
+                placeholder="Enter your message here..."
+                rows={4}
+                value={bulkSmsMessage}
+                onChange={(e) => setBulkSmsMessage(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {bulkSmsMessage.length} characters
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Recipients
+              </label>
+              <p className="text-sm text-muted-foreground mb-3">
+                Select which customers to send this message to:
+              </p>
+              <div className="space-y-2 max-h-48 overflow-y-auto border border-border rounded-md p-3">
+                {customers.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No customers available
+                  </p>
+                ) : (
+                  customers.map((customer) => (
+                    <div
+                      key={customer.id}
+                      className="flex items-center gap-2 p-2 hover:bg-muted/30 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        id={`customer-${customer.id}`}
+                        checked={selectedCustomersForSms.includes(customer.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedCustomersForSms((prev) => [
+                              ...prev,
+                              customer.id,
+                            ]);
+                          } else {
+                            setSelectedCustomersForSms((prev) =>
+                              prev.filter((id) => id !== customer.id),
+                            );
+                          }
+                        }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                      <label
+                        htmlFor={`customer-${customer.id}`}
+                        className="flex-1 cursor-pointer text-sm"
+                      >
+                        <span className="font-medium">{customer.name}</span>
+                        <span className="text-muted-foreground ml-2">
+                          {customer.phone}
+                        </span>
+                      </label>
+                    </div>
+                  ))
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {selectedCustomersForSms.length} of {customers.length} selected
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setBulkSmsDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSendBulkSms} disabled={sendingBulkSms}>
+              {sendingBulkSms ? "Sending..." : "Send SMS"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
