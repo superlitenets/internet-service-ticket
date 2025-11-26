@@ -223,16 +223,35 @@ export default function TicketsPage() {
     }
   };
 
-  // Load tickets from API on mount
+  // Load tickets, customers, and employees from API on mount
   useEffect(() => {
-    const loadTickets = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
+
+        // Load customers
+        try {
+          const customersData = await getCustomers();
+          setCustomers(customersData);
+        } catch (error) {
+          console.error("Failed to load customers:", error);
+        }
+
+        // Load employees
+        try {
+          const employeesData = await getEmployees();
+          setEmployees(employeesData);
+        } catch (error) {
+          console.error("Failed to load employees:", error);
+        }
+
+        // Load tickets
         const dbTickets = await apiGetTickets();
 
         // Convert API tickets to UI format
         const uiTickets = dbTickets.map((t: ApiTicket) => ({
           id: t.id,
+          customerId: t.customerId,
           customer: t.customer?.name || "Unknown",
           customerEmail: t.customer?.email || "",
           customerPhone: t.customer?.phone || "",
@@ -253,10 +272,10 @@ export default function TicketsPage() {
 
         setAllTickets(uiTickets);
       } catch (error) {
-        console.error("Failed to load tickets:", error);
+        console.error("Failed to load data:", error);
         toast({
           title: "Error",
-          description: "Failed to load tickets from database",
+          description: "Failed to load data from database",
           variant: "destructive",
         });
       } finally {
@@ -264,7 +283,7 @@ export default function TicketsPage() {
       }
     };
 
-    loadTickets();
+    loadData();
   }, []);
 
   const filteredTickets = allTickets.filter((ticket) => {
