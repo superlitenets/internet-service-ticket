@@ -66,8 +66,9 @@ const handler: Handler = async (event) => {
 
   try {
     const body = await parseBody(event);
-    // Netlify redirects /api/* to /.netlify/functions/api, so the path won't have /api prefix
-    let path = event.path.replace("/.netlify/functions/api", "") || "/";
+    // Netlify rewrite redirects /api/* to /.netlify/functions/api, preserving the original /api/* path
+    // We need to strip the /api prefix to get the route path
+    let path = event.path.replace(/^\/api/, "") || "/";
     // Ensure path starts with /
     if (!path.startsWith("/")) {
       path = "/" + path;
