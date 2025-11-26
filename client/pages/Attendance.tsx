@@ -120,10 +120,44 @@ export default function AttendancePage() {
   const handleSyncZKteco = async () => {
     setSyncing(true);
     try {
-      toast({
-        title: "Info",
-        description: "ZKteco sync feature coming soon",
-      });
+      // First test connection
+      const testResult = await testZKtecoConnection(zKtecoConfig);
+
+      if (!testResult.success) {
+        toast({
+          title: "Connection Failed",
+          description: testResult.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Connection successful, now sync attendance
+      const syncResult = await syncZKtecoAttendance(testResult.deviceId || "zk-device");
+
+      if (syncResult.success) {
+        // Reload attendance records
+        const records = await getAttendanceRecords();
+        const mappedRecords: ExtendedAttendanceRecord[] = records.map(
+          (record: any) => ({
+            ...record,
+            employeeName: record.employeeName || "Unknown",
+            biometricSource: "zkteco40",
+          }),
+        );
+        setAllRecords(mappedRecords);
+
+        toast({
+          title: "Sync Successful",
+          description: `✓ Successfully imported ${syncResult.recordsImported} attendance records`,
+        });
+      } else {
+        toast({
+          title: "Sync Failed",
+          description: syncResult.message,
+          variant: "destructive",
+        });
+      }
       setSyncDialogOpen(false);
     } catch (error) {
       toast({
@@ -142,10 +176,20 @@ export default function AttendancePage() {
   const handleTestConnection = async () => {
     setTesting(true);
     try {
-      toast({
-        title: "Info",
-        description: "ZKteco test feature coming soon",
-      });
+      const result = await testZKtecoConnection(zKtecoConfig);
+
+      if (result.success) {
+        toast({
+          title: "Connection Successful",
+          description: `✓ ${result.message}`,
+        });
+      } else {
+        toast({
+          title: "Connection Failed",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
