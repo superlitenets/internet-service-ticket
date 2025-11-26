@@ -263,7 +263,7 @@ model TicketTask {
 
   // Relations
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  assignee User? @relation(fields: [assignedTo], references: [id])
+  assignee User? @relation("assignee", fields: [assignedTo], references: [id])
   timeLogs TimeLog[]
 
   @@index([ticketId])
