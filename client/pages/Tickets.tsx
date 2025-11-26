@@ -1336,16 +1336,16 @@ export default function TicketsPage() {
                     Assign to Team Group (Optional)
                   </label>
                   <Select
-                    value={formData.teamGroupId}
+                    value={formData.teamGroupId || "none"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, teamGroupId: value })
+                      setFormData({ ...formData, teamGroupId: value === "none" ? "" : value })
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a team group..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {teamGroups.map((group) => (
                         <SelectItem key={group.id} value={group.id}>
                           {group.name}
