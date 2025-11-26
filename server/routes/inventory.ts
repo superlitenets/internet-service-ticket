@@ -6,7 +6,15 @@ import { db } from "../lib/db";
  */
 export const createPOSItem: RequestHandler = async (req, res) => {
   try {
-    const { sku, name, description, category, unitPrice, quantity, reorderLevel } = req.body;
+    const {
+      sku,
+      name,
+      description,
+      category,
+      unitPrice,
+      quantity,
+      reorderLevel,
+    } = req.body;
 
     if (!sku || !name || unitPrice === undefined) {
       return res.status(400).json({
@@ -106,7 +114,15 @@ export const getPOSItemById: RequestHandler = async (req, res) => {
 export const updatePOSItem: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, category, unitPrice, quantity, reorderLevel, enabled } = req.body;
+    const {
+      name,
+      description,
+      category,
+      unitPrice,
+      quantity,
+      reorderLevel,
+      enabled,
+    } = req.body;
 
     const item = await db.pOSItem.findUnique({
       where: { id },
@@ -226,12 +242,13 @@ export const createPOSTransaction: RequestHandler = async (req, res) => {
         cashier: cashier || undefined,
         notes: notes || undefined,
         items: {
-          create: items?.map((item: any) => ({
-            itemId: item.itemId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            lineTotal: item.quantity * item.unitPrice,
-          })) || [],
+          create:
+            items?.map((item: any) => ({
+              itemId: item.itemId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              lineTotal: item.quantity * item.unitPrice,
+            })) || [],
         },
       },
       include: {

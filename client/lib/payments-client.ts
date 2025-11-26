@@ -73,7 +73,9 @@ export async function getPaymentById(id: string): Promise<Payment> {
 /**
  * Get payments by invoice ID
  */
-export async function getPaymentsByInvoice(invoiceId: string): Promise<Payment[]> {
+export async function getPaymentsByInvoice(
+  invoiceId: string,
+): Promise<Payment[]> {
   const response = await fetch(`/api/payments/invoice/${invoiceId}`);
 
   if (!response.ok) {
@@ -87,7 +89,9 @@ export async function getPaymentsByInvoice(invoiceId: string): Promise<Payment[]
 /**
  * Get payments by customer ID
  */
-export async function getPaymentsByCustomer(customerId: string): Promise<Payment[]> {
+export async function getPaymentsByCustomer(
+  customerId: string,
+): Promise<Payment[]> {
   const response = await fetch(`/api/payments/customer/${customerId}`);
 
   if (!response.ok) {

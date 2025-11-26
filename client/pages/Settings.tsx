@@ -362,7 +362,6 @@ export default function SettingsPage() {
     }
   };
 
-
   const handleTestWhatsApp = async () => {
     try {
       setTestingWhatsApp(true);
@@ -2405,8 +2404,6 @@ export default function SettingsPage() {
               </div>
             </Card>
           </TabsContent>
-
-
         </Tabs>
       </div>
     </Layout>

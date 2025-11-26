@@ -168,7 +168,9 @@ export async function getPOSTransactions(): Promise<POSTransaction[]> {
 /**
  * Get a single POS transaction by ID
  */
-export async function getPOSTransactionById(id: string): Promise<POSTransaction> {
+export async function getPOSTransactionById(
+  id: string,
+): Promise<POSTransaction> {
   const response = await fetch(`/api/inventory/transactions/${id}`);
 
   if (!response.ok) {

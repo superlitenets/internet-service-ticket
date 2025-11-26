@@ -8,12 +8,12 @@ async function resetPassword() {
   try {
     const email = "admin@test.com";
     const newPassword = "password123";
-    
+
     console.log(`Resetting password for ${email}...`);
-    
+
     // Hash the new password
     const hashedPassword = await bcryptjs.hash(newPassword, 10);
-    
+
     // Update or create the user
     const user = await prisma.user.upsert({
       where: { email },
@@ -30,7 +30,7 @@ async function resetPassword() {
         status: "active",
       },
     });
-    
+
     console.log(`✅ Password reset successfully for ${user.email}`);
     console.log(`   User ID: ${user.id}`);
     console.log(`   Name: ${user.name}`);

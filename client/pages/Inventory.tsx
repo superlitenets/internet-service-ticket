@@ -143,9 +143,7 @@ export default function InventoryPage() {
         toast({
           title: "Error",
           description:
-            error instanceof Error
-              ? error.message
-              : "Failed to load inventory",
+            error instanceof Error ? error.message : "Failed to load inventory",
           variant: "destructive",
         });
       } finally {

@@ -6,7 +6,8 @@ import { db } from "../lib/db";
  */
 export const createAttendanceRecord: RequestHandler = async (req, res) => {
   try {
-    const { employeeId, date, checkInTime, checkOutTime, status, notes } = req.body;
+    const { employeeId, date, checkInTime, checkOutTime, status, notes } =
+      req.body;
 
     if (!employeeId || !date || !status) {
       return res.status(400).json({

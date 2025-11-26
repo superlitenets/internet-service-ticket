@@ -44,7 +44,7 @@ export async function getAttendanceRecords(filters?: {
   endDate?: string;
 }): Promise<AttendanceRecord[]> {
   const params = new URLSearchParams();
-  
+
   if (filters) {
     if (filters.employeeId) params.append("employeeId", filters.employeeId);
     if (filters.startDate) params.append("startDate", filters.startDate);
@@ -72,7 +72,7 @@ export async function getEmployeeAttendance(
 ): Promise<AttendanceRecord[]> {
   const params = new URLSearchParams();
   params.append("employeeId", employeeId);
-  
+
   if (startDate) params.append("startDate", startDate);
   if (endDate) params.append("endDate", endDate);
 
@@ -89,7 +89,9 @@ export async function getEmployeeAttendance(
 /**
  * Get a single attendance record by ID
  */
-export async function getAttendanceRecordById(id: string): Promise<AttendanceRecord> {
+export async function getAttendanceRecordById(
+  id: string,
+): Promise<AttendanceRecord> {
   const response = await fetch(`/api/attendance/${id}`);
 
   if (!response.ok) {

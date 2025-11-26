@@ -18,15 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Plus, Search, Edit, Trash2, Mail, Phone, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -73,7 +65,7 @@ export default function CustomersPage() {
       try {
         setLoading(true);
         const dbCustomers = await apiGetCustomers();
-        
+
         // Convert API customers to UI format
         const uiCustomers = dbCustomers.map((c: ApiCustomer) => ({
           id: c.id,
@@ -85,7 +77,7 @@ export default function CustomersPage() {
           registeredAt: new Date(c.registeredAt).toLocaleString(),
           updatedAt: new Date(c.updatedAt).toLocaleString(),
         }));
-        
+
         setCustomers(uiCustomers);
       } catch (error) {
         console.error("Failed to load customers:", error);
@@ -98,7 +90,7 @@ export default function CustomersPage() {
         setLoading(false);
       }
     };
-    
+
     loadCustomers();
   }, []);
 
@@ -121,7 +113,8 @@ export default function CustomersPage() {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
-        accountType: (customer.accountType as "residential" | "business") || "residential",
+        accountType:
+          (customer.accountType as "residential" | "business") || "residential",
         status: customer.status,
       });
     } else {
@@ -312,110 +305,122 @@ export default function CustomersPage() {
         <Card className="border-0 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <p className="text-muted-foreground">Loading customers from database...</p>
+              <p className="text-muted-foreground">
+                Loading customers from database...
+              </p>
             </div>
           ) : (
             <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Account Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Registered
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filteredCustomers.length > 0 ? (
-                    filteredCustomers.map((customer) => (
-                      <tr
-                        key={customer.id}
-                        className="hover:bg-muted/30 transition-colors"
-                      >
-                        <td className="px-6 py-4 text-sm font-semibold text-foreground">
-                          {customer.name}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          <div className="flex items-center gap-2">
-                            <Mail size={14} className="text-muted-foreground" />
-                            {customer.email}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          <div className="flex items-center gap-2">
-                            <Phone size={14} className="text-muted-foreground" />
-                            {customer.phone}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground capitalize">
-                          {customer.accountType || "—"}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Badge
-                            variant="secondary"
-                            className={getStatusColor(customer.status)}
-                          >
-                            {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-muted-foreground text-xs">
-                          {customer.registeredAt}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenDialog(customer)}
-                              className="gap-1"
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Phone
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Account Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Registered
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredCustomers.length > 0 ? (
+                      filteredCustomers.map((customer) => (
+                        <tr
+                          key={customer.id}
+                          className="hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                            {customer.name}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            <div className="flex items-center gap-2">
+                              <Mail
+                                size={14}
+                                className="text-muted-foreground"
+                              />
+                              {customer.email}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            <div className="flex items-center gap-2">
+                              <Phone
+                                size={14}
+                                className="text-muted-foreground"
+                              />
+                              {customer.phone}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground capitalize">
+                            {customer.accountType || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <Badge
+                              variant="secondary"
+                              className={getStatusColor(customer.status)}
                             >
-                              <Edit size={14} />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => setDeleteConfirm(customer.id)}
-                              className="gap-1"
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
+                              {customer.status.charAt(0).toUpperCase() +
+                                customer.status.slice(1)}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground text-xs">
+                            {customer.registeredAt}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(customer)}
+                                className="gap-1"
+                              >
+                                <Edit size={14} />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setDeleteConfirm(customer.id)}
+                                className="gap-1"
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-12 text-center">
+                          <p className="text-muted-foreground">
+                            No customers found
+                          </p>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center">
-                        <p className="text-muted-foreground">No customers found</p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className="border-t border-border px-6 py-4 bg-muted/30">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredCustomers.length} of {customers.length} customers
-              </p>
-            </div>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="border-t border-border px-6 py-4 bg-muted/30">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredCustomers.length} of {customers.length}{" "}
+                  customers
+                </p>
+              </div>
             </>
           )}
         </Card>
@@ -546,8 +551,8 @@ export default function CustomersPage() {
             <DialogHeader>
               <DialogTitle>Delete Customer</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this customer? This action cannot
-                be undone.
+                Are you sure you want to delete this customer? This action
+                cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

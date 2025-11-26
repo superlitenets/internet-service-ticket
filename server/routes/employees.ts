@@ -161,7 +161,8 @@ export const updateEmployee: RequestHandler = async (req, res) => {
     if (department !== undefined) updateData.department = department;
     if (salary !== undefined) updateData.salary = salary;
     if (status !== undefined) updateData.status = status;
-    if (emergencyContact !== undefined) updateData.emergencyContact = emergencyContact;
+    if (emergencyContact !== undefined)
+      updateData.emergencyContact = emergencyContact;
 
     const updatedEmployee = await db.employee.update({
       where: { id },

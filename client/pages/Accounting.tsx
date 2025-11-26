@@ -208,9 +208,7 @@ export function AccountingPage() {
       toast({
         title: "Error",
         description:
-          error instanceof Error
-            ? error.message
-            : "Failed to save transaction",
+          error instanceof Error ? error.message : "Failed to save transaction",
         variant: "destructive",
       });
       return;

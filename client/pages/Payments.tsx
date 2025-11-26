@@ -68,7 +68,9 @@ export default function PaymentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [mpesaTransactions, setMpesaTransactions] = useState<MpesaTransaction[]>([]);
+  const [mpesaTransactions, setMpesaTransactions] = useState<
+    MpesaTransaction[]
+  >([]);
   const [isConfigured, setIsConfigured] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -94,7 +96,7 @@ export default function PaymentsPage() {
       try {
         setLoading(true);
         const dbPayments = await apiGetPayments();
-        
+
         const uiPayments = dbPayments.map((p: ApiPayment) => ({
           id: p.id,
           amount: p.amount,
@@ -107,10 +109,10 @@ export default function PaymentsPage() {
           paymentDate: new Date(p.paymentDate).toLocaleString(),
           createdAt: new Date(p.createdAt).toLocaleString(),
         }));
-        
+
         setPayments(uiPayments);
         setIsConfigured(isMpesaConfigured());
-        
+
         // Load MPESA transactions
         if (isConfigured) {
           const mpesaData = await getMpesaTransactions();
@@ -127,7 +129,7 @@ export default function PaymentsPage() {
         setLoading(false);
       }
     };
-    
+
     loadPayments();
   }, []);
 
@@ -135,7 +137,9 @@ export default function PaymentsPage() {
     const matchesSearch =
       payment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.customerId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.mpesaReceiptNumber?.toLowerCase().includes(searchTerm.toLowerCase());
+      payment.mpesaReceiptNumber
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" || payment.status === statusFilter;
@@ -401,99 +405,105 @@ export default function PaymentsPage() {
                 </div>
               ) : (
                 <>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border bg-muted/30">
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          Method
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {filteredPayments.length > 0 ? (
-                        filteredPayments.map((payment) => (
-                          <tr
-                            key={payment.id}
-                            className="hover:bg-muted/30 transition-colors"
-                          >
-                            <td className="px-6 py-4 text-sm font-semibold text-foreground">
-                              {payment.id.slice(0, 8)}...
-                            </td>
-                            <td className="px-6 py-4 text-sm font-semibold text-foreground">
-                              <div className="flex items-center gap-2">
-                                <DollarSign size={14} className="text-muted-foreground" />
-                                {payment.amount.toFixed(2)}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-foreground capitalize">
-                              {payment.paymentMethod.replace("-", " ")}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <Badge
-                                variant="secondary"
-                                className={getStatusColor(payment.status)}
-                              >
-                                <span className="flex items-center gap-1">
-                                  {getStatusIcon(payment.status)}
-                                  {payment.status.charAt(0).toUpperCase() +
-                                    payment.status.slice(1)}
-                                </span>
-                              </Badge>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-muted-foreground text-xs">
-                              {payment.paymentDate}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleOpenDialog(payment)}
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            ID
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            Amount
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            Method
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            Date
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {filteredPayments.length > 0 ? (
+                          filteredPayments.map((payment) => (
+                            <tr
+                              key={payment.id}
+                              className="hover:bg-muted/30 transition-colors"
+                            >
+                              <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                                {payment.id.slice(0, 8)}...
+                              </td>
+                              <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                                <div className="flex items-center gap-2">
+                                  <DollarSign
+                                    size={14}
+                                    className="text-muted-foreground"
+                                  />
+                                  {payment.amount.toFixed(2)}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-foreground capitalize">
+                                {payment.paymentMethod.replace("-", " ")}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <Badge
+                                  variant="secondary"
+                                  className={getStatusColor(payment.status)}
                                 >
-                                  <Edit size={14} />
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => setDeleteConfirm(payment.id)}
-                                >
-                                  <Trash2 size={14} />
-                                </Button>
-                              </div>
+                                  <span className="flex items-center gap-1">
+                                    {getStatusIcon(payment.status)}
+                                    {payment.status.charAt(0).toUpperCase() +
+                                      payment.status.slice(1)}
+                                  </span>
+                                </Badge>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-muted-foreground text-xs">
+                                {payment.paymentDate}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenDialog(payment)}
+                                  >
+                                    <Edit size={14} />
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => setDeleteConfirm(payment.id)}
+                                  >
+                                    <Trash2 size={14} />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-12 text-center">
+                              <p className="text-muted-foreground">
+                                No payments found
+                              </p>
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={6} className="px-6 py-12 text-center">
-                            <p className="text-muted-foreground">No payments found</p>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="border-t border-border px-6 py-4 bg-muted/30">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {filteredPayments.length} of {payments.length} payments
-                  </p>
-                </div>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="border-t border-border px-6 py-4 bg-muted/30">
+                    <p className="text-sm text-muted-foreground">
+                      Showing {filteredPayments.length} of {payments.length}{" "}
+                      payments
+                    </p>
+                  </div>
                 </>
               )}
             </Card>
@@ -504,7 +514,8 @@ export default function PaymentsPage() {
             {!isConfigured ? (
               <Card className="p-6 border-0 shadow-sm bg-destructive/10">
                 <p className="text-destructive">
-                  MPESA is not configured. Please configure MPESA settings in Settings page.
+                  MPESA is not configured. Please configure MPESA settings in
+                  Settings page.
                 </p>
               </Card>
             ) : (
@@ -632,7 +643,11 @@ export default function PaymentsPage() {
                 onValueChange={(value) =>
                   setFormData({
                     ...formData,
-                    paymentMethod: value as "mpesa" | "bank-transfer" | "cash" | "check",
+                    paymentMethod: value as
+                      | "mpesa"
+                      | "bank-transfer"
+                      | "cash"
+                      | "check",
                   })
                 }
               >

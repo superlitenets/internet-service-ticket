@@ -84,7 +84,7 @@ export default function EmployeesPage() {
       try {
         setLoading(true);
         const dbEmployees = await apiGetEmployees();
-        
+
         const uiEmployees = dbEmployees.map((e: ApiEmployee) => ({
           id: e.id,
           firstName: e.firstName,
@@ -100,7 +100,7 @@ export default function EmployeesPage() {
           createdAt: new Date(e.createdAt).toLocaleString(),
           updatedAt: new Date(e.updatedAt).toLocaleString(),
         }));
-        
+
         setEmployees(uiEmployees);
       } catch (error) {
         console.error("Failed to load employees:", error);
@@ -113,7 +113,7 @@ export default function EmployeesPage() {
         setLoading(false);
       }
     };
-    
+
     loadEmployees();
   }, []);
 
@@ -125,8 +125,7 @@ export default function EmployeesPage() {
 
     const matchesDepartment =
       filterDepartment === "all" || emp.department === filterDepartment;
-    const matchesStatus =
-      filterStatus === "all" || emp.status === filterStatus;
+    const matchesStatus = filterStatus === "all" || emp.status === filterStatus;
 
     return matchesSearch && matchesDepartment && matchesStatus;
   });
@@ -169,7 +168,12 @@ export default function EmployeesPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.phone
+    ) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -206,7 +210,9 @@ export default function EmployeesPage() {
                   phone: formData.phone,
                   department: formData.department,
                   position: formData.position,
-                  salary: formData.salary ? parseInt(formData.salary) : undefined,
+                  salary: formData.salary
+                    ? parseInt(formData.salary)
+                    : undefined,
                   status: formData.status,
                   emergencyContact: formData.emergencyContact,
                   updatedAt: new Date().toLocaleString(),
@@ -309,7 +315,9 @@ export default function EmployeesPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
               Employees
             </h1>
-            <p className="text-muted-foreground">Manage employee records and information</p>
+            <p className="text-muted-foreground">
+              Manage employee records and information
+            </p>
           </div>
           <Button
             onClick={() => handleOpenDialog()}
@@ -339,7 +347,10 @@ export default function EmployeesPage() {
               </div>
             </div>
 
-            <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+            <Select
+              value={filterDepartment}
+              onValueChange={setFilterDepartment}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Departments" />
               </SelectTrigger>
@@ -371,111 +382,122 @@ export default function EmployeesPage() {
         <Card className="border-0 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <p className="text-muted-foreground">Loading employees from database...</p>
+              <p className="text-muted-foreground">
+                Loading employees from database...
+              </p>
             </div>
           ) : (
             <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Department
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Position
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filteredEmployees.length > 0 ? (
-                    filteredEmployees.map((employee) => (
-                      <tr
-                        key={employee.id}
-                        className="hover:bg-muted/30 transition-colors"
-                      >
-                        <td className="px-6 py-4 text-sm font-semibold text-foreground">
-                          {employee.firstName} {employee.lastName}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          <div className="flex items-center gap-2">
-                            <Mail size={14} className="text-muted-foreground" />
-                            {employee.email}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          <div className="flex items-center gap-2">
-                            <Phone size={14} className="text-muted-foreground" />
-                            {employee.phone}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          {employee.department || "—"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground">
-                          {employee.position || "—"}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <Badge
-                            variant="secondary"
-                            className={getStatusColor(employee.status)}
-                          >
-                            {employee.status === "on_leave"
-                              ? "On Leave"
-                              : employee.status.charAt(0).toUpperCase() +
-                                employee.status.slice(1)}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenDialog(employee)}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Phone
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Department
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Position
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredEmployees.length > 0 ? (
+                      filteredEmployees.map((employee) => (
+                        <tr
+                          key={employee.id}
+                          className="hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                            {employee.firstName} {employee.lastName}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            <div className="flex items-center gap-2">
+                              <Mail
+                                size={14}
+                                className="text-muted-foreground"
+                              />
+                              {employee.email}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            <div className="flex items-center gap-2">
+                              <Phone
+                                size={14}
+                                className="text-muted-foreground"
+                              />
+                              {employee.phone}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            {employee.department || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground">
+                            {employee.position || "—"}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <Badge
+                              variant="secondary"
+                              className={getStatusColor(employee.status)}
                             >
-                              <Edit size={14} />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => setDeleteConfirm(employee.id)}
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
+                              {employee.status === "on_leave"
+                                ? "On Leave"
+                                : employee.status.charAt(0).toUpperCase() +
+                                  employee.status.slice(1)}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(employee)}
+                              >
+                                <Edit size={14} />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setDeleteConfirm(employee.id)}
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-12 text-center">
+                          <p className="text-muted-foreground">
+                            No employees found
+                          </p>
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center">
-                        <p className="text-muted-foreground">No employees found</p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className="border-t border-border px-6 py-4 bg-muted/30">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredEmployees.length} of {employees.length} employees
-              </p>
-            </div>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="border-t border-border px-6 py-4 bg-muted/30">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredEmployees.length} of {employees.length}{" "}
+                  employees
+                </p>
+              </div>
             </>
           )}
         </Card>
@@ -666,8 +688,8 @@ export default function EmployeesPage() {
             <DialogHeader>
               <DialogTitle>Delete Employee</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this employee? This action cannot
-                be undone.
+                Are you sure you want to delete this employee? This action
+                cannot be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

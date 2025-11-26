@@ -457,7 +457,12 @@ export default function TicketsPage() {
   const handleStatusChange = async (ticketId: string, newStatus: string) => {
     try {
       await apiUpdateTicket(ticketId, {
-        status: newStatus as "open" | "in-progress" | "pending" | "resolved" | "closed",
+        status: newStatus as
+          | "open"
+          | "in-progress"
+          | "pending"
+          | "resolved"
+          | "closed",
       });
 
       setAllTickets((prev) =>
@@ -726,185 +731,197 @@ export default function TicketsPage() {
         <Card className="border-0 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <p className="text-muted-foreground">Loading tickets from database...</p>
+              <p className="text-muted-foreground">
+                Loading tickets from database...
+              </p>
             </div>
           ) : (
             <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-              <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Priority
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Assigned To
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    SMS
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredTickets.length > 0 ? (
-                  filteredTickets.map((ticket) => (
-                    <tr
-                      key={ticket.id}
-                      className="hover:bg-muted/30 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
-                        <button
-                          onClick={() => navigate(`/tickets/${ticket.id}`)}
-                          className="text-primary hover:underline cursor-pointer"
-                        >
-                          {ticket.id}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
-                        {ticket.customer}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
-                        {ticket.title}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <Select
-                          value={ticket.status}
-                          onValueChange={(value) =>
-                            handleStatusChange(ticket.id, value)
-                          }
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="open">Open</SelectItem>
-                            <SelectItem value="in-progress">
-                              In Progress
-                            </SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="resolved">Resolved</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </td>
-                      <td className="px-6 py-4 text-sm whitespace-nowrap">
-                        <Badge
-                          variant="secondary"
-                          className={getPriorityColor(ticket.priority)}
-                        >
-                          {ticket.priority.charAt(0).toUpperCase() +
-                            ticket.priority.slice(1)}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <Select
-                          value={ticket.assignedTo}
-                          onValueChange={(value) =>
-                            handleAssignTicket(ticket.id, value)
-                          }
-                        >
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Unassigned">
-                              Unassigned
-                            </SelectItem>
-                            {teamMembers.map((member) => (
-                              <SelectItem key={member.name} value={member.name}>
-                                {member.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        {ticket.smsNotificationsSent > 0 ? (
-                          <div className="flex items-center gap-1 text-accent">
-                            <MessageCircle size={16} />
-                            {ticket.smsNotificationsSent}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenDetail(ticket)}
-                            title="View details and replies"
-                          >
-                            <MessageSquare size={14} />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenDialog(ticket)}
-                            title="Edit ticket"
-                          >
-                            <Edit size={14} />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleSendSmsNotification(ticket)}
-                            disabled={sendingSms}
-                            title="Send SMS notification"
-                          >
-                            <Send size={14} />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => setDeleteConfirm(ticket.id)}
-                            title="Delete ticket"
-                          >
-                            <Trash2 size={14} />
-                          </Button>
-                        </div>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Title
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Priority
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Assigned To
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        SMS
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                        Actions
+                      </th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center">
-                      <p className="text-muted-foreground">No tickets found</p>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              </table>
-            </div>
-            <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredTickets.length} of {allTickets.length} tickets
-              </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm">
-                  Next
-                </Button>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filteredTickets.length > 0 ? (
+                      filteredTickets.map((ticket) => (
+                        <tr
+                          key={ticket.id}
+                          className="hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+                            <button
+                              onClick={() => navigate(`/tickets/${ticket.id}`)}
+                              className="text-primary hover:underline cursor-pointer"
+                            >
+                              {ticket.id}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
+                            {ticket.customer}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
+                            {ticket.title}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <Select
+                              value={ticket.status}
+                              onValueChange={(value) =>
+                                handleStatusChange(ticket.id, value)
+                              }
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="open">Open</SelectItem>
+                                <SelectItem value="in-progress">
+                                  In Progress
+                                </SelectItem>
+                                <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="resolved">
+                                  Resolved
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="px-6 py-4 text-sm whitespace-nowrap">
+                            <Badge
+                              variant="secondary"
+                              className={getPriorityColor(ticket.priority)}
+                            >
+                              {ticket.priority.charAt(0).toUpperCase() +
+                                ticket.priority.slice(1)}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <Select
+                              value={ticket.assignedTo}
+                              onValueChange={(value) =>
+                                handleAssignTicket(ticket.id, value)
+                              }
+                            >
+                              <SelectTrigger className="w-40">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Unassigned">
+                                  Unassigned
+                                </SelectItem>
+                                {teamMembers.map((member) => (
+                                  <SelectItem
+                                    key={member.name}
+                                    value={member.name}
+                                  >
+                                    {member.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            {ticket.smsNotificationsSent > 0 ? (
+                              <div className="flex items-center gap-1 text-accent">
+                                <MessageCircle size={16} />
+                                {ticket.smsNotificationsSent}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDetail(ticket)}
+                                title="View details and replies"
+                              >
+                                <MessageSquare size={14} />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(ticket)}
+                                title="Edit ticket"
+                              >
+                                <Edit size={14} />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  handleSendSmsNotification(ticket)
+                                }
+                                disabled={sendingSms}
+                                title="Send SMS notification"
+                              >
+                                <Send size={14} />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                                onClick={() => setDeleteConfirm(ticket.id)}
+                                title="Delete ticket"
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-12 text-center">
+                          <p className="text-muted-foreground">
+                            No tickets found
+                          </p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
-            </div>
+              <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredTickets.length} of {allTickets.length}{" "}
+                  tickets
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    Previous
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Next
+                  </Button>
+                </div>
+              </div>
             </>
           )}
         </Card>
