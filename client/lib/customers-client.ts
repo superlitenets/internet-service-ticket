@@ -18,7 +18,7 @@ export interface Customer {
  */
 export async function createCustomer(data: {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   accountType?: string;
   location?: string;
