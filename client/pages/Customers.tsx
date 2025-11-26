@@ -27,31 +27,32 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  getCustomers as apiGetCustomers,
+  createCustomer as apiCreateCustomer,
+  updateCustomer as apiUpdateCustomer,
+  deleteCustomer as apiDeleteCustomer,
+  type Customer as ApiCustomer,
+} from "@/lib/customers-client";
 
 interface Customer {
   id: string;
   name: string;
   email: string;
   phone: string;
-  company: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  plan: "basic" | "professional" | "enterprise";
+  accountType?: string;
   status: "active" | "inactive" | "suspended";
-  createdAt: string;
-  ticketCount: number;
+  registeredAt: string;
+  updatedAt: string;
 }
 
 export default function CustomersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [planFilter, setPlanFilter] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -60,78 +61,57 @@ export default function CustomersPage() {
     name: "",
     email: "",
     phone: "",
-    company: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "",
-    plan: "professional" as const,
+    accountType: "residential" as const,
     status: "active" as const,
   });
 
-  const [customers, setCustomers] = useState<Customer[]>([
-    {
-      id: "cust_001",
-      name: "Acme Corp",
-      email: "contact@acme.com",
-      phone: "+1 (555) 123-4567",
-      company: "Acme Corporation",
-      address: "123 Business Ave",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94105",
-      country: "USA",
-      plan: "enterprise",
-      status: "active",
-      createdAt: "2024-01-01",
-      ticketCount: 8,
-    },
-    {
-      id: "cust_002",
-      name: "Tech Startup Inc",
-      email: "support@techstartup.com",
-      phone: "+1 (555) 234-5678",
-      company: "Tech Startup Inc",
-      address: "456 Innovation St",
-      city: "New York",
-      state: "NY",
-      zipCode: "10001",
-      country: "USA",
-      plan: "professional",
-      status: "active",
-      createdAt: "2024-01-05",
-      ticketCount: 3,
-    },
-    {
-      id: "cust_003",
-      name: "Global Industries",
-      email: "info@global-ind.com",
-      phone: "+1 (555) 345-6789",
-      company: "Global Industries Ltd",
-      address: "789 Enterprise Blvd",
-      city: "Chicago",
-      state: "IL",
-      zipCode: "60601",
-      country: "USA",
-      plan: "basic",
-      status: "active",
-      createdAt: "2024-01-08",
-      ticketCount: 2,
-    },
-  ]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  // Load customers from API on mount
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        setLoading(true);
+        const dbCustomers = await apiGetCustomers();
+        
+        // Convert API customers to UI format
+        const uiCustomers = dbCustomers.map((c: ApiCustomer) => ({
+          id: c.id,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          accountType: c.accountType,
+          status: c.status as "active" | "inactive" | "suspended",
+          registeredAt: new Date(c.registeredAt).toLocaleString(),
+          updatedAt: new Date(c.updatedAt).toLocaleString(),
+        }));
+        
+        setCustomers(uiCustomers);
+      } catch (error) {
+        console.error("Failed to load customers:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load customers from database",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCustomers();
+  }, []);
 
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.company.toLowerCase().includes(searchTerm.toLowerCase());
+      customer.phone.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" || customer.status === statusFilter;
-    const matchesPlan = planFilter === "all" || customer.plan === planFilter;
 
-    return matchesSearch && matchesStatus && matchesPlan;
+    return matchesSearch && matchesStatus;
   });
 
   const handleOpenDialog = (customer?: Customer) => {
@@ -141,13 +121,7 @@ export default function CustomersPage() {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
-        company: customer.company,
-        address: customer.address,
-        city: customer.city,
-        state: customer.state,
-        zipCode: customer.zipCode,
-        country: customer.country,
-        plan: customer.plan,
+        accountType: (customer.accountType as "residential" | "business") || "residential",
         status: customer.status,
       });
     } else {
@@ -156,21 +130,15 @@ export default function CustomersPage() {
         name: "",
         email: "",
         phone: "",
-        company: "",
-        address: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        country: "",
-        plan: "professional",
+        accountType: "residential",
         status: "active",
       });
     }
     setDialogOpen(true);
   };
 
-  const handleSave = () => {
-    if (!formData.name || !formData.email || !formData.company) {
+  const handleSave = async () => {
+    if (!formData.name || !formData.email || !formData.phone) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -179,52 +147,96 @@ export default function CustomersPage() {
       return;
     }
 
-    if (editingCustomer) {
-      setCustomers((prev) =>
-        prev.map((c) =>
-          c.id === editingCustomer.id ? { ...c, ...formData } : c,
-        ),
-      );
+    try {
+      if (editingCustomer) {
+        // Update existing customer
+        await apiUpdateCustomer(editingCustomer.id, {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          accountType: formData.accountType,
+          status: formData.status,
+          registeredAt: editingCustomer.registeredAt,
+          updatedAt: new Date().toISOString(),
+        });
+
+        setCustomers((prev) =>
+          prev.map((c) =>
+            c.id === editingCustomer.id
+              ? {
+                  ...c,
+                  name: formData.name,
+                  email: formData.email,
+                  phone: formData.phone,
+                  accountType: formData.accountType,
+                  status: formData.status,
+                  updatedAt: new Date().toLocaleString(),
+                }
+              : c,
+          ),
+        );
+
+        toast({
+          title: "Success",
+          description: "Customer updated successfully",
+        });
+      } else {
+        // Create new customer
+        const newCustomer = await apiCreateCustomer({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          accountType: formData.accountType,
+        });
+
+        setCustomers((prev) => [
+          ...prev,
+          {
+            id: newCustomer.id,
+            name: newCustomer.name,
+            email: newCustomer.email,
+            phone: newCustomer.phone,
+            accountType: newCustomer.accountType,
+            status: newCustomer.status,
+            registeredAt: new Date(newCustomer.registeredAt).toLocaleString(),
+            updatedAt: new Date(newCustomer.updatedAt).toLocaleString(),
+          },
+        ]);
+
+        toast({
+          title: "Success",
+          description: "Customer added successfully",
+        });
+      }
+    } catch (error) {
+      console.error("Save customer error:", error);
       toast({
-        title: "Success",
-        description: "Customer updated successfully",
+        title: "Error",
+        description: "Failed to save customer",
+        variant: "destructive",
       });
-    } else {
-      const newCustomer: Customer = {
-        id: `cust_${Date.now()}`,
-        ...formData,
-        createdAt: new Date().toISOString().split("T")[0],
-        ticketCount: 0,
-      };
-      setCustomers((prev) => [...prev, newCustomer]);
-      toast({
-        title: "Success",
-        description: "Customer added successfully",
-      });
+      return;
     }
 
     setDialogOpen(false);
   };
 
-  const handleDelete = (customerId: string) => {
-    setCustomers((prev) => prev.filter((c) => c.id !== customerId));
-    setDeleteConfirm(null);
-    toast({
-      title: "Success",
-      description: "Customer deleted successfully",
-    });
-  };
-
-  const getPlanColor = (plan: string) => {
-    switch (plan) {
-      case "enterprise":
-        return "bg-primary/10 text-primary";
-      case "professional":
-        return "bg-secondary/10 text-secondary";
-      case "basic":
-        return "bg-muted/10 text-muted-foreground";
-      default:
-        return "bg-muted/10 text-muted-foreground";
+  const handleDelete = async (customerId: string) => {
+    try {
+      await apiDeleteCustomer(customerId);
+      setCustomers((prev) => prev.filter((c) => c.id !== customerId));
+      setDeleteConfirm(null);
+      toast({
+        title: "Success",
+        description: "Customer deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete customer error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete customer",
+        variant: "destructive",
+      });
     }
   };
 
@@ -266,7 +278,7 @@ export default function CustomersPage() {
 
         {/* Filters */}
         <Card className="p-6 border-0 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
               <div className="relative">
                 <Search
@@ -274,7 +286,7 @@ export default function CustomersPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 />
                 <Input
-                  placeholder="Search by name, email, or company..."
+                  placeholder="Search by name, email, or phone..."
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -293,121 +305,122 @@ export default function CustomersPage() {
                 <SelectItem value="suspended">Suspended</SelectItem>
               </SelectContent>
             </Select>
-
-            <Select value={planFilter} onValueChange={setPlanFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Plans" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Plans</SelectItem>
-                <SelectItem value="basic">Basic</SelectItem>
-                <SelectItem value="professional">Professional</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </Card>
 
-        {/* Customers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCustomers.length > 0 ? (
-            filteredCustomers.map((customer) => (
-              <Card
-                key={customer.id}
-                className="p-6 border-0 shadow-sm hover:shadow-md transition-shadow flex flex-col"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-foreground text-lg mb-1">
-                      {customer.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {customer.company}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-4 flex-1">
-                  <div className="flex items-center gap-2 text-sm text-foreground">
-                    <Mail size={14} className="text-muted-foreground" />
-                    {customer.email}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-foreground">
-                    <Phone size={14} className="text-muted-foreground" />
-                    {customer.phone}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-foreground">
-                    <MapPin size={14} className="text-muted-foreground" />
-                    {customer.city}, {customer.state}
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-4 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      Service Plan
-                    </span>
-                    <Badge
-                      className={getPlanColor(customer.plan)}
-                      variant="secondary"
-                    >
-                      {customer.plan.charAt(0).toUpperCase() +
-                        customer.plan.slice(1)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      Status
-                    </span>
-                    <Badge
-                      className={getStatusColor(customer.status)}
-                      variant="secondary"
-                    >
-                      {customer.status.charAt(0).toUpperCase() +
-                        customer.status.slice(1)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      Tickets
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {customer.ticketCount}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 gap-1"
-                    onClick={() => handleOpenDialog(customer)}
-                  >
-                    <Edit size={14} />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => setDeleteConfirm(customer.id)}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
-                </div>
-              </Card>
-            ))
+        {/* Customers Table */}
+        <Card className="border-0 shadow-sm overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center">
+              <p className="text-muted-foreground">Loading customers from database...</p>
+            </div>
           ) : (
-            <div className="col-span-full py-12 text-center">
-              <p className="text-muted-foreground">
-                No customers found. Create one to get started.
+            <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Phone
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Account Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Registered
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filteredCustomers.length > 0 ? (
+                    filteredCustomers.map((customer) => (
+                      <tr
+                        key={customer.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                          {customer.name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Mail size={14} className="text-muted-foreground" />
+                            {customer.email}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground">
+                          <div className="flex items-center gap-2">
+                            <Phone size={14} className="text-muted-foreground" />
+                            {customer.phone}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground capitalize">
+                          {customer.accountType || "—"}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Badge
+                            variant="secondary"
+                            className={getStatusColor(customer.status)}
+                          >
+                            {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-muted-foreground text-xs">
+                          {customer.registeredAt}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenDialog(customer)}
+                              className="gap-1"
+                            >
+                              <Edit size={14} />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => setDeleteConfirm(customer.id)}
+                              className="gap-1"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center">
+                        <p className="text-muted-foreground">No customers found</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-border px-6 py-4 bg-muted/30">
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredCustomers.length} of {customers.length} customers
               </p>
             </div>
+            </>
           )}
-        </div>
+        </Card>
 
-        {/* Add/Edit Dialog */}
+        {/* Create/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
@@ -422,137 +435,58 @@ export default function CustomersPage() {
             </DialogHeader>
 
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Customer Name *
-                  </label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="e.g., Acme Corp"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Company *
-                  </label>
-                  <Input
-                    value={formData.company}
-                    onChange={(e) =>
-                      setFormData({ ...formData, company: e.target.value })
-                    }
-                    placeholder="e.g., Acme Corporation"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email *
-                  </label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    placeholder="contact@company.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Phone
-                  </label>
-                  <Input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Name *
+                </label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="e.g., Acme Corporation"
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Address
+                  Email *
                 </label>
                 <Input
-                  value={formData.address}
+                  type="email"
+                  value={formData.email}
                   onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
+                    setFormData({ ...formData, email: e.target.value })
                   }
-                  placeholder="Street address"
+                  placeholder="contact@company.com"
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    City
-                  </label>
-                  <Input
-                    value={formData.city}
-                    onChange={(e) =>
-                      setFormData({ ...formData, city: e.target.value })
-                    }
-                    placeholder="San Francisco"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    State
-                  </label>
-                  <Input
-                    value={formData.state}
-                    onChange={(e) =>
-                      setFormData({ ...formData, state: e.target.value })
-                    }
-                    placeholder="CA"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Zip Code
-                  </label>
-                  <Input
-                    value={formData.zipCode}
-                    onChange={(e) =>
-                      setFormData({ ...formData, zipCode: e.target.value })
-                    }
-                    placeholder="94105"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Phone *
+                </label>
+                <Input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="+1 (555) 123-4567"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Country
-                  </label>
-                  <Input
-                    value={formData.country}
-                    onChange={(e) =>
-                      setFormData({ ...formData, country: e.target.value })
-                    }
-                    placeholder="USA"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Service Plan
+                    Account Type
                   </label>
                   <Select
-                    value={formData.plan}
+                    value={formData.accountType}
                     onValueChange={(value) =>
                       setFormData({
                         ...formData,
-                        plan: value as "basic" | "professional" | "enterprise",
+                        accountType: value as "residential" | "business",
                       })
                     }
                   >
@@ -560,36 +494,35 @@ export default function CustomersPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="basic">Basic</SelectItem>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="enterprise">Enterprise</SelectItem>
+                      <SelectItem value="residential">Residential</SelectItem>
+                      <SelectItem value="business">Business</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Status
-                </label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) =>
-                    setFormData({
-                      ...formData,
-                      status: value as "active" | "inactive" | "suspended",
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Status
+                  </label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        status: value as "active" | "inactive" | "suspended",
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -613,8 +546,8 @@ export default function CustomersPage() {
             <DialogHeader>
               <DialogTitle>Delete Customer</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this customer? This action
-                cannot be undone.
+                Are you sure you want to delete this customer? This action cannot
+                be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
