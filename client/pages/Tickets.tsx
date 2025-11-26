@@ -136,6 +136,8 @@ export default function TicketsPage() {
     status: "open" as const,
     priority: "medium" as const,
     assignedTo: "" as string,
+    teamGroupId: "" as string,
+    assignedTeamMemberId: "" as string,
     location: "",
     apartment: "",
     roomNumber: "",
