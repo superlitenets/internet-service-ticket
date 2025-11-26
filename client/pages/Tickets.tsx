@@ -110,6 +110,13 @@ export default function TicketsPage() {
   const [sendingSms, setSendingSms] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [createCustomerDialogOpen, setCreateCustomerDialogOpen] = useState(false);
+  const [creatingCustomer, setCreatingCustomer] = useState(false);
+  const [newCustomerData, setNewCustomerData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+  });
 
   const [formData, setFormData] = useState({
     customerId: "",
