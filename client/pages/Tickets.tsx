@@ -304,12 +304,7 @@ export default function TicketsPage() {
     if (ticket) {
       setEditingTicket(ticket);
       setFormData({
-        customer: ticket.customer,
-        customerEmail: ticket.customerEmail,
-        customerPhone: ticket.customerPhone,
-        customerLocation: ticket.customerLocation || "",
-        apartment: "",
-        roomNumber: "",
+        customerId: ticket.customerId,
         title: ticket.title,
         description: ticket.description,
         status: ticket.status,
@@ -319,17 +314,12 @@ export default function TicketsPage() {
     } else {
       setEditingTicket(null);
       setFormData({
-        customer: "",
-        customerEmail: "",
-        customerPhone: "",
-        customerLocation: "",
-        apartment: "",
-        roomNumber: "",
+        customerId: "",
         title: "",
         description: "",
         status: "open",
         priority: "medium",
-        assignedTo: "Unassigned",
+        assignedTo: "",
       });
     }
     setDialogOpen(true);
