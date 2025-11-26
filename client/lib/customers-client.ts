@@ -21,6 +21,10 @@ export async function createCustomer(data: {
   email: string;
   phone: string;
   accountType?: string;
+  location?: string;
+  apartment?: string;
+  roomNumber?: string;
+  streetAddress?: string;
 }): Promise<Customer> {
   console.log("[Customer API] Creating customer with data:", data);
 
