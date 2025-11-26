@@ -214,11 +214,9 @@ export function AccountingPage() {
 
   const handleDelete = async (id: string) => {
     try {
+      const txTitle = transactions.find((t) => t.id === id)?.title || "Transaction";
       setTransactions((prev) => prev.filter((tx) => tx.id !== id));
-      toast({
-        title: "Success",
-        description: "Transaction deleted successfully",
-      });
+      toast(getSaveNotification({ itemName: `"${txTitle}"`, action: "deleted" }));
     } catch (error) {
       toast({
         title: "Error",
