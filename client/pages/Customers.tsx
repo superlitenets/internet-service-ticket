@@ -214,7 +214,7 @@ export default function CustomersPage() {
 
         toast({
           title: "Success",
-          description: "Customer added successfully",
+          description: `✓ Customer "${newCustomer.name}" created successfully`,
         });
       }
 
