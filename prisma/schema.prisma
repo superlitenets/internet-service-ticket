@@ -171,27 +171,38 @@ model Ticket {
   userId                String?
   teamGroupId           String?  // Assign entire team group
   assignedTeamMemberId  String?  // Assign specific team member
+  slaPolicyId           String?  // SLA Policy
   subject               String
   description           String
   category              String? // technical, billing, complaint, general
   priority              String   @default("medium") // low, medium, high, urgent
   status                String   @default("open") // open, in-progress, bounced, waiting, resolved, closed
   resolution            String?
+  firstResponseAt       DateTime?
   createdAt             DateTime @default(now())
   resolvedAt            DateTime?
   updatedAt             DateTime @updatedAt
 
   // Relations
-  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  user          User?    @relation(fields: [userId], references: [id])
-  teamGroup     TeamGroup? @relation(fields: [teamGroupId], references: [id], onDelete: SetNull)
+  customer           Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user               User?    @relation(fields: [userId], references: [id])
+  teamGroup          TeamGroup? @relation(fields: [teamGroupId], references: [id], onDelete: SetNull)
   assignedTeamMember TeamMember? @relation(fields: [assignedTeamMemberId], references: [id], onDelete: SetNull)
-  replies       TicketReply[]
+  slaPolicy          SLAPolicy? @relation(fields: [slaPolicyId], references: [id], onDelete: SetNull)
+  replies            TicketReply[]
+  comments           TicketComment[]
+  tasks              TicketTask[]
+  timeLogs           TimeLog[]
+  activities         ActivityLog[]
 
   @@index([customerId])
   @@index([userId])
   @@index([teamGroupId])
   @@index([assignedTeamMemberId])
+  @@index([slaPolicyId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
   @@index([ticketId])
 }
 
