@@ -82,6 +82,7 @@ export default function Layout({ children }: LayoutProps) {
         { path: "/employees", label: "Employees", icon: Users },
         { path: "/departments", label: "Departments", icon: Users },
         { path: "/attendance", label: "Attendance", icon: Clock },
+        { path: "/hikvision", label: "Surveillance", icon: Camera },
         { path: "/leave", label: "Leave", icon: Calendar },
         { path: "/payroll", label: "Payroll", icon: DollarSign },
         { path: "/performance", label: "Performance", icon: TrendingUp },
