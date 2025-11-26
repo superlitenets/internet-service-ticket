@@ -437,6 +437,22 @@ export default function Leads() {
         } catch (storageError) {
           console.warn("Failed to save ticket to localStorage:", storageError);
         }
+
+        // Send SMS/WhatsApp notifications for lead conversion (don't fail if SMS fails)
+        if (selectedLead) {
+          try {
+            const technicianInfo = employees.find(
+              (e) => e.id === convertForm.assignedTo || e.name === convertForm.assignedTo
+            );
+            await sendLeadNotifications("lead_converted", selectedLead,
+              technicianInfo
+                ? { name: technicianInfo.name, phone: technicianInfo.phone, id: technicianInfo.id }
+                : undefined
+            );
+          } catch (smsError) {
+            console.warn("Notification sending failed, but lead converted successfully:", smsError);
+          }
+        }
       }
 
       toast({
