@@ -22,13 +22,8 @@ import Payroll from "./pages/Payroll";
 import Performance from "./pages/Performance";
 import Payments from "./pages/Payments";
 import UserManagement from "./pages/UserManagement";
-import MikrotikAccounts from "./pages/MikrotikAccounts";
-import MikrotikBilling from "./pages/MikrotikBilling";
-import MikrotikMonitoring from "./pages/MikrotikMonitoring";
 import Reports from "./pages/Reports";
-import AccountDetail from "./pages/AccountDetail";
 import LandingContentEditor from "./pages/LandingContentEditor";
-import MikrotikRouterOSIntegration from "./pages/MikrotikRouterOSIntegration";
 import { AccountingPage } from "./pages/Accounting";
 
 const queryClient = new QueryClient();
@@ -141,46 +136,6 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute requiredRole={["admin", "support", "manager"]}>
           <Payments />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/mikrotik/accounts/:accountId"
-      element={
-        <ProtectedRoute>
-          <AccountDetail />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/mikrotik/accounts"
-      element={
-        <ProtectedRoute>
-          <MikrotikAccounts />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/mikrotik/billing"
-      element={
-        <ProtectedRoute>
-          <MikrotikBilling />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/mikrotik/monitoring"
-      element={
-        <ProtectedRoute>
-          <MikrotikMonitoring />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/mikrotik/routeros"
-      element={
-        <ProtectedRoute>
-          <MikrotikRouterOSIntegration />
         </ProtectedRoute>
       }
     />
