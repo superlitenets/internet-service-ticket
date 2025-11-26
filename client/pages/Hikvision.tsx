@@ -24,6 +24,7 @@ import {
   Camera,
   Plus,
   CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import {
   testHikvisionConnection,
