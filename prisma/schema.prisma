@@ -45,7 +45,7 @@ model User {
 model Customer {
   id            String   @id @default(cuid())
   phone         String   @unique
-  email         String   @unique
+  email         String?  @unique
   name          String
   accountType   String? // residential, business
   location      String?  // City/Location
