@@ -246,67 +246,83 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {recentTickets.map((ticket) => (
-                <Link key={ticket.id} to={`/tickets/${ticket.id}`}>
-                  <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer p-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-                      {/* ID and Customer */}
-                      <div className="lg:col-span-2">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Ticket ID
-                        </p>
-                        <p className="font-semibold text-primary">
-                          {ticket.id}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {ticket.customer}
-                        </p>
-                      </div>
+              {loading ? (
+                <Card className="border-0 shadow-sm p-8 text-center">
+                  <p className="text-muted-foreground">Loading tickets...</p>
+                </Card>
+              ) : recentTickets.length === 0 ? (
+                <Card className="border-0 shadow-sm p-8 text-center">
+                  <TicketIcon size={32} className="mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No tickets yet</p>
+                  <Link to="/tickets">
+                    <Button className="mt-4" size="sm">
+                      Create a Ticket
+                    </Button>
+                  </Link>
+                </Card>
+              ) : (
+                recentTickets.map((ticket) => (
+                  <Link key={ticket.id} to={`/tickets/${ticket.id}`}>
+                    <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                        {/* ID and Customer */}
+                        <div className="lg:col-span-2">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">
+                            Ticket ID
+                          </p>
+                          <p className="font-semibold text-primary">
+                            {ticket.id}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {ticket.customer}
+                          </p>
+                        </div>
 
-                      {/* Title */}
-                      <div className="lg:col-span-2">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Issue
-                        </p>
-                        <p className="text-sm text-foreground line-clamp-2">
-                          {ticket.title}
-                        </p>
-                      </div>
+                        {/* Title */}
+                        <div className="lg:col-span-2">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">
+                            Issue
+                          </p>
+                          <p className="text-sm text-foreground line-clamp-2">
+                            {ticket.title}
+                          </p>
+                        </div>
 
-                      {/* Status and Priority */}
-                      <div className="space-y-2">
-                        <Badge
-                          variant="outline"
-                          className={`gap-1.5 ${getStatusColor(ticket.status)}`}
-                        >
-                          {getStatusIcon(ticket.status)}
-                          {ticket.status === "in-progress"
-                            ? "In Progress"
-                            : ticket.status.charAt(0).toUpperCase() +
-                              ticket.status.slice(1)}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className={getPriorityColor(ticket.priority)}
-                        >
-                          {ticket.priority.charAt(0).toUpperCase() +
-                            ticket.priority.slice(1)}
-                        </Badge>
-                      </div>
+                        {/* Status and Priority */}
+                        <div className="space-y-2">
+                          <Badge
+                            variant="outline"
+                            className={`gap-1.5 ${getStatusColor(ticket.status)}`}
+                          >
+                            {getStatusIcon(ticket.status)}
+                            {ticket.status === "in-progress"
+                              ? "In Progress"
+                              : ticket.status.charAt(0).toUpperCase() +
+                                ticket.status.slice(1)}
+                          </Badge>
+                          <Badge
+                            variant="secondary"
+                            className={getPriorityColor(ticket.priority)}
+                          >
+                            {ticket.priority.charAt(0).toUpperCase() +
+                              ticket.priority.slice(1)}
+                          </Badge>
+                        </div>
 
-                      {/* Assigned To */}
-                      <div className="flex items-center justify-between lg:justify-start">
-                        <p className="text-xs font-medium text-muted-foreground mb-1 lg:hidden">
-                          Assigned
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {ticket.assignedTo}
-                        </p>
+                        {/* Assigned To */}
+                        <div className="flex items-center justify-between lg:justify-start">
+                          <p className="text-xs font-medium text-muted-foreground mb-1 lg:hidden">
+                            Assigned
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {ticket.assignedTo}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
+                    </Card>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
 
