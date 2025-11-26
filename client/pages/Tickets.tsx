@@ -133,6 +133,10 @@ export default function TicketsPage() {
     status: "open" as const,
     priority: "medium" as const,
     assignedTo: "" as string,
+    location: "",
+    apartment: "",
+    roomNumber: "",
+    streetAddress: "",
   });
 
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
