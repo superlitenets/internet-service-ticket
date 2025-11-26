@@ -332,6 +332,58 @@ export default function TicketsPage() {
     setDialogOpen(true);
   };
 
+  const handleCreateCustomer = async () => {
+    if (!newCustomerData.name || !newCustomerData.phone) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (Name, Phone)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setCreatingCustomer(true);
+      const createdCustomer = await apiCreateCustomer({
+        name: newCustomerData.name,
+        phone: newCustomerData.phone,
+        email: newCustomerData.email || "",
+      });
+
+      // Add the new customer to the list
+      setCustomers((prev) => [...prev, createdCustomer]);
+
+      // Auto-select the newly created customer
+      setFormData((prev) => ({
+        ...prev,
+        customerId: createdCustomer.id,
+      }));
+
+      // Reset the create customer form
+      setNewCustomerData({
+        name: "",
+        phone: "",
+        email: "",
+      });
+
+      setCreateCustomerDialogOpen(false);
+
+      toast({
+        title: "Success",
+        description: `Customer "${createdCustomer.name}" created and selected`,
+      });
+    } catch (error) {
+      console.error("Create customer error:", error);
+      toast({
+        title: "Error",
+        description: `Failed to create customer: ${error instanceof Error ? error.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingCustomer(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!formData.customerId || !formData.title || !formData.description) {
       toast({
