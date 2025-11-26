@@ -71,6 +71,7 @@ import {
   deleteTask,
   logTime,
   getTimeLogs,
+  deleteTimeLog,
   getActivityLog,
   addComment,
   getComments,
