@@ -179,6 +179,16 @@ export function createServer() {
   app.delete("/api/leads/:id", deleteLead);
   app.post("/api/leads/:id/convert-to-ticket", convertLeadToTicket);
 
+  // Support Tickets endpoints
+  app.post("/api/tickets", createTicket);
+  app.get("/api/tickets", getTickets);
+  app.get("/api/tickets/stats", getTicketStats);
+  app.get("/api/tickets/customer/:customerId", getTicketsByCustomer);
+  app.get("/api/tickets/:id", getTicketById);
+  app.put("/api/tickets/:id", updateTicket);
+  app.delete("/api/tickets/:id", deleteTicket);
+  app.post("/api/tickets/:id/assign", assignTicket);
+
   // Accounting Routes
   // Chart of Accounts
   app.get("/api/accounting/accounts", getChartOfAccounts);
