@@ -1075,10 +1075,10 @@ export default function TicketsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Unassigned">Unassigned</SelectItem>
-                      {teamMembers.map((member) => (
-                        <SelectItem key={member.name} value={member.name}>
-                          {member.name}
+                      <SelectItem value="">Unassigned</SelectItem>
+                      {employees.map((employee) => (
+                        <SelectItem key={employee.id} value={employee.id}>
+                          {employee.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
