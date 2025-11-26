@@ -724,8 +724,14 @@ export default function TicketsPage() {
 
         {/* Tickets Table */}
         <Card className="border-0 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          {loading ? (
+            <div className="p-12 text-center">
+              <p className="text-muted-foreground">Loading tickets from database...</p>
+            </div>
+          ) : (
+            <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground">
@@ -884,23 +890,23 @@ export default function TicketsPage() {
                   </tr>
                 )}
               </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredTickets.length} of {allTickets.length} tickets
-            </p>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
+              </table>
             </div>
-          </div>
+            <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredTickets.length} of {allTickets.length} tickets
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm">
+                  Next
+                </Button>
+              </div>
+            </div>
+            </>
+          )}
         </Card>
 
         {/* Create/Edit Dialog */}
