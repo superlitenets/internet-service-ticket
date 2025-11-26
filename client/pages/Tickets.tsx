@@ -528,8 +528,12 @@ export default function TicketsPage() {
 
         setAllTickets((prev) => [...prev, newTicket]);
 
-        // Send SMS notifications for new ticket
-        await sendTicketSms("ticket_created", newTicket);
+        // Send SMS notifications for new ticket (don't fail if SMS fails)
+        try {
+          await sendTicketSms("ticket_created", newTicket);
+        } catch (smsError) {
+          console.warn("SMS notification failed, but ticket created successfully:", smsError);
+        }
 
         toast({
           title: "Success",
