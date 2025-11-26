@@ -1364,7 +1364,15 @@ export default function TicketsPage() {
                 variant="outline"
                 onClick={() => {
                   setCreateCustomerDialogOpen(false);
-                  setNewCustomerData({ name: "", phone: "", email: "" });
+                  setNewCustomerData({
+                    name: "",
+                    phone: "",
+                    email: "",
+                    location: "",
+                    apartment: "",
+                    roomNumber: "",
+                    streetAddress: "",
+                  });
                 }}
               >
                 Cancel
