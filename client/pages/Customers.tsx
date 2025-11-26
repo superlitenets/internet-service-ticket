@@ -233,12 +233,13 @@ export default function CustomersPage() {
 
   const handleDelete = async (customerId: string) => {
     try {
+      const customerName = customers.find((c) => c.id === customerId)?.name || "Customer";
       await apiDeleteCustomer(customerId);
       setCustomers((prev) => prev.filter((c) => c.id !== customerId));
       setDeleteConfirm(null);
       toast({
         title: "Success",
-        description: "Customer deleted successfully",
+        description: `✓ Customer "${customerName}" deleted successfully`,
       });
     } catch (error) {
       console.error("Delete customer error:", error);
