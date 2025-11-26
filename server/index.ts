@@ -22,8 +22,6 @@ import {
 } from "./routes/test";
 import { handleSendSms } from "./routes/sms";
 import {
-  getEmployees,
-  createEmployee,
   getAttendance,
   getLeaveRequests,
   getPayroll,
