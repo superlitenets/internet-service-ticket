@@ -25,16 +25,6 @@ export interface AccessControlEvent {
   status?: string;
 }
 
-export interface SurveillanceEvent {
-  id: string;
-  cameraId: string;
-  eventType: string;
-  eventTime: string;
-  severity: string;
-  location?: string;
-  snapshotUrl?: string;
-  description?: string;
-}
 
 /**
  * Test Hikvision device connection
