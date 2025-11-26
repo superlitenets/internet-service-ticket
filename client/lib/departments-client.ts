@@ -48,7 +48,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
   }
 
   const result = await response.json();
-  return result || [];
+  return result.teamMembers || result || [];
 }
 
 /**
