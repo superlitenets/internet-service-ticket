@@ -4,7 +4,8 @@ import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 
 // Netlify automatically prefixes env vars with NETLIFY_, so check both
-const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "";
+const DATABASE_URL =
+  process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "";
 const sql = neon(DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
