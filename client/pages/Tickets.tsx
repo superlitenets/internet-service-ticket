@@ -82,6 +82,8 @@ interface Ticket {
   createdAt: string;
   updatedAt: string;
   assignedTo: string;
+  teamGroupId?: string;
+  assignedTeamMemberId?: string;
   smsNotificationsSent: number;
   replies?: Reply[];
 }
