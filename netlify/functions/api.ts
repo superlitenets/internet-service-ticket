@@ -552,12 +552,69 @@ const handler: Handler = async (event) => {
       }
     }
 
-    // EMPLOYEES - Get all
+    // EMPLOYEES - Create
+    if (path === "/employees" && method === "POST") {
+      const { firstName, lastName, email, phone, position, department, salary, hireDate, emergencyContact, status } = body;
+
+      if (!firstName || !email || !phone) {
+        return jsonResponse(400, {
+          success: false,
+          message: "FirstName, email, and phone are required",
+        });
+      }
+
+      try {
+        const existingEmployee = await sql(
+          `SELECT * FROM "Employee" WHERE email = $1 OR phone = $2`,
+          [email, phone],
+        );
+
+        if (existingEmployee.length > 0) {
+          return jsonResponse(409, {
+            success: false,
+            message: "Employee with this email or phone already exists",
+          });
+        }
+
+        const result = await sql(
+          `INSERT INTO "Employee" (id, "firstName", "lastName", email, phone, position, department, salary, "hireDate", "emergencyContact", status, "createdAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+           RETURNING *`,
+          [firstName, lastName || "", email, phone, position || null, department || null, salary || null, hireDate || new Date().toISOString(), emergencyContact || null, status || "active"],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Employee created successfully",
+          employee: result[0],
+        });
+      } catch (error) {
+        console.error("Create employee error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create employee",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // EMPLOYEES - Get all (with optional department filter)
     if (path === "/employees" && method === "GET") {
       try {
-        const employees = await sql(
-          `SELECT * FROM "Employee" ORDER BY "createdAt" DESC`,
-        );
+        const department = event.queryStringParameters?.department;
+
+        let query = `SELECT * FROM "Employee"`;
+        const params: any[] = [];
+
+        if (department) {
+          query += ` WHERE department = $1`;
+          params.push(department);
+        }
+
+        query += ` ORDER BY "createdAt" DESC`;
+
+        const employees = await sql(query, params);
+
         return jsonResponse(200, {
           success: true,
           employees,
@@ -568,6 +625,141 @@ const handler: Handler = async (event) => {
         return jsonResponse(500, {
           success: false,
           message: "Failed to fetch employees",
+        });
+      }
+    }
+
+    // EMPLOYEES - Get by ID
+    if (path.match(/^\/employees\/[^/]+$/) && method === "GET") {
+      const employeeId = path.split("/").pop();
+      try {
+        const employee = await sql(`SELECT * FROM "Employee" WHERE id = $1`, [employeeId]);
+
+        if (employee.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Employee not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          employee: employee[0],
+        });
+      } catch (error) {
+        console.error("Get employee error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch employee",
+        });
+      }
+    }
+
+    // EMPLOYEES - Update
+    if (path.match(/^\/employees\/[^/]+$/) && method === "PUT") {
+      const employeeId = path.split("/").pop();
+      const { firstName, lastName, email, phone, position, department, salary, hireDate, emergencyContact, status } = body;
+
+      try {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        if (firstName !== undefined) {
+          updates.push(`"firstName" = $${paramCount++}`);
+          values.push(firstName);
+        }
+        if (lastName !== undefined) {
+          updates.push(`"lastName" = $${paramCount++}`);
+          values.push(lastName);
+        }
+        if (email !== undefined) {
+          updates.push(`email = $${paramCount++}`);
+          values.push(email);
+        }
+        if (phone !== undefined) {
+          updates.push(`phone = $${paramCount++}`);
+          values.push(phone);
+        }
+        if (position !== undefined) {
+          updates.push(`position = $${paramCount++}`);
+          values.push(position);
+        }
+        if (department !== undefined) {
+          updates.push(`department = $${paramCount++}`);
+          values.push(department);
+        }
+        if (salary !== undefined) {
+          updates.push(`salary = $${paramCount++}`);
+          values.push(salary);
+        }
+        if (hireDate !== undefined) {
+          updates.push(`"hireDate" = $${paramCount++}`);
+          values.push(hireDate);
+        }
+        if (emergencyContact !== undefined) {
+          updates.push(`"emergencyContact" = $${paramCount++}`);
+          values.push(emergencyContact);
+        }
+        if (status !== undefined) {
+          updates.push(`status = $${paramCount++}`);
+          values.push(status);
+        }
+
+        updates.push(`"updatedAt" = NOW()`);
+        values.push(employeeId);
+
+        const result = await sql(
+          `UPDATE "Employee" SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`,
+          values,
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Employee not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Employee updated successfully",
+          employee: result[0],
+        });
+      } catch (error) {
+        console.error("Update employee error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to update employee",
+        });
+      }
+    }
+
+    // EMPLOYEES - Delete
+    if (path.match(/^\/employees\/[^/]+$/) && method === "DELETE") {
+      const employeeId = path.split("/").pop();
+      try {
+        const result = await sql(
+          `DELETE FROM "Employee" WHERE id = $1 RETURNING *`,
+          [employeeId],
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Employee not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Employee deleted successfully",
+        });
+      } catch (error) {
+        console.error("Delete employee error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to delete employee",
         });
       }
     }
