@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getCustomers } from "@/lib/customers-client";
+import { getCustomers, createCustomer as apiCreateCustomer } from "@/lib/customers-client";
 import { getEmployees } from "@/lib/employees-client";
 import { sendSmsToPhone } from "@/lib/sms-client";
 import {
