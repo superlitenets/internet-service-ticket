@@ -170,10 +170,12 @@ export default function Dashboard() {
   };
 
   const handleAddCustomer = () => {
+    console.log("Add Customer button clicked");
     navigate("/customers");
   };
 
   const handleOpenBulkSmsDialog = () => {
+    console.log("Send Bulk SMS button clicked, customers:", customers);
     setSelectedCustomersForSms(customers.map((c) => c.id));
     setBulkSmsMessage("");
     setBulkSmsDialogOpen(true);
