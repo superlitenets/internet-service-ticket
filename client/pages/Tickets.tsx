@@ -120,6 +120,10 @@ export default function TicketsPage() {
     name: "",
     phone: "",
     email: "",
+    location: "",
+    apartment: "",
+    roomNumber: "",
+    streetAddress: "",
   });
 
   const [formData, setFormData] = useState({
