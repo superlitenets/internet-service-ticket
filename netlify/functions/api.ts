@@ -983,6 +983,67 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // TICKET REPLIES - Create
+    if (path === "/ticket-replies" && method === "POST") {
+      const { ticketId, userId, message, isInternal } = body;
+
+      if (!ticketId || !userId || !message) {
+        return jsonResponse(400, {
+          success: false,
+          message: "TicketId, userId, and message are required",
+        });
+      }
+
+      try {
+        const result = await sql(
+          `INSERT INTO "TicketReply" (id, "ticketId", "userId", message, "isInternal", "createdAt", "updatedAt")
+           VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
+           RETURNING *`,
+          [ticketId, userId, message, isInternal || false],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Reply added successfully",
+          reply: result[0],
+        });
+      } catch (error) {
+        console.error("Create ticket reply error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create ticket reply",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    // TICKET REPLIES - Get by ticket ID
+    if (path.match(/^\/tickets\/[^/]+\/replies$/) && method === "GET") {
+      const ticketId = path.split("/")[2];
+      try {
+        const replies = await sql(
+          `SELECT tr.*, u.name, u.email
+           FROM "TicketReply" tr
+           LEFT JOIN "User" u ON tr."userId" = u.id
+           WHERE tr."ticketId" = $1
+           ORDER BY tr."createdAt" ASC`,
+          [ticketId],
+        );
+
+        return jsonResponse(200, {
+          success: true,
+          replies,
+          count: replies.length,
+        });
+      } catch (error) {
+        console.error("Get ticket replies error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch ticket replies",
+        });
+      }
+    }
+
     // DEPARTMENTS - Create
     if (path === "/departments" && method === "POST") {
       const { name, description, manager } = body;
