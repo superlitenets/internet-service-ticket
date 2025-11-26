@@ -859,7 +859,8 @@ export default function SettingsPage() {
 
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
-                          Custom API URL (Optional)
+                          API Endpoint URL
+                          <span className="text-red-500 ml-1">*</span>
                         </label>
                         <Input
                           type="url"
@@ -873,7 +874,7 @@ export default function SettingsPage() {
                           placeholder="https://api.advantasms.com/send"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Leave empty to use default endpoint
+                          Your Advanta SMS API endpoint. Required for sending SMS messages.
                         </p>
                       </div>
                     </>
