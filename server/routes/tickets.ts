@@ -29,12 +29,14 @@ export const createTicket: RequestHandler = async (req, res) => {
     // If customerId is not provided or is a placeholder, create a temporary customer
     let finalCustomerId = customerId;
     if (!finalCustomerId || finalCustomerId === "temp-customer") {
+      // Generate unique phone and email
+      const uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const customer = await db.customer.create({
         data: {
           name: customerName || "Unknown Customer",
-          email: customerEmail || `customer-${Date.now()}@example.com`,
+          email: customerEmail || `customer-${uniqueId}@example.com`,
           phone:
-            customerPhone || `+0000000000${Date.now().toString().slice(-4)}`,
+            customerPhone || `+0${uniqueId.replace(/\D/g, "").substring(0, 11)}`,
           accountType: "residential",
           status: "active",
         },
