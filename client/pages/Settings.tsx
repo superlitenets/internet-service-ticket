@@ -241,6 +241,9 @@ export default function SettingsPage() {
         if (notifPrefs) {
           setNotificationPrefs(notifPrefs);
         }
+
+        const prefix = await getTicketPrefix();
+        setTicketPrefix(prefix);
       } catch (error) {
         // Fall back to localStorage on API error
         const saved = getSmsSettings();
@@ -250,6 +253,10 @@ export default function SettingsPage() {
         setWhatsappSettings(getWhatsAppConfig());
         setMpesaSettings(getMpesaSettings());
         setCompanySettings(getCompanySettings());
+
+        // Load ticket prefix (no localStorage fallback)
+        const prefix = await getTicketPrefix();
+        setTicketPrefix(prefix);
       }
     };
 
