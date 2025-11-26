@@ -79,6 +79,7 @@ export default function Layout({ children }: LayoutProps) {
       icon: Briefcase,
       subItems: [
         { path: "/employees", label: "Employees", icon: Users },
+        { path: "/departments", label: "Departments", icon: Users },
         { path: "/attendance", label: "Attendance", icon: Clock },
         { path: "/leave", label: "Leave", icon: Calendar },
         { path: "/payroll", label: "Payroll", icon: DollarSign },
