@@ -37,6 +37,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getCustomers, createCustomer as apiCreateCustomer } from "@/lib/customers-client";
 import { getEmployees } from "@/lib/employees-client";
+import { getTeamGroups, getTeamMembers } from "@/lib/departments-client";
 import { sendSmsToPhone } from "@/lib/sms-client";
 import {
   getTemplate,
