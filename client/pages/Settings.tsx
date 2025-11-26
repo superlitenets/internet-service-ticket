@@ -187,11 +187,6 @@ export default function SettingsPage() {
     setMpesaSettings(mpesaConfig);
     const companyConfig = getCompanySettings();
     setCompanySettings(companyConfig);
-    const instances = getMikrotikInstances();
-    setMikrotikInstances(instances);
-    if (instances.length > 0) {
-      setSelectedInstanceForRadius(instances[0].id);
-    }
   }, []);
 
   // Notification Preferences State
