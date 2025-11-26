@@ -14,9 +14,6 @@ export const createTicket: RequestHandler = async (req, res) => {
       category,
       priority,
       status,
-      customerName,
-      customerEmail,
-      customerPhone,
     } = req.body;
 
     if (!subject || !description) {
@@ -26,30 +23,29 @@ export const createTicket: RequestHandler = async (req, res) => {
       });
     }
 
-    // If customerId is not provided or is a placeholder, create a temporary customer
-    let finalCustomerId = customerId;
-    if (!finalCustomerId || finalCustomerId === "temp-customer") {
-      // Generate truly unique phone and email
-      const uniqueId =
-        Math.random().toString(36).substring(2, 15) +
-        Math.random().toString(36).substring(2, 15);
-      const phoneNumber = `+254${Math.floor(Math.random() * 900000000) + 100000000}`;
-      const customer = await db.customer.create({
-        data: {
-          name: customerName || "Unknown Customer",
-          email: customerEmail || `customer-${uniqueId}@example.com`,
-          phone: customerPhone || phoneNumber,
-          accountType: "residential",
-          status: "active",
-        },
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID is required",
       });
-      finalCustomerId = customer.id;
+    }
+
+    // Verify customer exists
+    const customer = await db.customer.findUnique({
+      where: { id: customerId },
+    });
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
     }
 
     const ticket = await db.ticket.create({
       data: {
         ticketId: `TK-${Date.now()}`,
-        customerId: finalCustomerId,
+        customerId,
         userId: userId || undefined,
         subject,
         description,
