@@ -572,12 +572,58 @@ const handler: Handler = async (event) => {
       }
     }
 
+    // TICKETS - Create
+    if (path === "/tickets" && method === "POST") {
+      const { customerId, userId, subject, description, category, priority, status } = body;
+
+      if (!customerId || !subject || !description) {
+        return jsonResponse(400, {
+          success: false,
+          message: "CustomerId, subject, and description are required",
+        });
+      }
+
+      try {
+        // Verify customer exists
+        const customerCheck = await sql(`SELECT id FROM "Customer" WHERE id = $1`, [customerId]);
+        if (customerCheck.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Customer not found",
+          });
+        }
+
+        const ticketId = `TK-${Date.now()}`;
+        const result = await sql(
+          `INSERT INTO "Ticket" (id, "ticketId", "customerId", "userId", subject, description, category, priority, status, "createdAt", "updatedAt")
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+           RETURNING *`,
+          [ticketId, ticketId, customerId, userId || null, subject, description, category || "general", priority || "medium", status || "open"],
+        );
+
+        return jsonResponse(201, {
+          success: true,
+          message: "Ticket created successfully",
+          ticket: result[0],
+        });
+      } catch (error) {
+        console.error("Create ticket error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to create ticket",
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
     // TICKETS - Get all
     if (path === "/tickets" && method === "GET") {
       try {
         const tickets = await sql(
-          `SELECT t.*, c.name as customer_name FROM "Ticket" t 
+          `SELECT t.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email, u.name as user_name, u.email as user_email
+           FROM "Ticket" t
            LEFT JOIN "Customer" c ON t."customerId" = c.id
+           LEFT JOIN "User" u ON t."userId" = u.id
            ORDER BY t."createdAt" DESC`,
         );
         return jsonResponse(200, {
@@ -590,6 +636,132 @@ const handler: Handler = async (event) => {
         return jsonResponse(500, {
           success: false,
           message: "Failed to fetch tickets",
+        });
+      }
+    }
+
+    // TICKETS - Get by ID
+    if (path.match(/^\/tickets\/[^/]+$/) && method === "GET") {
+      const ticketId = path.split("/").pop();
+      try {
+        const ticket = await sql(
+          `SELECT t.*, c.name as customer_name, c.phone as customer_phone, c.email as customer_email, u.name as user_name, u.email as user_email
+           FROM "Ticket" t
+           LEFT JOIN "Customer" c ON t."customerId" = c.id
+           LEFT JOIN "User" u ON t."userId" = u.id
+           WHERE t.id = $1`,
+          [ticketId],
+        );
+
+        if (ticket.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Ticket not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          ticket: ticket[0],
+        });
+      } catch (error) {
+        console.error("Get ticket error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to fetch ticket",
+        });
+      }
+    }
+
+    // TICKETS - Update
+    if (path.match(/^\/tickets\/[^/]+$/) && method === "PUT") {
+      const ticketId = path.split("/").pop();
+      const { subject, description, status, priority, category, userId } = body;
+
+      try {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramCount = 1;
+
+        if (subject !== undefined) {
+          updates.push(`subject = $${paramCount++}`);
+          values.push(subject);
+        }
+        if (description !== undefined) {
+          updates.push(`description = $${paramCount++}`);
+          values.push(description);
+        }
+        if (status !== undefined) {
+          updates.push(`status = $${paramCount++}`);
+          values.push(status);
+        }
+        if (priority !== undefined) {
+          updates.push(`priority = $${paramCount++}`);
+          values.push(priority);
+        }
+        if (category !== undefined) {
+          updates.push(`category = $${paramCount++}`);
+          values.push(category);
+        }
+        if (userId !== undefined) {
+          updates.push(`"userId" = $${paramCount++}`);
+          values.push(userId);
+        }
+
+        updates.push(`"updatedAt" = NOW()`);
+        values.push(ticketId);
+
+        const result = await sql(
+          `UPDATE "Ticket" SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`,
+          values,
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Ticket not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Ticket updated successfully",
+          ticket: result[0],
+        });
+      } catch (error) {
+        console.error("Update ticket error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to update ticket",
+        });
+      }
+    }
+
+    // TICKETS - Delete
+    if (path.match(/^\/tickets\/[^/]+$/) && method === "DELETE") {
+      const ticketId = path.split("/").pop();
+      try {
+        const result = await sql(
+          `DELETE FROM "Ticket" WHERE id = $1 RETURNING *`,
+          [ticketId],
+        );
+
+        if (result.length === 0) {
+          return jsonResponse(404, {
+            success: false,
+            message: "Ticket not found",
+          });
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          message: "Ticket deleted successfully",
+        });
+      } catch (error) {
+        console.error("Delete ticket error:", error);
+        return jsonResponse(500, {
+          success: false,
+          message: "Failed to delete ticket",
         });
       }
     }
