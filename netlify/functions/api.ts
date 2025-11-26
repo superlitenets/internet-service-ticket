@@ -1946,7 +1946,14 @@ const handler: Handler = async (event) => {
       }
 
       try {
-        if (provider === "advanta" && customApiUrl) {
+        if (provider === "advanta") {
+          if (!customApiUrl) {
+            return jsonResponse(400, {
+              success: false,
+              message: "Advanta API URL is not configured",
+            });
+          }
+
           const formattedPhones = validPhoneNumbers.map((phone: string) => {
             const digits = phone.replace(/\D/g, "");
             if (digits.startsWith("0")) {
@@ -1956,6 +1963,14 @@ const handler: Handler = async (event) => {
               return "254" + digits;
             }
             return digits;
+          });
+
+          console.log("Sending Advanta SMS", {
+            apikey: apiKey,
+            partnerID: partnerId,
+            shortcode: shortcode,
+            phoneCount: formattedPhones.length,
+            messageLength: message.length,
           });
 
           const advantaPayload = {
@@ -1972,14 +1987,21 @@ const handler: Handler = async (event) => {
             body: JSON.stringify(advantaPayload),
           });
 
+          console.log("Advanta API Response Status:", response.status);
+
           if (!response.ok) {
             const error = await response.text();
+            console.error("Advanta API Error:", error);
             return jsonResponse(400, {
               success: false,
               message: "Failed to send SMS via Advanta API",
               error,
+              status: response.status,
             });
           }
+
+          const responseData = await response.json();
+          console.log("Advanta API Success:", responseData);
         }
 
         const messageIds = validPhoneNumbers.map(
