@@ -43,9 +43,11 @@ export const createTicket: RequestHandler = async (req, res) => {
       });
     }
 
+    const newTicketId = await generateTicketId();
+
     const ticket = await db.ticket.create({
       data: {
-        ticketId: `TK-${Date.now()}`,
+        ticketId: newTicketId,
         customerId,
         userId: userId || undefined,
         subject,
