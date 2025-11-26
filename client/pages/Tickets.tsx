@@ -459,6 +459,7 @@ export default function TicketsPage() {
       return;
     }
 
+    setSavingTicket(true);
     try {
       if (editingTicket) {
         // Update existing ticket
