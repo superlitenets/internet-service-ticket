@@ -259,6 +259,7 @@ model TeamMember {
   // Relations
   department  Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
   teamGroup   TeamGroup?  @relation(fields: [teamGroupId], references: [id], onDelete: SetNull)
+  assignedTickets Ticket[]
 
   @@unique([employeeId, departmentId, teamGroupId])
   @@index([employeeId])
