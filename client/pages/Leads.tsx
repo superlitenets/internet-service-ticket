@@ -334,10 +334,7 @@ export default function Leads() {
           );
         }
 
-        toast({
-          title: "Success",
-          description: "Lead created successfully",
-        });
+        toast(getSaveNotification({ itemName: `Lead "${newLead.customerName}"`, action: "created" }));
       }
 
       setFormData({
