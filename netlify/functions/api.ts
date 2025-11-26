@@ -8,8 +8,8 @@ const DATABASE_URL =
   process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || "";
 const sqlClient = neon(DATABASE_URL);
 
-// Use the new .query() API for parameterized queries
-const sql = sqlClient.query.bind(sqlClient);
+// Neon now uses .query() for parameterized queries
+const sql = (query: string, params?: any[]) => sqlClient.query(query, params || []);
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // Helper to create JSON response
