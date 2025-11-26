@@ -212,8 +212,7 @@ export default function Dashboard() {
       if (phoneNumbers.length === 0) {
         toast({
           title: "Error",
-          description:
-            "Selected customers do not have phone numbers available",
+          description: "Selected customers do not have phone numbers available",
           variant: "destructive",
         });
         return;
