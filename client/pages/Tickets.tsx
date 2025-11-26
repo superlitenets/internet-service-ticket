@@ -508,6 +508,10 @@ export default function TicketsPage() {
           assignedTeamMemberId: formData.assignedTeamMemberId || undefined,
         });
 
+        if (!newApiTicket || !newApiTicket.id) {
+          throw new Error("Invalid response from server: missing ticket ID");
+        }
+
         const newTicket: Ticket = {
           id: newApiTicket.id,
           customerId: formData.customerId,
