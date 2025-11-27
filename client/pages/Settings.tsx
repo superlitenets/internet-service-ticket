@@ -40,6 +40,7 @@ import {
   Network,
   Wifi,
   Clock,
+  Loader,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
