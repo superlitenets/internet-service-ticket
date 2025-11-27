@@ -103,6 +103,7 @@ import {
   saveNotificationPrefsApi,
   getNotificationPrefsApi,
 } from "@/lib/settings-client";
+import { getSaveNotification } from "@/lib/save-notification";
 
 export default function SettingsPage() {
   const { toast } = useToast();
