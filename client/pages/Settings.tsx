@@ -2147,7 +2147,7 @@ export default function SettingsPage() {
                   className="gap-2"
                 >
                   <Save size={16} />
-                  {savingNotifications ? "Saving..." : "Save Account Settings"}
+                  Save Account Settings
                 </Button>
               </div>
             </Card>
