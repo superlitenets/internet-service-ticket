@@ -2663,7 +2663,11 @@ export default function SettingsPage() {
                       disabled={savingTicketPrefix}
                       className="gap-2"
                     >
-                      <Save size={16} />
+                      {savingTicketPrefix ? (
+                        <Loader size={16} className="animate-spin" />
+                      ) : (
+                        <Save size={16} />
+                      )}
                       {savingTicketPrefix ? "Saving..." : "Save Ticket Prefix"}
                     </Button>
                   </div>
