@@ -115,6 +115,14 @@ export default function SettingsPage() {
   const [ticketPrefix, setTicketPrefix] = useState("TKT");
   const [savingTicketPrefix, setSavingTicketPrefix] = useState(false);
 
+  // Loading States for Save Operations
+  const [savingSms, setSavingSms] = useState(false);
+  const [savingWhatsApp, setSavingWhatsApp] = useState(false);
+  const [savingMpesa, setSavingMpesa] = useState(false);
+  const [savingCompany, setSavingCompany] = useState(false);
+  const [savingDeductions, setSavingDeductions] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
+
   // SMS Settings State
   const [smsSettings, setSmsSettings] = useState<
     SmsSettings & {
