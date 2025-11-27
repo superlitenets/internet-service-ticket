@@ -1686,10 +1686,15 @@ export default function SettingsPage() {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleSaveSettings("Deductions")}
+                    disabled={savingDeductions}
                     className="gap-2"
                   >
-                    <Save size={16} />
-                    Save Deduction Settings
+                    {savingDeductions ? (
+                      <Loader size={16} className="animate-spin" />
+                    ) : (
+                      <Save size={16} />
+                    )}
+                    {savingDeductions ? "Saving..." : "Save Deduction Settings"}
                   </Button>
                   <Button
                     onClick={() => {
