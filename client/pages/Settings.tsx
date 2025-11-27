@@ -364,7 +364,12 @@ export default function SettingsPage() {
     try {
       setSavingTicketPrefix(true);
       await setTicketPrefix(ticketPrefix);
-      toast(getSaveNotification({ itemName: `Ticket Prefix "${ticketPrefix}"`, action: "updated" }));
+      toast(
+        getSaveNotification({
+          itemName: `Ticket Prefix "${ticketPrefix}"`,
+          action: "updated",
+        }),
+      );
     } catch (error) {
       toast({
         title: "Error",
@@ -400,7 +405,9 @@ export default function SettingsPage() {
         setSavingSms(true);
         await saveSmsSettingsApi(smsSettings);
         saveSmsSettings(smsSettings);
-        toast(getSaveNotification({ itemName: "SMS Settings", action: "updated" }));
+        toast(
+          getSaveNotification({ itemName: "SMS Settings", action: "updated" }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -415,7 +422,12 @@ export default function SettingsPage() {
         setSavingWhatsApp(true);
         await saveWhatsAppSettingsApi(whatsappSettings);
         saveWhatsAppConfig(whatsappSettings);
-        toast(getSaveNotification({ itemName: "WhatsApp Settings", action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: "WhatsApp Settings",
+            action: "updated",
+          }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -430,7 +442,12 @@ export default function SettingsPage() {
         setSavingMpesa(true);
         await saveMpesaSettingsApi(mpesaSettings);
         saveMpesaSettings(mpesaSettings);
-        toast(getSaveNotification({ itemName: "MPESA Settings", action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: "MPESA Settings",
+            action: "updated",
+          }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -445,7 +462,12 @@ export default function SettingsPage() {
         setSavingCompany(true);
         await saveCompanySettingsApi(companySettings);
         saveCompanySettings(companySettings);
-        toast(getSaveNotification({ itemName: "Company Settings", action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: "Company Settings",
+            action: "updated",
+          }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -460,7 +482,12 @@ export default function SettingsPage() {
         setSavingDeductions(true);
         await saveDeductionSettingsApi(deductionSettings);
         saveDeductionSettings(deductionSettings);
-        toast(getSaveNotification({ itemName: "Deduction Settings", action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: "Deduction Settings",
+            action: "updated",
+          }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -474,7 +501,12 @@ export default function SettingsPage() {
       try {
         setSavingNotifications(true);
         await saveNotificationPrefsApi(notificationPrefs);
-        toast(getSaveNotification({ itemName: "Notification Preferences", action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: "Notification Preferences",
+            action: "updated",
+          }),
+        );
       } catch (error) {
         toast({
           title: "Error",
@@ -485,7 +517,12 @@ export default function SettingsPage() {
         setSavingNotifications(false);
       }
     } else {
-      toast(getSaveNotification({ itemName: `${section} Settings`, action: "updated" }));
+      toast(
+        getSaveNotification({
+          itemName: `${section} Settings`,
+          action: "updated",
+        }),
+      );
     }
   };
 
