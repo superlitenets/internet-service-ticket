@@ -1291,10 +1291,15 @@ export default function SettingsPage() {
                 <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={() => handleSaveSettings("WhatsApp")}
+                    disabled={savingWhatsApp}
                     className="gap-2"
                   >
-                    <Save size={16} />
-                    Save Settings
+                    {savingWhatsApp ? (
+                      <Loader size={16} className="animate-spin" />
+                    ) : (
+                      <Save size={16} />
+                    )}
+                    {savingWhatsApp ? "Saving..." : "Save Settings"}
                   </Button>
                   {whatsappSettings.enabled &&
                     (whatsappSettings.mode === "business" ||
