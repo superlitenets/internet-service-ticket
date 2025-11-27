@@ -355,10 +355,7 @@ export default function SettingsPage() {
     try {
       setSavingTicketPrefix(true);
       await setTicketPrefix(ticketPrefix);
-      toast({
-        title: "Success",
-        description: "Ticket prefix updated successfully",
-      });
+      toast(getSaveNotification({ itemName: `Ticket Prefix "${ticketPrefix}"`, action: "updated" }));
     } catch (error) {
       toast({
         title: "Error",
