@@ -977,10 +977,15 @@ export default function SettingsPage() {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleSaveSettings("SMS")}
+                    disabled={savingSms}
                     className="gap-2"
                   >
-                    <Save size={16} />
-                    Save SMS Settings
+                    {savingSms ? (
+                      <Loader size={16} className="animate-spin" />
+                    ) : (
+                      <Save size={16} />
+                    )}
+                    {savingSms ? "Saving..." : "Save SMS Settings"}
                   </Button>
                   <Button
                     onClick={handleTestSms}
