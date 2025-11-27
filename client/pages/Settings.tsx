@@ -1994,10 +1994,15 @@ export default function SettingsPage() {
 
                 <Button
                   onClick={() => handleSaveSettings("Company")}
+                  disabled={savingCompany}
                   className="gap-2"
                 >
-                  <Save size={16} />
-                  Save Company Settings
+                  {savingCompany ? (
+                    <Loader size={16} className="animate-spin" />
+                  ) : (
+                    <Save size={16} />
+                  )}
+                  {savingCompany ? "Saving..." : "Save Company Settings"}
                 </Button>
               </div>
             </Card>
