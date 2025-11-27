@@ -2575,10 +2575,15 @@ export default function SettingsPage() {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleSaveSettings("MPESA")}
+                    disabled={savingMpesa}
                     className="gap-2"
                   >
-                    <Save size={16} />
-                    Save MPESA Settings
+                    {savingMpesa ? (
+                      <Loader size={16} className="animate-spin" />
+                    ) : (
+                      <Save size={16} />
+                    )}
+                    {savingMpesa ? "Saving..." : "Save MPESA Settings"}
                   </Button>
                   <Button
                     onClick={() => {
