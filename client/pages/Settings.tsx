@@ -397,6 +397,7 @@ export default function SettingsPage() {
   const handleSaveSettings = async (section: string) => {
     if (section === "SMS") {
       try {
+        setSavingSms(true);
         await saveSmsSettingsApi(smsSettings);
         saveSmsSettings(smsSettings);
         toast(getSaveNotification({ itemName: "SMS Settings", action: "updated" }));
@@ -406,9 +407,12 @@ export default function SettingsPage() {
           description: "Failed to save SMS settings.",
           variant: "destructive",
         });
+      } finally {
+        setSavingSms(false);
       }
     } else if (section === "WhatsApp") {
       try {
+        setSavingWhatsApp(true);
         await saveWhatsAppSettingsApi(whatsappSettings);
         saveWhatsAppConfig(whatsappSettings);
         toast(getSaveNotification({ itemName: "WhatsApp Settings", action: "updated" }));
@@ -418,9 +422,12 @@ export default function SettingsPage() {
           description: "Failed to save WhatsApp settings.",
           variant: "destructive",
         });
+      } finally {
+        setSavingWhatsApp(false);
       }
     } else if (section === "MPESA") {
       try {
+        setSavingMpesa(true);
         await saveMpesaSettingsApi(mpesaSettings);
         saveMpesaSettings(mpesaSettings);
         toast(getSaveNotification({ itemName: "MPESA Settings", action: "updated" }));
@@ -430,9 +437,12 @@ export default function SettingsPage() {
           description: "Failed to save MPESA settings.",
           variant: "destructive",
         });
+      } finally {
+        setSavingMpesa(false);
       }
     } else if (section === "Company") {
       try {
+        setSavingCompany(true);
         await saveCompanySettingsApi(companySettings);
         saveCompanySettings(companySettings);
         toast(getSaveNotification({ itemName: "Company Settings", action: "updated" }));
@@ -442,9 +452,12 @@ export default function SettingsPage() {
           description: "Failed to save company settings.",
           variant: "destructive",
         });
+      } finally {
+        setSavingCompany(false);
       }
     } else if (section === "Deduction") {
       try {
+        setSavingDeductions(true);
         await saveDeductionSettingsApi(deductionSettings);
         saveDeductionSettings(deductionSettings);
         toast(getSaveNotification({ itemName: "Deduction Settings", action: "updated" }));
@@ -454,9 +467,12 @@ export default function SettingsPage() {
           description: "Failed to save deduction settings.",
           variant: "destructive",
         });
+      } finally {
+        setSavingDeductions(false);
       }
     } else if (section === "Notifications") {
       try {
+        setSavingNotifications(true);
         await saveNotificationPrefsApi(notificationPrefs);
         toast(getSaveNotification({ itemName: "Notification Preferences", action: "updated" }));
       } catch (error) {
@@ -465,6 +481,8 @@ export default function SettingsPage() {
           description: "Failed to save notification preferences.",
           variant: "destructive",
         });
+      } finally {
+        setSavingNotifications(false);
       }
     } else {
       toast(getSaveNotification({ itemName: `${section} Settings`, action: "updated" }));
