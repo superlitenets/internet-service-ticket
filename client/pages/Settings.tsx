@@ -1810,10 +1810,15 @@ export default function SettingsPage() {
 
                 <Button
                   onClick={() => handleSaveSettings("Notifications")}
+                  disabled={savingNotifications}
                   className="gap-2"
                 >
-                  <Save size={16} />
-                  Save Preferences
+                  {savingNotifications ? (
+                    <Loader size={16} className="animate-spin" />
+                  ) : (
+                    <Save size={16} />
+                  )}
+                  {savingNotifications ? "Saving..." : "Save Preferences"}
                 </Button>
               </div>
             </Card>
