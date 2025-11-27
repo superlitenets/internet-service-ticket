@@ -393,10 +393,7 @@ export default function SettingsPage() {
       try {
         await saveSmsSettingsApi(smsSettings);
         saveSmsSettings(smsSettings);
-        toast({
-          title: "Success",
-          description: "SMS settings saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "SMS Settings", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -408,10 +405,7 @@ export default function SettingsPage() {
       try {
         await saveWhatsAppSettingsApi(whatsappSettings);
         saveWhatsAppConfig(whatsappSettings);
-        toast({
-          title: "Success",
-          description: "WhatsApp settings saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "WhatsApp Settings", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -423,10 +417,7 @@ export default function SettingsPage() {
       try {
         await saveMpesaSettingsApi(mpesaSettings);
         saveMpesaSettings(mpesaSettings);
-        toast({
-          title: "Success",
-          description: "MPESA settings saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "MPESA Settings", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -438,10 +429,7 @@ export default function SettingsPage() {
       try {
         await saveCompanySettingsApi(companySettings);
         saveCompanySettings(companySettings);
-        toast({
-          title: "Success",
-          description: "Company settings saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "Company Settings", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -453,10 +441,7 @@ export default function SettingsPage() {
       try {
         await saveDeductionSettingsApi(deductionSettings);
         saveDeductionSettings(deductionSettings);
-        toast({
-          title: "Success",
-          description: "Deduction settings saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "Deduction Settings", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -467,10 +452,7 @@ export default function SettingsPage() {
     } else if (section === "Notifications") {
       try {
         await saveNotificationPrefsApi(notificationPrefs);
-        toast({
-          title: "Success",
-          description: "Notification preferences saved successfully.",
-        });
+        toast(getSaveNotification({ itemName: "Notification Preferences", action: "updated" }));
       } catch (error) {
         toast({
           title: "Error",
@@ -479,10 +461,7 @@ export default function SettingsPage() {
         });
       }
     } else {
-      toast({
-        title: "Success",
-        description: `${section} settings saved successfully.`,
-      });
+      toast(getSaveNotification({ itemName: `${section} Settings`, action: "updated" }));
     }
   };
 
