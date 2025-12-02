@@ -1334,7 +1334,7 @@ export default function TicketsPage() {
                       <SelectItem value="unassigned">Unassigned</SelectItem>
                       {employees.map((employee) => (
                         <SelectItem key={employee.id} value={employee.id}>
-                          {employee.name}
+                          {`${employee.firstName} ${employee.lastName}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
