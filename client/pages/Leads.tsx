@@ -313,7 +313,12 @@ export default function Leads() {
           agreedInstallAmount: parseFloat(formData.agreedInstallAmount),
           notes: formData.notes || undefined,
         });
-        toast(getSaveNotification({ itemName: `Lead "${formData.name}"`, action: "updated" }));
+        toast(
+          getSaveNotification({
+            itemName: `Lead "${formData.name}"`,
+            action: "updated",
+          }),
+        );
       } else {
         const newLead = await createLead({
           customerName: formData.customerName,
@@ -335,7 +340,12 @@ export default function Leads() {
           );
         }
 
-        toast(getSaveNotification({ itemName: `Lead "${newLead.customerName}"`, action: "created" }));
+        toast(
+          getSaveNotification({
+            itemName: `Lead "${newLead.customerName}"`,
+            action: "created",
+          }),
+        );
       }
 
       setFormData({
@@ -383,7 +393,9 @@ export default function Leads() {
       setLoading(true);
       const leadName = leads.find((l) => l.id === id)?.customerName || "Lead";
       await deleteLead(id);
-      toast(getSaveNotification({ itemName: `"${leadName}"`, action: "deleted" }));
+      toast(
+        getSaveNotification({ itemName: `"${leadName}"`, action: "deleted" }),
+      );
       await loadLeads();
     } catch (error) {
       toast({
