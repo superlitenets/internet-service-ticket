@@ -112,12 +112,7 @@ export default function Leads() {
     assignedTo: "Unassigned",
   });
 
-  const teamMembers: TeamMember[] = [
-    { name: "Mike Johnson", phone: "+1555111111" },
-    { name: "Sarah Smith", phone: "+1555222222" },
-    { name: "Alex Chen", phone: "+1555333333" },
-    { name: "David Brown", phone: "+1555444444" },
-  ];
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
     loadLeads();
