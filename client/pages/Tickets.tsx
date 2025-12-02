@@ -285,6 +285,14 @@ export default function TicketsPage() {
           console.error("Failed to load team groups:", error);
         }
 
+        // Load employees for "Assign To" dropdown
+        try {
+          const employeesData = await getEmployees();
+          setEmployees(employeesData);
+        } catch (error) {
+          console.error("Failed to load employees:", error);
+        }
+
         // Load team members
         try {
           const teamMembersData = await getTeamMembers();
