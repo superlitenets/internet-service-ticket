@@ -465,9 +465,19 @@ export const getEmployeeTeamMemberships: RequestHandler = async (req, res) => {
       },
     });
 
+    // Fetch employee data for consistency
+    const employee = await db.employee.findUnique({
+      where: { id: employeeId },
+    });
+
+    const enrichedMemberships = memberships.map((membership) => ({
+      ...membership,
+      employee,
+    }));
+
     return res.json({
       success: true,
-      teamMemberships: memberships,
+      teamMemberships: enrichedMemberships,
     });
   } catch (error) {
     console.error("Get employee team memberships error:", error);
