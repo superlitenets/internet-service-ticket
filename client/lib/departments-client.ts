@@ -21,6 +21,15 @@ export interface TeamMember {
     id: string;
     name: string;
   };
+  employee?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    position?: string;
+    status: string;
+  };
 }
 
 /**
