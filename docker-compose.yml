@@ -17,41 +17,41 @@ services:
     environment:
       NODE_ENV: development
       PORT: 9000
-      DATABASE_URL: mysql://netflow_user:secure_password@mysql:3306/netflow_db
-      DB_HOST: mysql
-      DB_PORT: 3306
+      DATABASE_URL: postgresql://netflow_user:secure_password@postgres:5432/netflow_db
+      DB_HOST: postgres
+      DB_PORT: 5432
       DB_NAME: netflow_db
       DB_USER: netflow_user
       DB_PASSWORD: secure_password
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_started
     networks:
       - netflow-network
-    command: sh -c "pnpm prisma migrate deploy && pnpm build && node dist/server/production.mjs"
+    command: sh -c "pnpm prisma migrate deploy && pnpm run dev"
 
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
-    container_name: netflow-mysql
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: netflow-postgres
     environment:
-      MYSQL_DATABASE: netflow_db
-      MYSQL_USER: netflow_user
-      MYSQL_PASSWORD: secure_password
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_ROOT_HOST: "%"
+      POSTGRES_DB: netflow_db
+      POSTGRES_USER: netflow_user
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - netflow-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U netflow_user -d netflow_db"]
       timeout: 20s
       retries: 10
+      interval: 5s
 
   # Redis Cache
   redis:
@@ -64,18 +64,17 @@ services:
     networks:
       - netflow-network
 
-  # phpMyAdmin (for development only)
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: netflow-phpmyadmin
+  # pgAdmin for PostgreSQL management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: netflow-pgadmin
     environment:
-      PMA_HOST: mysql
-      PMA_USER: netflow_user
-      PMA_PASSWORD: secure_password
+      PGADMIN_DEFAULT_EMAIL: admin@netflow.local
+      PGADMIN_DEFAULT_PASSWORD: admin_password
     ports:
-      - "8081:80"
+      - "5050:80"
     depends_on:
-      - mysql
+      - postgres
     networks:
       - netflow-network
 
@@ -84,7 +83,7 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  postgres_data:
     driver: local
   redis_data:
     driver: local
