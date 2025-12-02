@@ -65,62 +65,49 @@ export default function TeamPage() {
     permissions: [] as string[],
   });
 
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    {
-      id: "user_1",
-      name: "Mike Johnson",
-      email: "mike@netflow-isp.com",
-      phone: "+1 (555) 111-2222",
-      role: "technician",
-      department: "Support",
-      status: "online",
-      permissions: ["view_tickets", "update_tickets", "send_sms"],
-      assignedTickets: 5,
-      joinedDate: "2024-01-01",
-    },
-    {
-      id: "user_2",
-      name: "Sarah Smith",
-      email: "sarah@netflow-isp.com",
-      phone: "+1 (555) 222-3333",
-      role: "manager",
-      department: "Operations",
-      status: "online",
-      permissions: [
-        "view_tickets",
-        "update_tickets",
-        "send_sms",
-        "manage_team",
-        "view_reports",
-      ],
-      assignedTickets: 3,
-      joinedDate: "2024-01-05",
-    },
-    {
-      id: "user_3",
-      name: "Alex Chen",
-      email: "alex@netflow-isp.com",
-      phone: "+1 (555) 333-4444",
-      role: "technician",
-      department: "Support",
-      status: "away",
-      permissions: ["view_tickets", "update_tickets"],
-      assignedTickets: 4,
-      joinedDate: "2024-01-08",
-    },
-    {
-      id: "user_4",
-      name: "David Brown",
-      email: "david@netflow-isp.com",
-      phone: "+1 (555) 444-5555",
-      role: "admin",
-      department: "Administration",
-      status: "online",
-      permissions: ["all"],
-      assignedTickets: 0,
-      joinedDate: "2023-12-01",
-    },
-  ]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadTeamMembers();
+  }, []);
+
+  const loadTeamMembers = async () => {
+    try {
+      setLoading(true);
+      const [employeesData, teamMembersData] = await Promise.all([
+        getEmployees(),
+        getTeamMembers(),
+      ]);
+
+      // Map employees to team member format
+      const formattedMembers: TeamMember[] = employeesData.map((emp: any) => ({
+        id: emp.id,
+        name: `${emp.firstName} ${emp.lastName}`,
+        email: emp.email,
+        phone: emp.phone,
+        role: "technician" as const,
+        department: emp.department || "Unassigned",
+        status: "offline" as const,
+        permissions: ["view_tickets", "update_tickets"],
+        assignedTickets: 0,
+        joinedDate: emp.createdAt
+          ? new Date(emp.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+      }));
+
+      setTeamMembers(formattedMembers);
+    } catch (error) {
+      console.error("Failed to load team members:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load team members",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const allPermissions = [
     "view_tickets",
