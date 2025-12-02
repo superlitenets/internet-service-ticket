@@ -8,13 +8,13 @@ docker-compose up --build
 
 ## Access Points
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Frontend | http://localhost:5173 | - |
-| Backend API | http://localhost:9000 | - |
-| pgAdmin | http://localhost:5050 | admin@netflow.local / admin_password |
-| PostgreSQL | localhost:5432 | netflow_user / secure_password |
-| Redis | localhost:6379 | - |
+| Service     | URL                   | Credentials                          |
+| ----------- | --------------------- | ------------------------------------ |
+| Frontend    | http://localhost:5173 | -                                    |
+| Backend API | http://localhost:9000 | -                                    |
+| pgAdmin     | http://localhost:5050 | admin@netflow.local / admin_password |
+| PostgreSQL  | localhost:5432        | netflow_user / secure_password       |
+| Redis       | localhost:6379        | -                                    |
 
 ## Essential Commands
 
@@ -59,11 +59,13 @@ docker-compose exec -T postgres psql -U netflow_user -d netflow_db < backup.sql
 ## Change Passwords
 
 Edit `docker-compose.yml` and update:
+
 - `POSTGRES_PASSWORD` in postgres service
 - `DATABASE_URL` in app service
 - `PGADMIN_DEFAULT_PASSWORD` in pgadmin service
 
 Then restart:
+
 ```bash
 docker-compose down
 docker-compose up --build

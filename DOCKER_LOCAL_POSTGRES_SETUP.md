@@ -46,6 +46,7 @@ docker-compose logs -f app
 ```
 
 The application will be available at:
+
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:9000
 - **pgAdmin**: http://localhost:5050
@@ -151,6 +152,7 @@ docker-compose exec -T postgres pg_restore -U netflow_user -d netflow_db netflow
 ## Services Overview
 
 ### PostgreSQL (postgres)
+
 - **Container Name**: netflow-postgres
 - **Host**: postgres
 - **Port**: 5432
@@ -160,18 +162,21 @@ docker-compose exec -T postgres pg_restore -U netflow_user -d netflow_db netflow
 - **Data Volume**: postgres_data
 
 ### Redis (redis)
+
 - **Container Name**: netflow-redis
 - **Host**: redis
 - **Port**: 6379
 - **Data Volume**: redis_data
 
 ### Node.js Application (app)
+
 - **Container Name**: netflow-app
 - **Frontend Port**: 5173
 - **API Port**: 9000
 - **Mounts**: Entire project directory for live reloading
 
 ### pgAdmin
+
 - **Container Name**: netflow-pgadmin
 - **URL**: http://localhost:5050
 - **Email**: admin@netflow.local
@@ -225,13 +230,15 @@ If port 5432 is already in use:
 # Edit docker-compose.yml
 postgres:
   ports:
-    - "5433:5432"  # Map to different port
+    - "5433:5432" # Map to different port
 ```
 
 Then update DATABASE_URL:
+
 ```
 DATABASE_URL=postgresql://netflow_user:secure_password@postgres:5432/netflow_db
 ```
+
 (Note: Use `postgres` as hostname, not localhost, when inside Docker network)
 
 ### Database Won't Start
@@ -256,23 +263,29 @@ docker-compose up app
 ## Switching Between Neon and Local PostgreSQL
 
 ### Use Local PostgreSQL
+
 Update your `.env` file:
+
 ```env
 DATABASE_URL=postgresql://netflow_user:secure_password@postgres:5432/netflow_db
 ```
 
 Then run:
+
 ```bash
 docker-compose up --build
 ```
 
 ### Switch Back to Neon
+
 Update your `.env` file with Neon connection string:
+
 ```env
 DATABASE_URL=postgresql://[user]:[password]@[host]/[dbname]?sslmode=require&channel_binding=require
 ```
 
 Then run without Docker:
+
 ```bash
 pnpm install
 pnpm prisma migrate deploy
@@ -282,11 +295,13 @@ pnpm run dev
 ## Next Steps
 
 1. Create initial admin user:
+
    ```bash
    docker-compose exec app pnpm run ts scripts/create-test-user.ts
    ```
 
 2. Seed database with test data (if available):
+
    ```bash
    docker-compose exec app pnpm prisma db seed
    ```
