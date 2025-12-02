@@ -123,6 +123,12 @@ export default function Leads() {
     try {
       const employeesData = await getEmployees();
       setEmployees(employeesData);
+      // Convert employees to team members format for assignment dropdown
+      const teamMembersData = employeesData.map((emp: any) => ({
+        name: `${emp.firstName} ${emp.lastName}`,
+        phone: emp.phone,
+      }));
+      setTeamMembers(teamMembersData);
     } catch (error) {
       console.error("Failed to load employees:", error);
     }
