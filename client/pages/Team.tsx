@@ -28,8 +28,10 @@ import {
   Clock,
   CheckCircle2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { getEmployees } from "@/lib/employees-client";
+import { getTeamMembers } from "@/lib/departments-client";
 
 interface TeamMember {
   id: string;
