@@ -1390,8 +1390,11 @@ export default function TicketsPage() {
                       <SelectItem value="none">None</SelectItem>
                       {teamMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id}>
-                          {member.department?.name || "No Department"} -{" "}
-                          {member.teamGroup?.name || "No Team"}
+                          {member.employee
+                            ? `${member.employee.firstName} ${member.employee.lastName}`
+                            : "Unknown"}{" "}
+                          ({member.department?.name || "N/A"} -{" "}
+                          {member.teamGroup?.name || "N/A"})
                         </SelectItem>
                       ))}
                     </SelectContent>
