@@ -252,6 +252,20 @@ export default function SettingsPage() {
 
         const prefix = await getTicketPrefix();
         setTicketPrefix(prefix);
+
+        // Load team members
+        const employeesData = await getEmployees();
+        const formattedMembers = employeesData.map((emp: any) => ({
+          id: emp.id,
+          name: `${emp.firstName} ${emp.lastName}`,
+          email: emp.email,
+          role: "technician",
+          permissions: ["view_tickets", "update_tickets"],
+          joinedDate: emp.createdAt
+            ? new Date(emp.createdAt).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+        }));
+        setTeamMembers(formattedMembers);
       } catch (error) {
         // Fall back to localStorage on API error
         const saved = getSmsSettings();
@@ -265,6 +279,24 @@ export default function SettingsPage() {
         // Load ticket prefix (no localStorage fallback)
         const prefix = await getTicketPrefix();
         setTicketPrefix(prefix);
+
+        // Try to load team members even on error
+        try {
+          const employeesData = await getEmployees();
+          const formattedMembers = employeesData.map((emp: any) => ({
+            id: emp.id,
+            name: `${emp.firstName} ${emp.lastName}`,
+            email: emp.email,
+            role: "technician",
+            permissions: ["view_tickets", "update_tickets"],
+            joinedDate: emp.createdAt
+              ? new Date(emp.createdAt).toISOString().split("T")[0]
+              : new Date().toISOString().split("T")[0],
+          }));
+          setTeamMembers(formattedMembers);
+        } catch {
+          console.error("Failed to load team members");
+        }
       }
     };
 
