@@ -324,37 +324,7 @@ export default function SettingsPage() {
   ]);
 
   // Team Permissions State
-  const [teamMembers] = useState([
-    {
-      id: "user_1",
-      name: "Mike Johnson",
-      email: "mike@netflow-isp.com",
-      role: "technician",
-      permissions: ["view_tickets", "update_tickets", "send_sms"],
-      joinedDate: "2024-01-01",
-    },
-    {
-      id: "user_2",
-      name: "Sarah Smith",
-      email: "sarah@netflow-isp.com",
-      role: "manager",
-      permissions: [
-        "view_tickets",
-        "update_tickets",
-        "send_sms",
-        "manage_team",
-      ],
-      joinedDate: "2024-01-05",
-    },
-    {
-      id: "user_3",
-      name: "Alex Chen",
-      email: "alex@netflow-isp.com",
-      role: "technician",
-      permissions: ["view_tickets", "update_tickets"],
-      joinedDate: "2024-01-08",
-    },
-  ]);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
 
   const handleSmsSettingChange = (key: string, value: any) => {
     setSmsSettings((prev) => ({ ...prev, [key]: value }));
