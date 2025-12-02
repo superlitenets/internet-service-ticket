@@ -422,10 +422,23 @@ export const getTeamMembers: RequestHandler = async (_req, res) => {
       orderBy: [{ teamGroupId: "asc" }, { employeeId: "asc" }],
     });
 
+    // Fetch employee data for each team member to get names and other details
+    const enrichedMembers = await Promise.all(
+      members.map(async (member) => {
+        const employee = await db.employee.findUnique({
+          where: { id: member.employeeId },
+        });
+        return {
+          ...member,
+          employee,
+        };
+      }),
+    );
+
     return res.json({
       success: true,
-      teamMembers: members,
-      count: members.length,
+      teamMembers: enrichedMembers,
+      count: enrichedMembers.length,
     });
   } catch (error) {
     console.error("Get team members error:", error);
