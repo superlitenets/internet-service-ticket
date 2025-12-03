@@ -107,6 +107,34 @@ export const createTicket: RequestHandler = async (req, res) => {
       },
     });
 
+    // Send SMS notification for ticket creation
+    (async () => {
+      const customerDetails = await getCustomerDetailsForNotification(customerId);
+      const technicianDetails = assignedTeamMemberId
+        ? await getTechnicianDetailsForNotification(assignedTeamMemberId)
+        : null;
+
+      const notificationData: TicketEventData = {
+        ticketId: ticket.id,
+        ticketNumber: ticket.ticketId,
+        customerId,
+        customerName: customerDetails?.name || ticket.customer.name,
+        customerPhone: customerDetails?.phone || ticket.customer.phone,
+        subject,
+        priority: priority || "medium",
+        status: "open",
+        assignedTechnicianName: technicianDetails?.name,
+        assignedTechnicianPhone: technicianDetails?.phone,
+      };
+
+      await sendTicketNotificationSms(
+        "ticket_created",
+        notificationData,
+        true,
+        !!assignedTeamMemberId,
+      );
+    })();
+
     return res.status(201).json({
       success: true,
       message: "Ticket created successfully",
