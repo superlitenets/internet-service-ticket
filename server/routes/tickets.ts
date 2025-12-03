@@ -1,6 +1,12 @@
 import { RequestHandler } from "express";
 import { db } from "../lib/db";
 import { generateTicketId } from "../lib/ticket-id-generator";
+import {
+  sendTicketNotificationSms,
+  getCustomerDetailsForNotification,
+  getTechnicianDetailsForNotification,
+  type TicketEventData,
+} from "../lib/ticket-notification-service";
 
 /**
  * Create a new ticket
