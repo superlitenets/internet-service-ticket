@@ -352,7 +352,10 @@ export default function TicketsPage() {
 
       document.addEventListener("visibilitychange", handleVisibilityChange);
       return () => {
-        document.removeEventListener("visibilitychange", handleVisibilityChange);
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
       };
     };
 
@@ -1351,7 +1354,10 @@ export default function TicketsPage() {
                             });
                           })
                           .catch((error) => {
-                            console.error("Failed to refresh employees:", error);
+                            console.error(
+                              "Failed to refresh employees:",
+                              error,
+                            );
                             toast({
                               title: "Error",
                               description: "Failed to refresh employee list",
@@ -1403,7 +1409,10 @@ export default function TicketsPage() {
                             });
                           })
                           .catch((error) => {
-                            console.error("Failed to refresh team groups:", error);
+                            console.error(
+                              "Failed to refresh team groups:",
+                              error,
+                            );
                             toast({
                               title: "Error",
                               description: "Failed to refresh team group list",
@@ -1456,7 +1465,10 @@ export default function TicketsPage() {
                             });
                           })
                           .catch((error) => {
-                            console.error("Failed to refresh team members:", error);
+                            console.error(
+                              "Failed to refresh team members:",
+                              error,
+                            );
                             toast({
                               title: "Error",
                               description: "Failed to refresh team member list",
