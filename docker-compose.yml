@@ -17,11 +17,11 @@ services:
     environment:
       NODE_ENV: development
       PORT: 9000
-      DATABASE_URL: postgresql://netflow_user:secure_password@postgres:5432/netflow_db
+      DATABASE_URL: postgresql://netflow:secure_password@postgres:5432/netflow_db
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: netflow_db
-      DB_USER: netflow_user
+      DB_USER: netflow
       DB_PASSWORD: secure_password
     depends_on:
       postgres:
