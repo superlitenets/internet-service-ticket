@@ -69,8 +69,9 @@ services:
     image: dpage/pgadmin4:latest
     container_name: netflow-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@netflow.local
+      PGADMIN_DEFAULT_EMAIL: admin@netflow.com
       PGADMIN_DEFAULT_PASSWORD: admin_password
+      SCRIPT_NAME: /pgadmin
     ports:
       - "5050:80"
     depends_on:
