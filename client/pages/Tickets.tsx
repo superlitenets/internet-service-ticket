@@ -948,13 +948,19 @@ export default function TicketsPage() {
                         >
                           {ticket.id}
                         </button>
-                        <Badge variant="secondary" className={getPriorityColor(ticket.priority)}>
-                          {ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
+                        <Badge
+                          variant="secondary"
+                          className={getPriorityColor(ticket.priority)}
+                        >
+                          {ticket.priority.charAt(0).toUpperCase() +
+                            ticket.priority.slice(1)}
                         </Badge>
                       </div>
 
                       <div>
-                        <p className="text-xs text-muted-foreground">Customer</p>
+                        <p className="text-xs text-muted-foreground">
+                          Customer
+                        </p>
                         <p className="font-medium text-sm">{ticket.customer}</p>
                       </div>
 
@@ -965,14 +971,23 @@ export default function TicketsPage() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <p className="text-xs text-muted-foreground">Status</p>
-                          <Select value={ticket.status} onValueChange={(value) => handleStatusChange(ticket.id, value)}>
+                          <p className="text-xs text-muted-foreground">
+                            Status
+                          </p>
+                          <Select
+                            value={ticket.status}
+                            onValueChange={(value) =>
+                              handleStatusChange(ticket.id, value)
+                            }
+                          >
                             <SelectTrigger className="h-8 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="open">Open</SelectItem>
-                              <SelectItem value="in-progress">In Progress</SelectItem>
+                              <SelectItem value="in-progress">
+                                In Progress
+                              </SelectItem>
                               <SelectItem value="pending">Pending</SelectItem>
                               <SelectItem value="resolved">Resolved</SelectItem>
                             </SelectContent>
@@ -980,16 +995,31 @@ export default function TicketsPage() {
                         </div>
 
                         <div>
-                          <p className="text-xs text-muted-foreground">Assigned</p>
-                          <Select value={ticket.assignedTo || "unassigned"} onValueChange={(value) => handleAssignTicket(ticket.id, value === "unassigned" ? "" : value)}>
+                          <p className="text-xs text-muted-foreground">
+                            Assigned
+                          </p>
+                          <Select
+                            value={ticket.assignedTo || "unassigned"}
+                            onValueChange={(value) =>
+                              handleAssignTicket(
+                                ticket.id,
+                                value === "unassigned" ? "" : value,
+                              )
+                            }
+                          >
                             <SelectTrigger className="h-8 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="unassigned">Unassigned</SelectItem>
+                              <SelectItem value="unassigned">
+                                Unassigned
+                              </SelectItem>
                               {employees.map((emp) => (
                                 <SelectItem key={emp.id} value={emp.id}>
-                                  {`${emp.firstName} ${emp.lastName}`.substring(0, 15)}
+                                  {`${emp.firstName} ${emp.lastName}`.substring(
+                                    0,
+                                    15,
+                                  )}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -998,16 +1028,37 @@ export default function TicketsPage() {
                       </div>
 
                       <div className="flex gap-2 pt-2 border-t">
-                        <Button size="xs" variant="outline" onClick={() => handleOpenDetail(ticket)} className="flex-1">
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          onClick={() => handleOpenDetail(ticket)}
+                          className="flex-1"
+                        >
                           <MessageSquare size={12} />
                         </Button>
-                        <Button size="xs" variant="outline" onClick={() => handleOpenDialog(ticket)} className="flex-1">
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          onClick={() => handleOpenDialog(ticket)}
+                          className="flex-1"
+                        >
                           <Edit size={12} />
                         </Button>
-                        <Button size="xs" variant="outline" onClick={() => handleSendSmsNotification(ticket)} disabled={sendingSms} className="flex-1">
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          onClick={() => handleSendSmsNotification(ticket)}
+                          disabled={sendingSms}
+                          className="flex-1"
+                        >
                           <Send size={12} />
                         </Button>
-                        <Button size="xs" variant="outline" className="text-destructive flex-1" onClick={() => setDeleteConfirm(ticket.id)}>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="text-destructive flex-1"
+                          onClick={() => setDeleteConfirm(ticket.id)}
+                        >
                           <Trash2 size={12} />
                         </Button>
                       </div>
@@ -1049,132 +1100,128 @@ export default function TicketsPage() {
                   </thead>
                   <tbody className="divide-y divide-border">
                     {filteredTickets.map((ticket) => (
-                        <tr
-                          key={ticket.id}
-                          className="hover:bg-muted/30 transition-colors"
-                        >
-                          <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
-                            <button
-                              onClick={() => navigate(`/tickets/${ticket.id}`)}
-                              className="text-primary hover:underline cursor-pointer"
-                            >
-                              {ticket.id}
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
-                            {ticket.customer}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
-                            {ticket.title}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <Select
-                              value={ticket.status}
-                              onValueChange={(value) =>
-                                handleStatusChange(ticket.id, value)
-                              }
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="open">Open</SelectItem>
-                                <SelectItem value="in-progress">
-                                  In Progress
+                      <tr
+                        key={ticket.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-6 py-4 text-sm font-semibold whitespace-nowrap">
+                          <button
+                            onClick={() => navigate(`/tickets/${ticket.id}`)}
+                            className="text-primary hover:underline cursor-pointer"
+                          >
+                            {ticket.id}
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground whitespace-nowrap">
+                          {ticket.customer}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-foreground max-w-xs truncate">
+                          {ticket.title}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Select
+                            value={ticket.status}
+                            onValueChange={(value) =>
+                              handleStatusChange(ticket.id, value)
+                            }
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="open">Open</SelectItem>
+                              <SelectItem value="in-progress">
+                                In Progress
+                              </SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="resolved">Resolved</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </td>
+                        <td className="px-6 py-4 text-sm whitespace-nowrap">
+                          <Badge
+                            variant="secondary"
+                            className={getPriorityColor(ticket.priority)}
+                          >
+                            {ticket.priority.charAt(0).toUpperCase() +
+                              ticket.priority.slice(1)}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <Select
+                            value={ticket.assignedTo}
+                            onValueChange={(value) =>
+                              handleAssignTicket(ticket.id, value)
+                            }
+                          >
+                            <SelectTrigger className="w-40">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned">
+                                Unassigned
+                              </SelectItem>
+                              {employees.map((employee) => (
+                                <SelectItem
+                                  key={employee.id}
+                                  value={employee.id}
+                                >
+                                  {`${employee.firstName} ${employee.lastName}`}
                                 </SelectItem>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="resolved">
-                                  Resolved
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-6 py-4 text-sm whitespace-nowrap">
-                            <Badge
-                              variant="secondary"
-                              className={getPriorityColor(ticket.priority)}
-                            >
-                              {ticket.priority.charAt(0).toUpperCase() +
-                                ticket.priority.slice(1)}
-                            </Badge>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <Select
-                              value={ticket.assignedTo}
-                              onValueChange={(value) =>
-                                handleAssignTicket(ticket.id, value)
-                              }
-                            >
-                              <SelectTrigger className="w-40">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="unassigned">
-                                  Unassigned
-                                </SelectItem>
-                                {employees.map((employee) => (
-                                  <SelectItem
-                                    key={employee.id}
-                                    value={employee.id}
-                                  >
-                                    {`${employee.firstName} ${employee.lastName}`}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            {ticket.smsNotificationsSent > 0 ? (
-                              <div className="flex items-center gap-1 text-accent">
-                                <MessageCircle size={16} />
-                                {ticket.smsNotificationsSent}
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenDetail(ticket)}
-                                title="View details and replies"
-                              >
-                                <MessageSquare size={14} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenDialog(ticket)}
-                                title="Edit ticket"
-                              >
-                                <Edit size={14} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  handleSendSmsNotification(ticket)
-                                }
-                                disabled={sendingSms}
-                                title="Send SMS notification"
-                              >
-                                <Send size={14} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-destructive hover:text-destructive"
-                                onClick={() => setDeleteConfirm(ticket.id)}
-                                title="Delete ticket"
-                              >
-                                <Trash2 size={14} />
-                              </Button>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {ticket.smsNotificationsSent > 0 ? (
+                            <div className="flex items-center gap-1 text-accent">
+                              <MessageCircle size={16} />
+                              {ticket.smsNotificationsSent}
                             </div>
-                          </td>
-                        </tr>
-                      ))}
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenDetail(ticket)}
+                              title="View details and replies"
+                            >
+                              <MessageSquare size={14} />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenDialog(ticket)}
+                              title="Edit ticket"
+                            >
+                              <Edit size={14} />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSendSmsNotification(ticket)}
+                              disabled={sendingSms}
+                              title="Send SMS notification"
+                            >
+                              <Send size={14} />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => setDeleteConfirm(ticket.id)}
+                              title="Delete ticket"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1184,10 +1231,18 @@ export default function TicketsPage() {
                   tickets
                 </p>
                 <div className="flex gap-2 w-full md:w-auto">
-                  <Button variant="outline" size="sm" className="flex-1 md:flex-none">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 md:flex-none"
+                  >
                     Previous
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 md:flex-none">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 md:flex-none"
+                  >
                     Next
                   </Button>
                 </div>
@@ -1455,7 +1510,9 @@ export default function TicketsPage() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={`${employees.length} employees available`} />
+                      <SelectValue
+                        placeholder={`${employees.length} employees available`}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unassigned">
