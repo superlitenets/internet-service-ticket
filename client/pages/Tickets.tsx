@@ -1387,9 +1387,35 @@ export default function TicketsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Assign to Team Group (Optional)
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-foreground">
+                      Assign to Team Group (Optional)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        getTeamGroups()
+                          .then((teamGroupsData) => {
+                            setTeamGroups(teamGroupsData);
+                            toast({
+                              title: "Success",
+                              description: "Team group list refreshed",
+                            });
+                          })
+                          .catch((error) => {
+                            console.error("Failed to refresh team groups:", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to refresh team group list",
+                              variant: "destructive",
+                            });
+                          });
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Refresh
+                    </button>
+                  </div>
                   <Select
                     value={formData.teamGroupId || "none"}
                     onValueChange={(value) =>
