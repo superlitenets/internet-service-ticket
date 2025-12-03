@@ -1414,9 +1414,35 @@ export default function TicketsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Assign to Team Member (Optional)
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-foreground">
+                      Assign to Team Member (Optional)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        getTeamMembers()
+                          .then((teamMembersData) => {
+                            setTeamMembers(teamMembersData);
+                            toast({
+                              title: "Success",
+                              description: "Team member list refreshed",
+                            });
+                          })
+                          .catch((error) => {
+                            console.error("Failed to refresh team members:", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to refresh team member list",
+                              variant: "destructive",
+                            });
+                          });
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Refresh
+                    </button>
+                  </div>
                   <Select
                     value={formData.assignedTeamMemberId || "none"}
                     onValueChange={(value) =>
