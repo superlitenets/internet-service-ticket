@@ -1033,7 +1033,7 @@ export default function TicketsPage() {
                                     key={employee.id}
                                     value={employee.id}
                                   >
-                                    {employee.name}
+                                    {`${employee.firstName} ${employee.lastName}`}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
