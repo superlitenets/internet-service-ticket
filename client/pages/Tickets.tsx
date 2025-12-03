@@ -1335,9 +1335,35 @@ export default function TicketsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Assign To (Individual)
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium text-foreground">
+                      Assign To (Individual)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        getEmployees()
+                          .then((employeesData) => {
+                            setEmployees(employeesData);
+                            toast({
+                              title: "Success",
+                              description: "Employee list refreshed",
+                            });
+                          })
+                          .catch((error) => {
+                            console.error("Failed to refresh employees:", error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to refresh employee list",
+                              variant: "destructive",
+                            });
+                          });
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Refresh
+                    </button>
+                  </div>
                   <Select
                     value={formData.assignedTo}
                     onValueChange={(value) =>
