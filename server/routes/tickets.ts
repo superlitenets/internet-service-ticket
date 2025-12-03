@@ -346,6 +346,62 @@ export const updateTicket: RequestHandler = async (req, res) => {
       },
     });
 
+    // Send SMS notifications for ticket updates
+    (async () => {
+      const customerDetails = await getCustomerDetailsForNotification(ticket.customerId);
+      const technicianDetails = updatedTicket.assignedTeamMemberId
+        ? await getTechnicianDetailsForNotification(updatedTicket.assignedTeamMemberId)
+        : null;
+
+      const notificationData: TicketEventData = {
+        ticketId: updatedTicket.id,
+        ticketNumber: updatedTicket.ticketId,
+        customerId: updatedTicket.customerId,
+        customerName: customerDetails?.name || updatedTicket.customer.name,
+        customerPhone: customerDetails?.phone || updatedTicket.customer.phone,
+        subject: updatedTicket.subject,
+        priority: updatedTicket.priority,
+        status: updatedTicket.status,
+        previousStatus: ticket.status,
+        assignedTechnicianName: technicianDetails?.name,
+        assignedTechnicianPhone: technicianDetails?.phone,
+        resolution: updatedTicket.resolution,
+      };
+
+      // Send appropriate SMS based on what changed
+      if (
+        assignedTeamMemberId !== undefined &&
+        ticket.assignedTeamMemberId !== assignedTeamMemberId
+      ) {
+        // Assignment changed
+        await sendTicketNotificationSms(
+          "ticket_assigned",
+          notificationData,
+          true,
+          !!updatedTicket.assignedTeamMemberId,
+        );
+      } else if (status !== undefined && ticket.status !== status) {
+        // Status changed
+        if (status === "closed" || status === "resolved") {
+          // Ticket is being closed/resolved
+          await sendTicketNotificationSms(
+            "ticket_closed",
+            notificationData,
+            true,
+            false,
+          );
+        } else {
+          // Other status changes
+          await sendTicketNotificationSms(
+            "ticket_status_change",
+            notificationData,
+            true,
+            !!updatedTicket.assignedTeamMemberId,
+          );
+        }
+      }
+    })();
+
     return res.json({
       success: true,
       message: "Ticket updated successfully",
