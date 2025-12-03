@@ -109,7 +109,8 @@ export const createTicket: RequestHandler = async (req, res) => {
 
     // Send SMS notification for ticket creation
     (async () => {
-      const customerDetails = await getCustomerDetailsForNotification(customerId);
+      const customerDetails =
+        await getCustomerDetailsForNotification(customerId);
       const technicianDetails = assignedTeamMemberId
         ? await getTechnicianDetailsForNotification(assignedTeamMemberId)
         : null;
@@ -348,9 +349,13 @@ export const updateTicket: RequestHandler = async (req, res) => {
 
     // Send SMS notifications for ticket updates
     (async () => {
-      const customerDetails = await getCustomerDetailsForNotification(ticket.customerId);
+      const customerDetails = await getCustomerDetailsForNotification(
+        ticket.customerId,
+      );
       const technicianDetails = updatedTicket.assignedTeamMemberId
-        ? await getTechnicianDetailsForNotification(updatedTicket.assignedTeamMemberId)
+        ? await getTechnicianDetailsForNotification(
+            updatedTicket.assignedTeamMemberId,
+          )
         : null;
 
       const notificationData: TicketEventData = {

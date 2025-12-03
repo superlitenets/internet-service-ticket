@@ -30,6 +30,7 @@ Before testing SMS notifications, ensure:
 The following ticket events now trigger SMS notifications:
 
 ### 1. **Ticket Created** (`ticket_created`)
+
 - **When**: When a new ticket is created
 - **Who Gets Notified**:
   - Customer (always)
@@ -39,6 +40,7 @@ The following ticket events now trigger SMS notifications:
   - Technician: "New ticket #TKT-2024-001 for John Doe. Priority: high. Issue: Internet not working. Contact: +254712345678"
 
 ### 2. **Ticket Assigned** (`ticket_assigned`)
+
 - **When**: A ticket is assigned to a technician or team
 - **Who Gets Notified**:
   - Customer (always)
@@ -48,6 +50,7 @@ The following ticket events now trigger SMS notifications:
   - Technician: "Ticket #TKT-2024-001 assigned to you. Customer: John (254712345678). Priority: high. Internet not working"
 
 ### 3. **Ticket Status Changed** (`ticket_status_change`)
+
 - **When**: Ticket status is updated (open → in-progress, waiting, bounced, etc.)
 - **Who Gets Notified**:
   - Customer (always)
@@ -57,6 +60,7 @@ The following ticket events now trigger SMS notifications:
   - Technician: "Ticket #TKT-2024-001 for John Doe status changed to in-progress."
 
 ### 4. **Ticket Closed/Resolved** (`ticket_closed`)
+
 - **When**: Ticket is marked as resolved or closed
 - **Who Gets Notified**:
   - Customer (always)
@@ -145,20 +149,24 @@ Monitor the server console for SMS-related logs:
 ### Common Issues
 
 **1. "SMS not enabled or configured"**
+
 - Solution: Check that SMS is enabled in the Settings page and configuration exists in the database
 
 **2. "SMS configuration incomplete"**
+
 - Solution: Ensure all required SMS provider credentials are filled in:
   - For Advanta: apiKey, partnerId, shortcode, customApiUrl
   - For Twilio: accountSid, authToken, fromNumber
 
 **3. "No valid phone numbers to notify"**
+
 - Solution: Verify that:
   - Customer has a phone number in their profile
   - Technician/Employee has a phone number in their profile
   - Phone numbers are in valid format
 
 **4. "Failed to send SMS" (HTTP errors)**
+
 - Solution:
   - Check that SMS API endpoint is reachable
   - Verify SMS provider credentials are correct
@@ -173,6 +181,7 @@ SELECT * FROM "SmsConfig" WHERE enabled = true;
 ```
 
 Expected output:
+
 ```
  id  | provider | enabled | apiKey | partnerId | shortcode | customApiUrl
 -----+----------+---------+--------+-----------+-----------+-----------
@@ -198,6 +207,7 @@ To customize messages, edit the switch statement in that function and redeploy.
 ### Message Variables
 
 Messages use these variables:
+
 - `{{ticketRef}}` / `#TKT-XXXX`: Ticket number
 - `{{customerName}}`: Customer name
 - `{{subject}}`: Ticket subject
@@ -219,9 +229,11 @@ Messages use these variables:
 ### Logs to Check
 
 **Client-side** (Browser Console):
+
 - No logs (notifications happen server-side)
 
 **Server-side** (Node.js Console):
+
 - `[SMS]` messages: SMS provider calls
 - `[TICKET SMS]` messages: Ticket notification flow
 
@@ -250,6 +262,7 @@ Each step should trigger corresponding SMS notifications as logged in the server
 ### With Real SMS Provider
 
 If using a real SMS provider (Advanta, Twilio, etc.):
+
 1. Check your provider's dashboard for sent messages
 2. Verify message count increased
 3. Check actual phone receiving SMS (if test numbers configured)
@@ -257,6 +270,7 @@ If using a real SMS provider (Advanta, Twilio, etc.):
 ### With Custom API
 
 If using `customApiUrl`:
+
 1. Your API should receive POST request with:
    ```json
    {

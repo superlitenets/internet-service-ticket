@@ -20,7 +20,11 @@ export interface TicketEventData {
  * Supports: ticket_created, ticket_assigned, ticket_status_change, ticket_closed
  */
 export async function sendTicketNotificationSms(
-  eventType: "ticket_created" | "ticket_assigned" | "ticket_status_change" | "ticket_closed",
+  eventType:
+    | "ticket_created"
+    | "ticket_assigned"
+    | "ticket_status_change"
+    | "ticket_closed",
   data: TicketEventData,
   notifyCustomer: boolean = true,
   notifyTechnician: boolean = true,
@@ -92,7 +96,11 @@ export async function sendTicketNotificationSms(
  * Generate SMS message for ticket events
  */
 function generateTicketSmsMessage(
-  eventType: "ticket_created" | "ticket_assigned" | "ticket_status_change" | "ticket_closed",
+  eventType:
+    | "ticket_created"
+    | "ticket_assigned"
+    | "ticket_status_change"
+    | "ticket_closed",
   data: TicketEventData,
   isCustomerNotification: boolean,
 ): string {
@@ -123,7 +131,9 @@ function generateTicketSmsMessage(
 
     case "ticket_closed":
       if (isCustomerNotification) {
-        const resolutionText = data.resolution ? ` Resolution: ${data.resolution}` : "";
+        const resolutionText = data.resolution
+          ? ` Resolution: ${data.resolution}`
+          : "";
         return `Hi ${customerName}, your ticket ${ticketRef} has been resolved and closed.${resolutionText} Thank you for choosing us!`;
       } else {
         return `Ticket ${ticketRef} for ${customerName} has been closed.`;
@@ -171,12 +181,13 @@ async function sendTicketSmsViaApi(options: {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(
-        `SMS API error: ${response.status} - ${errorText}`,
-      );
+      throw new Error(`SMS API error: ${response.status} - ${errorText}`);
     }
 
-    const result = (await response.json()) as { success: boolean; messageIds?: string[] };
+    const result = (await response.json()) as {
+      success: boolean;
+      messageIds?: string[];
+    };
 
     if (result.success) {
       console.log(
