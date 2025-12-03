@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { sendSmsDirectly } from "./sms-service";
 
 export interface TicketEventData {
   ticketId: string;
