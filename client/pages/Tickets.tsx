@@ -922,17 +922,102 @@ export default function TicketsPage() {
           </div>
         </Card>
 
-        {/* Tickets Table */}
+        {/* Tickets Table/Cards - Responsive */}
         <Card className="border-0 shadow-sm overflow-hidden">
           {loading ? (
-            <div className="p-12 text-center">
+            <div className="p-8 md:p-12 text-center">
               <p className="text-muted-foreground">
                 Loading tickets from database...
               </p>
             </div>
+          ) : filteredTickets.length === 0 ? (
+            <div className="p-8 md:p-12 text-center">
+              <p className="text-muted-foreground">No tickets found</p>
+            </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4 p-4">
+                {filteredTickets.map((ticket) => (
+                  <Card key={ticket.id} className="p-4 border">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <button
+                          onClick={() => navigate(`/tickets/${ticket.id}`)}
+                          className="text-primary hover:underline font-semibold text-sm"
+                        >
+                          {ticket.id}
+                        </button>
+                        <Badge variant="secondary" className={getPriorityColor(ticket.priority)}>
+                          {ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
+                        </Badge>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-muted-foreground">Customer</p>
+                        <p className="font-medium text-sm">{ticket.customer}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-muted-foreground">Subject</p>
+                        <p className="text-sm line-clamp-2">{ticket.title}</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Status</p>
+                          <Select value={ticket.status} onValueChange={(value) => handleStatusChange(ticket.id, value)}>
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="open">Open</SelectItem>
+                              <SelectItem value="in-progress">In Progress</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="resolved">Resolved</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-muted-foreground">Assigned</p>
+                          <Select value={ticket.assignedTo || "unassigned"} onValueChange={(value) => handleAssignTicket(ticket.id, value === "unassigned" ? "" : value)}>
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned">Unassigned</SelectItem>
+                              {employees.map((emp) => (
+                                <SelectItem key={emp.id} value={emp.id}>
+                                  {`${emp.firstName} ${emp.lastName}`.substring(0, 15)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 pt-2 border-t">
+                        <Button size="xs" variant="outline" onClick={() => handleOpenDetail(ticket)} className="flex-1">
+                          <MessageSquare size={12} />
+                        </Button>
+                        <Button size="xs" variant="outline" onClick={() => handleOpenDialog(ticket)} className="flex-1">
+                          <Edit size={12} />
+                        </Button>
+                        <Button size="xs" variant="outline" onClick={() => handleSendSmsNotification(ticket)} disabled={sendingSms} className="flex-1">
+                          <Send size={12} />
+                        </Button>
+                        <Button size="xs" variant="outline" className="text-destructive flex-1" onClick={() => setDeleteConfirm(ticket.id)}>
+                          <Trash2 size={12} />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border bg-muted/30">
