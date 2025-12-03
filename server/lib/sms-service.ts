@@ -63,10 +63,7 @@ export async function sendSmsDirectly(options: SendSmsOptions): Promise<{
 
     // Validate message length
     if (message.length === 0 || message.length > 1600) {
-      console.error(
-        "[SMS SERVICE] Invalid message length:",
-        message.length,
-      );
+      console.error("[SMS SERVICE] Invalid message length:", message.length);
       return {
         success: false,
         error: "Invalid message length",
@@ -98,7 +95,9 @@ export async function sendSmsDirectly(options: SendSmsOptions): Promise<{
 
     // If no custom API URL or provider not fully configured, log and return success
     // This prevents blocking ticket operations if SMS is not fully configured
-    console.log("[SMS SERVICE] SMS provider not fully configured, skipping send");
+    console.log(
+      "[SMS SERVICE] SMS provider not fully configured, skipping send",
+    );
     return {
       success: true,
       messageIds: validPhoneNumbers.map(

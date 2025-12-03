@@ -3,12 +3,15 @@
 ## Check if SMS is Being Triggered
 
 ### 1. Check Server Logs
+
 When you create a ticket, look at the server console for these messages:
+
 ```
 [TICKET SMS] Successfully sent ticket_created SMS for ticket ...
 ```
 
 If you don't see any `[TICKET SMS]` messages, check these logs:
+
 ```
 [TICKET SMS] SMS not enabled or configured
 [TICKET SMS] SMS configuration incomplete
@@ -21,18 +24,22 @@ If you don't see any `[TICKET SMS]` messages, check these logs:
 ## Diagnostic Steps
 
 ### Step 1: Verify SMS Configuration
+
 Run this SQL query to check if SMS is configured:
+
 ```sql
 SELECT * FROM "SmsConfig" WHERE enabled = true;
 ```
 
 **Expected result:**
+
 - At least one row with `enabled = true`
 - `provider` should be "advanta" (or your provider)
 - `apiKey`, `partnerId`, `shortcode` should NOT be empty
 - `customApiUrl` should have your SMS API endpoint
 
 **If empty:**
+
 - Go to Settings page
 - Configure SMS provider with credentials
 - Click Save
@@ -40,21 +47,25 @@ SELECT * FROM "SmsConfig" WHERE enabled = true;
 ---
 
 ### Step 2: Verify Customer & Employee Phone Numbers
+
 When creating a ticket, both customer and technician must have phone numbers.
 
 Check customers:
+
 ```sql
 SELECT id, name, phone FROM "Customer" LIMIT 5;
 ```
 
 Check employees:
+
 ```sql
 SELECT id, "firstName", "lastName", phone FROM "Employee" LIMIT 5;
 ```
 
 **Issue:** If phone numbers are empty or `NULL`, SMS won't be sent.
 
-**Fix:** 
+**Fix:**
+
 1. Add phone numbers to customer profiles
 2. Add phone numbers to employee profiles
 3. Then create a ticket
@@ -62,6 +73,7 @@ SELECT id, "firstName", "lastName", phone FROM "Employee" LIMIT 5;
 ---
 
 ### Step 3: Test Ticket Creation
+
 1. Go to **Tickets** page
 2. Click **New Ticket**
 3. **IMPORTANT** - Make sure:
@@ -75,13 +87,16 @@ SELECT id, "firstName", "lastName", phone FROM "Employee" LIMIT 5;
 ---
 
 ### Step 4: Check Console Output
+
 **In your browser DevTools (F12):**
+
 - Open **Console** tab
 - Create a ticket
 - Look for any error messages
 
 **In the server console:**
 Look for:
+
 ```
 [TICKET SMS] Successfully sent ticket_created SMS for ticket ...
 ```
@@ -91,11 +106,13 @@ Look for:
 ## Common Issues & Fixes
 
 ### Issue 1: "SMS not enabled or configured"
+
 ```
 [TICKET SMS] SMS not enabled or configured
 ```
 
 **Fix:**
+
 1. Go to Settings page
 2. Make sure SMS toggle is **ON**
 3. Verify SMS provider is selected
@@ -105,11 +122,13 @@ Look for:
 ---
 
 ### Issue 2: "SMS configuration incomplete"
+
 ```
 [TICKET SMS] SMS configuration incomplete
 ```
 
 **Fix:**
+
 1. Go to Settings page
 2. Fill in ALL SMS credentials:
    - API Key (or Account SID)
@@ -122,32 +141,37 @@ Look for:
 ---
 
 ### Issue 3: "No valid phone numbers to notify"
+
 ```
 [TICKET SMS] No valid phone numbers to notify
 ```
 
 **Fix:**
+
 1. Check customer phone number is set
 2. Check employee phone number is set
 3. Ensure phone numbers are valid format (9-15 digits)
 
 **Database check:**
+
 ```sql
 -- Check customer
 SELECT phone FROM "Customer" WHERE id = 'CUSTOMER_ID';
 
--- Check employee  
+-- Check employee
 SELECT phone FROM "Employee" WHERE id = 'EMPLOYEE_ID';
 ```
 
 ---
 
 ### Issue 4: SMS Service Error
+
 ```
 [SMS SERVICE] Error calling Advanta API
 ```
 
 **Fix:**
+
 1. Verify SMS API endpoint (customApiUrl) is correct
 2. Check credentials (apiKey, partnerId, shortcode) are correct
 3. Test API endpoint directly with Postman or curl
@@ -156,9 +180,11 @@ SELECT phone FROM "Employee" WHERE id = 'EMPLOYEE_ID';
 ---
 
 ### Issue 5: No Server Logs at All
+
 The SMS code might not be executing.
 
 **Check:**
+
 1. Confirm server restarted after code changes
 2. Check for TypeScript compilation errors
 3. Look at dev server console for errors
@@ -228,7 +254,7 @@ sqlite3 database.db "SELECT COUNT(*) FROM \"SmsConfig\" WHERE enabled = true;"
 # 2. Check customer has phone
 sqlite3 database.db "SELECT id, name, phone FROM \"Customer\" LIMIT 1;"
 
-# 3. Check employee has phone  
+# 3. Check employee has phone
 sqlite3 database.db "SELECT id, \"firstName\", \"lastName\", phone FROM \"Employee\" LIMIT 1;"
 ```
 
@@ -237,6 +263,7 @@ sqlite3 database.db "SELECT id, \"firstName\", \"lastName\", phone FROM \"Employ
 ## Need More Help?
 
 Check these files for implementation details:
+
 - `server/lib/ticket-notification-service.ts` - SMS notification logic
 - `server/lib/sms-service.ts` - Direct SMS sending
 - `server/routes/tickets.ts` - Ticket handlers with SMS integration
