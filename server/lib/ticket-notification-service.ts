@@ -158,7 +158,10 @@ async function sendTicketSmsViaApi(options: {
       customApiUrl: options.customApiUrl,
     };
 
-    const response = await fetch("http://localhost:9000/api/sms/send", {
+    const port = process.env.PORT || 9000;
+    const apiUrl = `http://localhost:${port}/api/sms/send`;
+
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
