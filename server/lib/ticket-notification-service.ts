@@ -159,7 +159,7 @@ async function sendTicketSmsViaApi(options: {
   ticketId: string;
 }): Promise<void> {
   try {
-    const smsRequest = {
+    const result = await sendSmsDirectly({
       to: options.phoneNumbers,
       message: options.message,
       provider: "advanta",
@@ -167,41 +167,20 @@ async function sendTicketSmsViaApi(options: {
       partnerId: options.partnerId,
       shortcode: options.shortcode,
       customApiUrl: options.customApiUrl,
-    };
-
-    const port = process.env.PORT || 9000;
-    const apiUrl = `http://localhost:${port}/api/sms/send`;
-
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(smsRequest),
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`SMS API error: ${response.status} - ${errorText}`);
-    }
-
-    const result = (await response.json()) as {
-      success: boolean;
-      messageIds?: string[];
-    };
 
     if (result.success) {
       console.log(
-        `[TICKET SMS] Successfully sent ${options.eventType} SMS for ticket ${options.ticketId}`,
+        `[TICKET SMS] Successfully sent ${options.eventType} SMS for ticket ${options.ticketId} to ${options.phoneNumbers.length} recipient(s)`,
       );
     } else {
       console.error(
-        `[TICKET SMS] SMS API returned failure for ticket ${options.ticketId}`,
+        `[TICKET SMS] Failed to send ${options.eventType} SMS for ticket ${options.ticketId}: ${result.error}`,
       );
     }
   } catch (error) {
     console.error(
-      `[TICKET SMS] Failed to send SMS for ticket ${options.ticketId}:`,
+      `[TICKET SMS] Error sending ${options.eventType} SMS for ticket ${options.ticketId}:`,
       error,
     );
   }
