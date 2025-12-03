@@ -1178,16 +1178,16 @@ export default function TicketsPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
-                <p className="text-sm text-muted-foreground">
+              <div className="border-t border-border px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between bg-muted/30 gap-4 md:gap-0">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   Showing {filteredTickets.length} of {allTickets.length}{" "}
                   tickets
                 </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Button variant="outline" size="sm" className="flex-1 md:flex-none">
                     Previous
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex-1 md:flex-none">
                     Next
                   </Button>
                 </div>
