@@ -269,7 +269,7 @@ export default function TicketsPage() {
           console.error("Failed to load customers:", error);
         }
 
-        // Load employees
+        // Load employees for "Assign To" dropdown
         try {
           const employeesData = await getEmployees();
           setEmployees(employeesData);
@@ -283,14 +283,6 @@ export default function TicketsPage() {
           setTeamGroups(teamGroupsData);
         } catch (error) {
           console.error("Failed to load team groups:", error);
-        }
-
-        // Load employees for "Assign To" dropdown
-        try {
-          const employeesData = await getEmployees();
-          setEmployees(employeesData);
-        } catch (error) {
-          console.error("Failed to load employees:", error);
         }
 
         // Load team members
