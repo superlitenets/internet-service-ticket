@@ -1371,21 +1371,32 @@ export default function TicketsPage() {
                     </button>
                   </div>
                   <Select
-                    value={formData.assignedTo}
+                    value={formData.assignedTo || "unassigned"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, assignedTo: value })
+                      setFormData({
+                        ...formData,
+                        assignedTo: value === "unassigned" ? "" : value,
+                      })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder={`${employees.length} employees available`} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {employees.map((employee) => (
-                        <SelectItem key={employee.id} value={employee.id}>
-                          {`${employee.firstName} ${employee.lastName}`}
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="unassigned">
+                        Unassigned ({employees.length} available)
+                      </SelectItem>
+                      {employees.length === 0 ? (
+                        <div className="p-2 text-sm text-muted-foreground">
+                          No employees found. Create an employee first.
+                        </div>
+                      ) : (
+                        employees.map((employee) => (
+                          <SelectItem key={employee.id} value={employee.id}>
+                            {`${employee.firstName} ${employee.lastName}`}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
