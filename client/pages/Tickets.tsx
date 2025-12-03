@@ -334,6 +334,31 @@ export default function TicketsPage() {
     loadData();
   }, []);
 
+  // Auto-refresh employees list when page becomes visible
+  useEffect(() => {
+    const refreshEmployeesOnVisibility = () => {
+      // When user comes back to this tab/window, refresh employees
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          getEmployees()
+            .then((employeesData) => {
+              setEmployees(employeesData);
+            })
+            .catch((error) => {
+              console.error("Failed to refresh employees:", error);
+            });
+        }
+      };
+
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+      return () => {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+      };
+    };
+
+    return refreshEmployeesOnVisibility();
+  }, []);
+
   const filteredTickets = allTickets.filter((ticket) => {
     const matchesSearch =
       ticket.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
