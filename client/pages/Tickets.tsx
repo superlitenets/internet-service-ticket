@@ -1048,8 +1048,7 @@ export default function TicketsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {filteredTickets.length > 0 ? (
-                      filteredTickets.map((ticket) => (
+                    {filteredTickets.map((ticket) => (
                         <tr
                           key={ticket.id}
                           className="hover:bg-muted/30 transition-colors"
@@ -1175,16 +1174,7 @@ export default function TicketsPage() {
                             </div>
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={8} className="px-6 py-12 text-center">
-                          <p className="text-muted-foreground">
-                            No tickets found
-                          </p>
-                        </td>
-                      </tr>
-                    )}
+                      ))}
                   </tbody>
                 </table>
               </div>
